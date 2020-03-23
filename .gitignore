@@ -1,5 +1,6 @@
+# Local settings/key files
 backend/pg_settings.env
-backend/dj_secret.key
+*.key
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

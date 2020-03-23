@@ -77,6 +77,9 @@ WSGI_APPLICATION = 'config.wsgi.application'
 with open('pg_settings.env') as f:
     POSTGRES_PASS = f.read().strip().split("=")[1]
 
+with open('cms.key') as f:
+    CMS_PASS = f.read().strip()
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -85,7 +88,15 @@ DATABASES = {
         'PASSWORD': POSTGRES_PASS,
         'HOST': 'db',
         'PORT': 5432,
-    }
+    },
+    'cms': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'cmsyw',
+        'USER': 'root',
+        'PASSWORD': CMS_PASS,
+        'HOST': 'host.docker.internal',
+        'PORT': '3306',
+    },
 }
 
 
