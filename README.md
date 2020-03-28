@@ -1,21 +1,20 @@
-# Django-Postgres-Docker Template
+# cmsMan: CMS Manager
 
-Basic Django-Postgres template for Development using Docker
+Add-on to support legacy CMS app
 
-After pulling the repository, need to create two files in the `./backend` directory:
+Three files need to be created in the `./backend` directory:
 
 1. `dj_secret.key`: Django Secret Key File
-2. `pg_settings.env`: Postgres Database Password
-
-These will be used by to set up Django and Postgres during initialization.
+2. `pg_settings.env`: POSTGRES_PASSWORD=*password*
+3. `cms.key`: MySQL database password to access legacy CMS App db
 
 To use: `docker-compose up`
 
-Next run bash shell into backend while container is running:
+To initialize:
 ```
 docker-compose exec backend /bin/bash
 ```
-After getting a bash shell in the container-service, migrate the database and create a superuser/password:
+Migrate the database and create a superuser/password:
 ```
 python manage.py migrate
 python manage.py createsuperuser
