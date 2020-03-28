@@ -1,4 +1,4 @@
-# cmsMan: CMS Manager
+# CMS Manager
 
 Add-on to support legacy CMS app
 
