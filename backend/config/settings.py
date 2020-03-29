@@ -81,6 +81,11 @@ with open('pg_settings.env') as f:
 with open('cms.key') as f:
     CMS_PASS = f.read().strip()
 
+DATABASE_ROUTERS = ['db_routers.cms.CmsDbRouter', ]
+DATABASE_APPS_MAPPING = {
+    'cmsinv': 'cms_db',
+   }
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -90,7 +95,7 @@ DATABASES = {
         'HOST': 'db',
         'PORT': 5432,
     },
-    'cms': {
+    'cms_db': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'cmsyw',
         'USER': 'root',
