@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Advisory, SupplierManufacturer, Instruction, InventoryItemType
+from .models import Advisory, SupplierManufacturer, Instruction, InventoryItemType, InventoryItem
 
 class CMSModelAdmin(admin.ModelAdmin):
 
@@ -35,4 +35,5 @@ class CMSModelAdmin(admin.ModelAdmin):
 admin.site.register(Advisory, CMSModelAdmin)
 admin.site.register(Instruction, CMSModelAdmin)
 admin.site.register(SupplierManufacturer, CMSModelAdmin)
+admin.site.register(InventoryItem)
 admin.site.register(InventoryItemType, CMSModelAdmin)

@@ -96,3 +96,63 @@ class InventoryItemType(models.Model):
         return '{} | {}'.format(
             self.id, self.name
         )
+
+
+class InventoryItem(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    version = models.BigIntegerField()
+
+    advisory = models.ForeignKey('Advisory', on_delete=models.PROTECT)
+    
+    alias = models.CharField(max_length=255, blank=True, null=True)
+    avg_cost = models.FloatField(default=0)
+    category = models.CharField(max_length=255, blank=True, null=True)
+    certificate_holder_id = models.BigIntegerField(blank=True, null=True)
+    clinic_drug_no = models.CharField(max_length=255, blank=True, null=True)
+    dangerous_sign = models.BooleanField(default=False)
+    date_created = models.DateTimeField(blank=True, null=True)
+    discontinue = models.BooleanField(default=False)
+    dosage = models.CharField(max_length=255, blank=True, null=True)
+    duration = models.CharField(max_length=255, blank=True, null=True)
+    expected_qty = models.FloatField()
+    expire_date = models.DateField(blank=True, null=True)
+    frequency = models.CharField(max_length=255, blank=True, null=True)
+    generic_name = models.CharField(max_length=255, blank=True, null=True)
+    generic_name_chinese = models.CharField(max_length=255, blank=True, null=True)
+    ingredient = models.TextField(blank=True, null=True)
+    
+    instruction = models.ForeignKey('Instruction', on_delete=models.PROTECT)
+    
+    inventory_type = models.CharField(max_length=255, blank=True, null=True)
+    is_clinic_drug_list = models.BooleanField(default=True)
+    is_master_drug_list = models.BooleanField(default=True)
+    label_name = models.CharField(max_length=255, blank=True, null=True)
+    label_name_chinese = models.CharField(max_length=255, blank=True, null=True)
+    last_updated = models.DateTimeField(blank=True, null=True)
+    location = models.CharField(max_length=255, blank=True, null=True)
+    mini_dispensary_unit = models.FloatField()
+    mini_dosage_unit = models.FloatField()
+    product_name = models.CharField(max_length=255, blank=True, null=True)
+    product_name_chinese = models.CharField(max_length=255, blank=True, null=True)
+    registration_no = models.CharField(unique=True, max_length=255, blank=True, null=True)
+    remarks = models.TextField(blank=True, null=True)
+    reorder_level = models.FloatField()
+    reorder_status = models.CharField(max_length=255, blank=True, null=True)
+    standard_cost = models.FloatField(default=0)
+    stock_qty = models.FloatField()
+    unit = models.CharField(max_length=255, blank=True, null=True)
+    unit_price = models.FloatField(default=True)
+    updated_by = models.CharField(max_length=255, blank=True, null=True)
+    priority = models.FloatField(blank=True, null=True)
+
+    inventory_item_type = models.ForeignKey('InventoryItemType', on_delete=models.PROTECT, db_column='type_id')
+
+    class Meta:
+        managed = False
+        db_table = 'inventory_item'
+        app_label = 'cmsinv'
+
+    def __str__(self):
+        return '{} | {} / {} [{}]'.format(
+            self.registration_no, self.product_name, self.generic_name, self.alias
+        )
