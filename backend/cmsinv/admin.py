@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import SupplierManufacturer
+from .models import SupplierManufacturer, Instruction
 
 class CMSModelAdmin(admin.ModelAdmin):
     # A handy constant for the name of the alternate database.
@@ -28,3 +28,4 @@ class CMSModelAdmin(admin.ModelAdmin):
         return super().formfield_for_manytomany(db_field, request, using=self.using, **kwargs)
 
 admin.site.register(SupplierManufacturer, CMSModelAdmin)
+admin.site.register(Instruction, CMSModelAdmin)
