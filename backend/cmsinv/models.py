@@ -156,3 +156,37 @@ class InventoryItem(models.Model):
         return '{} | {} / {} [{}]'.format(
             self.registration_no, self.product_name, self.generic_name, self.alias
         )
+
+class InventoryMovementLog(models.Model):
+
+    DELIVERY = 'Delivery'
+    DISPENSARY = 'Dispensary'
+    RECONCILLIATION = 'Reconcilliation'
+    STOCK_INIT = 'Stock Initialization'
+    MOVEMENT_TYPE_CHOICES = [
+        (DELIVERY, 'Delivery'),
+        (DISPENSARY, 'Dispensary'),
+        (RECONCILLIATION, 'Reconcilliation'),
+        (STOCK_INIT, 'Stock Initialization'),
+    ]
+
+    id = models.BigAutoField(primary_key=True)
+    version = models.BigIntegerField()
+    date_created = models.DateTimeField()
+    last_updated = models.DateTimeField()
+    lot_no = models.CharField(max_length=255, blank=True, null=True)
+    move_item = models.CharField(max_length=255, blank=True, null=True)
+    quantity = models.FloatField()
+    reference_no = models.CharField(max_length=255, blank=True, null=True)
+    movement_type = models.CharField(db_column='type', choices=MOVEMENT_TYPE_CHOICES, max_length=255, blank=True, null=True)
+    updated_by = models.CharField(max_length=255, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'inventory_movement_log'
+        app_label = 'cmsinv'
+
+    def __str__(self):
+        return '{} [{}]: {} | {}'.format(
+            self.last_updated, self.movement_type, self.quantity, self.move_item
+            )
