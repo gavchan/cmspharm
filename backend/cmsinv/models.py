@@ -43,7 +43,7 @@ class Advisory(models.Model):
     date_created = models.DateTimeField()
     description = models.TextField()
     description_chinese = models.TextField(blank=True, null=True)
-    is_public = models.BooleanField()
+    is_public = models.BooleanField(default=True)
     last_updated = models.DateTimeField()
     updated_by = models.CharField(max_length=255, blank=True, null=True)
 
@@ -78,4 +78,21 @@ class Instruction(models.Model):
     def __str__(self):
         return '{} | {} / {}'.format(
             self.alias, self.description_chinese, self.description
+        )
+
+class InventoryItemType(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    version = models.BigIntegerField(default=0)
+    active = models.BooleanField(default=True)
+    name = models.CharField(max_length=255)
+    value = models.CharField(max_length=255)
+
+    class Meta:
+        managed = False
+        db_table = 'inventory_item_type'
+        app_label = 'cmsinv'
+
+    def __str__(self):
+        return '{} | {}'.format(
+            self.id, self.name
         )
