@@ -7,7 +7,7 @@ class CmsDbRouter:
         """
         Attempts to read cms models go to cms_db.
         """
-        if model._meta.app_label == 'cmsinv':
+        if model._meta.app_label == 'cms':
             return 'cms_db'
         return None
 
@@ -15,7 +15,7 @@ class CmsDbRouter:
         """
         Attempts to write cms models to cms_db
         """
-        if model._meta.app_label == 'cmsinv':
+        if model._meta.app_label == 'cms':
             return 'cms_db'
         return None
 
@@ -23,7 +23,7 @@ class CmsDbRouter:
         """
         Do not allow relations involving the cms_db
         """
-        if (obj1._meta.app_label == 'cmsinv' or obj2._meta.app_label == 'cmsinv'):
+        if (obj1._meta.app_label == 'cms' or obj2._meta.app_label == 'cms'):
             return False
         return None
 
@@ -31,6 +31,6 @@ class CmsDbRouter:
         """
         Do not allow migration of models relating to the cms_db
         """
-        if app_label == 'cmsinv':
+        if app_label == 'cms':
             return False
         return True

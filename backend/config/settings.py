@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'cmsinv',
+    'cmssys',
 ]
 
 MIDDLEWARE = [
@@ -84,6 +85,7 @@ with open('cms.key') as f:
 DATABASE_ROUTERS = ['db_routers.cms.CmsDbRouter', ]
 DATABASE_APPS_MAPPING = {
     'cmsinv': 'cms_db',
+    'cmssys': 'cms_db',
    }
 
 DATABASES = {

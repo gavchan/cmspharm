@@ -1,10 +1,5 @@
 from django.contrib import admin
-from .models import ( 
-    Advisory, Supplier, Instruction,
-    InventoryItemType, InventoryItem, InventoryMovementLog,
-    Request, RequestItem, Delivery, ReceivedItem,
-    Depletion, DepletionItem, #DepletionDepletionItem
-)
+from .models import CmsUser, AuditLog 
 
 class CMSModelAdmin(admin.ModelAdmin):
 
@@ -37,16 +32,5 @@ class CMSModelAdmin(admin.ModelAdmin):
         # on the 'cms_db' database.
         return super().formfield_for_manytomany(db_field, request, using=self.using, **kwargs)
 
-admin.site.register(Advisory, CMSModelAdmin)
-admin.site.register(Instruction, CMSModelAdmin)
-admin.site.register(Supplier, CMSModelAdmin)
-admin.site.register(InventoryItem, CMSModelAdmin)
-admin.site.register(InventoryItemType, CMSModelAdmin)
-admin.site.register(InventoryMovementLog, CMSModelAdmin)
-admin.site.register(Request, CMSModelAdmin)
-admin.site.register(RequestItem, CMSModelAdmin)
-admin.site.register(Delivery, CMSModelAdmin) 
-admin.site.register(ReceivedItem, CMSModelAdmin)
-admin.site.register(Depletion, CMSModelAdmin)
-admin.site.register(DepletionItem, CMSModelAdmin)
-# admin.site.register(DepletionDepletionItem, CMSModelAdmin)
+admin.site.register(AuditLog, CMSModelAdmin)
+admin.site.register(CmsUser, CMSModelAdmin)
