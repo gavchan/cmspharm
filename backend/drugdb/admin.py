@@ -1,3 +1,5 @@
 from django.contrib import admin
+from .models import RegisteredDrug, Company
 
-# Register your models here.
+admin.site.register(RegisteredDrug)
+admin.site.register(Company)
