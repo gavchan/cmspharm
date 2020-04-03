@@ -17,7 +17,7 @@ class RegisteredDrug(models.Model):
 
     def __str__(self):
         return '{} | {} - {}'.format(
-            self.permit_no, self.product_name, self.company
+            self.permit_no, self.name, self.company
         )
 
 class Company(models.Model):
