@@ -47,7 +47,7 @@ class Command(BaseCommand):
         if created:
             self.stdout.write(f"Created: {drug_id} | {drug_permit_no} | {drug_name}")
         else:
-            self.stdout.write(f"Updated: {drug_id} | {drug_permit_no} | {drug_name}")
+            self.stdout.write(f"Skip/Updated: {drug_id} | {drug_permit_no} | {drug_name}")
 
     def handle(self, *args, **options):
         DRUGS_CSV_FILE = options['csvfile']
