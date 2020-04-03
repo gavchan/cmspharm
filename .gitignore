@@ -1,5 +1,6 @@
-# Local settings/key files
+# Local settings/keys/files
 backend/pg_settings.env
+backend/drugs.csv
 *.key
 
 # Byte-compiled / optimized / DLL files
