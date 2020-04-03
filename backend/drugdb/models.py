@@ -7,7 +7,7 @@ class RegisteredDrug(models.Model):
     # Product Name
     name = models.CharField(max_length=255, blank=True, null=True)
     # Permit No.
-    permit_no = models.CharField(max_length=255, blank=True, null=True)
+    permit_no = models.CharField(unique=True, max_length=255, blank=True, null=True)
     # Active ingredients
     ingredients = models.TextField(blank=True, null=True)
     # Company Name and Company Address
@@ -25,7 +25,7 @@ class Company(models.Model):
     Stores list of company names and addresses
     """
     # Company Name
-    name = models.CharField(max_length=255, blank=True, null=True)
+    name = models.CharField(unique=True, max_length=255, blank=True, null=True)
     # Company Address
     address = models.TextField(blank=True, null=True)
 
