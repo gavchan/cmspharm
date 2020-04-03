@@ -32,15 +32,22 @@ class Command(BaseCommand):
             'name': company_name,
             'address': company_addr,
         }
-        company_id, created = Company.objects.update_or_create(name=company_name, address=company_addr, defaults=company)
+        company_id, created = Company.objects.update_or_create(name=company_name, defaults=company)
+        if created:
+            self.stdout.write(f"Created: {company_id} | {company_name}")
+        else:
+            self.stdout.write(f"Skip/Update: {company_id} | {company_name}")
         registered_drug = {
             'name': drug_name,
             'permit_no': drug_permit_no,
             'ingredients': active_ingredients,
             'company': company_id
         }
-        RegisteredDrug.objects.update_or_create(permit_no=drug_permit_no, defaults=registered_drug)
-
+        drug_id, created = RegisteredDrug.objects.update_or_create(permit_no=drug_permit_no, defaults=registered_drug)
+        if created:
+            self.stdout.write(f"Created: {drug_id} | {drug_permit_no} | {drug_name}")
+        else:
+            self.stdout.write(f"Updated: {drug_id} | {drug_permit_no} | {drug_name}")
 
     def handle(self, *args, **options):
         DRUGS_CSV_FILE = options['csvfile']
@@ -65,10 +72,9 @@ class Command(BaseCommand):
         except:
             self.stdout.write('Error reading .csv file')            
             return -1
-        self.stdout.write(f"Records: {len(lines)}")
-        self.stdout.write(f"1st: {lines[0]}")
-        self.stdout.write(f"Last: {lines[-1]}")
-        self.stdout.write("====\nAdding to database")
+        self.stdout.write(f"Number of records: {len(lines)}")
+        self.stdout.write("====\nWriting to database:\n=====\n")
         for line in lines:
             self.update_or_create(line)
+
         
