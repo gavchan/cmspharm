@@ -14,10 +14,15 @@ class RegisteredDrug(models.Model):
     company = models.ForeignKey(
         'Company', on_delete=models.CASCADE,
         )
+    date_created = models.DateTimeField(auto_now_add=True)
+    date_modified = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering=['permit_no']
 
     def __str__(self):
-        return '{} | {} - {}'.format(
-            self.permit_no, self.name, self.company
+        return '{} | {} ({})'.format(
+            self.permit_no, self.name, self.ingredients
         )
 
 class Company(models.Model):
@@ -28,6 +33,15 @@ class Company(models.Model):
     name = models.CharField(unique=True, max_length=255, blank=True, null=True)
     # Company Address
     address = models.TextField(blank=True, null=True)
+    # Companies imported from official source are certificate holders
+    is_certholder = models.BooleanField(default=True)
+    # Companies may also be a supplier
+    is_supplier = models.BooleanField(default=False)
+    date_created = models.DateTimeField(auto_now_add=True)
+    date_modified = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['name']
 
     def __str__(self):
         return '{} @ {}'.format(
