@@ -12,16 +12,12 @@ class CMSModelAdmin(admin.ModelAdmin):
     using = 'cms_db'
 
     def save_model(self, request, obj, form, change):
-        pass
-        # Filler code, need modify to implement
         # Tell Django to save objects to the 'cms_db' database.
-        #obj.save(using=self.using)
+        obj.save(using=self.using)
 
     def delete_model(self, request, obj):
-        pass
-        # Filler code, need modify to implement
         # Tell Django to delete objects from the 'cms_db' database
-        #obj.delete(using=self.using)
+        obj.delete(using=self.using)
 
     def get_queryset(self, request):
         # Tell Django to look for objects on the 'cms_db' database.

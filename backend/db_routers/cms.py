@@ -7,30 +7,30 @@ class CmsDbRouter:
         """
         Attempts to read cms models go to cms_db.
         """
-        if model._meta.app_label == 'cms':
+        if model._meta.app_label == 'cmsinv' or model._meta.app_label == 'cmssys':
             return 'cms_db'
-        return None
+        return 'default'
 
     def db_for_write(self, model, **hints):
         """
         Attempts to write cms models to cms_db
         """
-        if model._meta.app_label == 'cms':
+        if model._meta.app_label == 'cmsinv' or model._meta.app_label == 'cmssys':
             return 'cms_db'
-        return None
+        return 'default'
 
     def allow_relation(self, obj1, obj2, **hints):
         """
         Do not allow relations involving the cms_db
         """
-        if (obj1._meta.app_label == 'cms' or obj2._meta.app_label == 'cms'):
+        if (obj1._meta.app_label == 'cmsinv' or obj2._meta.app_label == 'cmsinv'):
             return False
-        return None
+        return 'default'
 
     def allow_migrate(self, db, app_label, model_name=None, **hints):
         """
         Do not allow migration of models relating to the cms_db
         """
-        if app_label == 'cms':
+        if app_label == 'cmsinv':
             return False
         return True
