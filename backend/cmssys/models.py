@@ -5,12 +5,12 @@ class AuditLog(models.Model):
     Maps to CMS table: audit_log
     """
     id = models.BigAutoField(primary_key=True)
-    version = models.BigIntegerField()
+    version = models.BigIntegerField(default=0)
     actor = models.CharField(max_length=255, blank=True, null=True)
     class_name = models.CharField(max_length=255)
-    date_created = models.DateTimeField()
+    date_created = models.DateTimeField(auto_now_add=True)
     event_name = models.CharField(max_length=255)
-    last_updated = models.DateTimeField()
+    last_updated = models.DateTimeField(auto_now=True)
     new_value = models.TextField(blank=True, null=True)
     old_value = models.TextField(blank=True, null=True)
     persisted_object_id = models.CharField(max_length=255, blank=True, null=True)
@@ -23,18 +23,26 @@ class AuditLog(models.Model):
         managed = False
         db_table = 'audit_log'
         app_label = 'cmssys'
+        ordering = ['-last_updated']
 
+    def get_absolute_url(self):
+        from django.urls import reverse
+        return reverse('drugdb.views.details', args=[str(self.id)])
+
+    def __str__(self):
+        return f"{self.date_created} [{self.actor}] {self.event_name} {self.class_name}: {self.property_name} - {self.old_value} => {self.new_value}"
+  
 class CmsUser(models.Model):
     """
     Maps to CMS table: user
     """
     id = models.BigAutoField(primary_key=True)
-    version = models.BigIntegerField()
-    active = models.BooleanField()
+    version = models.BigIntegerField(default=0)
+    active = models.BooleanField(default=True)
     cname = models.CharField(max_length=255, blank=True, null=True)
-    date_created = models.DateTimeField()
+    date_created = models.DateTimeField(auto_now_add=True)
     email = models.CharField(max_length=255, blank=True, null=True)
-    last_updated = models.DateTimeField()
+    last_updated = models.DateTimeField(auto_now=True)
     medical_council_reg_no = models.CharField(max_length=255, blank=True, null=True)
     mobile = models.CharField(max_length=255, blank=True, null=True)
     name = models.CharField(max_length=255)
@@ -50,20 +58,30 @@ class CmsUser(models.Model):
         managed = False
         db_table = 'user'
         app_label = 'cmssys'
-    
+        ordering = ['id']
+
+    def get_absolute_url(self):
+        from django.urls import reverse
+        return reverse('cmssys.views.details', args=[str(self.id)])
+
     def __str__(self):
-        return '{}|{} ({})'.format(
-            self.id, self.username, self.name
-        )
+        return f"{self.id} | {self.username} - {self.name}"
 
 class UserProfile(models.Model):
     """
     Maps to CMS table user_profile
     """
     id = models.BigAutoField(primary_key=True)
-    version = models.BigIntegerField()
+    version = models.BigIntegerField(default=0)
 
     class Meta:
         managed = False
         db_table = 'user_profile'
         app_label = 'cmssys'
+
+    def get_absolute_url(self):
+        from django.urls import reverse
+        return reverse('cmssys.views.details', args=[str(self.id)])
+
+    def __str__(self):
+        return f"{self.id} | ver.{self.version}"

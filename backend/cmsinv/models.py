@@ -35,11 +35,14 @@ class Supplier(models.Model):
         managed = False
         db_table = 'supplier_manufacturer'
         app_label = 'cmsinv'
+        ordering = ['name']
+
+    def get_absolute_url(self):
+        from django.urls import reverse
+        return reverse('cmsinv.views.details', args=[str(self.id)])
 
     def __str__(self):
-        return '{} | {} - {}'.format(
-            self.id, self.name, self.supp_type
-        )
+        return f"{self.id} | {self.name} - {self.supp_type}"
 
 class Advisory(models.Model):
     """
@@ -64,11 +67,11 @@ class Advisory(models.Model):
         managed = False
         db_table = 'advisory'
         app_label = 'cmsinv'
+        verbose_name_plural = 'Advisory list'
+
 
     def __str__(self):
-        return '{} | {} / {}'.format(
-            self.alias, self.description_chinese, self.description
-        )
+        return f"{self.alias} | {self.description_chinese} / {self.description}"
 
 class Instruction(models.Model):
     """
@@ -95,9 +98,7 @@ class Instruction(models.Model):
         app_label = 'cmsinv'
 
     def __str__(self):
-        return '{} | {} / {}'.format(
-            self.alias, self.description_chinese, self.description
-        )
+        return f"{self.alias} | {self.description_chinese} / {self.description}"
 
 class InventoryItemType(models.Model):
     """
@@ -116,9 +117,7 @@ class InventoryItemType(models.Model):
         app_label = 'cmsinv'
 
     def __str__(self):
-        return '{} | {}'.format(
-            self.id, self.name
-        )
+        return f"{self.id} | {self.name}"
 
 class InventoryItem(models.Model):
     """
@@ -126,7 +125,7 @@ class InventoryItem(models.Model):
     Stores details in inventory items, including current stock quantity
     """
     id = models.BigAutoField(primary_key=True)
-    version = models.BigIntegerField()
+    version = models.BigIntegerField(default=0)
     advisory = models.ForeignKey(
         'Advisory', on_delete=models.PROTECT, 
         db_column='advisory_id', blank=True, null=True)
@@ -134,19 +133,20 @@ class InventoryItem(models.Model):
     alias = models.CharField(max_length=255, blank=True, null=True)
     avg_cost = models.FloatField(default=0)
     category = models.CharField(max_length=255, blank=True, null=True)
+
+    # certificate_holder - CMS database accepts 'Supplier' or 'Certificate Holder' but not 'Manufacturer' 
+    # in this field, need to add validation to enforce this
     certificate_holder = models.ForeignKey(
         'Supplier', on_delete=models.PROTECT, 
-        db_column='certificate_holder_id')
-    # CMS database accepts 'Supplier' or 'Certificate Holder' but not 'Manufacturer' 
-    # in this field, need to add validation to enforce this
-    
+        db_column='certificate_holder_id'
+        )
     clinic_drug_no = models.CharField(max_length=255, blank=True, null=True)
     dangerous_sign = models.BooleanField(default=False)
     date_created = models.DateTimeField(auto_now_add=True)
     discontinue = models.BooleanField(default=False)
     dosage = models.CharField(max_length=255, blank=True, null=True)
     duration = models.CharField(max_length=255, blank=True, null=True)
-    expected_qty = models.FloatField()
+    expected_qty = models.FloatField(default=1000)
     expire_date = models.DateField(blank=True, null=True)
     frequency = models.CharField(max_length=255, blank=True, null=True)
     generic_name = models.CharField(max_length=255, blank=True, null=True)
@@ -155,37 +155,37 @@ class InventoryItem(models.Model):
     instruction = models.ForeignKey(
         'Instruction', on_delete=models.PROTECT, 
         db_column='instruction_id', 
-        blank=True, null=True)
-    
-    inventory_type = models.CharField(max_length=255, blank=True, null=True)
+        blank=True, null=True
+        )
+
     # N.B. inventory_type is not ever used in CMS App, perhaps it 
     # duplicates the database 'type_id' field
-
+    inventory_type = models.CharField(max_length=255, blank=True, null=True)
     is_clinic_drug_list = models.BooleanField(default=True)
     is_master_drug_list = models.BooleanField(default=True)
     label_name = models.CharField(max_length=255, blank=True, null=True)
     label_name_chinese = models.CharField(max_length=255, blank=True, null=True)
     last_updated = models.DateTimeField(blank=True, null=True)
     location = models.CharField(max_length=255, blank=True, null=True)
-    mini_dispensary_unit = models.FloatField()
+    mini_dispensary_unit = models.FloatField(default=0)
     mini_dosage_unit = models.FloatField()
     product_name = models.CharField(max_length=255, blank=True, null=True)
     product_name_chinese = models.CharField(max_length=255, blank=True, null=True)
     registration_no = models.CharField(unique=True, max_length=255, blank=True, null=True)
     remarks = models.TextField(blank=True, null=True)
-    reorder_level = models.FloatField()
+    reorder_level = models.FloatField(default=100)
     reorder_status = models.CharField(max_length=255, blank=True, null=True)
     standard_cost = models.FloatField(default=0)
-    stock_qty = models.FloatField()
+    stock_qty = models.FloatField(default=0)
     unit = models.CharField(max_length=255, blank=True, null=True)
-    unit_price = models.FloatField(default=True)
+    unit_price = models.FloatField(default=0)
     updated_by = models.CharField(max_length=255, blank=True, null=True)
-    priority = models.FloatField(blank=True, null=True)
+    priority = models.FloatField(default=0, blank=True, null=True)
 
+    # inventory_item_type / type_id - Only type_id=1 (Drug) is ever used in the CMS App
     inventory_item_type = models.ForeignKey(
         'InventoryItemType', on_delete=models.PROTECT, 
         db_column='type_id')
-    # Only type_id=1 (Drug) is ever used in the CMS App
 
     class Meta:
         managed = False
@@ -193,9 +193,7 @@ class InventoryItem(models.Model):
         app_label = 'cmsinv'
 
     def __str__(self):
-        return '{} | {} / {} [{}]'.format(
-            self.registration_no, self.product_name, self.generic_name, self.alias
-        )
+        return f"{self.registration_no} | {self.product_name} / {self.generic_name} [{self.alias}]"
 
 class InventoryMovementLog(models.Model):
     """
@@ -209,15 +207,22 @@ class InventoryMovementLog(models.Model):
     MOVEMENT_TYPE_CHOICES = [
         (DELIVERY, 'Delivery'),
         (DISPENSARY, 'Dispensary'),
+        (RECONCILIATION, 'Reconciliation'),
         (STOCK_INIT, 'Stock Initialization'),
     ]
     id = models.BigAutoField(primary_key=True)
-    version = models.BigIntegerField()
+    version = models.BigIntegerField(default=1)
     date_created = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
     lot_no = models.CharField(max_length=255, blank=True, null=True)
     move_item = models.CharField(max_length=255, blank=True, null=True)
     quantity = models.FloatField()
+
+    # reference_no - maps to table based on movement_type:
+    #   Delivery => delivery
+    #   Dispensary => encounter
+    #   Reconciliation => depletion
+    #   Stock Initialization => null - N.B.What transaction registers this?
     reference_no = models.CharField(max_length=255, blank=True, null=True)
     movement_type = models.CharField(db_column='type', choices=MOVEMENT_TYPE_CHOICES, max_length=255, blank=True, null=True)
     updated_by = models.CharField(max_length=255, blank=True, null=True)
@@ -228,9 +233,7 @@ class InventoryMovementLog(models.Model):
         app_label = 'cmsinv'
 
     def __str__(self):
-        return '{} [{}]: {} | {}'.format(
-            self.last_updated, self.movement_type, self.quantity, self.move_item
-            )
+        return f"{self.last_updated} [{self.movement_type}]: {self.quantity} | {self.move_item}"
 
 # CMS INVENTORY > REQUEST Models
 
@@ -246,19 +249,26 @@ class Request(models.Model):
         (PENDING, 'Pending'),
     ]
     id = models.BigAutoField(primary_key=True)
-    version = models.BigIntegerField()
+    version = models.BigIntegerField(default=1)
     create_date = models.DateField(auto_now_add=True)
     date_created = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
+
+    # remarks - New Request remarks textbox
     remarks = models.TextField(blank=True, null=True)
     requested_by = models.ForeignKey(
         'cmssys.CmsUser', on_delete=models.PROTECT,
-        db_column='requested_by_id')
+        db_column='requested_by_id'
+        )
+    # settle_date - appears not to be used by CMS app
     settle_date = models.DateTimeField(auto_now_add=True, blank=True, null=True)
-    status = models.CharField(max_length=255, blank=True, null=True)
+    
+    # status - toggled by "Completed" button, stored as text by CMS app
+    status = models.CharField(choices=STATUS_CHOICES, max_length=255, blank=True, null=True)
     supplier = models.ForeignKey(
         'Supplier', on_delete=models.PROTECT,
-        db_column='supplier_id')
+        db_column='supplier_id'
+        )
     total_cost = models.FloatField()
     updated_by = models.CharField(max_length=255, blank=True, null=True)
 
@@ -267,17 +277,18 @@ class Request(models.Model):
         db_table = 'request'
         app_label = 'cmsinv'
 
+    def get_absolute_url(self):
+        from django.core.urlresolvers import reverse
+        return reverse('', kwargs={'pk': self.pk})
     def __str__(self):
-        return '{}| Supplier # {}: ${} on {} ({})'.format(
-            self.create_date, self.supplier, self.total_cost, self.settle_date, self.status,
-        )
+        return f"{self.create_date} | [{self.status}] {self.requested_by.name} request to {self.supplier.name}"
 
 class RequestItem(models.Model):
     """
     Maps to CMS table: request_item
     """
     id = models.BigAutoField(primary_key=True)
-    version = models.BigIntegerField()
+    version = models.BigIntegerField(default=1)
     expected_qty = models.FloatField()
     item = models.ForeignKey(
         'InventoryItem', on_delete=models.PROTECT,
@@ -299,9 +310,7 @@ class RequestItem(models.Model):
         app_label = 'cmsinv'
 
     def __str__(self):
-        return 'Request #{} (idx {}) for {} x item #{}'.format(
-            self.request, self.request_items_idx, self.quantity, self.item
-        )
+        return f"{self.request.create_date} | Request #{self.request.id}.{self.request_items_idx}: {self.quantity} x {self.item.product_name} ({self.request.status})"
 
 # CMS INVENTORY > DELIVERY Models
 
@@ -335,6 +344,7 @@ class Delivery(models.Model):
         managed = False
         db_table = 'delivery'
         app_label = 'cmsinv'
+        verbose_name_plural = 'Deliveries'
     
     def __str__(self):
         return '{}| Paid ${:>6}; Received from {}'.format(
@@ -410,17 +420,19 @@ class Depletion(models.Model):
     """Maps to CMS table: depletion"""
     """Stores inventory depetion info"""
 
-    STOCKMOVE = 'Stock Move'
-    STOCKTAKE = 'Stock Take'
+    STOCKMOVE = 'Stock Move' # Stock move transaction
+    STOCKTAKE = 'Stock Take' # Reconciliation transaction
     DEPLETION_TYPE_CHOICES = [
         (STOCKMOVE, 'Stock Move'),
         (STOCKTAKE, 'Stock Take')
     ]
 
     id = models.BigAutoField(primary_key=True)
-    version = models.BigIntegerField()
+    version = models.BigIntegerField(default=1)
     last_updated = models.DateTimeField(auto_now=True, blank=True, null=True)
+    # move_to - seems not used in CMS app
     move_to = models.TextField(blank=True, null=True)
+    # remarks - Reconciliation modal Remarks Text Box
     remarks = models.TextField(blank=True, null=True)
     depletion_type = models.CharField(choices=DEPLETION_TYPE_CHOICES, db_column='type', max_length=255)
     depletion_items = models.ManyToManyField(DepletionItem, db_table='depletion_depletion_item')

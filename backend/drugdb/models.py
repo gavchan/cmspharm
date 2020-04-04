@@ -20,6 +20,10 @@ class RegisteredDrug(models.Model):
     class Meta:
         ordering=['permit_no']
 
+    def get_absolute_url(self):
+        from django.urls import reverse
+        return reverse('drugdb.views.details', args=[str(self.permit_no)])
+  
     def __str__(self):
         return '{} | {} ({})'.format(
             self.permit_no, self.name, self.ingredients
@@ -42,7 +46,12 @@ class Company(models.Model):
 
     class Meta:
         ordering = ['name']
+        verbose_name_plural = 'Companies'
 
+    def get_absolute_url(self):
+        from django.urls import reverse
+        return reverse('drugdb.views.details', args=[str(self.id)])
+    
     def __str__(self):
         return '{} @ {}'.format(
             self.name, self.address
