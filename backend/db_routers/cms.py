@@ -1,13 +1,20 @@
+CMS_APPS = [
+        'cmsacc',
+        'cmsinv',
+        'cmssys',
+    ]
+    
 class CmsDbRouter:
     """
     A router to control all database operations on models in the
     user application.
     """
+    
     def db_for_read(self, model, **hints):
         """
         Attempts to read cms models go to cms_db.
         """
-        if model._meta.app_label == 'cmsinv' or model._meta.app_label == 'cmssys':
+        if model._meta.app_label in CMS_APPS:
             return 'cms_db'
         return 'default'
 
@@ -15,7 +22,7 @@ class CmsDbRouter:
         """
         Attempts to write cms models to cms_db
         """
-        if model._meta.app_label == 'cmsinv' or model._meta.app_label == 'cmssys':
+        if model._meta.app_label in CMS_APPS:
             return 'cms_db'
         return 'default'
 
@@ -31,6 +38,6 @@ class CmsDbRouter:
         """
         Do not allow migration of models relating to the cms_db
         """
-        if app_label == 'cmsinv':
+        if app_label in CMS_APPS:
             return False
         return True
