@@ -195,6 +195,38 @@ class InventoryItem(models.Model):
     def __str__(self):
         return f"{self.registration_no} | {self.product_name} / {self.generic_name} [{self.alias}]"
 
+class InventoryItemSupplier(models.Model):
+    """
+    Maps to CMS table: inventory_item_supplier_manufacturer
+    Stores which inventory_items are supplied by which supplier_manufacturer
+
+    CMS table inventory_item_supplier_manufacturer is a legacy table using a composite key as the primary key
+    Django does not support composite keys and a many-to-many field could not be used for this table
+    Await solution/implementation/workaround...
+    
+    inventory_item = models.ForeignKey(
+        'InventoryItem', on_delete=models.PROTECT,
+        primary_key=True,
+        db_column='inventory_item_suppliers_id'
+        )
+    supplier = models.ForeignKey(
+        'Supplier', on_delete=models.PROTECT,
+        db_column='supplier_manufacturer_id'
+        )
+    """
+    inventory_item_suppliers_id = models.CharField(max_length=255)  # Maps to InventoryItem table
+    supplier_manufacturer_id = models.CharField(max_length=255)     # Maps to Supplier table
+    suppliers_idx = models.IntegerField(default=0, blank=True, null=True)
+
+    class Meta:
+        unique_together = ['inventory_item_suppliers_id', 'supplier_manufacturer_id']
+        managed = False
+        db_table = 'inventory_item_supplier_manufacturer'
+        app_label = 'cmsinv'
+
+    def __str__(self):
+        return f"{self.supplier.name} - {self.suppliers_idx} : {self.inventory_item.product_name}"
+
 class InventoryMovementLog(models.Model):
     """
     Maps to CMS table: inventory_movement_log
@@ -319,7 +351,9 @@ class Delivery(models.Model):
     """Stores delivery settlement details"""
 
     id = models.BigAutoField(primary_key=True)
-    version = models.BigIntegerField()
+    version = models.BigIntegerField(default=1)
+
+    # cash_amount - amount to be deducted from CMS cash_book
     cash_amount = models.FloatField()
     create_date = models.DateField(auto_now_add=True, blank=True, null=True)
     date_created = models.DateTimeField(auto_now_add=True)
@@ -329,6 +363,8 @@ class Delivery(models.Model):
         db_column='received_by_id'
         )
     remarks = models.TextField(blank=True, null=True)
+
+    # settle_date - not used in CMS app
     settle_date = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     status = models.CharField(max_length=255, blank=True, null=True)
     supplier = models.ForeignKey(
@@ -356,7 +392,7 @@ class ReceivedItem(models.Model):
     Maps to CMS table: received_item
     """
     id = models.BigAutoField(primary_key=True)
-    version = models.BigIntegerField()
+    version = models.BigIntegerField(default=0)
     arrive_date = models.DateField(auto_now_add=True, blank=True, null=True)
     cost = models.FloatField()
     dangerous_sign = models.BooleanField(default=False)
@@ -373,11 +409,14 @@ class ReceivedItem(models.Model):
     manufacturer_id = models.BigIntegerField(blank=True, null=True)
     quantity = models.FloatField()
     remarks = models.TextField(blank=True, null=True)
+
+    # supplier_id - not used in CMS app
     supplier_id = models.BigIntegerField(blank=True, null=True)
-    # supplier not used in CMS app so left unmapped via ForeignKey
 
     unit = models.CharField(max_length=255, blank=True, null=True)
     use_up = models.BooleanField(default=False)
+
+    # received_items_idx - Index of item(s) in the delivery episode
     received_items_idx = models.IntegerField(blank=True, null=True)
 
     class Meta:
@@ -435,7 +474,6 @@ class Depletion(models.Model):
     # remarks - Reconciliation modal Remarks Text Box
     remarks = models.TextField(blank=True, null=True)
     depletion_type = models.CharField(choices=DEPLETION_TYPE_CHOICES, db_column='type', max_length=255)
-    depletion_items = models.ManyToManyField(DepletionItem, db_table='depletion_depletion_item')
     updated_by = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
@@ -444,29 +482,40 @@ class Depletion(models.Model):
         app_label = 'cmsinv'
 
     def __str__(self):
-        return '{}|#{} - {}: {}'.format(
+        return '{} | #{} - {}: {}'.format(
             self.id, self.depletion_type, self.remarks, self.last_updated
         )
 
-# class DepletionDepletionItem(models.Model):
-#     depletion_items = models.ForeignKey(
-#         Depletion, on_delete=models.CASCADE,
-#         db_column='depletion_items_id'
-#         )
-#     depletion_item = models.ForeignKey(
-#         DepletionItem, on_delete=models.CASCADE,
-#         db_column='depletion_item_id'
-#     )
-#     items_idx = models.IntegerField(blank=True, null=True)
 
-#     class Meta:
-#         managed = False
-#         db_table = 'depletion_depletion_item'
-#         app_label = 'cmsinv'
+class DepletionDepletionItem(models.Model):
+    """
+    CMS table depletion_depletion_items is a legacy table using a composite key as the primary key
+    Django does not support composite keys and a many-to-many field could not be used for this table
+    Will have errors when trying to write/save/view details
+    Await solution/implementation/workaround...
 
-#     def __str__(self):
-#         return '{} [{}] {}'.format(
-#             self.depletion, self.items_idx, self.depletion_item
-#         )
+    models.ForeignKey(
+        Depletion, on_delete=models.CASCADE,
+        db_column='depletion_items_id'
+        )
+    depletion_item = models.ForeignKey(
+        DepletionItem, on_delete=models.CASCADE,
+        db_column='depletion_item_id'
+    )
+    """
+    depletion_items_id = models.CharField(max_length=255)  # Refers to Depletion table
+    depletion_item_id = models.CharField(max_length=255)   # Refers to DepletionItem table
+    items_idx = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        unique_together = ['depletion_items_id', 'depletion_item_id']
+        managed = False
+        db_table = 'depletion_depletion_item'
+        app_label = 'cmsinv'
+
+    def __str__(self):
+        return '{} [{}] {}'.format(
+            self.depletion, self.items_idx, self.depletion_item
+        )
 
 
