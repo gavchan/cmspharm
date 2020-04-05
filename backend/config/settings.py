@@ -31,6 +31,12 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
+CMS_APPS = [
+        'cmsacc',
+        'cmsinv',
+        'cmssys',
+    ]
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -39,9 +45,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_extensions',
-    'cmsinv',
-    'cmssys',
-    'drugdb'
+    *CMS_APPS,
+    'drugdb',
 ]
 
 MIDDLEWARE = [
@@ -86,6 +91,7 @@ with open('cms.key') as f:
 
 DATABASE_ROUTERS = ['db_routers.cms.CmsDbRouter', ]
 DATABASE_APPS_MAPPING = {
+    'cmsacc': 'cms_db',
     'cmsinv': 'cms_db',
     'cmssys': 'cms_db',
     'drugdb': 'default',
