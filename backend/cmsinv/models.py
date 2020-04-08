@@ -202,25 +202,23 @@ class InventoryItemSupplier(models.Model):
 
     CMS table inventory_item_supplier_manufacturer is a legacy table using a composite key as the primary key
     Django does not support composite keys and a many-to-many field could not be used for this table
-    Await solution/implementation/workaround...
-    
+    Workaround:
+    - The legacy databased was modified to add an autoincrement `id` primary key
+    - see backend/scripts/alter-cmsdb-generate-id-from-composite-key.py
+    """
+ 
     inventory_item = models.ForeignKey(
         'InventoryItem', on_delete=models.PROTECT,
-        primary_key=True,
         db_column='inventory_item_suppliers_id'
         )
     supplier = models.ForeignKey(
         'Supplier', on_delete=models.PROTECT,
         db_column='supplier_manufacturer_id'
         )
-    """
-    inventory_item_suppliers_id = models.CharField(max_length=255)  # Maps to InventoryItem table
-    supplier_manufacturer_id = models.CharField(max_length=255)     # Maps to Supplier table
     suppliers_idx = models.IntegerField(default=0, blank=True, null=True)
 
     class Meta:
-        unique_together = ['inventory_item_suppliers_id', 'supplier_manufacturer_id']
-        managed = False
+        managed = True
         db_table = 'inventory_item_supplier_manufacturer'
         app_label = 'cmsinv'
 
@@ -486,15 +484,15 @@ class Depletion(models.Model):
             self.id, self.depletion_type, self.remarks, self.last_updated
         )
 
-
 class DepletionDepletionItem(models.Model):
     """
     CMS table depletion_depletion_items is a legacy table using a composite key as the primary key
     Django does not support composite keys and a many-to-many field could not be used for this table
-    Will have errors when trying to write/save/view details
-    Await solution/implementation/workaround...
-
-    models.ForeignKey(
+    Workaround:
+    - The legacy databased was modified to add an autoincrement `id` primary key
+    - see backend/scripts/alter-cmsdb-generate-id-from-composite-key.py
+    """
+    depletion = models.ForeignKey(
         Depletion, on_delete=models.CASCADE,
         db_column='depletion_items_id'
         )
@@ -502,14 +500,10 @@ class DepletionDepletionItem(models.Model):
         DepletionItem, on_delete=models.CASCADE,
         db_column='depletion_item_id'
     )
-    """
-    depletion_items_id = models.CharField(max_length=255)  # Refers to Depletion table
-    depletion_item_id = models.CharField(max_length=255)   # Refers to DepletionItem table
     items_idx = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        unique_together = ['depletion_items_id', 'depletion_item_id']
-        managed = False
+        managed = True
         db_table = 'depletion_depletion_item'
         app_label = 'cmsinv'
 

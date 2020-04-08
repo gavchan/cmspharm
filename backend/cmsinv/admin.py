@@ -3,7 +3,7 @@ from .models import (
     Advisory, Supplier, Instruction,
     InventoryItemType, InventoryItem, InventoryItemSupplier, InventoryMovementLog,
     Request, RequestItem, Delivery, ReceivedItem,
-    Depletion, DepletionItem, #DepletionDepletionItem
+    Depletion, DepletionItem, DepletionDepletionItem
 )
 
 class CMSModelAdmin(admin.ModelAdmin):
@@ -38,7 +38,7 @@ admin.site.register(Instruction, CMSModelAdmin)
 admin.site.register(Supplier, CMSModelAdmin)
 admin.site.register(InventoryItem, CMSModelAdmin)
 admin.site.register(InventoryItemType, CMSModelAdmin)
-# admin.site.register(InventoryItemSupplier, CMSModelAdmin)
+admin.site.register(InventoryItemSupplier, CMSModelAdmin)
 admin.site.register(InventoryMovementLog, CMSModelAdmin)
 admin.site.register(Request, CMSModelAdmin)
 admin.site.register(RequestItem, CMSModelAdmin)
@@ -46,4 +46,4 @@ admin.site.register(Delivery, CMSModelAdmin)
 admin.site.register(ReceivedItem, CMSModelAdmin)
 admin.site.register(Depletion, CMSModelAdmin)
 admin.site.register(DepletionItem, CMSModelAdmin)
-# admin.site.register(DepletionDepletionItem, CMSModelAdmin)
+admin.site.register(DepletionDepletionItem, CMSModelAdmin)
