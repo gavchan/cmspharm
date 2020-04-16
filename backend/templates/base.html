@@ -1,0 +1,38 @@
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {% load bootstrap4 %}
+    {% bootstrap_css %}
+    {% bootstrap_messages %}    
+    <title>
+        {% block title %}CMS Manager{% endblock %}
+    </title>
+    <style>
+        .cmm-masthead {
+            background-color: #eee;
+            margin-bottom: 1em;
+        }
+    </style>
+</head>
+<body>
+    <div class="cmm-masthead">
+        <div class="container">
+            <nav class="nav">
+                <div class="navbar-brand">cmsMan</div>
+                {% block nav %}Navbar{% endblock %}
+            </nav>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-10 cmm-main">
+                {% block main %}{% endblock %}
+            </div>
+            <div class="col-sm-2 cmm-sidebar">
+                {% block sidebar %}{% endblock %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>

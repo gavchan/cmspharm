@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  DrugDB
+{% endblock %}
+
+<!--
+{% block nav %}
+
+{% endblock %}
+-->
+{% block main %}
+
+<h1>Drug DB</h1>
+    {% if drug_list %}
+    
+    <table class="table table-sm table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Product name</th>
+                <th scope="col">Permit no.</th>
+                <th scope="col">Ingredients</th>
+                <th scope="col">Company</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for drug in drug_list %}
+            
+            <tr>
+                <td>{{ drug.name }}</td>
+                <td>{{ drug.permit_no }}</td>
+                <td>{{ drug.ingredients }}</td>
+                <td>{{ drug.company }}</td>
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+    </table>
+
+    {% else %}
+    
+    <p>No drugs in database</p>
+
+    {% endif %}
+
+
+{% endblock %}
+
+{% block sidebar %}
+
+Filter
+
+{% endblock %}
