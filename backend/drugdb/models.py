@@ -54,8 +54,8 @@ class Company(models.Model):
         return reverse('drugdb.views.details', args=[str(self.id)])
     
     def __str__(self):
-        return '{} @ {}'.format(
-            self.name, self.address
+        return '{}'.format(
+            self.name
         )
 
 # class InventoryItemSupplier(models.Model):
