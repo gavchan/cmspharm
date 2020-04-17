@@ -11,20 +11,30 @@ class RegisteredDrugList(ListView):
     model = RegisteredDrug
     context_object_name = 'drug_list'
     paginate_by = 20
+    last_query = ''
+    last_query_count = 0
 
     def get_queryset(self):
         query = self.request.GET.get('q')
         if query:
-            print(f"Query={query}")
+            self.last_query = query
             object_list = RegisteredDrug.objects.filter(
                 Q(name__icontains=query) |
                 Q(permit_no__icontains=query) |
                 Q(ingredients__icontains=query)
             )
+            self.last_query_count = object_list.count
         else:
-            print("Empty query")
+            self.last_query = ''
             object_list = RegisteredDrug.objects.all()
+            self.last_query_count = object_list.count
         return object_list
+
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        data['last_query'] = self.last_query
+        data['last_query_count'] = self.last_query_count
+        return data
 
 class CompanyList(ListView):
     """List of Companies"""
@@ -34,5 +44,4 @@ class CompanyList(ListView):
     paginate_by = 20
 
     def get_queryset(self):
-        """Return 20 companies."""
         return Company.objects.all()
