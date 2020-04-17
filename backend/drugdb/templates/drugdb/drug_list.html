@@ -12,7 +12,6 @@
 {% block main %}
 
 <h1>Drug DB</h1>
-    {% if drug_list %}
     
     <nav class="row">
         <div class="col-4">
@@ -68,6 +67,7 @@
         </div>
     </nav>
 
+    {% if drug_list %}
     <table class="table table-sm table-striped">
         <thead>
             <tr>
