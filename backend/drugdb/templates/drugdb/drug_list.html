@@ -14,6 +14,54 @@
 <h1>Drug DB</h1>
     {% if drug_list %}
     
+    <nav class="row">
+        <div class="col-6">
+            <form action="{% url 'drugdb:DrugList' %}" method="get">
+                <input name="q" type="text" placeholder="Search Drugs..." />
+            </form>
+        </div>
+        <div class="col-6">
+        {% if is_paginated %}
+            <ul class="pagination">
+                <li class="page-item">
+                    <a href="{% url 'drugdb:DrugList' %}?page=1"
+                    class="page-link">
+                        First
+                    </a>
+                </li>
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a href="{% url 'drugdb:DrugList' %}?page={{ page_obj.previous_page_number }}" 
+                    class="page-link">
+                        {{ page_obj.previous_page_number }}
+                    </a>
+                </li>
+                {% endif %}
+                <li class="page-item active">
+                    <a href="{% url 'drugdb:DrugList' %}?page={{ page_obj.number }}" 
+                    class="page-link">
+                        {{ page_obj.number }}
+                    </a>
+                </li>
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a href="{% url 'drugdb:DrugList' %}?page={{ page_obj.next_page_number }}" 
+                    class="page-link">
+                        {{ page_obj.next_page_number }}
+                    </a>
+                </li>
+                {% endif %}
+                <li class="page-item">
+                    <a href="{% url 'drugdb:DrugList' %}?page=last"
+                    class="page-link">
+                        Last 
+                    </a>
+                </li>
+            </ul>
+        {% endif %}    
+        </div>
+    </nav>
+
     <table class="table table-sm table-striped">
         <thead>
             <tr>
