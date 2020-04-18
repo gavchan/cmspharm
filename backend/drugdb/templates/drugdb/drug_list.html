@@ -4,14 +4,20 @@
   DrugDB
 {% endblock %}
 
-<!--
 {% block nav %}
-
+  {% if user.is_authenticated %}
+  <a 
+    href="{% url 'drugdb:DrugList' %}" 
+    class="nav-link">
+    DrugDB
+  </a>
+  {% endif %}
 {% endblock %}
--->
+
 {% block main %}
 
-<h1>Drug DB</h1>
+  {% if user.is_authenticated %}
+    <h1>Drug DB</h1>
     
     <nav class="row">
         <div class="col-4">
@@ -98,7 +104,12 @@
 
     {% endif %}
 
+  {% else %}
+  <p>You are not logged in</p>
+  <a href="{% url 'login' %}">login</a>
 
+  {% endif %}
+  
 {% endblock %}
 
 {% block sidebar %}
