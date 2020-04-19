@@ -1,5 +1,4 @@
 from django.db import models
-from cmsinv.models import InventoryItem, Supplier, Depletion, DepletionItem
 
 class RegisteredDrug(models.Model):
     """
@@ -26,9 +25,7 @@ class RegisteredDrug(models.Model):
         return reverse('drugdb.views.details', args=[str(self.permit_no)])
   
     def __str__(self):
-        return '{} | {} ({})'.format(
-            self.permit_no, self.name, self.ingredients
-        )
+        return f"{self.permit_no} | {self.name}"
 
 class Company(models.Model):
     """
@@ -54,6 +51,17 @@ class Company(models.Model):
         return reverse('drugdb.views.details', args=[str(self.id)])
     
     def __str__(self):
-        return '{}'.format(
-            self.name
-        )
+        return f"{self.name}"
+
+class DrugUnit(models.Model):
+    """
+    Stores unit of drug dispensing, e.g. tab
+    """
+    name = models.CharField(max_length=255, default="TAB")
+    description = models.CharField(max_length=255, default="Tablet")
+
+    class Meta:
+        ordering = ['name']
+
+    def __str__(self):
+        return f"{self.name} [#{self.id}]"
