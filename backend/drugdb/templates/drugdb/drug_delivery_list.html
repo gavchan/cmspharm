@@ -1,16 +1,18 @@
 {% extends 'base.html' %}
 
 {% block title %}
-  DrugDB
+  Deliveries
 {% endblock %}
-
+  
 {% block main %}
 
   {% if user.is_authenticated %}
+    <h1>Drug Delivery List</h1>
+    
     <nav class="row">
         <div class="col-4">
-            <form action="{% url 'drugdb:DrugList' %}" method="get">
-                <input name="q" type="text" placeholder="Search Drugs..." />
+            <form action="{% url 'drugdb:DrugDeliveryList' %}" method="get">
+                <input name="q" type="text" placeholder="Search Drugs Deliveries..." />
             </form>
         </div>
         <div class="col-4">
@@ -23,35 +25,35 @@
         
             <ul class="pagination">
                 <li class="page-item">
-                    <a href="{% url 'drugdb:DrugList' %}?q={{ last_query }}&page=1"
+                    <a href="{% url 'drugdb:DrugDeliveryList' %}?q={{ last_query }}&page=1"
                     class="page-link">
                         First
                     </a>
                 </li>
                 {% if page_obj.has_previous %}
                 <li class="page-item">
-                    <a href="{% url 'drugdb:DrugList' %}?q={{ last_query }}&page={{ page_obj.previous_page_number }}" 
+                    <a href="{% url 'drugdb:DrugDeliveryList' %}?q={{ last_query }}&page={{ page_obj.previous_page_number }}" 
                     class="page-link">
                         {{ page_obj.previous_page_number }}
                     </a>
                 </li>
                 {% endif %}
                 <li class="page-item active">
-                    <a href="{% url 'drugdb:DrugList' %}?q={{ last_query }}&page={{ page_obj.number }}" 
+                    <a href="{% url 'drugdb:DrugDeliveryList' %}?q={{ last_query }}&page={{ page_obj.number }}" 
                     class="page-link">
                         {{ page_obj.number }}
                     </a>
                 </li>
                 {% if page_obj.has_next %}
                 <li class="page-item">
-                    <a href="{% url 'drugdb:DrugList' %}?q={{ last_query }}&page={{ page_obj.next_page_number }}" 
+                    <a href="{% url 'drugdb:DrugDeliveryList' %}?q={{ last_query }}&page={{ page_obj.next_page_number }}" 
                     class="page-link">
                         {{ page_obj.next_page_number }}
                     </a>
                 </li>
                 {% endif %}
                 <li class="page-item">
-                    <a href="{% url 'drugdb:DrugList' %}?q={{ last_query }}&page=last"
+                    <a href="{% url 'drugdb:DrugDeliveryList' %}?q={{ last_query }}&page=last"
                     class="page-link">
                         Last 
                     </a>
@@ -61,28 +63,26 @@
         </div>
     </nav>
 
-    {% if drug_list %}
+    {% if drug_delivery_list %}
     <table class="table table-sm table-striped">
         <thead>
             <tr>
+                <th scope="col">Date</th>
                 <th scope="col">Product name</th>
-                <th scope="col">Reg no.</th>
-                <th scope="col">Ingredients</th>
-                <th scope="col">Company</th>
-                <th scope="col">Action</th>
+                <th scope="col">Permit no.</th>
+                <th scope="col">Quantity</th>
+                <th scope="col">Total price</th>
             </tr>
         </thead>
         <tbody>
-            {% for drug in drug_list %}
+            {% for drug in drug_delivery_list %}
             
             <tr>
-                <td>{{ drug.name }}</td>
+                <td>{{ drug.date_created }}</td>
+                <td>{{ drug.product_name }}</td>
                 <td>{{ drug.registration_no }}</td>
-                <td>{{ drug.ingredients }}</td>
-                <td>{{ drug.company }}</td>
-                <td>
-                    <a href="{% url 'drugdb:DrugDetail' drug.id %}" class="btn btn-info"> # </a>
-                </td>
+                <td>{{ drug.product_quantity }}+{{ drug.bonus_quantity }}</td>
+                <td>{{ drug.total_price }}</td>
             </tr>
 
             {% endfor %}
@@ -92,10 +92,10 @@
 
     {% else %}
     
-    <p>No drugs in database</p>
+    <p>No drug delivery in database</p>
 
     {% endif %}
-
+    
   {% else %}
   <p>You are not logged in</p>
   <a href="{% url 'login' %}">login</a>

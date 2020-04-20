@@ -1,0 +1,81 @@
+- model: drugdb.drugunit
+  pk: 1
+  fields:
+    name: AMPOULE
+    description: Ampoule
+- model: drugdb.drugunit
+  pk: 2
+  fields:
+    name: BOTTLE
+    description: Bottle
+- model: drugdb.drugunit
+  pk: 3
+  fields:
+    name: BOX
+    description: Box
+- model: drugdb.drugunit
+  pk: 4
+  fields:
+    name: CAP
+    description: Capsule
+- model: drugdb.drugunit
+  pk: 5
+  fields:
+    name: DOSE
+    description: Dose
+- model: drugdb.drugunit
+  pk: 6
+  fields:
+    name: DROP
+    description: Drop
+- model: drugdb.drugunit
+  pk: 7
+  fields:
+    name: GRAM
+    description: Gram
+- model: drugdb.drugunit
+  pk: 8
+  fields:
+    name: INJECTION
+    description: Injection
+- model: drugdb.drugunit
+  pk: 9
+  fields:
+    name: MG
+    description: Milligram
+- model: drugdb.drugunit
+  pk: 10
+  fields:
+    name: ML
+    description: Millilitre
+- model: drugdb.drugunit
+  pk: 11
+  fields:
+    name: NO
+    description: Number
+- model: drugdb.drugunit
+  pk: 12
+  fields:
+    name: PACK
+    description: Pack
+- model: drugdb.drugunit
+  pk: 13
+  fields:
+    name: TAB
+    description: Tablet
+- model: drugdb.drugunit
+  pk: 14
+  fields:
+    name: TUBE
+    description: Tube
+- model: drugdb.drugunit
+  pk: 15
+  fields:
+    name: UNIT
+    description: Unit
+- model: drugdb.drugunit
+  pk: 16
+  fields:
+    name: VIAL
+    description: Vial
+

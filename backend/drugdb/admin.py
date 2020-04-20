@@ -1,6 +1,6 @@
 from django.contrib import admin
-from .models import RegisteredDrug, Company, DrugUnit 
+from .models import RegisteredDrug, Company, DrugDelivery
 
 admin.site.register(RegisteredDrug)
 admin.site.register(Company)
-admin.site.register(DrugUnit)
+admin.site.register(DrugDelivery)

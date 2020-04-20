@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags %}
+{% block main %}
+    <h1>New Drug Purchase</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-row">
+            <div class="form-group col-md-5 mb-0">
+                {{ form.product_name|as_crispy_field }}
+            </div>
+            <div class="form-group col-md-5 mb-0">
+                {{ form.permit_no|as_crispy_field }}
+            </div>
+            <div class="form-group col-md-2 mb-0">
+                
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-5 mb-0">
+                {{ form.purchase_quantity|as_crispy_field }}
+            </div>
+            <div class="form-group col-md-5 mb-0">
+                {{ form.bonus_quantity|as_crispy_field }}
+            </div>
+            <div class="form-group col-md-2 mb-0">
+                {{ form.purchase_unit|as_crispy_field }}
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-5 mb-0">
+                {{ form.unit_price|as_crispy_field }}
+            </div>
+            <div class="form-group col-md-5 mb-0">
+                {{ form.discount|as_crispy_field }}
+            </div>
+            <div class="form-group col-md-2 mb-0">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-5 mb-0">
+                {{ form.items_per_purchase|as_crispy_field }}
+            </div>
+            <div class="form-group col-md-5 mb-0">
+                {{ form.unit|as_crispy_field }}
+            </div>
+            <div class="form-group col-md-2 mb-0">
+            </div>
+        </div>
+       <div class="form-row">
+            <div class="form-group col-md-5 mb-0">
+                {{ form.batch_num|as_crispy_field }}
+            </div>
+            <div class="form-group col-md-5 mb-0">
+                {{ form.expiry_date|as_crispy_field }}
+            </div>
+            <div class="form-group col-md-2 mb-0">
+            </div>    
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-5 mb-0">
+                {{ form.other_ref|as_crispy_field }}
+            </div>
+            <div class="form-group col-md-5 mb-0">
+                {{ form.remark|as_crispy_field }}
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-success">Save</button>
+    </form>
+
+{% endblock %}
+
+{% block sidebar %}
+    <h1> </h1>
+    <br>
+    <button class="btn btn-primary">Select</button>
+    <p>Total cost:<br>0.0</p>
+    <p>Standard cost:<br>0.0</p>
+    <p>Average cost:<br>0.0</p>
+
+{% endblock %}
