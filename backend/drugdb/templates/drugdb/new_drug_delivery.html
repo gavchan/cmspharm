@@ -2,67 +2,76 @@
 
 {% load crispy_forms_tags %}
 {% block main %}
-    <h1>New Drug Purchase</h1>
-
+    <h1>New Drug Delivery</h1>
     <form method="post">
         {% csrf_token %}
         <div class="form-row">
-            <div class="form-group col-md-5 mb-0">
-                {{ form.product_name|as_crispy_field }}
+            <div class="form-group col-md-8 mb-0">
+                <p>Product Name:<br><b>{{ product_name }}</b></p>
+                <input type="hidden" id="product_name" name="product_name" value="{{ product_name }}" />
             </div>
-            <div class="form-group col-md-5 mb-0">
-                {{ form.permit_no|as_crispy_field }}
-            </div>
-            <div class="form-group col-md-2 mb-0">
-                
+            <div class="form-group col-md-4 mb-0">
+                <p>Registration No.:<br><b>{{ reg_no }}</b></p>
+                <input type="hidden" id="registration_no" name="registration_no" value = "{{ reg_no }}" />
             </div>
         </div>
         <div class="form-row">
-            <div class="form-group col-md-5 mb-0">
+            <div class="form-group col-md-4 mb-0">
+                {{ form.vendor|as_crispy_field }}
+            </div>
+            <div class="form-group col-md-4 mb-0">
+                {{ form.delivery_date|as_crispy_field }}
+            </div>
+            <div class="form-group col-md-4 mb-0">
+                {{ form.delivery_note_no|as_crispy_field }}
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-4 mb-0">
                 {{ form.purchase_quantity|as_crispy_field }}
             </div>
-            <div class="form-group col-md-5 mb-0">
+            <div class="form-group col-md-4 mb-0">
                 {{ form.bonus_quantity|as_crispy_field }}
             </div>
-            <div class="form-group col-md-2 mb-0">
+            <div class="form-group col-md-4 mb-0">
                 {{ form.purchase_unit|as_crispy_field }}
             </div>
         </div>
         <div class="form-row">
-            <div class="form-group col-md-5 mb-0">
+            <div class="form-group col-md-4 mb-0">
                 {{ form.unit_price|as_crispy_field }}
             </div>
-            <div class="form-group col-md-5 mb-0">
+            <div class="form-group col-md-4 mb-0">
                 {{ form.discount|as_crispy_field }}
             </div>
-            <div class="form-group col-md-2 mb-0">
+            <div class="form-group col-md-4 mb-0">
             </div>
         </div>
         <div class="form-row">
-            <div class="form-group col-md-5 mb-0">
+            <div class="form-group col-md-4 mb-0">
                 {{ form.items_per_purchase|as_crispy_field }}
             </div>
-            <div class="form-group col-md-5 mb-0">
-                {{ form.unit|as_crispy_field }}
+            <div class="form-group col-md-4 mb-0">
+                {{ form.items_unit|as_crispy_field }}
             </div>
-            <div class="form-group col-md-2 mb-0">
+            <div class="form-group col-md-4 mb-0">
             </div>
         </div>
        <div class="form-row">
-            <div class="form-group col-md-5 mb-0">
+            <div class="form-group col-md-4 mb-0">
                 {{ form.batch_num|as_crispy_field }}
             </div>
-            <div class="form-group col-md-5 mb-0">
+            <div class="form-group col-md-4 mb-0">
                 {{ form.expiry_date|as_crispy_field }}
             </div>
-            <div class="form-group col-md-2 mb-0">
+            <div class="form-group col-md-4 mb-0">
             </div>    
         </div>
         <div class="form-row">
-            <div class="form-group col-md-5 mb-0">
+            <div class="form-group col-md-4 mb-0">
                 {{ form.other_ref|as_crispy_field }}
             </div>
-            <div class="form-group col-md-5 mb-0">
+            <div class="form-group col-md-4 mb-0">
                 {{ form.remark|as_crispy_field }}
             </div>
         </div>

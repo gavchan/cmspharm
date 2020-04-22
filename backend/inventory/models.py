@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 
 # Create your models here.
 class Delivery(models.Model):
@@ -38,29 +39,31 @@ class Delivery(models.Model):
     @property
     def total_price(self):
         """Total calculated price of purchased unit in transaction"""
-        return (self.purchase_quantity * self.unit_price * (1 - self.discount/100))
+        return round(self.purchase_quantity * self.unit_price * (1 - self.discount/100), 2)
 
     @property
     def items_quantity(self):
         """Total calculated number of items including bonus in transaction"""
-        return (self.items_per_purchase * (self.purchase_quantity + self.bonus_quantity))
+        return round(self.items_per_purchase * (self.purchase_quantity + self.bonus_quantity), 2)
 
     @property
     def standard_cost(self):
         """Standard average cost of items (not including bonus items or discounts)"""
-        return (self.unit_price * self.purchase_quantity / self.items_quantity) 
+        return round(self.unit_price * self.purchase_quantity / self.items_quantity, 2) 
 
     @property
     def average_cost(self):
         """Average cost of items (including bonus items and discounts)"""
-        return (self.total_price / self.items_quantity)
+        return round(self.total_price / self.items_quantity, 2)
     
     class Meta:
         ordering = ['-id']
     
+    def get_absolute_url(self):
+        return reverse('DeliveryDetail', kwargs={'pk': self.pk})
+
     def __str__(self):
         return f"{self.date_created} | {self.product_name} [{self.purchase_quantity}+{self.bonus_quantity}] ${self.total_price}"
-
 
 class ConsumableDelivery(Delivery):
     """

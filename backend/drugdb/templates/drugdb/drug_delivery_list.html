@@ -72,6 +72,7 @@
                 <th scope="col">Permit no.</th>
                 <th scope="col">Quantity</th>
                 <th scope="col">Total price</th>
+                <th scope="col">Action</th>
             </tr>
         </thead>
         <tbody>
@@ -81,8 +82,11 @@
                 <td>{{ drug.date_created }}</td>
                 <td>{{ drug.product_name }}</td>
                 <td>{{ drug.registration_no }}</td>
-                <td>{{ drug.product_quantity }}+{{ drug.bonus_quantity }}</td>
+                <td>{{ drug.purchase_quantity }}+{{ drug.bonus_quantity }}</td>
                 <td>{{ drug.total_price }}</td>
+                <td>
+                    <a href="{% url 'drugdb:DrugDeliveryDetail' drug.id %}" class="btn btn-info"> # </a>
+                </td>
             </tr>
 
             {% endfor %}

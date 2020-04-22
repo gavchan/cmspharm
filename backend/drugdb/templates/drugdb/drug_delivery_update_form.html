@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+  Drug: {{ object.product_name }}
+{% endblock %}
+
+
+{% block main %}
+
+  {% if user.is_authenticated %}
+    <h1>Delivery on {{ object.delivery_date }}</h1>
+    <hr>
+    <form method="post">
+      {% csrf_token %}
+
+      <div class="form-row">
+        <div class="form-group col-md-8 mb-0">
+          <p>Product Name:<br>
+            <b>{{ object.product_name }}</b></p>
+        </div>
+        <div class="form-group col-md-4 mb-0">
+          <p>Registration No.:<br>
+            <b>{{ object.registration_no }}</b></p>
+        </div>
+      </div>
+      <div class="form-row">
+          <div class="form-group col-md-4 mb-0">
+            {{ form.vendor|as_crispy_field }}
+          </div>
+          <div class="form-group col-md-4 mb-0">
+            {{ form.delivery_date|as_crispy_field }}
+          </div>
+          <div class="form-group col-md-4 mb-0">
+            {{ form.delivery_note_no|as_crispy_field }}
+          </div>
+      </div>
+      <div class="form-row">
+          <div class="form-group col-md-4 mb-0">
+            {{ form.purchase_quantity|as_crispy_field }}
+          </div>
+          <div class="form-group col-md-4 mb-0">
+            {{ form.bonus_quantity|as_crispy_field }}
+          </div>
+          <div class="form-group col-md-4 mb-0">
+            {{ form.purchase_unit|as_crispy_field }}
+          </div>
+      </div>
+      <div class="form-row">
+          <div class="form-group col-md-4 mb-0">
+            {{ form.unit_price|as_crispy_field }}
+          </div>
+          <div class="form-group col-md-4 mb-0">
+            {{ form.discount|as_crispy_field }}
+          </div>
+          <div class="form-group col-md-4 mb-0">
+            <p>Total cost:<br>
+            <span class="dd-total-cost">{{ object.total_price }}</span></p>
+          </div>
+      </div>
+      <div class="form-row">
+          <div class="form-group col-md-4 mb-0">
+            {{ form.items_per_purchase|as_crispy_field }}
+          </div>
+          <div class="form-group col-md-4 mb-0">
+            {{ form.items_unit|as_crispy_field }}
+          </div>
+          <div class="form-group col-md-4 mb-0">
+            <p>Standard cost/{{ object.items_unit }}<br>
+            <span class="dd-standard-cost">{{ object.standard_cost }}</span></p>
+          </div>
+      </div>
+      <div class="form-row">
+          <div class="form-group col-md-4 mb-0">
+            {{ form.batch_num|as_crispy_field }}
+          </div>
+          <div class="form-group col-md-4 mb-0">
+            {{ form.expiry_date|as_crispy_field }}
+          </div>
+          <div class="form-group col-md-4 mb-0">
+            <p>Average cost/{{object.items_unit }}<br>
+            <span class="dd-avg-cost">{{ object.average_cost }}</span></p>
+          </div>    
+      </div>
+      <div class="form-row">
+          <div class="form-group col-md-8 mb-0">
+            {{ form.other_ref|as_crispy_field }}
+          </div>
+          <div class="form-group col-md-4 mb-0">
+            <p>Date created:<br>
+            <b>{{ object.date_created }}</b></p>
+          </div>
+      </div>
+      <div class="form-row">
+          <div class="form-group col-md-8 mb-0">
+            {{ form.remark|as_crispy_field }}
+          </div>
+          <div class="form-group col-md-4 mb-0">
+            <p>Last updated:<br>
+            <b>{{ object.last_updated }}</b></p>
+          </div>
+      </div>
+      <hr>
+      <div class="form-row">
+        <div class="form-group col-md-8 mb-0">
+          <input class="btn btn-primary" type="submit" value="Submit"/>
+          <a class="btn btn-secondary" href="{% url 'drugdb:DrugDeliveryDetail' object.pk %}">Cancel</a>
+        </div>
+        <div class="form-group col-md-4 mb-0">
+          <a class="btn btn-danger" href="{% url 'drugdb:DrugDeliveryDelete' object.pk %}">Delete</a>
+        </div>
+    </form>
+  {% else %}
+  <p>You are not logged in</p>
+  <a href="{% url 'login' %}">login</a>
+
+  {% endif %}
+  
+{% endblock %}
+
+{% block sidebar %}
+
+{% endblock %}

@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 from inventory.models import Delivery
 
 class RegisteredDrug(models.Model):
@@ -80,3 +81,6 @@ class DrugDelivery(Delivery):
     ]
     registration_no = models.CharField(max_length=255, blank=True, null=True)
     items_unit = models.CharField(max_length=100, choices=ITEMS_UNIT_CHOICES, default=TAB)
+
+    def get_absolute_url(self):
+        return reverse('drugdb:DrugDeliveryDetail', kwargs={'pk': self.pk})

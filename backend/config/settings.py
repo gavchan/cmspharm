@@ -49,9 +49,9 @@ INSTALLED_APPS = [
     'bootstrap_modal_forms',
     *CMS_APPS,
     'drugdb',
-    'accounts',
     'inventory',
 ]
+CRIPSY_TEMPLATE_PACK = 'bootstrap4'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
