@@ -1,11 +1,8 @@
-{% extends 'base.html' %}
-
+{% load static %}
+<link href="{% static '/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+        
 {% load crispy_forms_tags %}
-
-{% block title %}
-Login - {{ block.super }}
-{% endblock title %}
-{% block main %}
+<div class="container">
     <form method="post">
         {% csrf_token %}
         {{ form|crispy }}
@@ -13,7 +10,5 @@ Login - {{ block.super }}
             Login
         </button>
     </form>
-    
-{% endblock main %}
-    
-    
+</div>
+        

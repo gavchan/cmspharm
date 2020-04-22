@@ -41,6 +41,8 @@
         </div>
     </div>
     <div class="container">
+        {% if user.is_authenticated %}
+        
         <div class="row">
             <div class="col-sm-10 cmm-main">
                 {% block main %}{% endblock %}
@@ -49,6 +51,12 @@
                 {% block sidebar %}{% endblock %}
             </div>
         </div>
+
+        {% else %}
+        <h2>You are not logged in</h2><br>
+        <a class="btn btn-primary" href="{% url 'login' %}">Login</a>
+
+        {% endif %}
     </div>
 </body>
 </html>
