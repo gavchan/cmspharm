@@ -56,4 +56,4 @@ class DrugDeliveryUpdateForm(ModelForm):
 
     class Meta:
         model = DrugDelivery
-        exclude = ['id', 'product_name', 'registration_no']
+        exclude = ['id', 'product_name', 'reg_no']

@@ -171,7 +171,7 @@ class InventoryItem(models.Model):
     mini_dosage_unit = models.FloatField()
     product_name = models.CharField(max_length=255, blank=True, null=True)
     product_name_chinese = models.CharField(max_length=255, blank=True, null=True)
-    registration_no = models.CharField(unique=True, max_length=255, blank=True, null=True)
+    reg_no = models.CharField(unique=True, max_length=255, blank=True, null=True)
     remarks = models.TextField(blank=True, null=True)
     reorder_level = models.FloatField(default=100)
     reorder_status = models.CharField(max_length=255, blank=True, null=True)
@@ -193,7 +193,7 @@ class InventoryItem(models.Model):
         app_label = 'cmsinv'
 
     def __str__(self):
-        return f"{self.registration_no} | {self.product_name} / {self.generic_name} [{self.alias}]"
+        return f"{self.reg_no} | {self.product_name} / {self.generic_name} [{self.alias}]"
 
 class InventoryItemSupplier(models.Model):
     """

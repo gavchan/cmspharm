@@ -24,7 +24,7 @@ class RegisteredDrugList(ListView, LoginRequiredMixin):
             self.last_query = query
             object_list = RegisteredDrug.objects.filter(
                 Q(name__icontains=query) |
-                Q(registration_no__icontains=query) |
+                Q(reg_no__icontains=query) |
                 Q(ingredients__icontains=query)
             )
             self.last_query_count = object_list.count
@@ -76,7 +76,7 @@ class DrugDeliveryList(ListView, LoginRequiredMixin):
             self.last_query = query
             object_list = DrugDelivery.objects.filter(
                 Q(product_name__icontains=query) |
-                Q(registration_no__icontains=query)
+                Q(reg_no__icontains=query)
             )
             self.last_query_count = object_list.count
         else:
@@ -130,7 +130,7 @@ class NewDrugDelivery(CreateView, LoginRequiredMixin):
         data = super().get_context_data(**kwargs)
         if self.drug_reg_no:
             data['reg_no'] = self.drug_reg_no
-            drug_obj = RegisteredDrug.objects.get(registration_no=self.drug_reg_no)
+            drug_obj = RegisteredDrug.objects.get(reg_no=self.drug_reg_no)
             data['product_name'] = drug_obj.name
             data['vendor'] = drug_obj.company
         else:

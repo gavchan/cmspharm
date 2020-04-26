@@ -76,12 +76,12 @@
             
             <tr>
                 <td>{{ drug.name }}</td>
-                <td>{{ drug.registration_no }}</td>
+                <td>{{ drug.reg_no }}</td>
                 <td>{{ drug.ingredients }}</td>
                 <td>{{ drug.company }}</td>
                 <td>
                     <a href="{% url 'drugdb:DrugDetail' drug.id %}" class="btn btn-info"> # </a>
-                    <a href="{% url 'drugdb:NewDrugDelivery' drug.registration_no %}" class="btn btn-primary">+</a>
+                    <a href="{% url 'drugdb:NewDrugDelivery' drug.reg_no %}" class="btn btn-primary">+</a>
                 </td>
             </tr>
 

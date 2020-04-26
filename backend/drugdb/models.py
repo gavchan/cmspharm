@@ -8,21 +8,21 @@ class RegisteredDrug(models.Model):
     """
     name = models.CharField(max_length=255, blank=True, null=True)
     # name: Product Name
-    registration_no = models.CharField(unique=True, max_length=255, blank=True, null=True)
-    # registration_no: equivalent to "permit_no" in drug database
+    reg_no = models.CharField(unique=True, max_length=255, blank=True, null=True)
+    # reg_no: equivalent to "permit_no" in drug database
     ingredients = models.TextField(blank=True, null=True)
     # Company Name and Company Address
     company = models.ForeignKey(
         'Company', on_delete=models.PROTECT,
         )
     date_created = models.DateTimeField(auto_now_add=True)
-    date_modified = models.DateTimeField(auto_now=True)
+    last_updated = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering=['registration_no']
+        ordering=['reg_no']
   
     def __str__(self):
-        return f"{self.registration_no} | {self.name}"
+        return f"{self.reg_no} | {self.name}"
 
 class Company(models.Model):
     """
@@ -35,7 +35,7 @@ class Company(models.Model):
     is_supplier = models.BooleanField(default=False)
     # is_supplier: Companies may also be a supplier
     date_created = models.DateTimeField(auto_now_add=True)
-    date_modified = models.DateTimeField(auto_now=True)
+    last_updated  = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ['name']
@@ -79,7 +79,7 @@ class DrugDelivery(Delivery):
         (UNIT, 'Unit'),
         (VIAL, 'Vial'),
     ]
-    registration_no = models.CharField(max_length=255, blank=True, null=True)
+    reg_no = models.CharField(max_length=255, blank=True, null=True)
     items_unit = models.CharField(max_length=100, choices=ITEMS_UNIT_CHOICES, default=TAB)
 
     def get_absolute_url(self):
