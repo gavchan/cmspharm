@@ -34,6 +34,16 @@
                     class="nav-link">
                     Deliveries
                 </a>
+                <a
+                    href="{% url 'inventory:ItemList' %}"
+                    class="nav-link">
+                    Items
+                </a>
+                <a 
+                    href="{% url 'inventory:ItemDeliveryList' %}"
+                    class="nav-link">
+                    ItemDeliveries
+                </a>
                 {% endif %}
 
                 {% endblock %}

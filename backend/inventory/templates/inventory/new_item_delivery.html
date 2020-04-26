@@ -2,23 +2,23 @@
 
 {% load crispy_forms_tags %}
 {% block main %}
-    <h1>New Drug Delivery</h1>
+    <h1>New Item Delivery</h1>
     <form method="post">
         {% csrf_token %}
         <div class="form-row">
             <div class="form-group col-md-8 mb-0">
-                <p>Product Name:<br><b>{{ product_name }}</b></p>
-                <input type="hidden" id="product_name" name="product_name" value="{{ product_name }}" />
+                <p>Product Name:<br><b>{{ item_name }}</b></p>
+                <input type="hidden" id="product_name" name="product_name" value="{{ item_name }}" />
             </div>
             <div class="form-group col-md-4 mb-0">
-                <p>Registration No.:<br><b>{{ reg_no }}</b></p>
-                <input type="hidden" id="registration_no" name="registration_no" value = "{{ reg_no }}" />
+                <p>Product ID:<br><b>{{ item_id }}</b></p>
+                <input type="hidden" id="id" name="id" value = "{{ item_id }}" />
             </div>
         </div>
         <div class="form-row">
             <div class="form-group col-md-4 mb-0">
-                <p>Vendor:<br><b>{{ vendor }}</b></p>
-                <input type="hidden" id="vendor" name="vendor" value = "{{ vendor }}" />
+                <p>Vendor:<br><b>{{ item_vendor }}</b></p>
+                <input type="hidden" id="vendor" name="vendor" value = "{{ item_vendor }}" />
             </div>
             <div class="form-group col-md-4 mb-0">
                 {{ form.received_date|as_crispy_field }}

@@ -1,15 +1,15 @@
 {% extends 'base.html' %}
 
 {% block title %}
-  DrugDB
+  Categories
 {% endblock %}
 
 {% block main %}
-    <h1>Registered Drug List</h1>
+    <h1>Item Categories</h1>
     <nav class="row">
         <div class="col-4">
-            <form action="{% url 'drugdb:DrugList' %}" method="get">
-                <input name="q" type="text" placeholder="Search Drugs..." />
+            <form action="{% url 'inventory:CategoryList' %}" method="get">
+                <input name="q" type="text" placeholder="Search Categories..." />
             </form>
         </div>
         <div class="col-4">
@@ -22,35 +22,35 @@
         
             <ul class="pagination">
                 <li class="page-item">
-                    <a href="{% url 'drugdb:DrugList' %}?q={{ last_query }}&page=1"
+                    <a href="{% url 'inventory:CategoryList' %}?q={{ last_query }}&page=1"
                     class="page-link">
                         First
                     </a>
                 </li>
                 {% if page_obj.has_previous %}
                 <li class="page-item">
-                    <a href="{% url 'drugdb:DrugList' %}?q={{ last_query }}&page={{ page_obj.previous_page_number }}" 
+                    <a href="{% url 'inventory:CategoryList' %}?q={{ last_query }}&page={{ page_obj.previous_page_number }}" 
                     class="page-link">
                         {{ page_obj.previous_page_number }}
                     </a>
                 </li>
                 {% endif %}
                 <li class="page-item active">
-                    <a href="{% url 'drugdb:DrugList' %}?q={{ last_query }}&page={{ page_obj.number }}" 
+                    <a href="{% url 'inventory:CategoryList' %}?q={{ last_query }}&page={{ page_obj.number }}" 
                     class="page-link">
                         {{ page_obj.number }}
                     </a>
                 </li>
                 {% if page_obj.has_next %}
                 <li class="page-item">
-                    <a href="{% url 'drugdb:DrugList' %}?q={{ last_query }}&page={{ page_obj.next_page_number }}" 
+                    <a href="{% url 'inventory:CategoryList' %}?q={{ last_query }}&page={{ page_obj.next_page_number }}" 
                     class="page-link">
                         {{ page_obj.next_page_number }}
                     </a>
                 </li>
                 {% endif %}
                 <li class="page-item">
-                    <a href="{% url 'drugdb:DrugList' %}?q={{ last_query }}&page=last"
+                    <a href="{% url 'inventory:CategoryList' %}?q={{ last_query }}&page=last"
                     class="page-link">
                         Last 
                     </a>
@@ -60,28 +60,24 @@
         </div>
     </nav>
 
-    {% if drug_list %}
+    {% if category_list %}
     <table class="table table-sm table-striped">
         <thead>
             <tr>
-                <th scope="col">Product name</th>
-                <th scope="col">Reg no.</th>
-                <th scope="col">Ingredients</th>
-                <th scope="col">Company</th>
+                <th scope="col">Category</th>
+                <th scope="col">Description</th>
                 <th scope="col">Action</th>
             </tr>
         </thead>
         <tbody>
-            {% for drug in drug_list %}
+            {% for category in category_list %}
             
             <tr>
-                <td>{{ drug.name }}</td>
-                <td>{{ drug.registration_no }}</td>
-                <td>{{ drug.ingredients }}</td>
-                <td>{{ drug.company }}</td>
+                <td>{{ category.name }}</td>
+                <td>{{ category.description }}</td>
                 <td>
-                    <a href="{% url 'drugdb:DrugDetail' drug.id %}" class="btn btn-info"> # </a>
-                    <a href="{% url 'drugdb:NewDrugDelivery' drug.registration_no %}" class="btn btn-primary">+</a>
+                    <a href="{% url 'inventory:CategoryUpdate' category.pk %}" class="btn btn-info"> # </a>
+                    <a href="{% url 'inventory:CategoryDelete' category.pk %}" class="btn btn-danger"> Delete </a>
                 </td>
             </tr>
 
@@ -92,14 +88,12 @@
 
     {% else %}
     
-    <p>No drugs in database</p>
+    <p>No categories in database</p>
 
     {% endif %}
 
 {% endblock %}
 
 {% block sidebar %}
-
-  Filter
-
+<p><a class="btn btn-primary btn-block" href="{% url 'inventory:NewCategory' %}">Add Category</a></p>
 {% endblock %}

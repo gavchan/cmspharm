@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block main %}
+
+<form method="post">
+    {% csrf_token %}
+    {{form|crispy}}
+    <button type="submit" class="btn btn-success">Save</button>
+    <a class="btn btn-secondary" href="{% url 'inventory:ItemList' %}">Cancel</a>
+</form>
+{% endblock %}

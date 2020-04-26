@@ -1,15 +1,15 @@
 {% extends 'base.html' %}
 
 {% block title %}
-  DrugDB
+  Vendors
 {% endblock %}
 
 {% block main %}
-    <h1>Registered Drug List</h1>
+    <h1>Vendors</h1>
     <nav class="row">
         <div class="col-4">
-            <form action="{% url 'drugdb:DrugList' %}" method="get">
-                <input name="q" type="text" placeholder="Search Drugs..." />
+            <form action="{% url 'inventory:VendorList' %}" method="get">
+                <input name="q" type="text" placeholder="Search Vendors..." />
             </form>
         </div>
         <div class="col-4">
@@ -22,35 +22,35 @@
         
             <ul class="pagination">
                 <li class="page-item">
-                    <a href="{% url 'drugdb:DrugList' %}?q={{ last_query }}&page=1"
+                    <a href="{% url 'inventory:VendorList' %}?q={{ last_query }}&page=1"
                     class="page-link">
                         First
                     </a>
                 </li>
                 {% if page_obj.has_previous %}
                 <li class="page-item">
-                    <a href="{% url 'drugdb:DrugList' %}?q={{ last_query }}&page={{ page_obj.previous_page_number }}" 
+                    <a href="{% url 'inventory:VendorList' %}?q={{ last_query }}&page={{ page_obj.previous_page_number }}" 
                     class="page-link">
                         {{ page_obj.previous_page_number }}
                     </a>
                 </li>
                 {% endif %}
                 <li class="page-item active">
-                    <a href="{% url 'drugdb:DrugList' %}?q={{ last_query }}&page={{ page_obj.number }}" 
+                    <a href="{% url 'inventory:VendorList' %}?q={{ last_query }}&page={{ page_obj.number }}" 
                     class="page-link">
                         {{ page_obj.number }}
                     </a>
                 </li>
                 {% if page_obj.has_next %}
                 <li class="page-item">
-                    <a href="{% url 'drugdb:DrugList' %}?q={{ last_query }}&page={{ page_obj.next_page_number }}" 
+                    <a href="{% url 'inventory:VendorList' %}?q={{ last_query }}&page={{ page_obj.next_page_number }}" 
                     class="page-link">
                         {{ page_obj.next_page_number }}
                     </a>
                 </li>
                 {% endif %}
                 <li class="page-item">
-                    <a href="{% url 'drugdb:DrugList' %}?q={{ last_query }}&page=last"
+                    <a href="{% url 'inventory:VendorList' %}?q={{ last_query }}&page=last"
                     class="page-link">
                         Last 
                     </a>
@@ -60,28 +60,28 @@
         </div>
     </nav>
 
-    {% if drug_list %}
+    {% if vendor_list %}
     <table class="table table-sm table-striped">
         <thead>
             <tr>
-                <th scope="col">Product name</th>
-                <th scope="col">Reg no.</th>
-                <th scope="col">Ingredients</th>
-                <th scope="col">Company</th>
+                <th scope="col">Vendor</th>
+                <th scope="col">Contact Person</th>
+                <th scope="col">Main Tel</th>
+                <th scope="col">Email</th>
                 <th scope="col">Action</th>
             </tr>
         </thead>
         <tbody>
-            {% for drug in drug_list %}
+            {% for vendor in vendor_list %}
             
             <tr>
-                <td>{{ drug.name }}</td>
-                <td>{{ drug.registration_no }}</td>
-                <td>{{ drug.ingredients }}</td>
-                <td>{{ drug.company }}</td>
+                <td>{{ vendor.name }}</td>
+                <td>{{ vendor.contact_person }}</td>
+                <td>{{ vendor.tel_main }}</td>
+                <td>{{ vendor.email }}</td>
                 <td>
-                    <a href="{% url 'drugdb:DrugDetail' drug.id %}" class="btn btn-info"> # </a>
-                    <a href="{% url 'drugdb:NewDrugDelivery' drug.registration_no %}" class="btn btn-primary">+</a>
+                    <a href="{% url 'inventory:VendorUpdate' vendor.id %}" class="btn btn-info"> # </a>
+                    <a href="{% url 'inventory:NewItem' vendor.id %}" class="btn btn-primary">+Item</a>
                 </td>
             </tr>
 
@@ -92,14 +92,12 @@
 
     {% else %}
     
-    <p>No drugs in database</p>
+    <p>No vendors in database</p>
 
     {% endif %}
 
 {% endblock %}
 
 {% block sidebar %}
-
-  Filter
-
+<p><a class="btn btn-light btn-block" href="{% url 'inventory:NewVendor' %}">Add Vendor</a></p>
 {% endblock %}

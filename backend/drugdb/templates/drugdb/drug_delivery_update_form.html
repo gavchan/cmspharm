@@ -29,7 +29,7 @@
             {{ form.vendor|as_crispy_field }}
           </div>
           <div class="form-group col-md-4 mb-0">
-            {{ form.delivery_date|as_crispy_field }}
+            {{ form.received_date|as_crispy_field }}
           </div>
           <div class="form-group col-md-4 mb-0">
             {{ form.delivery_note_no|as_crispy_field }}
@@ -109,6 +109,7 @@
         <div class="form-group col-md-4 mb-0">
           <a class="btn btn-danger" href="{% url 'drugdb:DrugDeliveryDelete' object.pk %}">Delete</a>
         </div>
+      </div>
     </form>
   {% else %}
   <p>You are not logged in</p>

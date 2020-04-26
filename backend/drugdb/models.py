@@ -4,7 +4,7 @@ from inventory.models import Delivery
 
 class RegisteredDrug(models.Model):
     """
-    Stores list of products/drugs
+    Stores list of products/drugs registered in offical drug office database
     """
     name = models.CharField(max_length=255, blank=True, null=True)
     # name: Product Name
@@ -26,7 +26,7 @@ class RegisteredDrug(models.Model):
 
 class Company(models.Model):
     """
-    Stores list of company names and addresses
+    Stores list of company names and addresses in official drug office database
     """
     name = models.CharField(unique=True, max_length=255, blank=True, null=True)
     address = models.TextField(blank=True, null=True)
@@ -64,20 +64,20 @@ class DrugDelivery(Delivery):
     VIAL = 'VIAL'
 
     ITEMS_UNIT_CHOICES = [
-        (AMPOULE, 'AMPOULE'),
-        (BOTTLE, 'BOTTLE'),
-        (BOX, 'BOX'),
-        (CAPSULE, 'CAP'),
-        (DOSE, 'DOSE'),
-        (GRAM, 'GRAM'),
-        (INJECTION, 'INJECTION'),
-        (MG, 'MG'),
-        (ML, 'ML'),
-        (PACK, 'PACK'),
-        (TAB, 'TAB'),
-        (TUBE, 'TUBE'),
-        (UNIT, 'UNIT'),
-        (VIAL, 'VIAL'),
+        (AMPOULE, 'Ampoule'),
+        (BOTTLE, 'Bottle'),
+        (BOX, 'Box'),
+        (CAPSULE, 'Cap'),
+        (DOSE, 'Dose'),
+        (GRAM, 'gram'),
+        (INJECTION, 'Injection'),
+        (MG, 'mg'),
+        (ML, 'mL'),
+        (PACK, 'Pack'),
+        (TAB, 'Tablet'),
+        (TUBE, 'Tube'),
+        (UNIT, 'Unit'),
+        (VIAL, 'Vial'),
     ]
     registration_no = models.CharField(max_length=255, blank=True, null=True)
     items_unit = models.CharField(max_length=100, choices=ITEMS_UNIT_CHOICES, default=TAB)

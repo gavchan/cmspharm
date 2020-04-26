@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block main %}
+  <h1>Category: {{ object.name }}</h1>
+  <form method="post">
+    {% csrf_token %}
+    <p>Id<br>{{ object.id }}</p>
+    <p>{{ form.name|as_crispy_field }}</p>
+    <p>{{ form.description|as_crispy_field }}</p>
+    <p>{{ form.active|as_crispy_field }}</p>
+    <hr>
+    <button type="submit" class="btn btn-success">Save</button>
+    <a class="btn btn-secondary" href="{% url 'inventory:CategoryList' %}">Cancel</a>
+</form>
+{% endblock %}

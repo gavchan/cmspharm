@@ -105,7 +105,6 @@ class DrugDeliveryUpdate(UpdateView, LoginRequiredMixin):
 
     def get_success_url(self):
         return reverse('drugdb:DrugDeliveryDetail', args=(self.object.pk,))
-    # context_object_name = 'delivery_obj'
 
 class DrugDeliveryDelete(DeleteView, LoginRequiredMixin):
     """Delete drug delivery record"""
@@ -114,6 +113,7 @@ class DrugDeliveryDelete(DeleteView, LoginRequiredMixin):
 
 class NewDrugDelivery(CreateView, LoginRequiredMixin):
     """Add new drug delivery"""
+    model = DrugDelivery
     template_name = 'drugdb/new_drug_delivery.html'
     form_class = NewDrugDeliveryForm
     context_object_name = 'new_drug_delivery'
@@ -132,6 +132,7 @@ class NewDrugDelivery(CreateView, LoginRequiredMixin):
             data['reg_no'] = self.drug_reg_no
             drug_obj = RegisteredDrug.objects.get(registration_no=self.drug_reg_no)
             data['product_name'] = drug_obj.name
+            data['vendor'] = drug_obj.company
         else:
             print("Error: missing reg_no")
             data['product_name'] = ''

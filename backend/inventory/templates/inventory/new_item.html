@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+  New Item
+{% endblock %}
+
+
+{% block main %}
+
+  <h1>Add New Item</h1>
+  <hr>
+  <form method="post">
+    {% csrf_token %}
+    <div class="form-row">
+        <div class="form-group col-md-8 mb-0">
+            {{ form.name|as_crispy_field }}
+        </div>
+        <div class="form-group col-md-4 mb-0">
+            {{ form.alias|as_crispy_field }}
+        </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group col-md-8 mb-0">
+          {{ form.description|as_crispy_field }}
+      </div>
+      <div class="form-group col-md-4 mb-0">
+          {{ form.category|as_crispy_field }}
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group col-md-8 mb-0">
+        {% if vendor_id %}
+          <p>Vendor:<br><b>{{ vendor_name }}</b></p>
+          <input type="hidden" id="vendor" name="vendor" value = "{{ vendor_name }}" />
+        {% else %}
+          {{ form.vendor|as_crispy_field }}
+        {% endif %}
+      </div>
+      <div class="form-group col-md-4 mb-0">
+        {{ form.inventory_type|as_crispy_field }}
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group col-md-8 mb-0">
+        {{ form.remarks|as_crispy_field }}
+      </div>
+      <div class="form-group col-md-4 mb-0">
+        {{ form.updated_by|as_crispy_field }}
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group col-md-4 mb-0">
+        Active? {{ form.active|as_crispy_field }}
+      </div>
+    </div>
+    <hr>
+    <button class="btn btn-primary" type="submit">Submit</button>
+  </form>
+
+{% endblock %}
+
+{% block sidebar %}
+<p><a class="btn btn-light btn-block" href="{% url 'inventory:NewVendor' %}">Add Vendor
+<p><a class="btn btn-light btn-block" href="{% url 'inventory:NewCategory' %}">Add Category</a></p>
+<hr>
+<p><a class="btn btn-light btn-block" href="{% url 'inventory:VendorList' %}">Show Vendors</a></p>
+{% endblock %}
