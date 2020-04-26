@@ -127,9 +127,9 @@ class Delivery(models.Model):
     vendor = models.CharField(max_length=255, blank=True, null=True)
     delivery_note_no = models.CharField(max_length=255, blank=True, null=True)
     # delivery_note_no: can be referenced to cmsinv.Delivery; a.k.a. invoice no.
-    purchase_quantity = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    purchase_quantity = models.DecimalField(max_digits=10, decimal_places=1, default=0)
     purchase_unit = models.CharField(max_length=100, choices=PURCHASE_UNIT_CHOICES, default=PACK)
-    bonus_quantity = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    bonus_quantity = models.DecimalField(max_digits=10, decimal_places=1, default=0)
     unit_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     discount = models.DecimalField(max_digits=4, decimal_places=2, default=0)
     # discount: percentage discount applied to unit_price in calculation of total; e.g. 25 = 25% off
