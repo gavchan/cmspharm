@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     *CMS_APPS,
     'drugdb',
     'inventory',
+    'ledger',
 ]
 CRIPSY_TEMPLATE_PACK = 'bootstrap4'
 
