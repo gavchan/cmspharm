@@ -13,6 +13,7 @@ class ItemType(models.Model):
 
     class Meta:
         ordering = ['id']
+        verbose_name = 'Item type'
 
     def __str__(self):
         return f"{self.id} | {self.name}"
@@ -201,7 +202,8 @@ class ItemDelivery(Delivery):
 
     class Meta:
         ordering = ['received_date']
-        verbose_name_plural = 'ItemDeliveries'
+        verbose_name = 'Item delivery'
+        verbose_name_plural = 'Item deliveries'
 
     def get_absolute_url(self):
         return reverse('inventory:ItemDeliveryDetail', kwargs={'pk': self.pk})

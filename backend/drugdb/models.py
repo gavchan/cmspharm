@@ -19,7 +19,8 @@ class RegisteredDrug(models.Model):
     last_updated = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering=['reg_no']
+        ordering = ['reg_no']
+        verbose_name = 'Registered drug'
   
     def __str__(self):
         return f"{self.reg_no} | {self.name}"
@@ -81,6 +82,10 @@ class DrugDelivery(Delivery):
     ]
     reg_no = models.CharField(max_length=255, blank=True, null=True)
     items_unit = models.CharField(max_length=100, choices=ITEMS_UNIT_CHOICES, default=TAB)
+
+    class Meta:
+        verbose_name = 'Drug delivery'
+        verbose_name_plural = 'Drug deliveries'
 
     def get_absolute_url(self):
         return reverse('drugdb:DrugDeliveryDetail', kwargs={'pk': self.pk})
