@@ -1,5 +1,6 @@
 from django.db import models
 from django.urls import reverse
+from inventory.models import Vendor
 
 class ExpenseCategory(models.Model):
     """
@@ -64,6 +65,11 @@ class Expense(LedgerEntry):
         blank=True, null=True
     )
     payee = models.CharField(max_length=255, blank=True, null=True)
+    # vendor: can be the same as the payee; occasionally the payee name is different.
+    vendor = models.ForeignKey(
+        Vendor, blank=True, null=True,
+        on_delete = models.PROTECT
+        )
     payment_method = models.ForeignKey(
         PaymentMethod, on_delete=models.PROTECT,
     )

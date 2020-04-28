@@ -9,7 +9,8 @@
     {% csrf_token %}
         <div class="form-row">
             <div class="form-group col-md-4 mb-0">
-                Today's date
+                Entry Date:
+                <input type="text" id="entry_date" name="entry_date" value="{{ today }}" /> 
             </div>
                 <div class="form-group col-md-4 mb-0">
                 {{ form.expected_date|as_crispy_field }}
@@ -34,12 +35,16 @@
                 {{ form.payee|as_crispy_field }}
             </div>
             <div class="form-group col-md-4 mb-0">
+                {{ form.vendor|as_crispy_field}}
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-4 mb-0">
                 {{ form.payment_ref|as_crispy_field }}
             </div>
             <div class="form-group col-md-4 mb-0">
                 {{ form.payment_method|as_crispy_field }}
             </div>
-            
         </div>
         <div class="form-row">
             <div class="form-group col-md-4 mb-0">

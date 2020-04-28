@@ -1,3 +1,4 @@
+from datetime import date
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse, reverse_lazy
@@ -117,3 +118,8 @@ class NewExpense(CreateView, LoginRequiredMixin):
     template_name = 'ledger/new_expense.html'
     form_class = NewExpenseForm
     success_url = reverse_lazy('ledger:ExpenseList')
+
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        data['today'] = date.today().strftime('%Y-%m-%d') 
+        return data
