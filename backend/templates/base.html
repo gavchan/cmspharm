@@ -24,6 +24,11 @@
                 {% block nav %}
 
                 {% if user.is_authenticated %}
+                <a
+                    href="{% url 'ledger:ExpenseList' %}"
+                    class="nav-link">
+                    Expenses
+                </a>
                 <a 
                     href="{% url 'drugdb:DrugList' %}" 
                     class="nav-link">

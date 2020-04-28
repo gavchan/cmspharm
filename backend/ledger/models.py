@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 
 class ExpenseCategory(models.Model):
     """
@@ -34,7 +35,7 @@ class PaymentMethod(models.Model):
 class LedgerEntry(models.Model):
     """Base model definition for Ledger Entries"""
 
-    entry_date = models.DateField(auto_now_add=True)
+    entry_date = models.DateField()
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     description = models.CharField(max_length=255, blank=True, null=True)
     remarks = models.TextField(blank=True, null=True)
@@ -76,3 +77,6 @@ class Expense(LedgerEntry):
         ordering = ['-entry_date']
         verbose_name = 'Expense'
         verbose_name_plural = 'Expenses'
+
+    def get_absolute_url(self):
+        return reverse('ledger:ExpenseDetail', kwargs={'pk': self.pk})

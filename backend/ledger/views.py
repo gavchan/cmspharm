@@ -9,8 +9,11 @@ from .models import (
 
 from .forms import (
     NewExpenseCategoryForm, ExpenseCategoryUpdateForm,
-    # NewExpenseForm, ExpenseEntryForm,
+    NewExpenseForm, ExpenseUpdateForm,
 )
+
+# Expense Category Views
+# ======================
 
 class ExpenseCategoryList(ListView, LoginRequiredMixin):
     model = ExpenseCategory
@@ -58,3 +61,59 @@ class NewExpenseCategory(CreateView, LoginRequiredMixin):
     template_name = 'ledger/new_expense_category.html'
     form_class = NewExpenseCategoryForm
     success_url = reverse_lazy('ledger:ExpenseCategoryList')
+
+# Expense Views
+# =============
+
+class ExpenseList(ListView, LoginRequiredMixin):
+    model = Expense
+    template_name = "ledger/expense_list.html"
+    context_object_name = 'expense_list_obj'
+    paginate_by = 20
+    last_query = ''
+    last_query_count = 0
+
+    def get_queryset(self):
+        query = self.request.GET.get('q')
+        if query:
+            self.last_query = query
+            object_list = Expense.objects.filter(
+                Q(description__icontains=query) |
+                Q(payee__icontains=query)
+            )
+            self.last_query_count = object_list.count
+        else:
+            self.last_query = ''
+            object_list = Expense.objects.all()
+            self.last_query_count = object_list.count
+        return object_list
+
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        data['last_query'] = self.last_query
+        data['last_query_count'] = self.last_query_count
+        return data
+
+class ExpenseDetail(DetailView, LoginRequiredMixin):
+    model = Expense
+    template_name = "ledger/expense_detail.html"
+    context_object_name = "expense_obj"
+
+class ExpenseUpdate(UpdateView, LoginRequiredMixin):
+    model = Expense
+    form_class = ExpenseUpdateForm
+    template_name = "ledger/expense_update.html"
+
+    def get_success_url(self):
+        return reverse('ledger:ExpenseDetail', args=(self.object.pk,))
+
+class ExpenseDelete(DeleteView, LoginRequiredMixin):
+    model = Expense
+    template_name = "ledger/expense_confirm_delete.html"
+    success_url = reverse_lazy('ledger:ExpenseList')
+
+class NewExpense(CreateView, LoginRequiredMixin):
+    model = Expense
+    template_name = 'ledger/new_expense.html'
+    form_class = NewExpenseForm
+    success_url = reverse_lazy('ledger:ExpenseList')

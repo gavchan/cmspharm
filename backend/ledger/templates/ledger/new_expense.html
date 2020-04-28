@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block main %}
+
+    <h1>New Expense Entry</h1>
+    <hr>
+    <form method="post">
+    {% csrf_token %}
+        <div class="form-row">
+            <div class="form-group col-md-4 mb-0">
+                Today's date
+            </div>
+                <div class="form-group col-md-4 mb-0">
+                {{ form.expected_date|as_crispy_field }}
+            </div>
+            <div class="form-group col-md-4 mb-0">
+                {{ form.settled_date|as_crispy_field }}
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-4 mb-0">
+                {{ form.amount|as_crispy_field }}
+            </div>
+            <div class="form-group col-md-4 mb-0">
+                {{ form.description|as_crispy_field }}
+            </div>
+            <div class="form-group col-md-4 mb-0">
+                {{ form.category|as_crispy_field }}
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-4 mb-0">
+                {{ form.payee|as_crispy_field }}
+            </div>
+            <div class="form-group col-md-4 mb-0">
+                {{ form.payment_ref|as_crispy_field }}
+            </div>
+            <div class="form-group col-md-4 mb-0">
+                {{ form.payment_method|as_crispy_field }}
+            </div>
+            
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-4 mb-0">
+                {{ form.invoice_no|as_crispy_field }}
+            </div>
+            <div class="form-group col-md-4 mb-0">
+                {{ form.invoice_date|as_crispy_field }}
+            </div>
+            <div class="form-group col-md-4 mb-0">
+                {{ form.other_ref|as_crispy_field }}
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-8 mb-0">
+                {{ form.remarks|as_crispy_field }}
+            </div>
+            <!---
+            <div class="form-group col-md-4 mb-0">
+            </div>
+            <div class="form-group col-md-4 mb-0">
+            </div>
+        -->
+        </div>
+        <hr>
+        <div class="form-row">
+            <div class="form-group col-md-8 mb-0">
+            <input type="hidden" id="version" name="version" value="1" />
+            <input class="btn btn-primary" type="submit" value="Submit"/>
+            <a class="btn btn-secondary" href="{% url 'ledger:ExpenseList' %}">Cancel</a>
+            </div>
+        </div>
+    </form>
+    
+{% endblock %}
+
+{% block sidebar %}
+
+{% endblock %}
