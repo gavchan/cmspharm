@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  Expense Categories
+{% endblock %}
+
+{% block main %}
+    <h1>Expense Categories</h1>
+    <nav class="row">
+        <div class="col-4">
+            <form action="{% url 'ledger:ExpenseCategoryList' %}" method="get">
+                <input name="q" type="text" placeholder="Search Categories..." />
+            </form>
+        </div>
+        <div class="col-4">
+            {% if last_query %}
+            Results for "{{ last_query }}" ({{ last_query_count }})
+            {% endif %}
+        </div>
+        <div class="col-4">
+            {% if is_paginated %}
+        
+            <ul class="pagination">
+                <li class="page-item">
+                    <a href="{% url 'ledger:ExpenseCategoryList' %}?q={{ last_query }}&page=1"
+                    class="page-link">
+                        First
+                    </a>
+                </li>
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a href="{% url 'ledger:ExpenseCategoryList' %}?q={{ last_query }}&page={{ page_obj.previous_page_number }}" 
+                    class="page-link">
+                        {{ page_obj.previous_page_number }}
+                    </a>
+                </li>
+                {% endif %}
+                <li class="page-item active">
+                    <a href="{% url 'ledger:ExpenseCategoryList' %}?q={{ last_query }}&page={{ page_obj.number }}" 
+                    class="page-link">
+                        {{ page_obj.number }}
+                    </a>
+                </li>
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a href="{% url 'ledger:ExpenseCategoryList' %}?q={{ last_query }}&page={{ page_obj.next_page_number }}" 
+                    class="page-link">
+                        {{ page_obj.next_page_number }}
+                    </a>
+                </li>
+                {% endif %}
+                <li class="page-item">
+                    <a href="{% url 'ledger:ExpenseCategoryList' %}?q={{ last_query }}&page=last"
+                    class="page-link">
+                        Last 
+                    </a>
+                </li>
+            </ul>
+        {% endif %}    
+        </div>
+    </nav>
+
+    {% if expense_category_list_obj %}
+    <table class="table table-sm table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Category</th>
+                <th scope="col">Description</th>
+                <th scope="col">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for category in expense_category_list_obj %}
+            
+            <tr>
+                <td>{{ category.name }}</td>
+                <td>{{ category.description }}</td>
+                <td>
+                    <a href="{% url 'ledger:ExpenseCategoryUpdate' category.pk %}" class="btn btn-info"> # </a>
+                    <a href="{% url 'ledger:ExpenseCategoryDelete' category.pk %}" class="btn btn-danger"> Delete </a>
+                </td>
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+    </table>
+
+    {% else %}
+    
+    <p>No categories in database</p>
+
+    {% endif %}
+
+{% endblock %}
+
+{% block sidebar %}
+<p><a class="btn btn-primary btn-block" href="{% url 'ledger:NewExpenseCategory' %}">Add Category</a></p>
+{% endblock %}

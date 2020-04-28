@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block main %}
+
+<form method="post">
+    {% csrf_token %}
+    {{form|crispy}}
+    <input class="btn btn-primary" type="submit" value="Save">
+    <a class="btn btn-secondary" href="{% url 'ledger:ExpenseCategoryList' %}">Cancel</a>
+</form>
+{% endblock %}
