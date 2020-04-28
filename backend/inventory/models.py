@@ -6,10 +6,9 @@ class ItemType(models.Model):
     Model for type of inventory items, correlates to cmsinv.InventoryItemType
     To reserve id=1 for Drug, id=2 for Consumable
     """
-    version = models.BigIntegerField(default=0)
-    active = models.BooleanField(default=True)
     name = models.CharField(max_length=255)
     description = models.CharField(max_length=255)
+    active = models.BooleanField(default=True)
 
     class Meta:
         ordering = ['id']
@@ -22,10 +21,10 @@ class Category(models.Model):
     """
     Model for non-drug inventory items category
     """
-    version = models.BigIntegerField(default=0)
-    active = models.BooleanField(default=True)
     name = models.CharField(max_length=255)
     description = models.CharField(max_length=255)
+    active = models.BooleanField(default=True)
+    version = models.PositiveIntegerField(default=1)
 
     class Meta:
         ordering = ['id']
@@ -49,7 +48,8 @@ class Vendor(models.Model):
     
     # Fields matching cmsinv.Supplier
     # Note: tel_home replaced by tel_main
-    version = models.BigIntegerField(default=0)
+    #       version converted from BigIntegerField to PositiveIntegerField
+    version = models.PositiveIntegerField(default=1)
     contact_person = models.CharField(max_length=255, blank=True, null=True)
     email = models.CharField(max_length=255, blank=True, null=True)
     fax = models.CharField(max_length=255, blank=True, null=True)
@@ -82,8 +82,8 @@ class Item(models.Model):
     """
     name = models.CharField(max_length=255, blank=True, null=True)
     description = models.CharField(max_length=255, blank=True, null=True)
+    remarks = models.TextField(blank=True, null=True)
     alias = models.CharField(max_length=255, blank=True, null=True)
-    version = models.BigIntegerField(default=0)
     category = models.ForeignKey(
         Category, on_delete=models.PROTECT,
         blank=True, null=True,
@@ -92,14 +92,13 @@ class Item(models.Model):
         Vendor, on_delete=models.PROTECT,
     )
     active = models.BooleanField(default=True)
-    discontinue = models.BooleanField(default=False)
+    version = models.PositiveIntegerField(default=1)
     inventory_type = models.ForeignKey(
         ItemType, on_delete=models.PROTECT,
         default=2, # 2=Consumable
     )
     date_created = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(blank=True, null=True)
-    remarks = models.TextField(blank=True, null=True)
     updated_by = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
@@ -144,6 +143,7 @@ class Delivery(models.Model):
     received_by = models.CharField(max_length=255, blank=True, null=True)
     expiry_date = models.DateField(blank=True, null=True)
     date_created = models.DateTimeField(auto_now_add=True)
+    version = models.PositiveIntegerField(default=1)
     last_updated = models.DateTimeField(auto_now=True)
 
     # Calculated properties
