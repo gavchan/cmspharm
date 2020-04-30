@@ -54,7 +54,7 @@
                 <li class="page-item">
                     <a href="{% url 'inventory:ItemDeliveryList' %}?q={{ last_query }}&page=last"
                     class="page-link">
-                        Last 
+                        Last ({{ page_obj.paginator.num_pages }}) 
                     </a>
                 </li>
             </ul>
@@ -84,7 +84,7 @@
                 <td>{{ item.purchase_quantity }}+{{ item.bonus_quantity }}</td>
                 <td>{{ item.total_price }}</td>
                 <td>
-                    <a href="{% url 'inventory:ItemDeliveryDetail' item.id %}" class="btn btn-info"> # </a>
+                    <a href="{% url 'inventory:ItemDeliveryDetail' item.id %}" class="btn btn-sm btn-info"> # </a>
                 </td>
             </tr>
 
@@ -102,6 +102,6 @@
 {% endblock %}
 
 {% block sidebar %}
-<p><a class="btn btn-primary" href="{% url 'inventory:NewItem' %}">Add Item</a></p>
-<p><a class="btn btn-primary" href="{% url 'inventory:NewVendor' %}">Add Vendor</a></p>
+<p><a class="btn btn-sm btn-primary" href="{% url 'inventory:NewItem' %}">Add Item</a></p>
+<p><a class="btn btn-sm btn-primary" href="{% url 'inventory:NewVendor' %}">Add Vendor</a></p>
 {% endblock %}

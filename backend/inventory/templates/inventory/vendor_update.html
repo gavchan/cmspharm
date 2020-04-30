@@ -56,12 +56,12 @@
         </div>
     </div>
     <hr>
-    <button class="btn btn-primary" type="submit">Update</button>
-    <a class="btn btn-secondary" href="{% url 'inventory:VendorList' %}">Cancel</a>
+    <button class="btn btn-sm btn-primary" type="submit">Update</button>
+    <a class="btn btn-sm btn-secondary" href="{% url 'inventory:VendorList' %}">Cancel</a>
 </form>
 
 {% endblock %}
 
 {% block sidebar %}
-<p><a class="btn btn-light btn-block" href="{% url 'inventory:VendorList' %}">Show Vendors</a></p>
+<p><a class="btn btn-sm btn-light btn-block" href="{% url 'inventory:VendorList' %}">Show Vendors</a></p>
 {% endblock %}

@@ -52,7 +52,7 @@
                 <li class="page-item">
                     <a href="{% url 'ledger:ExpenseList' %}?q={{ last_query }}&page=last"
                     class="page-link">
-                        Last 
+                        Last ({{ page_obj.paginator.num_pages }}) 
                     </a>
                 </li>
             </ul>
@@ -78,8 +78,8 @@
                 <td>{{ expense.amount }}</td>
                 <td>{{ expense.description }}</td>
                 <td>
-                    <a href="{% url 'ledger:ExpenseDetail' expense.pk %}" class="btn btn-info"> # </a>
-                    <a href="{% url 'ledger:ExpenseDelete' expense.pk %}" class="btn btn-danger"> Delete </a>
+                    <a href="{% url 'ledger:ExpenseDetail' expense.pk %}" class="btn btn-sm btn-info"> # </a>
+                    <a href="{% url 'ledger:ExpenseDelete' expense.pk %}" class="btn btn-sm btn-danger"> Delete </a>
                 </td>
             </tr>
 
@@ -97,8 +97,8 @@
 {% endblock %}
 
 {% block sidebar %}
-<p><a class="btn btn-primary btn-block" href="{% url 'ledger:NewExpense' %}">Add Expense</a></p>
-<p><a class="btn btn-info btn-block" href="{% url 'ledger:NewExpenseCategory' %}">Add Category</a></p>
+<p><a class="btn btn-sm btn-primary btn-block" href="{% url 'ledger:NewExpense' %}">Add Expense</a></p>
+<p><a class="btn btn-sm btn-info btn-block" href="{% url 'ledger:NewExpenseCategory' %}">Add Category</a></p>
 <hr>
-<p><a class="btn btn-light btn-block" href="{% url 'ledger:ExpenseCategoryList' %}">Show Categories</a></p>
+<p><a class="btn btn-sm btn-light btn-block" href="{% url 'ledger:ExpenseCategoryList' %}">Show Categories</a></p>
 {% endblock %}

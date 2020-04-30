@@ -7,7 +7,7 @@
 {% block main %}
 
   {% if user.is_authenticated %}
-    <h1>Delivery on {{ delivery_obj.delivery_date }}</h1>
+    <h1>Delivery on {{ delivery_obj.received_date }}</h1>
     <hr>
     <div class="form-row">
         <div class="form-group col-md-8 mb-0">
@@ -112,10 +112,10 @@
     <hr>
     <div class="form-row">
       <div class="form-group col-md-8 mb-0">
-        <p><a class="btn btn-primary" href="{% url 'drugdb:DrugDeliveryUpdate' delivery_obj.pk %}">Modify</a></p>
+        <p><a class="btn btn-sm btn-primary" href="{% url 'drugdb:DrugDeliveryUpdate' delivery_obj.pk %}">Modify</a></p>
       </div>
       <div class="form-group col-md-4 mb-0">
-        <p><a class="btn btn-danger" href="{% url 'drugdb:DrugDeliveryDelete' delivery_obj.pk %}">Delete</a></p>
+        <p><a class="btn btn-sm btn-danger" href="{% url 'drugdb:DrugDeliveryDelete' delivery_obj.pk %}">Delete</a></p>
       </div>
   </div>
   {% else %}
@@ -127,5 +127,5 @@
 {% endblock %}
 
 {% block sidebar %}
-
+<a class="btn btn-sm btn-info btn-block" href="{% url 'cmsinv:MatchDeliveryInventoryItemList' delivery_obj.pk %}">Match CMS</a>
 {% endblock %}

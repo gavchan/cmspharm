@@ -9,7 +9,7 @@
     <p>{{ form.name|as_crispy_field }}</p>
     <p>{{ form.description|as_crispy_field }}</p>
     <hr>
-    <button type="submit" class="btn btn-success">Save</button>
-    <a class="btn btn-secondary" href="{% url 'ledger:ExpenseCategoryList' %}">Cancel</a>
+    <button type="submit" class="btn btn-sm btn-success">Save</button>
+    <a class="btn btn-sm btn-secondary" href="{% url 'ledger:ExpenseCategoryList' %}">Cancel</a>
 </form>
 {% endblock %}

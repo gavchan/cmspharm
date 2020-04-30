@@ -55,7 +55,7 @@
                 <li class="page-item">
                     <a href="{% url 'drugdb:DrugDeliveryList' %}?q={{ last_query }}&page=last"
                     class="page-link">
-                        Last 
+                        Last ({{ page_obj.paginator.num_pages }}) 
                     </a>
                 </li>
             </ul>
@@ -85,7 +85,8 @@
                 <td>{{ drug.purchase_quantity }}+{{ drug.bonus_quantity }}</td>
                 <td>{{ drug.total_price }}</td>
                 <td>
-                    <a href="{% url 'drugdb:DrugDeliveryDetail' drug.id %}" class="btn btn-info"> # </a>
+                    <a href="{% url 'drugdb:DrugDeliveryDetail' drug.id %}" class="btn btn-sm btn-info"> # </a>
+                    <a href="{% url 'cmsinv:MatchDeliveryInventoryItemList' drug.pk %}" class="btn btn-sm btn-success"> CMS? </a>
                 </td>
             </tr>
 

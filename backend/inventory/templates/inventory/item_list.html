@@ -52,7 +52,7 @@
                 <li class="page-item">
                     <a href="{% url 'inventory:ItemList' %}?q={{ last_query }}&page=last"
                     class="page-link">
-                        Last 
+                        Last ({{ page_obj.paginator.num_pages }}) 
                     </a>
                 </li>
             </ul>
@@ -80,8 +80,8 @@
                 <td>{{ item.category }}</td>
                 <td>{{ item.vendor }}</td>
                 <td>
-                    <a href="{% url 'inventory:ItemDetail' item.pk %}" class="btn btn-info"> # </a>
-                    <a href="{% url 'inventory:NewItemDelivery' item.pk %}" class="btn btn-primary">+Delivery</a>
+                    <a href="{% url 'inventory:ItemDetail' item.pk %}" class="btn btn-sm btn-info"> # </a>
+                    <a href="{% url 'inventory:NewItemDelivery' item.pk %}" class="btn btn-sm btn-primary">+Delivery</a>
                 </td>
             </tr>
 
@@ -99,10 +99,10 @@
 {% endblock %}
 
 {% block sidebar %}
-<p><a class="btn btn-primary btn-block" href="{% url 'inventory:NewItem' %}">Add Item</a></p>
-<p><a class="btn btn-info btn-block" href="{% url 'inventory:NewCategory' %}">Add Category</a></p>
-<p><a class="btn btn-info btn-block" href="{% url 'inventory:NewVendor' %}">Add Vendor</a></p>
+<p><a class="btn btn-sm btn-primary btn-block" href="{% url 'inventory:NewItem' %}">Add Item</a></p>
+<p><a class="btn btn-sm btn-info btn-block" href="{% url 'inventory:NewCategory' %}">Add Category</a></p>
+<p><a class="btn btn-sm btn-info btn-block" href="{% url 'inventory:NewVendor' %}">Add Vendor</a></p>
 <hr>
-<p><a class="btn btn-light btn-block" href="{% url 'inventory:CategoryList' %}">Show Categories</a></p>
-<p><a class="btn btn-light btn-block" href="{% url 'inventory:VendorList' %}">Show Vendors</a></p>
+<p><a class="btn btn-sm btn-light btn-block" href="{% url 'inventory:CategoryList' %}">Show Categories</a></p>
+<p><a class="btn btn-sm btn-light btn-block" href="{% url 'inventory:VendorList' %}">Show Vendors</a></p>
 {% endblock %}

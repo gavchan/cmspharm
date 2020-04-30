@@ -52,7 +52,7 @@
                 <li class="page-item">
                     <a href="{% url 'inventory:CategoryList' %}?q={{ last_query }}&page=last"
                     class="page-link">
-                        Last 
+                        Last ({{ page_obj.paginator.num_pages }}) 
                     </a>
                 </li>
             </ul>
@@ -76,8 +76,8 @@
                 <td>{{ category.name }}</td>
                 <td>{{ category.description }}</td>
                 <td>
-                    <a href="{% url 'inventory:CategoryUpdate' category.pk %}" class="btn btn-info"> # </a>
-                    <a href="{% url 'inventory:CategoryDelete' category.pk %}" class="btn btn-danger"> Delete </a>
+                    <a href="{% url 'inventory:CategoryUpdate' category.pk %}" class="btn btn-sm btn-info"> # </a>
+                    <a href="{% url 'inventory:CategoryDelete' category.pk %}" class="btn btn-sm btn-danger"> Delete </a>
                 </td>
             </tr>
 
@@ -95,5 +95,5 @@
 {% endblock %}
 
 {% block sidebar %}
-<p><a class="btn btn-primary btn-block" href="{% url 'inventory:NewCategory' %}">Add Category</a></p>
+<p><a class="btn btn-sm btn-primary btn-block" href="{% url 'inventory:NewCategory' %}">Add Category</a></p>
 {% endblock %}
