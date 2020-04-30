@@ -2,6 +2,7 @@
 backend/pg_settings.env
 backend/drugs.csv
 backend/static/bootstrap/
+backend/static/jquery/
 *.key
 
 # Byte-compiled / optimized / DLL files
