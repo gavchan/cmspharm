@@ -29,6 +29,11 @@
 
                 {% if user.is_authenticated %}
                 <a
+                    href="{% url 'cmsinv:InventoryItemList' %}"
+                    class="nav-link">
+                    cmsInventory
+                </a>
+                <a
                     href="{% url 'ledger:ExpenseList' %}"
                     class="nav-link">
                     Expenses
@@ -78,9 +83,9 @@
         </div>
 
         {% else %}
-        <h2>You are not logged in</h2><br>
-        <a class="btn btn-primary" href="{% url 'login' %}">Login</a>
-
+        <div class="alert alert-danger" role="alert">
+            You are not logged in. <a class="alert-link" href="{% url 'login' %}">Click here to Login</a>
+        </div>
         {% endif %}
     </div>
 </body>
