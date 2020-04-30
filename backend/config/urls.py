@@ -21,6 +21,7 @@ from django.views.generic.base import TemplateView
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('auth/', include('django.contrib.auth.urls')),
+    path('cmsinv/', include('cmsinv.urls')),
     path('drugdb/', include('drugdb.urls')),
     path('inventory/', include('inventory.urls')),
     path('ledger/', include('ledger.urls')),

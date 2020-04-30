@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  CMS Inventory Items
+{% endblock %}
+  
+{% block main %}
+
+    <h1>CMS Inventory Item List</h1>
+    
+    <nav class="row">
+        <div class="col-4">
+            <form action="{% url 'cmsinv:InventoryItemList' %}" method="get">
+                <input name="q" type="text" placeholder="Search CMS Inventory Items..." />
+            </form>
+        </div>
+        <div class="col-4">
+            {% if last_query %}
+            Results for "{{ last_query }}" ({{ last_query_count }})
+            {% endif %}
+        </div>
+        <div class="col-4">
+            {% if is_paginated %}
+        
+            <ul class="pagination">
+                <li class="page-item">
+                    <a href="{% url 'cmsinv:InventoryItemList' %}?q={{ last_query }}&page=1"
+                    class="page-link">
+                        First
+                    </a>
+                </li>
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a href="{% url 'cmsinv:InventoryItemList' %}?q={{ last_query }}&page={{ page_obj.previous_page_number }}" 
+                    class="page-link">
+                        {{ page_obj.previous_page_number }}
+                    </a>
+                </li>
+                {% endif %}
+                <li class="page-item active">
+                    <a href="{% url 'cmsinv:InventoryItemList' %}?q={{ last_query }}&page={{ page_obj.number }}" 
+                    class="page-link">
+                        {{ page_obj.number }}
+                    </a>
+                </li>
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a href="{% url 'cmsinv:InventoryItemList' %}?q={{ last_query }}&page={{ page_obj.next_page_number }}" 
+                    class="page-link">
+                        {{ page_obj.next_page_number }}
+                    </a>
+                </li>
+                {% endif %}
+                <li class="page-item">
+                    <a href="{% url 'cmsinv:InventoryItemList' %}?q={{ last_query }}&page=last"
+                    class="page-link">
+                        Last ({{ page_obj.paginator.num_pages }}) 
+                    </a>
+                </li>
+            </ul>
+        {% endif %}    
+        </div>
+    </nav>
+
+    {% if inventory_item_list %}
+    <table class="table table-sm table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Reg no.</th>
+                <th scope="col">Product name</th>
+                <th scope="col">Clinic no.</th>
+                <th scope="col">Generic name</th>
+                <th scope="col">Alias</th>
+                <th scope="col">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in inventory_item_list %}
+            
+            <tr>
+                <td>{{ item.registration_no }}</td>
+                <td>{{ item.product_name }}</td>
+                <td>{{ item.clinic_drug_no }}</td>
+                <td>{{ item.generic_name }}</td>
+                <td>{{ item.alias }}</td>
+                <td>
+                    <a href="#" class="btn btn-sm btn-info"> # </a>
+                </td>
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+    </table>
+
+    {% else %}
+    
+    <p>No item in database</p>
+
+    {% endif %}
+    
+{% endblock %}
+
+{% block sidebar %}
+{% endblock %}
