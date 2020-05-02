@@ -84,7 +84,11 @@
                 <td>{{ item.generic_name }}</td>
                 <td>{{ item.alias }}</td>
                 <td>
-                    <a href="#" class="btn btn-sm btn-info"> # </a>
+                    <a href="{% url 'cmsinv:InventoryItemUpdate' item.pk %}" class="btn btn-sm btn-info"> # </a>
+                    <a href="{% url 'cmsinv:InventoryItemDetail' item.pk %}" class="btn btn-sm btn-info"> Edit </a>
+                    {% if item.registration_no %}
+                    <a href="{% url 'cmsinv:MatchInventoryItemList' item.registration_no %}" class="btn btn-sm btn-success"> = </a>
+                    {% endif %}
                 </td>
             </tr>
 

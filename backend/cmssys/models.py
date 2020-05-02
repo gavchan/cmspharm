@@ -1,5 +1,52 @@
 from django.db import models
 
+# Custom Field Definitions
+class MySQLBitBooleanField(models.BooleanField):
+    """
+    Custom field definition to cater for MySQL bit field
+    Adapted from https://github.com/adamchainz/django-mysql
+    Note:
+    - Wanted to use django-mysql's Bit1BooleanField but ran into error even though none was knowingly defined: 
+      MySQLdb._exceptions.OperationalError: (1193, "Unknown system variable 'innodb_strict_mode'")
+    """
+    def db_type(self, connection):
+        return "bit(1)"
+
+    def from_db_value(self, value, expression, connection):
+        if isinstance(value, bytes):
+            value = value == b"\x01"
+        return value
+
+    def get_prep_value(self, value):
+        if value is None:
+            return value
+        else:
+            return 1 if value else 0
+
+class TextBooleanField(models.BooleanField):
+    """
+    Custom field created to model a boolean type field that has been formatted as "TEXT"
+    in the CMS MySQL database
+    Used by: cmsinv.InventoryItem
+    """
+    def db_type(self, connection):
+        return "boolean like text"
+
+    def from_db_value(self, value, expression, connection):
+        if value is None:
+            return value 
+        elif value is "1":
+            return True
+        else:
+            return False
+        
+    def get_prep_value(self, value):
+        if value is None:
+            return value
+        else:
+            return 1 if value else 0
+
+
 class AuditLog(models.Model):
     """
     Maps to CMS table: audit_log

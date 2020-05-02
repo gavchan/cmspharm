@@ -11,9 +11,9 @@ from .models import (
     InventoryItem,
 )
 
-# from .forms import (
-#     InventoryItemUpdateForm
-# )
+from .forms import (
+    InventoryItemUpdateForm
+)
 
 # InventoryItem Views
 # ===================
@@ -57,15 +57,35 @@ class InventoryItemDetail(DetailView, LoginRequiredMixin):
     model = InventoryItem
     template_name = 'cmsinv/inventory_item_detail.html'
     context_object_name = 'item_obj'
+    drug_reg_no = ''
+    keyword = ''
+    ingredients = ''
+    reg_drug_obj = None
+    drug_delivery_obj = None
+    reg_match_obj = None
 
-# class InventoryItemUpdate(UpdateView, LoginRequiredMixin):
-#     """Update details of drug delivery"""
-#     model = InventoryItem
-#     form_class = InventoryItemUpdateForm
-#     template_name = 'cmsinv/inventory_item_update.html'
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        try:
+            self.reg_drug_obj = RegisteredDrug.objects.get(reg_no=self.object.registration_no)
+        except RegisteredDrug.DoesNotExist:
+            print("No registration no. for {self.object.product_name}")
+        try:
+            self.drug_delivery_obj = DrugDelivery.objects.get(reg_no=self.object.registration_no)
+        except DrugDelivery.DoesNotExist:
+            print("No delivery record for {self.object.product_name}")
+        data['reg_drug_obj'] = self.reg_drug_obj
+        data['drug_delivery_obj'] = self.drug_delivery_obj
+        return data
 
-#     def get_success_url(self):
-#         return reverse('cmsinv:InventoryItemDetail', args=(self.object.pk,))
+class InventoryItemUpdate(UpdateView, LoginRequiredMixin):
+    """Update details of drug delivery"""
+    model = InventoryItem
+    form_class = InventoryItemUpdateForm
+    template_name = 'cmsinv/inventory_item_update.html'
+
+    def get_success_url(self):
+        return reverse('cmsinv:InventoryItemDetail', args=(self.object.pk,))
 
 # class InventoryItemDelete(DeleteView, LoginRequiredMixin):
 #     """Delete drug delivery record"""
@@ -138,6 +158,8 @@ class MatchInventoryItemList(ListView, LoginRequiredMixin):
     template_name = "cmsinv/match_inventory_item_list.html"
     context_object_name = 'match_item_list_obj'
     drug_reg_no = ''
+    keyword = ''
+    ingredients = ''
     reg_drug_obj = None
     delivery_obj_list = None
     reg_match_obj = None
@@ -145,12 +167,16 @@ class MatchInventoryItemList(ListView, LoginRequiredMixin):
     def dispatch(self, request, *args, **kwargs):
         if 'reg_no' in kwargs:
             self.drug_reg_no = kwargs['reg_no']
-            self.reg_drug_obj = RegisteredDrug.objects.get(reg_no=self.drug_reg_no)
-            self.reg_match_obj = InventoryItem.objects.get(registration_no=self.drug_reg_no)
             try:
-                print(f"Attempting to filter for {self.drug_reg_no}")
+                self.reg_match_obj = InventoryItem.objects.get(registration_no=self.drug_reg_no)
+            except InventoryItem.DoesNotExist:
+                self.reg_match_obj = None
+            try:
+                self.reg_drug_obj = RegisteredDrug.objects.get(reg_no=self.drug_reg_no)
+            except RegisteredDrug.DoesNotExist:
+                self.reg_drug_obj = None 
+            try:
                 self.delivery_obj_list = DrugDelivery.objects.filter(reg_no=self.drug_reg_no)[:5]
-                print(f"Result is {self.delivery_obj_list}")
             except DrugDelivery.DoesNotExist:
                 self.delivery_obj_list = None
 
@@ -162,15 +188,28 @@ class MatchInventoryItemList(ListView, LoginRequiredMixin):
         data = super().get_context_data(**kwargs)
         data['reg_drug_obj'] =  self.reg_drug_obj
         data['reg_match_obj'] = self.reg_match_obj
+        print(data['reg_drug_obj'])
         data['delivery_obj_list'] = self.delivery_obj_list
         return data
 
     def get_queryset(self):
-        keyword = self.reg_drug_obj.name.split(' ')[0]
+        if self.reg_drug_obj:
+            print('Should be existing reg drug no.')
+            self.keyword = self.reg_drug_obj.name
+            self.ingredients = self.reg_drug_obj.ingredients
+        else:
+            print('No existing reg no.')
+            self.keyword = self.reg_match_obj.product_name
+            self.ingredients = self.reg_match_obj.ingredient
+        if self.keyword == None:
+            self.keyword = ''
+        if self.ingredients == None:
+            self.ingredients = ''
+        print(f"Filter for: { self.keyword }; {self.ingredients }")    
         object_list = InventoryItem.objects.filter(
-            Q(product_name__icontains=keyword) |
-            Q(generic_name__icontains=keyword) |
-            Q(alias__icontains=keyword) |
-            Q(ingredient__icontains=self.reg_drug_obj.ingredients)
+            Q(product_name__icontains=self.keyword) |
+            Q(generic_name__icontains=self.keyword) |
+            Q(alias__icontains=self.keyword) |
+            Q(ingredient__icontains=self.ingredients)
         ).exclude(registration_no=self.drug_reg_no)[:100]
         return object_list

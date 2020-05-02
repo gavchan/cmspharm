@@ -50,7 +50,14 @@
 {% if drug_delivery_obj %}
 <div class="card">
     <div class="card-header">
-        Delivery Record on {{ drug_delivery_obj.received_date }}
+        <div class="row">
+            <div class="col-md-8">
+                Delivery Record on {{ drug_delivery_obj.received_date }}
+            </div>
+            <div class="col-md-4">
+                <a href="{% url 'drugdb:DrugDeliveryUpdate' drug_delivery_obj.pk %}" class="btn btn-sm btn-secondary"> Update </a>
+            </div>
+        </div>
     </div>
     <div class="card-body">
         <table class="table table-sm table-striped">
@@ -87,7 +94,14 @@
 {% if reg_match_obj %}
     <div class="card">
         <div class="card-header">
-            CMS Record matching {{ reg_match_obj.registration_no }}
+            <div class="row">
+                <div class="col-md-8">
+                    CMS Record matching {{ reg_match_obj.registration_no }}
+                </div>
+                <div class="col-md-4">
+                    <a href="{% url 'cmsinv:InventoryItemUpdate' reg_match_obj.pk %}" class="btn btn-sm btn-success"> Update </a>
+                </div>
+            </div>
         </div>
         <div class="card-body">
             <div class="row">
@@ -155,6 +169,7 @@
                     {{ reg_match_obj.certificate_holder.name }}
                 </div>
             </div>
+            <hr>
         </div>
     </div>
     {% else %}
@@ -190,7 +205,10 @@
                         <td>{{ item.generic_name }}</td>
                         <td>{{ item.alias }}</td>
                         <td>
-                            <a href="#" class="btn btn-sm btn-info"> # </a>
+                            <a href="{% url 'cmsinv:InventoryItemUpdate' item.pk %}" class="btn btn-sm btn-info"> # </a>
+                            {% if item.registration_no %}
+                            <a href="{% url 'cmsinv:MatchInventoryItemList' item.registration_no %}" class="btn btn-sm btn-success"> = </a>
+                            {% endif %}
                         </td>
                     </tr>
         

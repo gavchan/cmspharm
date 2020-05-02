@@ -6,7 +6,6 @@
   
 {% block main %}
 
-  {% if user.is_authenticated %}
     <h1>Drug Delivery List</h1>
     
     <nav class="row">
@@ -86,7 +85,7 @@
                 <td>{{ drug.total_price }}</td>
                 <td>
                     <a href="{% url 'drugdb:DrugDeliveryDetail' drug.id %}" class="btn btn-sm btn-info"> # </a>
-                    <a href="{% url 'cmsinv:MatchDeliveryInventoryItemList' drug.pk %}" class="btn btn-sm btn-success"> CMS? </a>
+                    <a href="{% url 'cmsinv:MatchDeliveryInventoryItemList' drug.pk %}" class="btn btn-sm btn-success"> = </a>
                 </td>
             </tr>
 
@@ -101,11 +100,7 @@
 
     {% endif %}
     
-  {% else %}
-  <p>You are not logged in</p>
-  <a href="{% url 'login' %}">login</a>
 
-  {% endif %}
   
 {% endblock %}
 

@@ -1,5 +1,5 @@
 from django.db import models
-from cmssys.models import CmsUser
+from cmssys.models import CmsUser, TextBooleanField 
 
 # CMS INVENTORY/DRUGS Models
 
@@ -42,7 +42,7 @@ class Supplier(models.Model):
         return reverse('cmsinv.views.details', args=[str(self.id)])
 
     def __str__(self):
-        return f"{self.id} | {self.name} - {self.supp_type}"
+        return f"{self.name}"
 
 class Advisory(models.Model):
     """
@@ -119,6 +119,7 @@ class InventoryItemType(models.Model):
     def __str__(self):
         return f"{self.id} | {self.name}"
 
+
 class InventoryItem(models.Model):
     """
     Maps to CMS table: inventory_item
@@ -141,9 +142,9 @@ class InventoryItem(models.Model):
         db_column='certificate_holder_id'
         )
     clinic_drug_no = models.CharField(max_length=255, blank=True, null=True)
-    dangerous_sign = models.BooleanField(default=False)
+    dangerous_sign = TextBooleanField()  # MySQL text field, behaves like Boolean
     date_created = models.DateTimeField(auto_now_add=True)
-    discontinue = models.BooleanField(default=False)
+    discontinue = TextBooleanField()  # MySQL text field, behaves like Boolean
     dosage = models.CharField(max_length=255, blank=True, null=True)
     duration = models.CharField(max_length=255, blank=True, null=True)
     expected_qty = models.FloatField(default=1000)
@@ -161,8 +162,8 @@ class InventoryItem(models.Model):
     # N.B. inventory_type is not ever used in CMS App, perhaps it 
     # duplicates the database 'type_id' field
     inventory_type = models.CharField(max_length=255, blank=True, null=True)
-    is_clinic_drug_list = models.BooleanField(default=True)
-    is_master_drug_list = models.BooleanField(default=True)
+    is_clinic_drug_list = TextBooleanField()  # MySQL text field, behaves like Boolean
+    is_master_drug_list = TextBooleanField()  # MySQL text field, behaves like Boolean
     label_name = models.CharField(max_length=255, blank=True, null=True)
     label_name_chinese = models.CharField(max_length=255, blank=True, null=True)
     last_updated = models.DateTimeField(blank=True, null=True)
@@ -186,6 +187,10 @@ class InventoryItem(models.Model):
     inventory_item_type = models.ForeignKey(
         'InventoryItemType', on_delete=models.PROTECT, 
         db_column='type_id')
+
+    @property
+    def is_active(self):
+        return not(self.discontinue)
 
     class Meta:
         managed = False

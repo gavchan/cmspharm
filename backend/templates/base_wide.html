@@ -1,0 +1,85 @@
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><meta charset="UTF-8">
+    {% load static %}
+    <link href="{% static '/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <script src="{% static '/bootstrap/jquery-3.5.0.slim.min.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="{% static '/bootstrap/js/bootstrap.min.js' %}"></script>
+
+    <title>
+        {% block title %}CMS Manager{% endblock %}
+    </title>
+    <style>
+        .cmm-masthead {
+            background-color: #eee;
+            margin-bottom: 1em;
+        }
+    </style>
+</head>
+<body>
+    <div class="cmm-masthead">
+        <div class="container">
+            <nav class="nav">
+                <div class="navbar-brand">cmsMan</div>
+
+                {% block nav %}
+
+                {% if user.is_authenticated %}
+                <a
+                    href="{% url 'cmsinv:InventoryItemList' %}"
+                    class="nav-link">
+                    cmsInventory
+                </a>
+                <a
+                    href="{% url 'ledger:ExpenseList' %}"
+                    class="nav-link">
+                    Expenses
+                </a>
+                <a 
+                    href="{% url 'drugdb:DrugList' %}" 
+                    class="nav-link">
+                    Drugs
+                </a>
+                <a
+                    href="{% url 'drugdb:DrugDeliveryList' %}"
+                    class="nav-link">
+                    Deliveries
+                </a>
+                <a
+                    href="{% url 'inventory:VendorList' %}"
+                    class="nav-link"
+                    >
+                    Vendors</a></p>
+
+                <a
+                    href="{% url 'inventory:ItemList' %}"
+                    class="nav-link">
+                    Items
+                </a>
+                <a 
+                    href="{% url 'inventory:ItemDeliveryList' %}"
+                    class="nav-link">
+                    ItemDeliveries
+                </a>
+                {% endif %}
+
+                {% endblock %}
+            </nav>
+        </div>
+    </div>
+    <div class="container">
+        {% if user.is_authenticated %}
+        
+        {% block main %}{% endblock %}
+
+        {% else %}
+        <div class="alert alert-danger" role="alert">
+            You are not logged in. <a class="alert-link" href="{% url 'login' %}">Click here to Login</a>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
