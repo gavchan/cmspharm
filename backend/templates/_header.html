@@ -1,0 +1,62 @@
+{% load static %}
+
+<!-- Header -->
+<header>
+    <nav class="navbar navbar-expand-lg navbar-dark cmm-masthead">
+        <a class="navbar-brand" href="{% url 'home' %}"><i class="fad fa-laptop-medical"></i></a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarBaseToggler"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class= "collapse navbar-collapse" id="navbarBaseToggler">
+            <ul class="navbar-nav navbar-center mr-auto mt-2 mt-lg-0">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="{% url 'ledger:ExpenseList' %}"
+                        id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Expenses
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                        <a href="{% url 'ledger:ExpenseList' %}" class="dropdown-item">Show Expenses</a>
+                        <a href="{% url 'ledger:NewExpense' %}" class="dropdown-item">Add Expense</a>
+                        <a href="{% url 'ledger:ExpenseCategoryList' %}" class="dropdown-item">Show Categories</a>
+                        <a href="{% url 'ledger:NewExpenseCategory' %}" class="dropdown-item">Add Category</a>
+                    </div>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="{% url 'cmsinv:InventoryItemList' %}"
+                        id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Drugs
+                    </a>
+                    <div class="dropdown-menu">
+                        <a href="{% url 'cmsinv:InventoryItemList' %}" class="dropdown-item">Show Drug Inventory
+                            List</a>
+                        <a href="{% url 'drugdb:DrugList' %}" class="dropdown-item">Show Registered Drugs</a>
+                        <a href="{% url 'drugdb:DrugDeliveryList' %}" class="dropdown-item">Show Delivered Drugs</a>
+                    </div>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="{% url 'inventory:ItemList' %}"
+                        id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Items
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                        <a href="{% url 'inventory:ItemList' %}" class="dropdown-item">Show Items</a>
+                        <a href="{% url 'inventory:ItemDeliveryList' %}" class="dropdown-item">Show Delivered
+                            Items</a>
+                        <a href="{% url 'inventory:NewItem' %}" class="dropdown-item">Add Item</a>
+                        <a href="{% url 'inventory:NewCategory' %}" class="dropdown-item">Add Item Category</a>
+                        <a href="{% url 'inventory:NewVendor' %}" class="dropdown-item">Add Item Vendor</a>
+                        <a href="{% url 'inventory:CategoryList' %}" class="dropdown-item">Show Categories</a>
+                        <a href="{% url 'inventory:VendorList' %}" class="dropdown-item">Show Vendors</a>
+                    </div>
+                </li>
+            </ul>
+            <ul class="navbar-nav my-2 my-lg-0">
+                <li class="nav-item dropdown">
+                    <a href="{% url 'logout' %}" class="nav-link">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</header>

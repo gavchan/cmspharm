@@ -15,6 +15,8 @@ from .forms import (
     InventoryItemUpdateForm
 )
 
+from bootstrap_modal_forms.generic import BSModalReadView
+
 # InventoryItem Views
 # ===================
 
@@ -36,9 +38,10 @@ class InventoryItemList(ListView, LoginRequiredMixin):
             object_list = InventoryItem.objects.filter(
                 Q(registration_no__icontains=query) |
                 Q(product_name__icontains=query) |
-                Q(generic_name__icontains=query) |
+                Q(alias__icontains=query) |
+                Q(clinic_drug_no__icontains=query) |
                 Q(ingredient__icontains=query)
-            )
+            ).order_by('discontinue', 'product_name')
             self.last_query_count = object_list.count
         else:
             self.last_query = ''
@@ -50,6 +53,7 @@ class InventoryItemList(ListView, LoginRequiredMixin):
         data = super().get_context_data(**kwargs)
         data['last_query'] = self.last_query
         data['last_query_count'] = self.last_query_count
+        data['next_clinic_drug_no'] = InventoryItem.generateNextClinicDrugNo()
         return data
 
 class InventoryItemDetail(DetailView, LoginRequiredMixin):
@@ -64,6 +68,26 @@ class InventoryItemDetail(DetailView, LoginRequiredMixin):
     drug_delivery_obj = None
     reg_match_obj = None
 
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        try:
+            self.reg_drug_obj = RegisteredDrug.objects.get(reg_no=self.object.registration_no)
+        except RegisteredDrug.DoesNotExist:
+            print("No registration no. for {self.object.product_name}")
+        try:
+            self.drug_delivery_obj = DrugDelivery.objects.get(reg_no=self.object.registration_no)
+        except DrugDelivery.DoesNotExist:
+            print("No delivery record for {self.object.product_name}")
+        data['reg_drug_obj'] = self.reg_drug_obj
+        data['drug_delivery_obj'] = self.drug_delivery_obj
+        return data
+
+class InventoryItemModalDetail(BSModalReadView):
+    model = InventoryItem
+    template_name = 'cmsinv/inventory_item_modal_detail.html'
+    reg_drug_obj = None
+    drug_delivery_obj = None
+    
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         try:

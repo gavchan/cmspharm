@@ -1,8 +1,7 @@
 # Local settings/keys/files
 backend/pg_settings.env
 backend/drugs.csv
-backend/static/bootstrap/
-backend/static/jquery/
+backend/static/lib/
 *.key
 
 # Byte-compiled / optimized / DLL files

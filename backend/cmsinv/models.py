@@ -192,6 +192,28 @@ class InventoryItem(models.Model):
     def is_active(self):
         return not(self.discontinue)
 
+    @classmethod
+    def generateNextClinicDrugNo(cls):
+        """
+        Generate new clinic drug no.
+        """
+        PREFIX = 'CN'
+        DIGIT_LENGTH = 6
+        clinic_drugs = cls.objects.filter(
+            clinic_drug_no__isnull=False,
+        ).exclude(clinic_drug_no__exact='')
+        clinic_drug_nos = list(clinic_drugs.values_list('clinic_drug_no', flat=True).order_by('clinic_drug_no'))
+        last_clinic_drug_no = clinic_drug_nos[-1]
+        no_numeric = last_clinic_drug_no[len(PREFIX):]
+        if len(no_numeric) != DIGIT_LENGTH:
+            print('Warning: clinic_drug_no digits does not match configured.')
+        next_no = str(int(no_numeric) + 1)
+        next_clinic_drug_no = f"{PREFIX}{next_no.rjust(DIGIT_LENGTH, '0')}"
+        print(f"Last clinic drug no.: {last_clinic_drug_no}; Generated next no.: {next_clinic_drug_no}")
+
+        return(next_clinic_drug_no)
+
+
     class Meta:
         managed = False
         db_table = 'inventory_item'

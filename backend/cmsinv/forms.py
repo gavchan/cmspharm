@@ -2,9 +2,11 @@ from django import forms
 from django.forms import ModelForm
 from django.urls import reverse
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Row, Column, Fieldset, Submit, Button
+from crispy_forms.layout import Layout, Row, Column, Field, Fieldset, Submit, Button
 from crispy_forms.bootstrap import FormActions
+from bootstrap_modal_forms.forms import BSModalForm
 from .models import InventoryItem
+
 
 class InventoryItemUpdateForm(ModelForm):
 
@@ -73,11 +75,11 @@ class InventoryItemUpdateForm(ModelForm):
                 css_class='form-row',
             ),
             Row(
-                Column('ingredient', css_class='form-group col-md-4 mb-0'),
+                Column(Field('ingredient', css_class='form-group col-md-12 mb-0', rows="1")),
                 css_class='form-row',
             ),
             Row(
-                Column('remarks', css_class='form-group col-md-4 mb-0'),
+                Column(Field('remarks', css_class='form-group col-md-12 mb-0', rows="1")),
                 css_class='form-row',
             ),
             Row(

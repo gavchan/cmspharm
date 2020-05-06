@@ -1,15 +1,45 @@
 {% extends 'base.html' %}
 
-{% block main %}
-  {% if user.is_authenticated %}
-  
-  <h2>Hi {{ user.username }}!</h2>
-  <p><a class="btn btn-sm btn-primary" href="{% url 'drugdb:DrugList' %}">DrugDB</a></p>
-  <p><a class="btn btn-sm btn-secondary" href="{% url 'logout' %}">Logout</a></p> 
+{% block content %}
 
-  {% else %}
-  <h2>You are not logged in.</h2>
-  <p><a class="btn btn-sm btn-primary" href="{% url 'login' %}">Login</a></p> 
-  
-  {% endif %}
+{% include "_modal.html" %}
+
+<h2>Hi {{ user.username }}!</h2>
+
+<div class="mx-auto" style="width: 600px;">
+  <form action="{% url 'cmsinv:InventoryItemList' %}" method="get">
+    <div class="input-group mb-3">
+      <input class="form-control" name="q" type="text" placeholder="Search CMS Drug Inventory List" />
+      <div class="input-group-append">
+        <button class="btn btn-secondary">Search</button>
+      </div>
+    </div>
+  </form>
+  <h5>Select task:</h5>
+  <nav>
+    <ul class="nav flex-column">
+      <li class="nav-item">
+        <a href="{% url 'cmsinv:InventoryItemList' %}" class="btn btn-md btn-info btn-block mb-1">Add Drug to
+          Inventory</a>
+      </li>
+      <li class="nav flex-column">
+        <a href="{% url 'drugdb:DrugList' %}" class="btn btn-md btn-primary btn-block mb-1">Search Registered Drug</a>
+      </li>
+    </ul>
+  </nav>
+
+</div>
+
+{% endblock %}
+
+{% block extrascripts %}
+<!--
+<script type="text/javascript">
+  $(document).ready(function () {
+    $(".home-add-drug".modalForm({
+      formURL: "% url 'drug:DrugList' %}"
+    }))
+  })
+</script>
+-->
 {% endblock %}
