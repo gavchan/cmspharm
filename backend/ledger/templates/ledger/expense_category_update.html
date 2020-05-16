@@ -1,15 +1,18 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
 
+{% block title %}
+  Update Category: {{ object.name }}
+{% endblock %}
+
+
 {% block main %}
-  <h1>Category: {{ object.name }}</h1>
-  <form method="post">
-    {% csrf_token %}
-    <p>Id<br>{{ object.id }}</p>
-    <p>{{ form.name|as_crispy_field }}</p>
-    <p>{{ form.description|as_crispy_field }}</p>
-    <hr>
-    <button type="submit" class="btn btn-sm btn-success">Save</button>
-    <a class="btn btn-sm btn-secondary" href="{% url 'ledger:ExpenseCategoryList' %}">Cancel</a>
-</form>
+
+  <h1>Update {{ object.name }}</h1>
+  {% crispy form %}
+  
+{% endblock %}
+
+{% block sidebar %}
+
 {% endblock %}

@@ -61,22 +61,30 @@
     </nav>
 
     {% if expense_category_list_obj %}
+
     <table class="table table-sm table-striped">
         <thead>
             <tr>
-                <th scope="col">Category</th>
-                <th scope="col">Description</th>
+                <th scope="col">Label</th>
+                <th scope="col">Category/Description</th>
                 <th scope="col">Action</th>
             </tr>
         </thead>
         <tbody>
             {% for category in expense_category_list_obj %}
-            
+           
+            {% if category.active %}
             <tr>
-                <td>{{ category.name }}</td>
-                <td>{{ category.description }}</td>
+            {% else %}
+            <tr class="table-secondary text-muted">
+            {% endif %}
+                <td>{{ category.label }}</td>
+                <td>{{ category.name }}<br>
+                    {{ category.description }}</td>
                 <td>
-                    <a href="{% url 'ledger:ExpenseCategoryUpdate' category.pk %}" class="btn btn-sm btn-info"> # </a>
+                    <a href="{% url 'ledger:ExpenseCategoryUpdate' category.pk %}" class="btn btn-sm btn-info">
+                        <i class="fad fa-file-alt"></i>
+                    </a>
                     <a href="{% url 'ledger:ExpenseCategoryDelete' category.pk %}" class="btn btn-sm btn-danger"> Delete </a>
                 </td>
             </tr>

@@ -1,12 +1,18 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
 
+{% block title %}
+  Add New Category
+{% endblock %}
+
+
 {% block main %}
 
-<form method="post">
-    {% csrf_token %}
-    {{form|crispy}}
-    <input class="btn btn-sm btn-primary" type="submit" value="Save">
-    <a class="btn btn-sm btn-secondary" href="{% url 'ledger:ExpenseCategoryList' %}">Cancel</a>
-</form>
+    <h1>Add New Expense Category</h1>
+    {% crispy form %}
+  
 {% endblock %}
+
+{% block sidebar %}
+
+{% endblock %
