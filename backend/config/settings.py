@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'crispy_forms',
     'bootstrap_modal_forms',
+    'bootstrap_datepicker_plus',    
     *CMS_APPS,
     'drugdb',
     'inventory',
