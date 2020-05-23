@@ -1,100 +1,106 @@
 {% extends 'base.html' %}
 
 {% block title %}
-  Item
+Item
 {% endblock %}
 
 {% block main %}
-    <h1>Items</h1>
-    <nav class="row">
-        <div class="col-4">
-            <form action="{% url 'inventory:ItemList' %}" method="get">
-                <input name="q" type="text" placeholder="Search Items..." />
-            </form>
-        </div>
-        <div class="col-4">
-            {% if last_query %}
-            Results for "{{ last_query }}" ({{ last_query_count }})
+<h1>Items</h1>
+<nav class="row">
+    <div class="col-4">
+        <form action="{% url 'inventory:ItemList' %}" method="get">
+            <input name="q" type="text" placeholder="Search Items..." />
+        </form>
+    </div>
+    <div class="col-4">
+        {% if last_query %}
+        Results for "{{ last_query }}" ({{ last_query_count }})
+        {% endif %}
+    </div>
+    <div class="col-4">
+        {% if is_paginated %}
+
+        <ul class="pagination">
+            <li class="page-item">
+                <a href="{% url 'inventory:ItemList' %}?q={{ last_query }}&page=1" class="page-link">
+                    First
+                </a>
+            </li>
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a href="{% url 'inventory:ItemList' %}?q={{ last_query }}&page={{ page_obj.previous_page_number }}"
+                    class="page-link">
+                    {{ page_obj.previous_page_number }}
+                </a>
+            </li>
             {% endif %}
-        </div>
-        <div class="col-4">
-            {% if is_paginated %}
-        
-            <ul class="pagination">
-                <li class="page-item">
-                    <a href="{% url 'inventory:ItemList' %}?q={{ last_query }}&page=1"
+            <li class="page-item active">
+                <a href="{% url 'inventory:ItemList' %}?q={{ last_query }}&page={{ page_obj.number }}"
                     class="page-link">
-                        First
-                    </a>
-                </li>
-                {% if page_obj.has_previous %}
-                <li class="page-item">
-                    <a href="{% url 'inventory:ItemList' %}?q={{ last_query }}&page={{ page_obj.previous_page_number }}" 
+                    {{ page_obj.number }}
+                </a>
+            </li>
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a href="{% url 'inventory:ItemList' %}?q={{ last_query }}&page={{ page_obj.next_page_number }}"
                     class="page-link">
-                        {{ page_obj.previous_page_number }}
-                    </a>
-                </li>
-                {% endif %}
-                <li class="page-item active">
-                    <a href="{% url 'inventory:ItemList' %}?q={{ last_query }}&page={{ page_obj.number }}" 
-                    class="page-link">
-                        {{ page_obj.number }}
-                    </a>
-                </li>
-                {% if page_obj.has_next %}
-                <li class="page-item">
-                    <a href="{% url 'inventory:ItemList' %}?q={{ last_query }}&page={{ page_obj.next_page_number }}" 
-                    class="page-link">
-                        {{ page_obj.next_page_number }}
-                    </a>
-                </li>
-                {% endif %}
-                <li class="page-item">
-                    <a href="{% url 'inventory:ItemList' %}?q={{ last_query }}&page=last"
-                    class="page-link">
-                        Last ({{ page_obj.paginator.num_pages }}) 
-                    </a>
-                </li>
-            </ul>
-        {% endif %}    
-        </div>
-    </nav>
+                    {{ page_obj.next_page_number }}
+                </a>
+            </li>
+            {% endif %}
+            <li class="page-item">
+                <a href="{% url 'inventory:ItemList' %}?q={{ last_query }}&page=last" class="page-link">
+                    Last ({{ page_obj.paginator.num_pages }})
+                </a>
+            </li>
+        </ul>
+        {% endif %}
+    </div>
+</nav>
 
-    {% if item_list %}
-    <table class="table table-sm table-striped">
-        <thead>
-            <tr>
-                <th scope="col">Product name</th>
-                <th scope="col">Alias</th>
-                <th scope="col">Category</th>
-                <th scope="col">Vendor</th>
-                <th scope="col">Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in item_list %}
-            
-            <tr>
-                <td>{{ item.name }}</td>
-                <td>{{ item.alias }}</td>
-                <td>{{ item.category }}</td>
-                <td>{{ item.vendor }}</td>
-                <td>
-                    <a href="{% url 'inventory:ItemDetail' item.pk %}" class="btn btn-sm btn-info"> # </a>
-                    <a href="{% url 'inventory:NewItemDelivery' item.pk %}" class="btn btn-sm btn-primary">+Delivery</a>
-                </td>
-            </tr>
+{% if item_list %}
+<table class="table table-sm table-striped">
+    <thead>
+        <tr>
+            <th scope="col">Product name</th>
+            <th scope="col">Alias</th>
+            <th scope="col">Category</th>
+            <th scope="col">Vendor</th>
+            <th scope="col">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in item_list %}
 
-            {% endfor %}
+        <tr>
+            <td>{{ item.name }}</td>
+            <td>{{ item.alias }}</td>
+            <td>{{ item.category }}</td>
+            <td>{{ item.vendor }}</td>
+            <td>
+                <a href="{% url 'inventory:ItemDetail' item.pk %}"><svg class="bi bi-window" width="1.5em" height="1.5em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" d="M14 2H2a1 1 0 00-1 1v10a1 1 0 001 1h12a1 1 0 001-1V3a1 1 0 00-1-1zM2 1a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V3a2 2 0 00-2-2H2z" clip-rule="evenodd"/>
+                    <path fill-rule="evenodd" d="M15 6H1V5h14v1z" clip-rule="evenodd"/>
+                    <path d="M3 3.5a.5.5 0 11-1 0 .5.5 0 011 0zm1.5 0a.5.5 0 11-1 0 .5.5 0 011 0zm1.5 0a.5.5 0 11-1 0 .5.5 0 011 0z"/>
+                  </svg></a>
+                <a href="{% url 'inventory:NewItemDelivery' item.pk %}">
+                    <svg class="bi bi-plus-square-fill" width="1.5em" height="1.5em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" d="M2 0a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V2a2 2 0 00-2-2H2zm6.5 4a.5.5 0 00-1 0v3.5H4a.5.5 0 000 1h3.5V12a.5.5 0 001 0V8.5H12a.5.5 0 000-1H8.5V4z" clip-rule="evenodd"/>
+                      </svg>
+                </a>
+            </td>
+        </tr>
 
-        </tbody>
-    </table>
+        {% endfor %}
 
-    {% else %}
-    
-    <p>No items in database</p>
+    </tbody>
+</table>
 
-    {% endif %}
+{% else %}
+
+<p>No items in database</p>
+
+{% endif %}
 
 {% endblock %}
 

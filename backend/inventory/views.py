@@ -1,7 +1,13 @@
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.shortcuts import render
+from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse, reverse_lazy
 from django.db.models import Q
+from django.views.decorators.csrf import csrf_exempt
+from bootstrap_modal_forms.generic import (
+    BSModalCreateView,
+)
 from .models import (
     Category,
     Item,
@@ -12,8 +18,9 @@ from .forms import (
     NewCategoryForm, CategoryUpdateForm,
     NewVendorForm, VendorUpdateForm,
     NewItemForm, ItemUpdateForm,
-    NewItemDeliveryForm, ItemDeliveryUpdateForm, 
+    NewItemDeliveryForm, ItemDeliveryUpdateForm,
 )
+
 
 class CategoryList(ListView, LoginRequiredMixin):
     """List of inventory categories"""
@@ -29,7 +36,7 @@ class CategoryList(ListView, LoginRequiredMixin):
         if query:
             self.last_query = query
             object_list = Category.objects.filter(
-                Q(name__icontains=query) 
+                Q(name__icontains=query)
             )
             self.last_query_count = object_list.count
         else:
@@ -44,10 +51,16 @@ class CategoryList(ListView, LoginRequiredMixin):
         data['last_query_count'] = self.last_query_count
         return data
 
+
 class NewCategory(CreateView, LoginRequiredMixin):
     model = Category
     form_class = NewCategoryForm
     template_name = 'inventory/new_category.html'
+
+# class NewCategory(BSModalCreateView, LoginRequiredMixin):
+#     model = Category
+#     form_class = NewCategoryModalForm
+#     template_name = 'inventory/new_category_modal.html'
 
 # class CategoryDetail(DetailView, LoginRequiredMixin):
 #     """Display details for category"""
@@ -58,13 +71,14 @@ class NewCategory(CreateView, LoginRequiredMixin):
 #     # def get_context_data(self, **kwargs):
 #     #     context = super().get_context_data(**kwargs)
 
+
 class CategoryUpdate(UpdateView, LoginRequiredMixin):
     """Update details for category"""
     model = Category
     form_class = CategoryUpdateForm
     template_name = 'inventory/category_update.html'
     success_url = reverse_lazy('inventory:CategoryList')
-    
+
     # def get_success_url(self):
     #     return reverse('inventory:CategoryList')
 
@@ -103,6 +117,7 @@ class ItemList(ListView, LoginRequiredMixin):
         data['last_query_count'] = self.last_query_count
         return data
 
+
 class ItemDetail(DetailView, LoginRequiredMixin):
     """Display details for item"""
     model = Item
@@ -112,19 +127,22 @@ class ItemDetail(DetailView, LoginRequiredMixin):
     # def get_context_data(self, **kwargs):
     #     context = super().get_context_data(**kwargs)
 
+
 class ItemUpdate(UpdateView, LoginRequiredMixin):
     """Update details for item"""
     model = Item
     form_class = ItemUpdateForm
     template_name = 'inventory/item_update_form.html'
-    
+
     def get_success_url(self):
         return reverse('inventory:ItemDetail', args=(self.object.pk,))
+
 
 class ItemDelete(DeleteView, LoginRequiredMixin):
     """Delete item"""
     model = Item
     success_url = reverse_lazy('inventory:ItemList')
+
 
 class VendorList(ListView, LoginRequiredMixin):
     """List of Vendors"""
@@ -156,11 +174,13 @@ class VendorList(ListView, LoginRequiredMixin):
         data['last_query_count'] = self.last_query_count
         return data
 
+
 class VendorDetail(DetailView, LoginRequiredMixin):
     """Display details for vendor"""
     model = Vendor
     template_name = 'inventory/vendor_detail.html'
     context_object_name = 'vendor_detail'
+
 
 class NewVendor(CreateView, LoginRequiredMixin):
     """Add new vendor"""
@@ -169,6 +189,31 @@ class NewVendor(CreateView, LoginRequiredMixin):
     form_class = NewVendorForm
     success_url = reverse_lazy('inventory:VendorList')
 
+# class NewVendorPopup(BSModalCreateView):
+#     model = Vendor
+#     template_name = 'inventory/new_vendor_modal.html'
+#     form_class = NewVendorForm
+#     success_message = 'Success: Book was created.'
+#     success_url = reverse_lazy('inventory:NewExpense')
+
+def NewVendorPopup(request):
+    form = NewVendorForm(request.POST or None)
+    if form.is_valid():
+        instance = form.save()
+        return HttpResponseRedirect(reverse('ledger:NewExpense', args=()))
+    return render(request, "inventory/new_vendor_modal.html", {"form": form})
+
+
+@csrf_exempt
+def get_vendor_id(request):
+    if request.is_ajax():
+        vendor_name = request.GET['vendor_name']
+        vendor_id = Vendor.objects.get(name=vendor_name).id
+        data = {'vendor_id': vendor_id, }
+        return HttpResponse(json.dumps(data), content_type='application/json')
+    return HttpResponse("/")
+
+
 class VendorUpdate(UpdateView, LoginRequiredMixin):
     """Update details for vendor"""
     model = Vendor
@@ -176,9 +221,11 @@ class VendorUpdate(UpdateView, LoginRequiredMixin):
     template_name = 'inventory/vendor_update.html'
     success_url = reverse_lazy('inventory:VendorList')
 
+
 class VendorDelete(DeleteView, LoginRequiredMixin):
     model = Vendor
     success_url = reverse_lazy('inventory:VendorList')
+
 
 class ItemDeliveryList(ListView, LoginRequiredMixin):
     """
@@ -212,11 +259,13 @@ class ItemDeliveryList(ListView, LoginRequiredMixin):
         data['last_query_count'] = self.last_query_count
         return data
 
+
 class ItemDeliveryDetail(DetailView, LoginRequiredMixin):
     """Display details of item delivery"""
     model = ItemDelivery
     template_name = 'inventory/item_delivery_detail.html'
     context_object_name = 'delivery_obj'
+
 
 class ItemDeliveryUpdate(UpdateView, LoginRequiredMixin):
     """Update details of item delivery"""
@@ -227,10 +276,12 @@ class ItemDeliveryUpdate(UpdateView, LoginRequiredMixin):
     def get_success_url(self):
         return reverse('inventory:ItemDeliveryDetail', args=(self.object.pk,))
 
+
 class ItemDeliveryDelete(DeleteView, LoginRequiredMixin):
     """Delete item delivery record"""
     model = ItemDelivery
     success_url = reverse_lazy('inventory:ItemDeliveryList')
+
 
 class NewItemDelivery(CreateView, LoginRequiredMixin):
     """Add new item delivery"""
@@ -246,7 +297,7 @@ class NewItemDelivery(CreateView, LoginRequiredMixin):
         else:
             self.item_id = ''
         return super().dispatch(request, *args, **kwargs)
-    
+
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         if self.item_id:
@@ -259,7 +310,7 @@ class NewItemDelivery(CreateView, LoginRequiredMixin):
             data['item_name'] = ''
         return data
 
-   
+
 class NewItem(CreateView, LoginRequiredMixin):
     model = Item
     form_class = NewItemForm
@@ -272,7 +323,7 @@ class NewItem(CreateView, LoginRequiredMixin):
         else:
             self.vendor_id = ''
         return super().dispatch(request, *args, **kwargs)
-    
+
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         if self.vendor_id:

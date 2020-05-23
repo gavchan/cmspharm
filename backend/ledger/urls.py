@@ -8,6 +8,7 @@ urlpatterns = [
     path('expenses/category/new/', views.NewExpenseCategory.as_view(), name='NewExpenseCategory'),
     path('expenses/category/', views.ExpenseCategoryList.as_view(), name='ExpenseCategoryList'),
     path('expenses/<int:pk>/update/', views.ExpenseUpdate.as_view(), name='ExpenseUpdate'),
+    path('expenses/<int:pk>/update/modal', views.ExpenseUpdatePopup.as_view(), name='ExpenseUpdatePopup'),
     path('expenses/<int:pk>/delete/', views.ExpenseDelete.as_view(), name='ExpenseDelete'),
     path('expenses/<int:pk>', views.ExpenseDetail.as_view(), name='ExpenseDetail'),
     path('expenses/new/', views.NewExpense.as_view(), name='NewExpense'),

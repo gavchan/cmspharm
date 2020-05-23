@@ -80,8 +80,15 @@
                 <td>{{ vendor.tel_main }}</td>
                 <td>{{ vendor.email }}</td>
                 <td>
-                    <a href="{% url 'inventory:VendorUpdate' vendor.id %}" class="btn btn-sm btn-info"> # </a>
-                    <a href="{% url 'inventory:NewItem' vendor.id %}" class="btn btn-sm btn-primary">+Item</a>
+                    <a href="{% url 'inventory:VendorUpdate' vendor.id %}" class="btn btn-sm btn-info">
+                        <i class="fad fa-file-alt"></i>
+                    </a>
+                    <a href="{% url 'inventory:NewItem' vendor.id %}" class="btn btn-sm btn-primary">
+                        <i class="fad fa-cart-plus"></i>
+                    </a>
+                    <a href="{% url 'inventory:VendorDelete' vendor.id %}" class="btn btn-sm btn-danger">
+                        <i class="fad fa-trash-alt"></i>
+                    </a>
                 </td>
             </tr>
 

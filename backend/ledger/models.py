@@ -1,5 +1,6 @@
 from django.db import models
 from django.urls import reverse
+from datetime import date
 from inventory.models import Vendor
 
 class ExpenseCategory(models.Model):

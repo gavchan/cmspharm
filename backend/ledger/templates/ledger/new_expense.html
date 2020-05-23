@@ -3,83 +3,43 @@
 
 {% block main %}
 
-    <h1>New Expense Entry</h1>
-    <hr>
-    <form method="post">
-    {% csrf_token %}
-        <div class="form-row">
-            <div class="form-group col-md-4 mb-0">
-                Entry Date:
-                <input type="text" id="entry_date" name="entry_date" value="{{ today }}" /> 
-            </div>
-                <div class="form-group col-md-4 mb-0">
-                {{ form.expected_date|as_crispy_field }}
-            </div>
-            <div class="form-group col-md-4 mb-0">
-                {{ form.settled_date|as_crispy_field }}
-            </div>
-        </div>
-        <div class="form-row">
-            <div class="form-group col-md-4 mb-0">
-                {{ form.amount|as_crispy_field }}
-            </div>
-            <div class="form-group col-md-4 mb-0">
-                {{ form.description|as_crispy_field }}
-            </div>
-            <div class="form-group col-md-4 mb-0">
-                {{ form.category|as_crispy_field }}
-            </div>
-        </div>
-        <div class="form-row">
-            <div class="form-group col-md-4 mb-0">
-                {{ form.payee|as_crispy_field }}
-            </div>
-            <div class="form-group col-md-4 mb-0">
-                {{ form.vendor|as_crispy_field}}
-            </div>
-        </div>
-        <div class="form-row">
-            <div class="form-group col-md-4 mb-0">
-                {{ form.payment_ref|as_crispy_field }}
-            </div>
-            <div class="form-group col-md-4 mb-0">
-                {{ form.payment_method|as_crispy_field }}
-            </div>
-        </div>
-        <div class="form-row">
-            <div class="form-group col-md-4 mb-0">
-                {{ form.invoice_no|as_crispy_field }}
-            </div>
-            <div class="form-group col-md-4 mb-0">
-                {{ form.invoice_date|as_crispy_field }}
-            </div>
-            <div class="form-group col-md-4 mb-0">
-                {{ form.other_ref|as_crispy_field }}
-            </div>
-        </div>
-        <div class="form-row">
-            <div class="form-group col-md-8 mb-0">
-                {{ form.remarks|as_crispy_field }}
-            </div>
-            <!---
-            <div class="form-group col-md-4 mb-0">
-            </div>
-            <div class="form-group col-md-4 mb-0">
-            </div>
-        -->
-        </div>
-        <hr>
-        <div class="form-row">
-            <div class="form-group col-md-8 mb-0">
-            <input type="hidden" id="version" name="version" value="1" />
-            <input class="btn btn-sm btn-primary" type="submit" value="Submit"/>
-            <a class="btn btn-sm btn-secondary" href="{% url 'ledger:ExpenseList' %}">Cancel</a>
-            </div>
-        </div>
-    </form>
-    
+<h1>Add New Expense</h1>
+{% crispy form %}
+
 {% endblock %}
 
 {% block sidebar %}
+<p><button id="set-settled-eq-expected" class="btn btn-sm btn-info btn-block">Set Settled=Expected</button></p>
+<hr>
+<p><a class="btn btn-sm btn-primary btn-block" href="{% url 'ledger:NewExpense' %}">Show Expenses</a></p>
+<p><a class="btn btn-sm btn-secondary btn-block" href="{% url 'inventory:VendorList' %}">Show Vendors</a></p>
+<p><a class="btn btn-sm btn-light btn-block" href="{% url 'ledger:ExpenseCategoryList' %}">Show Categories</a></p>
+{% endblock %}
 
+{% block extrascripts %}
+{{ form.media }}
+
+<script type="text/javascript">
+    // function showAddPopup(triggeringLink) {
+    //     var name = triggeringLink.id.replace(/^add_/, '');
+    //     print(name);
+    //     href = triggeringLink.href;
+    //     print(href);
+    //     var win = window.open(href, name, 'height=500,width=800,resizable=yes,scrollbars=yes');
+    //     win.focus();
+    //     return false;
+    // }
+    // function closePopup(win, newID, newRepr, id) {
+    //     $(id).append('<option value=' + newID + ' selected >' + newRepr + '</option>')
+    //     win.close();
+    // }
+    $(document).ready(function () {
+        $("#add_vendor_button").modalForm({
+            formURL: "{% url 'inventory:NewVendorPopup' %}"
+        });
+        $("#set-settled-eq-expected").click(function() {
+            console.log($("#id_settled_date").val($('#id_expected_date').val()));
+        });
+    })
+</script>
 {% endblock %}

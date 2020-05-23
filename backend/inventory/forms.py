@@ -1,5 +1,6 @@
 from django import forms
 from django.forms import ModelForm
+from bootstrap_modal_forms.forms import BSModalForm
 from .models import Category, Vendor, Item, ItemDelivery
 
 class NewCategoryForm(ModelForm):
@@ -77,6 +78,11 @@ class ItemUpdateForm(ModelForm):
     class Meta:
         model = Item
         exclude = ['id', 'version', 'date_created',]
+
+class NewVendorModalForm(BSModalForm):
+    class Meta:
+        model = Vendor
+        exclude = ['id', 'version', 'date_created', 'last_updated',]
 
 class NewVendorForm(ModelForm):
     class Meta:

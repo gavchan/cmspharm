@@ -12,7 +12,7 @@
     {% csrf_token %}
     <p>Are you sure you want to delete "{{ object }}"?</p>
     <input class="btn btn-sm btn-danger" type="submit" value="Confirm Delete">
-    <a class="btn btn-sm btn-secondary" href="{% url 'drugdb:VendorDetail' object.pk %}">Cancel</a>
+    <a class="btn btn-sm btn-secondary" href="{% url 'inventory:VendorDetail' object.pk %}">Cancel</a>
 </form>
 
 {% endblock %}

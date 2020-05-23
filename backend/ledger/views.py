@@ -3,6 +3,7 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse, reverse_lazy
 from django.db.models import Q
+from bootstrap_modal_forms.generic import BSModalUpdateView
 from .models import (
     ExpenseCategory,
     Expense
@@ -11,6 +12,7 @@ from .models import (
 from .forms import (
     NewExpenseCategoryForm, ExpenseCategoryUpdateForm,
     NewExpenseForm, ExpenseUpdateForm,
+    ExpenseUpdateModalForm,
 )
 
 # Expense Category Views
@@ -108,6 +110,13 @@ class ExpenseUpdate(UpdateView, LoginRequiredMixin):
     def get_success_url(self):
         return reverse('ledger:ExpenseDetail', args=(self.object.pk,))
 
+class ExpenseUpdatePopup(BSModalUpdateView, LoginRequiredMixin):
+    model = Expense
+    template_name = 'ledger/expense_update_modal.html'
+    form_class = ExpenseUpdateModalForm
+    # success_message = 'Success: Book was updated.'
+    # success_url = reverse_lazy('inventory:ExpenseList')
+
 class ExpenseDelete(DeleteView, LoginRequiredMixin):
     model = Expense
     template_name = "ledger/expense_confirm_delete.html"
@@ -123,3 +132,4 @@ class NewExpense(CreateView, LoginRequiredMixin):
         data = super().get_context_data(**kwargs)
         data['today'] = date.today().strftime('%Y-%m-%d') 
         return data
+
