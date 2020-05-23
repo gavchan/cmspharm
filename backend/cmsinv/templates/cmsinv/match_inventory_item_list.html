@@ -1,235 +1,41 @@
 {% extends 'base.html' %}
 
 {% block title %}
-  CMS Inventory Items
+CMS Inventory Items
 {% endblock %}
-  
+
 {% block main %}
-    {% if reg_drug_obj %}
-    <div class="card">
-        <div class="card-header">
-            Registered Drug Record
-        </div>
-        <div class="card-body">
-            <div class="row">
-                <div class="col-md-3">
-                    Permit No.
-                </div>
-                <div class="col-md-9">
-                    {{ reg_drug_obj.reg_no }}
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-3">
-                    Product Name
-                </div>
-                <div class="col-md-9">
-                    {{ reg_drug_obj.name }}
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-3">
-                    Ingredients
-                </div>
-                <div class="col-md-9">
-                    {{ reg_drug_obj.ingredients }}
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-3">
-                    Permit Holder
-                </div>
-                <div class="col-md-9">
-                    {{ reg_drug_obj.company.name }}
-                </div>
-            </div>
-            
-        </div>
-    </div>
-    {% else %}
-    <div class="alert alert-danger" role="alert">
-        Not a valid registered drug no.
-    </div>
-    {% endif %}
-    
-    {% if delivery_obj_list %}
-    <div class="card">
-        <div class="card-header">
-            Recent Delivery Records
-        </div>
-        <div class="card-body">
-            <table class="table table-sm table-striped">
-                <thead>
-                    <tr>
-                        <th scope="col">Date received</th>
-                        <th scope="col">Purchased+Bonus</th>
-                        <th scope="col">Unit Price</th>
-                        <th scope="col">Average Cost</th>
-                        <th scope="col">Expiry Date</th>
-                        <th scope="col">Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for item in delivery_obj_list %}
-                    
-                    <tr>
-                        <td>{{ item.received_date }}</td>
-                        <td>{{ item.purchase_quantity }} + {{ item.bonus_quantity }} x {{ item.items_per_purchase }} {{ item.items_unit }}</td>
-                        <td>{{ item.unit_price }} / {{ item.items_unit }}</td>
-                        <td> ${{ item.average_cost }}</td>
-                        <td>{{ item.alias }}</td>
-                        <td>
-                            <a href="#" class="btn btn-sm btn-info"> # </a>
-                        </td>
-                    </tr>
-        
-                    {% endfor %}
-        
-                </tbody>
-            </table>
-        </div>
-    </div>
-      
-    {% else %}
-    <div class="alert alert-warning" role="alert">
-        No drug delivery record
-    </div>
-    {% endif %}
 
-    {% if reg_match_obj %}
-    <div class="card">
-        <div class="card-header">
-            <div class="row">
-                <div class="col-md-8">
-                    CMS Record matching {{ reg_match_obj.registration_no }}
-                </div>
-                <div class="col-md-4">
-                    <a href="{% url 'cmsinv:InventoryItemUpdate' reg_match_obj.pk %}" class="btn btn-sm btn-success"> Update </a>
-                </div>
-            </div>
-        </div>
-        <div class="card-body">
-            <div class="row">
-                <div class="col-md-2">
-                    Product Name
-                </div>
-                <div class="col-md-6">
-                    {{ reg_match_obj.product_name }}
-                </div>
-                <div class="col-md-2">
-                    Clinic No.
-                </div>
-                <div class="col-md-2">
-                    {{ reg_match_obj.clinic_drug_no }}
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-2">
-                    Generic Name
-                </div>
-                <div class="col-md-6">
-                    {{ reg_match_obj.generic_name }}
-                </div>
-                <div class="col-md-2">
-                    Stock Quantity
-                </div>
-                <div class="col-md-2">
-                    {{ reg_match_obj.stock_qty }}
-                </div>
-                
-            </div>
-            <div class="row">
-                <div class="col-md-2">
-                    Alias
-                </div>
-                <div class="col-md-6">
-                    {{ reg_match_obj.alias }}
-                </div>
-                <div class="col-md-2">
-                    Standard Cost
-                </div>
-                <div class="col-md-2">
-                    {{ reg_match_obj.standard_cost }}
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-2">
-                    Ingredients
-                </div>
-                <div class="col-md-6">
-                    {{ reg_match_obj.ingredient }}
-                </div>
-                <div class="col-md-2">
-                    Unit Price
-                </div>
-                <div class="col-md-2">
-                    {{ reg_match_obj.unit_price }}
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-2">
-                    Cert. Holder  
-                </div>
-                <div class="col-md-6">
-                    {{ reg_match_obj.certificate_holder.name }}
-                </div>
-            </div>
-        </div>
-    </div>
-    {% else %}
-    <div class="alert alert-danger" role="alert">
-        No CMS inventory item matching registration no.
-    </div> 
-    {% endif %}
-    
-    {% if match_item_list_obj %}
-    <div class="card">
-        <div class="card-header">
-            Related CMS Inventory Items
-        </div>
-        <div class="card-body">
-            <table class="table table-sm table-striped">
-                <thead>
-                    <tr>
-                        <th scope="col">Reg no.</th>
-                        <th scope="col">Product name</th>
-                        <th scope="col">Clinic no.</th>
-                        <th scope="col">Generic name</th>
-                        <th scope="col">Alias</th>
-                        <th scope="col">Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for item in match_item_list_obj %}
-                    
-                    <tr>
-                        <td>{{ item.registration_no }}</td>
-                        <td>{{ item.product_name }}</td>
-                        <td>{{ item.clinic_drug_no }}</td>
-                        <td>{{ item.generic_name }}</td>
-                        <td>{{ item.alias }}</td>
-                        <td>
-                            <a href="{% url 'cmsinv:InventoryItemUpdate' item.pk %}" class="btn btn-sm btn-info"> # </a>
-                            {% if item.registration_no %}
-                            <a href="{% url 'cmsinv:MatchInventoryItemList' item.registration_no %}" class="btn btn-sm btn-success"> = </a>
-                            {% endif %}
-                        </td>
-                    </tr>
-        
-                    {% endfor %}
-        
-                </tbody>
-            </table>
-        </div>
-    </div>
+{% include 'cmsinv/_inventory_item_match_view.html' %}
 
-    {% else %}
-    <div class="alert alert-danger" role="alert">
-        No related CMS inventory items
-    </div> 
-    {% endif %}
-    
+{% if match_item_list_obj %}
+<div class="card">
+    <div class="card-header">
+        Related CMS Inventory Items
+    </div>
+    <div class="card-body">
+        {% include 'cmsinv/_inventory_item_list_table.html' %}
+    </div>
+</div>
+
+{% else %}
+<div class="alert alert-danger" role="alert">
+    No related CMS inventory items
+</div>
+{% endif %}
+
 {% endblock %}
 
-{% block sidebar %}
-{% endblock %}
+
+{% block extrascripts %}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(".show-item-details").each(function () {
+            $(this).modalForm({
+                formURL: $(this).data('id')
+            });
+        });
+    });
+</script>
+{% endblock extrascripts %}

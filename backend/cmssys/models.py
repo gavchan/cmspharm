@@ -46,7 +46,6 @@ class TextBooleanField(models.BooleanField):
         else:
             return 1 if value else 0
 
-
 class AuditLog(models.Model):
     """
     Maps to CMS table: audit_log

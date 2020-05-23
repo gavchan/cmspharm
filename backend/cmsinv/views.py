@@ -26,7 +26,7 @@ class InventoryItemList(ListView, LoginRequiredMixin):
     """
     template_name = 'cmsinv/inventory_item_list.html'
     model = InventoryItem
-    context_object_name = 'inventory_item_list'
+    context_object_name = 'match_item_list_obj'
     paginate_by = 20
     last_query = ''
     last_query_count = 0
@@ -82,12 +82,21 @@ class InventoryItemDetail(DetailView, LoginRequiredMixin):
         data['drug_delivery_obj'] = self.drug_delivery_obj
         return data
 
-class InventoryItemModalDetail(BSModalReadView):
+class InventoryItemModalDetail(BSModalReadView, LoginRequiredMixin):
     model = InventoryItem
     template_name = 'cmsinv/inventory_item_modal_detail.html'
+    item_obj = None
     reg_drug_obj = None
     drug_delivery_obj = None
-    
+   
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        data['reg_drug_obj'] =  self.reg_drug_obj
+        data['item_obj'] = self.object
+        print(data['reg_drug_obj'])
+        data['delivery_obj_list'] = self.delivery_obj_list
+        return data
+
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         try:
@@ -95,11 +104,13 @@ class InventoryItemModalDetail(BSModalReadView):
         except RegisteredDrug.DoesNotExist:
             print("No registration no. for {self.object.product_name}")
         try:
-            self.drug_delivery_obj = DrugDelivery.objects.get(reg_no=self.object.registration_no)
+            self.delivery_obj_list = DrugDelivery.objects.filter(reg_no=self.object.registration_no)[:5]
         except DrugDelivery.DoesNotExist:
+            self.delivery_obj_list = None
             print("No delivery record for {self.object.product_name}")
         data['reg_drug_obj'] = self.reg_drug_obj
-        data['drug_delivery_obj'] = self.drug_delivery_obj
+        data['delivery_obj_list'] = self.delivery_obj_list
+        data['item_obj'] = self.object
         return data
 
 class InventoryItemUpdate(UpdateView, LoginRequiredMixin):
@@ -186,15 +197,15 @@ class MatchInventoryItemList(ListView, LoginRequiredMixin):
     ingredients = ''
     reg_drug_obj = None
     delivery_obj_list = None
-    reg_match_obj = None
+    item_obj = None
 
     def dispatch(self, request, *args, **kwargs):
         if 'reg_no' in kwargs:
             self.drug_reg_no = kwargs['reg_no']
             try:
-                self.reg_match_obj = InventoryItem.objects.get(registration_no=self.drug_reg_no)
+                self.item_obj = InventoryItem.objects.get(registration_no=self.drug_reg_no)
             except InventoryItem.DoesNotExist:
-                self.reg_match_obj = None
+                self.item_obj = None
             try:
                 self.reg_drug_obj = RegisteredDrug.objects.get(reg_no=self.drug_reg_no)
             except RegisteredDrug.DoesNotExist:
@@ -211,7 +222,7 @@ class MatchInventoryItemList(ListView, LoginRequiredMixin):
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         data['reg_drug_obj'] =  self.reg_drug_obj
-        data['reg_match_obj'] = self.reg_match_obj
+        data['item_obj'] = self.item_obj
         print(data['reg_drug_obj'])
         data['delivery_obj_list'] = self.delivery_obj_list
         return data
@@ -222,9 +233,7 @@ class MatchInventoryItemList(ListView, LoginRequiredMixin):
             self.keyword = self.reg_drug_obj.name
             self.ingredients = self.reg_drug_obj.ingredients
         else:
-            print('No existing reg no.')
-            self.keyword = self.reg_match_obj.product_name
-            self.ingredients = self.reg_match_obj.ingredient
+            print('Error no existing reg no.')
         if self.keyword == None:
             self.keyword = ''
         if self.ingredients == None:
@@ -235,5 +244,5 @@ class MatchInventoryItemList(ListView, LoginRequiredMixin):
             Q(generic_name__icontains=self.keyword) |
             Q(alias__icontains=self.keyword) |
             Q(ingredient__icontains=self.ingredients)
-        ).exclude(registration_no=self.drug_reg_no)[:100]
+        ).order_by('discontinue').exclude(registration_no=self.drug_reg_no)[:100]
         return object_list

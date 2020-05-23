@@ -4,11 +4,12 @@
 CMS Inventory Items
 {% endblock %}
 
-{% block main %}
+{% block content %}
+
+{% include "_modal.html" %}
 
 <h1>CMS Inventory Item List</h1>
 <nav class="row">
-
     <div class="col-4">
         <form action="{% url 'cmsinv:InventoryItemList' %}" method="get">
             <input class="form-control" name="q" type="text" placeholder="Search CMS Inventory Items..." />
@@ -63,56 +64,18 @@ CMS Inventory Items
     </div>
 </nav>
 
-{% if inventory_item_list %}
-<table class="table table-sm table-striped">
-    <thead>
-        <tr>
-            <th scope="col-sm-2">Reg no.</th>
-            <th scope="col-sm-6">Product name</th>
-            <th scope="col-sm-2">Alias</th>
-            <th scope="col-sm-2">Action</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for item in inventory_item_list %}
-        {% if item.discontinue %}
-        <tr>
-            {% else %}
-        <tr class="table-primary">
-            {% endif %}
-            <td>{{ item.registration_no }}</td>
-            <td>{{ item.product_name }}</td>
-            <td>{{ item.alias }}</td>
-            <td>
-                <a href="{% url 'cmsinv:InventoryItemUpdate' item.pk %}" class="btn btn-sm btn-info"><i
-                        class="fad fa-edit"></i></a>
-                <button type="button" class="show-item-details btn btn-sm btn-primary"
-                    data-id="{% url 'cmsinv:InventoryItemModalDetail' item.pk %}">
-                    <i class="fad fa-file-alt"></i>
-                </button>
-                {% if item.registration_no %}
-                <a href="{% url 'cmsinv:MatchInventoryItemList' item.registration_no %}" class="btn btn-sm btn-success">
-                    <i class="fad fa-file-search"></i>
-                </a>
-                {% endif %}
-            </td>
-        </tr>
+{% if match_item_list_obj %}
 
-        {% endfor %}
-
-    </tbody>
-</table>
+{% include 'cmsinv/_inventory_item_list_table.html' %}
 
 {% else %}
 
-<p>No item in database</p>
+<p>No CMS item in database</p>
 
 {% endif %}
 
 {% endblock %}
 
-{% block sidebar %}
-{% endblock %}
 
 {% block extrascripts %}
 
@@ -123,6 +86,17 @@ CMS Inventory Items
                 formURL: $(this).data('id')
             });
         });
+        $(".item-action-cell")
+        .append(
+            `<div class="dropdown">
+                <a class="btn btn-sm btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></a>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                    <a class="dropdown-item" href="#">Add new delivery</a>
+                    <a class="dropdown-item" href="#">Toggle active status</a>
+                    <a class="dropdown-item" href="#">Edit</a>
+                </div>
+            </div>
+            `)
     });
 </script>
 {% endblock extrascripts %}

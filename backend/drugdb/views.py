@@ -118,6 +118,7 @@ class NewDrugDelivery(CreateView, LoginRequiredMixin):
     form_class = NewDrugDeliveryForm
     context_object_name = 'new_drug_delivery'
     drug_reg_no = ''
+    cmsinv_item_obj = None
 
     def dispatch(self, request, *args, **kwargs):
         if 'reg_no' in kwargs:
@@ -133,7 +134,13 @@ class NewDrugDelivery(CreateView, LoginRequiredMixin):
             drug_obj = RegisteredDrug.objects.get(reg_no=self.drug_reg_no)
             data['product_name'] = drug_obj.name
             data['vendor'] = drug_obj.company
+            try:
+                self.cmsinv_item_obj = InventoryItem.objects.get(registration_no=self.drug_reg_no)
+            except:
+                print("Error: CMS inventory does not have item that matches reg. no. {self.drug_reg_no}")
+
         else:
             print("Error: missing reg_no")
             data['product_name'] = ''
+        data['cmsinv_item_obj'] = self.cmsinv_item_obj
         return data

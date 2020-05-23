@@ -64,9 +64,8 @@
     <table class="table table-sm table-striped">
         <thead>
             <tr>
-                <th scope="col">Product name</th>
                 <th scope="col">Reg no.</th>
-                <th scope="col">Ingredients</th>
+                <th scope="col">Product name / Ingredients</th>
                 <th scope="col">Company</th>
                 <th scope="col">Action</th>
             </tr>
@@ -75,14 +74,15 @@
             {% for drug in drug_list %}
             
             <tr>
-                <td>{{ drug.name }}</td>
-                <td>{{ drug.reg_no }}</td>
-                <td>{{ drug.ingredients }}</td>
+                <td>{{ drug.reg_no}}</td>
+                <td><b>{{ drug.name }}</b>
+                <br>{{ drug.ingredients }}</td>
                 <td>{{ drug.company }}</td>
                 <td>
-                    <a href="{% url 'drugdb:DrugDetail' drug.id %}" class="btn btn-sm btn-info"> # </a>
-                    <a href="{% url 'drugdb:NewDrugDelivery' drug.reg_no %}" class="btn btn-sm btn-primary"> + </a>
-                    <a href="{% url 'cmsinv:MatchInventoryItemList' drug.reg_no %}" class="btn btn-sm btn-success"> = </a>
+                        <a href="{% url 'cmsinv:MatchInventoryItemList' drug.reg_no %}"
+                            class="btn btn-sm btn-primary">
+                            <i class="fad fa-file-search"></i>
+                        </a>
                 </td>
             </tr>
 

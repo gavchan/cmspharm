@@ -85,7 +85,17 @@
                 <td>{{ drug.total_price }}</td>
                 <td>
                     <a href="{% url 'drugdb:DrugDeliveryDetail' drug.id %}" class="btn btn-sm btn-info"> # </a>
-                    <a href="{% url 'cmsinv:MatchDeliveryInventoryItemList' drug.pk %}" class="btn btn-sm btn-success"> = </a>
+                    {% if drug.cmsinv_item %}
+                    <button type="button" class="show-item-details btn btn-sm btn-primary"
+                        data-id="{% url 'cmsinv:InventoryItemModalDetail' drug.cmsinv_item.pk %}">
+                        <i class="fad fa-file-alt"></i>
+                    </button>
+                    {% endif %}
+                    <a href="{% url 'cmsinv:MatchDeliveryInventoryItemList' drug.id %}" class="btn btn-sm btn-success"> = </a>
+                    <a href="{% url 'cmsinv:MatchInventoryItemList' drug.reg_no %}" 
+                        class="btn btn-sm btn-success">
+                        <i class="fad fa-file-search"></i>
+                    </a>
                 </td>
             </tr>
 
@@ -109,3 +119,16 @@
 Filter
 
 {% endblock %}
+
+{% block extrascripts %}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(".show-item-details").each(function () {
+            $(this).modalForm({
+                formURL: $(this).data('id')
+            });
+        });
+    });
+</script>
+{% endblock extrascripts %}

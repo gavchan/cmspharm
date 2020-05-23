@@ -1,0 +1,52 @@
+<!--
+    Include Table for List of matching CMS Inventory Items
+    Requires:
+    - match_item_list_obj
+-->
+<table class="table table-sm table-striped">
+    <thead>
+        <tr>
+            <th scope="col">Ref no.</th>
+            <th scope="col">Product name/Ingredients</th>
+            <th scope="col">Alias/Vendor</th>
+            <th scope="col">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in match_item_list_obj %}
+        
+        <tr 
+            {% if item.discontinue %}
+            class="table-secondary text-muted"
+            {% endif %}
+        >
+            <td><b>{{ item.registration_no }}</b>
+                {% if item.discontinue %}
+                <br><span class="badge badge-secondary">Inactive</span>
+                {% else %}
+                <br>{{ item.clinic_drug_no }}</td>
+                {% endif %}
+            <td><b>{{ item.product_name }}</b>
+                <br>{{ item.ingredient }}</td>
+            <td><b>{{ item.alias }}</b>
+                <br>{{ item.certificate_holder }}
+            </td>
+            <td class="item-action-cell">
+                {% if item.registration_no %} 
+                <button type="button" class="show-item-details btn btn-sm btn-primary"
+                    data-id="{% url 'cmsinv:InventoryItemModalDetail' item.pk %}">
+                    <i class="fad fa-file-alt"></i>
+                </button>
+                {% else %}
+                <button type="button" class="show-item-details btn btn-sm btn-danger"
+                    data-id="{% url 'cmsinv:InventoryItemModalDetail' item.pk %}">
+                    <i class="fad fa-file-alt"></i>
+                </button>
+                {% endif %}
+            </td>
+        </tr>
+
+        {% endfor %}
+
+    </tbody>
+</table>

@@ -184,38 +184,7 @@
             Related CMS Inventory Items
         </div>
         <div class="card-body">
-            <table class="table table-sm table-striped">
-                <thead>
-                    <tr>
-                        <th scope="col">Reg no.</th>
-                        <th scope="col">Product name</th>
-                        <th scope="col">Clinic no.</th>
-                        <th scope="col">Generic name</th>
-                        <th scope="col">Alias</th>
-                        <th scope="col">Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for item in match_item_list_obj %}
-                    
-                    <tr>
-                        <td>{{ item.registration_no }}</td>
-                        <td>{{ item.product_name }}</td>
-                        <td>{{ item.clinic_drug_no }}</td>
-                        <td>{{ item.generic_name }}</td>
-                        <td>{{ item.alias }}</td>
-                        <td>
-                            <a href="{% url 'cmsinv:InventoryItemUpdate' item.pk %}" class="btn btn-sm btn-info"> # </a>
-                            {% if item.registration_no %}
-                            <a href="{% url 'cmsinv:MatchInventoryItemList' item.registration_no %}" class="btn btn-sm btn-success"> = </a>
-                            {% endif %}
-                        </td>
-                    </tr>
-        
-                    {% endfor %}
-        
-                </tbody>
-            </table>
+            {% include 'cmsinv/_inventory_item_list_table.html' %}
         </div>
     </div>
 
