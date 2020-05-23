@@ -1,5 +1,6 @@
 from django.db import models
 from django.urls import reverse
+from cmsinv.models import InventoryItem
 from inventory.models import Delivery
 
 class RegisteredDrug(models.Model):
@@ -81,6 +82,10 @@ class DrugDelivery(Delivery):
         (VIAL, 'Vial'),
     ]
     reg_no = models.CharField(max_length=255, blank=True, null=True)
+    cmsinv_item = models.ForeignKey(
+        InventoryItem, on_delete=models.PROTECT,
+        blank=True, null=True,
+        )
     items_unit = models.CharField(max_length=100, choices=ITEMS_UNIT_CHOICES, default=TAB)
 
     class Meta:
