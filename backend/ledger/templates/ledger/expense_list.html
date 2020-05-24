@@ -65,7 +65,7 @@
         <thead>
             <tr>
                 <th scope="col">Date</th>
-                <th scope="col">Category</th>
+                <th scope="col">Category/Payee</th>
                 <th scope="col">Amount</th>
                 <th scope="col">Action</th>
             </tr>
@@ -75,17 +75,21 @@
             
             <tr>
                 <td>{{ expense.entry_date }}</td>
-                <td>{{ expense.category }}</td>
+                <td>{{ expense.category }}
+                    <br>{{ expense.payee }}
+                </td>
                 <td class="text-monospace text-right">{{ expense.amount }}</td>
                 <td>
                     <button type="button" class="expense_item_update btn btn-sm btn-primary"
                         data-id="{% url 'ledger:ExpenseUpdatePopup' expense.pk %}">
                         <i class="fad fa-file-alt"></i>
                     </button>
+                    {% if expense.category.name == "Drugs" %}
                     <a href="{% url 'ledger:ExpenseUpdate' expense.pk %}" class="btn btn-sm btn-info">
                         <!-- Placeholder for adding drug item-->
                         <i class="fad fa-layer-plus"></i>
                     </a>
+                    {% endif %}
                 </td>
             </tr>
 
