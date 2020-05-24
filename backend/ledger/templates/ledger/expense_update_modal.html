@@ -1,6 +1,6 @@
 {% load crispy_forms_tags %}
 <div class="modal-header">
-    <h3 class="modal-title">Add New Vendor</h3>
+    <h3 class="modal-title">Update Expense Entry</h3>
     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
         <span aria-hidden="true">&times;</span>
     </button>
@@ -13,5 +13,6 @@
 </div>
 
 <div class="modal-footer">
+    <a href="{% url 'ledger:ExpenseDelete' object.pk %}" class="btn btn-sm btn-danger"> Delete </a>
     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 </div>
