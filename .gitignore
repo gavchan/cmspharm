@@ -1,8 +1,8 @@
 # Local settings/keys/files
 backend/pg_settings.env
-backend/drugs.csv
 backend/static/lib/
 *.key
+*.csv
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
