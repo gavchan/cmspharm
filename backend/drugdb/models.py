@@ -2,6 +2,7 @@ from django.db import models
 from django.urls import reverse
 from cmsinv.models import InventoryItem
 from inventory.models import Delivery
+from ledger.models import Expense
 
 class RegisteredDrug(models.Model):
     """
@@ -86,6 +87,10 @@ class DrugDelivery(Delivery):
         InventoryItem, on_delete=models.PROTECT,
         blank=True, null=True,
         )
+    bill = models.ForeignKey(
+        Expense, on_delete=models.PROTECT,
+        blank=True, null=True,
+    )
     items_unit = models.CharField(max_length=100, choices=ITEMS_UNIT_CHOICES, default=TAB)
 
     class Meta:
