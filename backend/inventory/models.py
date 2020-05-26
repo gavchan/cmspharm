@@ -139,7 +139,7 @@ class Delivery(models.Model):
     batch_num = models.CharField(max_length=100, blank=True, null=True)
     other_ref = models.CharField(max_length=100, blank=True, null=True)
     remark = models.CharField(max_length=255, blank=True, null=True)
-    received_date = models.DateField(auto_now_add=True)
+    received_date = models.DateField()
     received_by = models.CharField(max_length=255, blank=True, null=True)
     expiry_date = models.DateField(blank=True, null=True)
     date_created = models.DateTimeField(auto_now_add=True)
