@@ -17,10 +17,14 @@
                         Expenses
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                        <a href="{% url 'ledger:ExpenseList' %}" class="dropdown-item">Show Expenses</a>
                         <a href="{% url 'ledger:NewExpense' %}" class="dropdown-item">Add Expense</a>
+                        <a href="{% url 'ledger:ExpenseList' %}" class="dropdown-item">Show Expenses</a>
                         <a href="{% url 'ledger:ExpenseCategoryList' %}" class="dropdown-item">Show Categories</a>
+                        <a href="{% url 'inventory:VendorList' %}" class="dropdown-item">Show Vendors</a>
+                    {% comment %}    
                         <a href="{% url 'ledger:NewExpenseCategory' %}" class="dropdown-item">Add Category</a>
+                        <a href="{% url 'inventory:NewVendor' %}" class="dropdown-item">Add Vendor</a>
+                    {% endcomment %}
                     </div>
                 </li>
                 <li class="nav-item dropdown">
@@ -35,10 +39,11 @@
                         <a href="{% url 'drugdb:DrugDeliveryList' %}" class="dropdown-item">Show Delivered Drugs</a>
                     </div>
                 </li>
+            {% comment %}
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="{% url 'inventory:ItemList' %}"
                         id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Items
+                        Misc
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                         <a href="{% url 'inventory:ItemList' %}" class="dropdown-item">Show Items</a>
@@ -46,11 +51,10 @@
                             Items</a>
                         <a href="{% url 'inventory:NewItem' %}" class="dropdown-item">Add Item</a>
                         <a href="{% url 'inventory:NewCategory' %}" class="dropdown-item">Add Item Category</a>
-                        <a href="{% url 'inventory:NewVendor' %}" class="dropdown-item">Add Item Vendor</a>
-                        <a href="{% url 'inventory:CategoryList' %}" class="dropdown-item">Show Categories</a>
-                        <a href="{% url 'inventory:VendorList' %}" class="dropdown-item">Show Vendors</a>
+                        <a href="{% url 'inventory:CategoryList' %}" class="dropdown-item">Show ItemCategories</a>
                     </div>
                 </li>
+            {% endcomment %}
             </ul>
             <ul class="navbar-nav my-2 my-lg-0">
                 <li class="nav-item dropdown">
