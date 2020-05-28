@@ -50,3 +50,16 @@
 
     </tbody>
 </table>
+
+{% block extrascripts %}
+
+{{ bill_obj.id|json_script:"bill_id" }}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(".add-drug-to-bill").each(function () {
+            $(this).modalForm({
+                formURL: $(this).data('id')
+            });
+        });
+</script>
+{% endblock %}

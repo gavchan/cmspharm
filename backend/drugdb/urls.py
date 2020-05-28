@@ -4,6 +4,9 @@ from . import views
 app_name = 'drugdb'
 urlpatterns = [
     path('', views.RegisteredDrugList.as_view(), name='DrugList'),
+    path('bill/<int:bill_id>/delivery/', views.BillDrugDeliveryView, name='BillDrugDeliveryView'),
+    path('bill/<int:bill_id>/delivery/add/<str:reg_no>/modal', views.BillDrugDeliveryAddDrugModal.as_view(), name='BillDrugDeliveryAddDrugModal'),
+    # path('bill/<int:bill_id>/delivery/choose_drug_modal', views.BillDrugDeliveryChooseDrugModal.as_view(), name='BillDrugDeliveryChooseDrugModal'),
     path('drug/<int:pk>', views.RegisteredDrugDetail.as_view(), name='DrugDetail'),
     path('delivery/', views.DrugDeliveryList.as_view(), name='DrugDeliveryList'),
     path('delivery/<int:pk>', views.DrugDeliveryDetail.as_view(), name='DrugDeliveryDetail'),

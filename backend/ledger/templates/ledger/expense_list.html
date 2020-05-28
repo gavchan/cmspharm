@@ -85,7 +85,7 @@
                         <i class="fad fa-file-alt"></i>
                     </button>
                     {% if expense.category.name == "Drugs" %}
-                    <a href="{% url 'ledger:ExpenseUpdate' expense.pk %}" class="btn btn-sm btn-info">
+                    <a href="{% url 'drugdb:BillDrugDeliveryView' expense.pk %}" class="btn btn-sm btn-info">
                         <!-- Placeholder for adding drug item-->
                         <i class="fad fa-layer-plus"></i>
                     </a>

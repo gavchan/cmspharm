@@ -1,0 +1,63 @@
+<!--
+    Include Card for Expense Bill Delivery Items
+    Requires:
+    - bill_items_list
+-->
+
+{% if bill_items_list %}
+<div class="card">
+    <div class="card-header bg-light">
+        <div class="row">
+            <div class="col-sm-12"><h6>Delivery Drug Items</h6>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <table class="table table-sm table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">Product name</th>
+                    <th scope="col">Permit no.</th>
+                    <th scope="col">Quantity</th>
+                    <th scope="col" class="text-center">Total price</th>
+                    <th scope="col" class="text-center">Cost</th>
+                    <th scope="col" class="text-center">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for drug in bill_items_list %}
+                
+                <tr>
+                    <td>{{ drug.product_name }}</td>
+                    <td>{{ drug.reg_no }}</td>
+                    <td>{{ drug.purchase_quantity }}+{{ drug.bonus_quantity }}</td>
+                    <td class="text-monospace text-right">${{ drug.total_price }}</td>
+                    <td class="text-monospace text-right">${{ drug.average_cost }}/{{ drug.items_unit }}</td>
+                    <td class="text-center">
+                        <a href="{% url 'drugdb:DrugDeliveryDetail' drug.id %}" class="btn btn-sm btn-info"> # </a>
+                        {% if drug.cmsinv_item %}
+                        <button type="button" class="show-item-details btn btn-sm btn-primary"
+                            data-id="{% url 'cmsinv:InventoryItemModalDetail' drug.cmsinv_item.pk %}">
+                            <i class="fad fa-file-alt"></i>
+                        </button>
+                        {% endif %}
+                        <a href="{% url 'cmsinv:MatchDeliveryInventoryItemList' drug.id %}" class="btn btn-sm btn-success"> = </a>
+                        <a href="{% url 'cmsinv:MatchInventoryItemList' drug.reg_no %}" 
+                            class="btn btn-sm btn-success">
+                            <i class="fad fa-file-search"></i>
+                        </a>
+                    </td>
+                </tr>
+    
+                {% endfor %}
+    
+            </tbody>
+        </table>
+
+    </div>
+</div>
+{% else %}
+<div class="alert alert-danger" role="alert">
+    No Drug Delivery Items Record 
+</div>
+{% endif %}

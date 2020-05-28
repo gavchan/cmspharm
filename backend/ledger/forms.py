@@ -47,7 +47,9 @@ class NewExpenseCategoryForm(ModelForm):
             ),
             FormActions(
                 Submit('submit', 'Submit'),
-                Button('cancel', 'Cancel'),
+                HTML("""
+                <a class="btn btn-light" href="{% url 'ledger:ExpenseCategoryList' %}">Cancel</a>
+                """),
             ),
         )
 
@@ -86,7 +88,9 @@ class ExpenseCategoryUpdateForm(ModelForm):
             ),
             FormActions(
                 Submit('submit', 'Submit'),
-                Button('cancel', 'Cancel'),
+                HTML("""
+                <a class="btn btn-light" href="{% url 'ledger:ExpenseCategoryList' %}">Cancel</a>
+                """),
             ),
         )
 
@@ -321,7 +325,7 @@ class ExpenseUpdateModalForm(ModelForm):
             FormActions(
                 Submit('submit', 'Submit'),
                 HTML("""
-                <a class="btn btn-light" href="{% url 'ledger:ExpenseList' %}">Cancel</a>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                 """)
             ),
         )

@@ -2,12 +2,23 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse, reverse_lazy
 from django.db.models import Q
+from bootstrap_modal_forms.generic import BSModalCreateView
+
+from django.template.loader import render_to_string
+from django.http import JsonResponse
+from django.shortcuts import render
+from ledger.models import (
+    Expense,
+)
 from .models import (
     RegisteredDrug,
     Company,
     DrugDelivery,
 )
-from .forms import NewDrugDeliveryForm, DrugDeliveryUpdateForm
+from .forms import (
+    NewDrugDeliveryForm, DrugDeliveryUpdateForm,
+    BillDrugDeliveryAddDrugModalForm,
+)
 
 class RegisteredDrugList(ListView, LoginRequiredMixin):
     """List of registered drugs"""
@@ -144,3 +155,140 @@ class NewDrugDelivery(CreateView, LoginRequiredMixin):
             data['product_name'] = ''
         data['cmsinv_item_obj'] = self.cmsinv_item_obj
         return data
+
+# class BillDrugDeliveryList(ListView, LoginRequiredMixin):
+#     """Add new drug delivery to bill"""
+#     model = DrugDelivery
+#     template_name = 'drugdb/bill_drugdelivery_view.html'
+#     context_object_name = 'bill_delivery_item_list'
+#     bill_obj = None
+
+#     def dispatch(self, request, *args, **kwargs):
+#         if 'bill_id' in kwargs:
+#             self.bill_obj = Expense.objects.get(id=kwargs['bill_id'])
+#         return super().dispatch(request, *args, **kwargs)
+
+#     def get_queryset(self):
+#         return DrugDelivery.objects.filter(bill=self.bill_obj)
+
+#     def get_context_data(self, **kwargs):
+#         data = super().get_context_data(**kwargs)
+#         if self.bill_obj:
+#             data['bill_obj'] = self.bill_obj
+#         return data
+
+def BillDrugDeliveryView(request, *args, **kwargs):
+    """View Bill with DrugDelivery items"""
+    MAX_QUERY_COUNT = 20
+
+    # Parse bill_id from request and get related Expense
+    bill_obj = None
+    if 'bill_id' in kwargs:
+        bill_obj = Expense.objects.get(id=kwargs['bill_id'])
+        print(bill_obj.id)
+    ctx = {
+        'bill_obj': bill_obj
+    }
+
+    # Get related DrugDelivery objects associated with bill_id
+    bill_items_list = DrugDelivery.objects.filter(bill=bill_obj)
+    ctx['bill_items_list'] = bill_items_list
+
+    # Get query from request and search RegisteredDrug    
+    query = request.GET.get('q')
+    print(query)
+    if query:
+        last_query = query
+        object_list = RegisteredDrug.objects.filter(
+            Q(name__icontains=query) |
+            Q(reg_no__icontains=query) |
+            Q(ingredients__icontains=query)
+        )[:MAX_QUERY_COUNT]
+        last_query_count = object_list.count
+    else:
+        last_query = ''
+        object_list = RegisteredDrug.objects.all()[:MAX_QUERY_COUNT]
+        last_query_count = object_list.count
+
+    if request.is_ajax():
+        html = render_to_string(
+            template_name='drugdb/_drug_search_results_partial.html',
+            context={
+                'drug_list': object_list,
+                'bill_id': bill_obj.id
+                }
+        )
+        data_dict = {"html_from_view": html}
+        return JsonResponse(data=data_dict, safe=False)
+
+    return render(request, "drugdb/bill_drugdelivery_view.html", context=ctx)
+
+# class BillDrugDeliveryChooseDrugModal(ListView, LoginRequiredMixin):
+#     """Modal to choose drug to add to bill"""
+#     template_name = 'drugdb/bill_drugdelivery_choose_drug_modal.html'
+#     model = RegisteredDrug
+#     context_object_name = 'drug_list'
+#     bill_obj = None
+
+#     def dispatch(self, request, *args, **kwargs):
+#         if 'bill_id' in kwargs:
+#             self.bill_obj = Expense.objects.get(id=kwargs['bill_id'])
+#         return super().dispatch(request, *args, **kwargs)
+
+#     def get_queryset(self):
+#         query = self.request.GET.get('q')
+#         if query:
+#             self.last_query = query
+#             object_list = RegisteredDrug.objects.filter(
+#                 Q(name__icontains=query) |
+#                 Q(reg_no__icontains=query) |
+#                 Q(ingredients__icontains=query)
+#             )[:30]
+#             self.last_query_count = object_list.count
+#         else:
+#             self.last_query = ''
+#             object_list = RegisteredDrug.objects.all()[:30]
+#             self.last_query_count = object_list.count
+#         return object_list
+
+#     def get_context_data(self, **kwargs):
+#         data = super().get_context_data(**kwargs)
+#         data['last_query'] = self.last_query
+#         data['last_query_count'] = self.last_query_count
+#         return data
+
+class BillDrugDeliveryAddDrugModal(BSModalCreateView, LoginRequiredMixin):
+    """Add new drug delivery to bill"""
+    template_name = 'drugdb/bill_drugdelivery_add_modal.html'
+    form_class = BillDrugDeliveryAddDrugModalForm
+    bill_obj = None
+    drug_obj = None
+    success_message = 'Success: Drug added'
+
+    def dispatch(self, request, *args, **kwargs):
+        if 'bill_id' in kwargs:
+            self.bill_obj = Expense.objects.get(id=kwargs['bill_id'])
+        else:
+            print('Error: no bill_id')
+        if 'reg_no' in kwargs:
+            self.drug_obj = RegisteredDrug.objects.get(reg_no=kwargs['reg_no'])
+        else:
+            print('Error: no drug reg_no')
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        if self.bill_obj:
+            data['bill_obj'] = self.bill_obj
+        return data
+
+    def get_success_url(self):
+        return reverse('drugdb:BillDrugDeliveryView', args=(self.bill_obj.pk,))
+
+    def get_form_kwargs(self):
+        kwargs = super(BillDrugDeliveryAddDrugModal, self).get_form_kwargs()
+        kwargs.update({
+            'bill_obj': self.bill_obj,
+            'drug_obj': self.drug_obj,
+            })
+        return kwargs

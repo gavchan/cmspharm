@@ -1,0 +1,68 @@
+<!--
+    Include Card for Expense Bill Summary
+    Requires:
+    - bill_obj
+-->
+
+
+
+{% if bill_obj %}
+<div class="card">
+    <div class="card-header bg-info">
+        <div class="row">
+            <div class="col-md-8">
+                <h5>Expense Bill Item ID # {{ bill_obj.id }}</h5>
+            </div>
+            <div class="col-md-4">
+                <a href="{% url 'ledger:ExpenseUpdate' bill_obj.id %}" 
+                    class="update-expense btn btn-sm btn-light"> Edit 
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-2">
+                Entry Date
+            </div>
+            <div class="col-md-6">
+                {{ bill_obj.entry_date }}
+            </div>
+            <div class="col-md-2">
+                Category
+            </div>
+            <div class="col-md-2">
+                {{ bill_obj.category.label }}
+            </div>
+        </div>
+        <div class="row">
+            {% if bill_obj.vendor %}
+            <div class="col-md-2">
+                Vendor
+            </div>
+            <div class="col-md-6">
+                {{ bill_obj.vendor.name }}
+            </div>
+            {% else %}
+            <div class="col-md-2">
+                Payee
+            </div>
+            <div class="col-md-6">
+                {{ bill_obj.payee }}
+            </div>
+            {% endif %}
+            <div class="col-md-2">
+                Amount
+            </div>
+            <div class="col-md-2">
+                {{ bill_obj.amount }}
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="alert alert-danger" role="alert">
+    No Expense Bill Details
+</div>
+{% endif %}
+
