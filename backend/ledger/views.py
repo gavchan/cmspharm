@@ -113,12 +113,12 @@ class ExpenseUpdate(UpdateView, LoginRequiredMixin):
     def get_success_url(self):
         return reverse('ledger:ExpenseDetail', args=(self.object.pk,))
 
-class ExpenseUpdatePopup(BSModalUpdateView, LoginRequiredMixin):
+class ExpenseUpdateModal(BSModalUpdateView, LoginRequiredMixin):
     model = Expense
     template_name = 'ledger/expense_update_modal.html'
     form_class = ExpenseUpdateModalForm
-    # success_message = 'Success: Book was updated.'
-    # success_url = reverse_lazy('inventory:ExpenseList')
+    success_message = 'Success: Book was updated.'
+    success_url = reverse_lazy('ledger:ExpenseList')
 
 class ExpenseDelete(DeleteView, LoginRequiredMixin):
     model = Expense

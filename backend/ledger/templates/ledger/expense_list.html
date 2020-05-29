@@ -81,7 +81,7 @@
                 <td class="text-monospace text-right">{{ expense.amount }}</td>
                 <td>
                     <button type="button" class="expense_item_update btn btn-sm btn-primary"
-                        data-id="{% url 'ledger:ExpenseUpdatePopup' expense.pk %}">
+                        data-id="{% url 'ledger:ExpenseUpdateModal' expense.pk %}">
                         <i class="fad fa-file-alt"></i>
                     </button>
                     {% if expense.category.name == "Drugs" %}

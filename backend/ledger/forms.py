@@ -287,7 +287,7 @@ class ExpenseUpdateForm(ModelForm):
 class ExpenseUpdateModalForm(BSModalForm):
 
     def __init__(self, *args, **kwargs):
-        self.request = kwargs.pop('request', None)
+        # self.request = kwargs.pop('request', None)
         super(ExpenseUpdateModalForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.render_unmentioned_fields = False
@@ -295,7 +295,7 @@ class ExpenseUpdateModalForm(BSModalForm):
         self.helper.form_class = 'cmmForms'
         self.helper.form_method = 'post'
         self.helper.form_action = reverse(
-            'ledger:ExpenseUpdatePopup', args=(self.instance.pk,))
+            'ledger:ExpenseUpdateModal', args=(self.instance.pk,))
 
         self.helper.layout = Layout(
             Row(
