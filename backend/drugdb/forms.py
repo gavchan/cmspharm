@@ -13,7 +13,7 @@ from crispy_forms.bootstrap import (
     UneditableField,
 )
 from bootstrap_datepicker_plus import DatePickerInput
-
+from bootstrap_modal_forms.forms import BSModalForm
 from .models import DrugDelivery
 
 class NewDrugDeliveryForm(ModelForm):
@@ -73,7 +73,7 @@ class DrugDeliveryUpdateForm(ModelForm):
         exclude = ['id', 'product_name', 'reg_no']
 
 
-class BillDrugDeliveryAddDrugModalForm(ModelForm):
+class BillDrugDeliveryAddDrugModalForm(BSModalForm):
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request', None)
