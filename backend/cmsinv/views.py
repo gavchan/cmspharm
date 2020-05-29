@@ -107,7 +107,7 @@ class InventoryItemModalDetail(BSModalReadView, LoginRequiredMixin):
             self.delivery_obj_list = DrugDelivery.objects.filter(reg_no=self.object.registration_no)[:5]
         except DrugDelivery.DoesNotExist:
             self.delivery_obj_list = None
-            print("No delivery record for {self.object.product_name}")
+            print(f"No delivery record for {self.object.product_name}")
         data['reg_drug_obj'] = self.reg_drug_obj
         data['delivery_obj_list'] = self.delivery_obj_list
         data['item_obj'] = self.object
