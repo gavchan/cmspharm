@@ -1,4 +1,11 @@
 {% load static %}
+{# Load the tag library #}
+{% load bootstrap4 %}
+
+{# Load CSS and JavaScript #}
+{% bootstrap_css %}
+{% bootstrap_javascript jquery='full' %}
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -9,8 +16,6 @@
   <meta charset="UTF-8">
 
   {% block stylesheets %}
-  <!-- Bootstrap CSS-->
-  <link href="{% static '/lib/css/bootstrap.min.css' %}" rel="stylesheet">
   <!-- Font awesome CSS -->
   <link href="{% static '/lib/css/all.css' %}" rel="stylesheet">
   <!-- Custom CSS-->
@@ -54,11 +59,9 @@
 
   <!-- Javascript -->
   {% block scripts %}
-  <script src="{% static '/lib/js/jquery-3.4.1.js' %}"></script>
   <script src="{% static '/lib/js/popper.min.js' %}"></script>
-  <script src="{% static '/lib/js/bootstrap.min.js' %}"></script>
   <script src="{% static 'js/jquery.bootstrap.modal.forms.min.js' %}"></script>
-  <script src="{% static '/lib/js/moment.js' %}"></script>"
+  <script src="{% static '/lib/js/moment.js' %}"></script>
   {% endblock scripts %}
 
   {% block extrascripts %}{% endblock extrascripts %}

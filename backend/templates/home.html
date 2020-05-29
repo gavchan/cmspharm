@@ -2,8 +2,6 @@
 
 {% block content %}
 
-{% include "_modal.html" %}
-
 <h2>Hi {{ user.username }}!</h2>
 
 <div class="mx-auto" style="width: 600px;">
@@ -32,16 +30,4 @@
 
 </div>
 
-{% endblock %}
-
-{% block extrascripts %}
-<!--
-<script type="text/javascript">
-  $(document).ready(function () {
-    $(".home-add-drug".modalForm({
-      formURL: "% url 'drug:DrugList' %}"
-    }))
-  })
-</script>
--->
 {% endblock %}

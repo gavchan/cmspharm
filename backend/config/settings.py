@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_extensions',
+    'bootstrap4',
     'crispy_forms',
     'bootstrap_modal_forms',
     'bootstrap_datepicker_plus',    
@@ -53,6 +54,9 @@ INSTALLED_APPS = [
     'inventory',
     'ledger',
 ]
+BOOTSTRAP4 = {
+    'include_jquery': True,
+}
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 MIDDLEWARE = [
