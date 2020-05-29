@@ -14,6 +14,9 @@ from .forms import (
     NewExpenseForm, ExpenseUpdateForm,
     ExpenseUpdateModalForm,
 )
+from inventory.models import (
+    Vendor,
+)
 
 # Expense Category Views
 # ======================
@@ -127,9 +130,21 @@ class NewExpense(CreateView, LoginRequiredMixin):
     template_name = 'ledger/new_expense.html'
     form_class = NewExpenseForm
     success_url = reverse_lazy('ledger:ExpenseList')
+    vendor_obj = None
+    
+    def dispatch(self, request, *args, **kwargs):
+        if 'vendor' in kwargs:
+            self.vendor_obj = Vendor.objects.get(id=kwargs['vendor'])
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
-        data['today'] = date.today().strftime('%Y-%m-%d') 
+        data['today'] = date.today().strftime('%Y-%m-%d')
         return data
 
+    def get_form_kwargs(self):
+        kwargs = super(NewExpense, self).get_form_kwargs()
+        kwargs.update({
+            'vendor_obj': self.vendor_obj,
+            })
+        return kwargs

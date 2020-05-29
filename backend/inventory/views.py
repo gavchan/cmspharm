@@ -16,7 +16,7 @@ from .models import (
 )
 from .forms import (
     NewCategoryForm, CategoryUpdateForm,
-    NewVendorForm, VendorUpdateForm,
+    NewVendorForm, NewVendorModalForm, VendorUpdateForm,
     NewItemForm, ItemUpdateForm,
     NewItemDeliveryForm, ItemDeliveryUpdateForm,
 )
@@ -189,19 +189,21 @@ class NewVendor(CreateView, LoginRequiredMixin):
     form_class = NewVendorForm
     success_url = reverse_lazy('inventory:VendorList')
 
-# class NewVendorPopup(BSModalCreateView):
-#     model = Vendor
-#     template_name = 'inventory/new_vendor_modal.html'
-#     form_class = NewVendorForm
-#     success_message = 'Success: Book was created.'
-#     success_url = reverse_lazy('inventory:NewExpense')
+class NewVendorModal(BSModalCreateView):
+    model = Vendor
+    template_name = 'inventory/new_vendor_modal.html'
+    form_class = NewVendorModalForm
+    success_message = 'Success: VendorModal was created.'
+    # success_url = reverse_lazy('ledger:NewExpense') 
+    def get_success_url(self):
+        return reverse('ledger:NewExpenseFromVendor', kwargs={'vendor': self.object.pk})
 
-def NewVendorPopup(request):
-    form = NewVendorForm(request.POST or None)
-    if form.is_valid():
-        instance = form.save()
-        return HttpResponseRedirect(reverse('ledger:NewExpense', args=()))
-    return render(request, "inventory/new_vendor_modal.html", {"form": form})
+# def NewVendorModal(request):
+#     form = NewVendorModalForm(request.POST or None)
+#     if form.is_valid():
+#         instance = form.save()
+#         return HttpResponseRedirect(reverse('ledger:NewExpense', args=()))
+#     return render(request, "inventory/new_vendor_modal.html", {"form": form})
 
 
 @csrf_exempt

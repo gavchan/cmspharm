@@ -1,7 +1,18 @@
 from django import forms
 from django.forms import ModelForm
-from bootstrap_modal_forms.forms import BSModalForm
+from django.urls import reverse
 from .models import Category, Vendor, Item, ItemDelivery
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import (
+    Layout, Row, Column, Div, HTML, Submit, Button, Hidden,
+    Field, Fieldset,
+)
+from crispy_forms.bootstrap import (
+    FormActions,
+    FieldWithButtons,
+    StrictButton,
+    )
+from bootstrap_modal_forms.forms import BSModalForm
 
 class NewCategoryForm(ModelForm):
     class Meta:
@@ -80,6 +91,49 @@ class ItemUpdateForm(ModelForm):
         exclude = ['id', 'version', 'date_created',]
 
 class NewVendorModalForm(BSModalForm):
+
+    def __init__(self, *args, **kwargs):
+        super(NewVendorModalForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.render_unmentioned_fields = False
+        self.helper.form_id = 'id-NewVendorModalForm'
+        self.helper.form_class = 'cmmForms'
+        self.helper.form_method = 'post'
+        self.helper.form_action = reverse(
+            'inventory:NewVendorModal')
+        self.helper.layout = Layout(
+            Row(
+                Column('name', css_class='form-group col-md-4 mb-0'),
+                Column('account_no', css_class='form-group col-md-4 mb-0'),
+                Column('website', css_class='form-group col-md-4 mb-0'),
+                css_class='form-row',
+            ),
+            Row(
+                Column(Field('address', rows='3'), css_class='form-group col-md-4 mb-0'),
+                Column('email', css_class='form-group col-md-4 mb-0'),
+                Column(Field('remarks', rows='3'), css_class='form-group col-md-4 mb-0'),
+                css_class='form-row',
+            ),
+            Row(
+                Column('contact_person', css_class='form-group col-md-4 mb-0'),
+                Column('tel_main', css_class='form-group col-md-4 mb-0'),
+                Column('tel_mobile', css_class='form-group col-md-4 mb-0'),
+                css_class='form-row',
+            ),
+            Row(
+                Column('tel_office', css_class='form-group col-md-4 mb-0'),
+                Column('fax', css_class='form-group col-md-4 mb-0'),
+                Column('active', css_class='form-group col-md-4 mb-0'),
+                css_class='form-row',
+            ),
+            FormActions(
+                Submit('submit', 'Submit'),
+                HTML("""
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                """),
+            ),
+        )
+
     class Meta:
         model = Vendor
         exclude = ['id', 'version', 'date_created', 'last_updated',]

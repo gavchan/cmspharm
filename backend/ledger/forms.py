@@ -13,7 +13,7 @@ from crispy_forms.bootstrap import (
     StrictButton,
 )
 from bootstrap_datepicker_plus import DatePickerInput
-
+from bootstrap_modal_forms.forms import BSModalForm
 from .models import ExpenseCategory, Expense, PaymentMethod
 
 
@@ -102,6 +102,7 @@ class ExpenseCategoryUpdateForm(ModelForm):
 class NewExpenseForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
+        self.vendor_obj= kwargs.pop('vendor_obj', None)
         super(NewExpenseForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.render_unmentioned_fields = False
@@ -114,6 +115,7 @@ class NewExpenseForm(ModelForm):
         today_date = date.today().strftime('%Y-%m-%d')
         self.initial['payment_method'] = PaymentMethod.objects.get(name='Cheque').pk 
         self.initial['version'] = 1
+        self.initial['vendor'] = self.vendor_obj.pk
 
         self.helper.layout = Layout(
             Hidden('entry_date', today_date),
@@ -276,7 +278,7 @@ class ExpenseUpdateForm(ModelForm):
                     ),
                 }
 
-class ExpenseUpdateModalForm(ModelForm):
+class ExpenseUpdateModalForm(BSModalForm):
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request', None)

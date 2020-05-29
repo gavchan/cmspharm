@@ -11,6 +11,7 @@ urlpatterns = [
     path('expenses/<int:pk>/update/modal', views.ExpenseUpdatePopup.as_view(), name='ExpenseUpdatePopup'),
     path('expenses/<int:pk>/delete/', views.ExpenseDelete.as_view(), name='ExpenseDelete'),
     path('expenses/<int:pk>', views.ExpenseDetail.as_view(), name='ExpenseDetail'),
+    path('expenses/vendor/<int:vendor>/new', views.NewExpense.as_view(), name='NewExpenseFromVendor'),
     path('expenses/new/', views.NewExpense.as_view(), name='NewExpense'),
     path('expenses/', views.ExpenseList.as_view(), name='ExpenseList'),
     ]

@@ -35,7 +35,7 @@
     // }
     $(document).ready(function () {
         $("#add_vendor_button").modalForm({
-            formURL: "{% url 'inventory:NewVendorPopup' %}"
+            formURL: "{% url 'inventory:NewVendorModal' %}"
         });
         $("#set-settled-eq-expected").click(function() {
             console.log($("#id_settled_date").val($('#id_expected_date').val()));
