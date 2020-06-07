@@ -160,7 +160,12 @@ class Delivery(models.Model):
     @property
     def standard_cost(self):
         """Standard average cost of items (not including bonus items or discounts)"""
-        return round(self.unit_price * self.purchase_quantity / self.items_quantity, 2) 
+        try:
+            std_cost = round(self.unit_price * self.purchase_quantity / (self.items_per_purchase * self.purchase_quantity), 2)
+        except Exception as e:
+            print('%s (%s)' % (e, type(e))) 
+            std_cost = 'NA'
+        return  std_cost
 
     @property
     def average_cost(self):
