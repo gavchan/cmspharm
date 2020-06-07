@@ -140,6 +140,7 @@ class NewExpense(CreateView, LoginRequiredMixin):
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         data['today'] = date.today().strftime('%Y-%m-%d')
+        data['vendor_obj'] = self.vendor_obj
         return data
 
     def get_form_kwargs(self):
