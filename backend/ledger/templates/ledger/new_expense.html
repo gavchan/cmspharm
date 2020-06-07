@@ -10,6 +10,7 @@
 
 {% block sidebar %}
 <p><button id="set-settled-eq-expected" class="btn btn-sm btn-info btn-block">Set Settled=Expected</button></p>
+<p><button id="set-payee-eq-vendor" class="btn btn-sm btn-info btn-block">Set Payee=Vendor</button></p>
 <hr>
 <p><a class="btn btn-sm btn-primary btn-block" href="{% url 'ledger:NewExpense' %}">Show Expenses</a></p>
 <p><a class="btn btn-sm btn-secondary btn-block" href="{% url 'inventory:VendorList' %}">Show Vendors</a></p>
@@ -38,7 +39,10 @@
             formURL: "{% url 'inventory:NewVendorModal' %}"
         });
         $("#set-settled-eq-expected").click(function() {
-            console.log($("#id_settled_date").val($('#id_expected_date').val()));
+            $("#id_settled_date").val($('#id_expected_date').val());
+        });
+        $("#id_vendor").change(function() {
+            $("#id_payee").val($("#id_vendor option:selected").text());
         });
     })
 </script>
