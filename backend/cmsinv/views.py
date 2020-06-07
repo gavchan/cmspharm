@@ -12,7 +12,8 @@ from .models import (
 )
 
 from .forms import (
-    InventoryItemUpdateForm
+    InventoryItemUpdateForm,
+    InventoryItemMatchUpdateForm,
 )
 
 from bootstrap_modal_forms.generic import BSModalReadView
@@ -60,13 +61,17 @@ class InventoryItemDetail(DetailView, LoginRequiredMixin):
     """Display details of inventory item"""
     model = InventoryItem
     template_name = 'cmsinv/inventory_item_detail.html'
-    context_object_name = 'item_obj'
-    drug_reg_no = ''
-    keyword = ''
-    ingredients = ''
+    item_obj = None
     reg_drug_obj = None
     drug_delivery_obj = None
-    reg_match_obj = None
+   
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        data['reg_drug_obj'] =  self.reg_drug_obj
+        data['item_obj'] = self.object
+        print(data['reg_drug_obj'])
+        data['delivery_obj_list'] = self.delivery_obj_list
+        return data
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
@@ -75,11 +80,13 @@ class InventoryItemDetail(DetailView, LoginRequiredMixin):
         except RegisteredDrug.DoesNotExist:
             print("No registration no. for {self.object.product_name}")
         try:
-            self.drug_delivery_obj = DrugDelivery.objects.get(reg_no=self.object.registration_no)
+            self.delivery_obj_list = DrugDelivery.objects.filter(reg_no=self.object.registration_no)[:5]
         except DrugDelivery.DoesNotExist:
-            print("No delivery record for {self.object.product_name}")
+            self.delivery_obj_list = None
+            print(f"No delivery record for {self.object.product_name}")
         data['reg_drug_obj'] = self.reg_drug_obj
-        data['drug_delivery_obj'] = self.drug_delivery_obj
+        data['delivery_obj_list'] = self.delivery_obj_list
+        data['item_obj'] = self.object
         return data
 
 class InventoryItemModalDetail(BSModalReadView, LoginRequiredMixin):
@@ -246,3 +253,34 @@ class MatchInventoryItemList(ListView, LoginRequiredMixin):
             Q(ingredient__icontains=self.ingredients)
         ).order_by('discontinue').exclude(registration_no=self.drug_reg_no)[:100]
         return object_list
+
+class InventoryItemMatchUpdate(UpdateView, LoginRequiredMixin):
+    model = InventoryItem
+    template_name = 'cmsinv/inventory_item_match_update.html'
+    form_class = InventoryItemMatchUpdateForm
+    item_obj = None
+    drug_obj = None
+    delivery_obj = None
+    delivery_obj_list = None
+    
+    def get_success_url(self):
+        return reverse('cmsinv:InventoryItemDetail', args=(self.object.pk,))
+        
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        try:
+            self.drug_obj = RegisteredDrug.objects.get(reg_no=self.object.registration_no)
+        except RegisteredDrug.DoesNotExist:
+            print("No registration no. for {self.object.product_name}")
+        try:
+            self.delivery_obj_list = DrugDelivery.objects.filter(reg_no=self.object.registration_no).order_by('-received_date')[:5]
+        except DrugDelivery.DoesNotExist:
+            self.delivery_obj_list = None
+            print(f"No delivery record for {self.object.product_name}")
+        if self.delivery_obj_list:
+            self.delivery_obj = self.delivery_obj_list[0]
+        data['drug_obj'] = self.drug_obj
+        data['delivery_obj'] = self.delivery_obj
+        data['delivery_obj_list'] = self.delivery_obj_list
+        data['item_obj'] = self.object
+        return data

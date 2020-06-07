@@ -5,6 +5,7 @@ app_name = 'cmsinv'
 urlpatterns = [
     path('item/match/delivery/<int:delivery_id>', views.MatchDeliveryInventoryItemList.as_view(), name='MatchDeliveryInventoryItemList'),
     path('item/match/<str:reg_no>', views.MatchInventoryItemList.as_view(), name='MatchInventoryItemList'),
+    path('item/match/<int:pk>/update/', views.InventoryItemMatchUpdate.as_view(), name='InventoryItemMatchUpdate'),
     path('item/<int:pk>/update/', views.InventoryItemUpdate.as_view(), name='InventoryItemUpdate'),
     # path('item/<int:pk>/delete/', views.InventoryItemDelete.as_view(), name='InventoryItemDelete'),
     path('item/<int:pk>', views.InventoryItemDetail.as_view(), name='InventoryItemDetail'),

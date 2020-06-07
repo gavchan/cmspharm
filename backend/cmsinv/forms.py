@@ -120,3 +120,24 @@ class InventoryItemUpdateForm(ModelForm):
         model = InventoryItem
         exclude = ['id',]
 
+class InventoryItemMatchUpdateForm(ModelForm):
+
+    class Meta:
+        model = InventoryItem
+        exclude = [
+            'id', 'version', 'date_created',
+            'inventory_item_type',
+            'inventory_type',
+            'generic_name_chinese',
+            'label_name_chinese',
+            'location',
+            'priority',
+            'reorder_status',
+            'stock_qty',
+            ]
+        widgets = {
+          'ingredient': forms.Textarea(attrs={'rows':2,}),
+        }
+        disabled_widget = forms.CheckboxInput(attrs={'disabled': True})
+
+
