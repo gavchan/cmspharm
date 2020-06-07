@@ -169,7 +169,7 @@ class InventoryItem(models.Model):
     last_updated = models.DateTimeField(blank=True, null=True)
     location = models.CharField(max_length=255, blank=True, null=True)
     mini_dispensary_unit = models.FloatField(default=0)
-    mini_dosage_unit = models.FloatField()
+    mini_dosage_unit = models.FloatField(default=0)
     product_name = models.CharField(max_length=255, blank=True, null=True)
     product_name_chinese = models.CharField(max_length=255, blank=True, null=True)
     registration_no = models.CharField(unique=True, max_length=255, blank=True, null=True)
