@@ -1,5 +1,6 @@
 # Local settings/keys/files
 backend/pg_settings.env
+backend/dbbackup/
 backend/static/lib/
 *.key
 *.csv
