@@ -131,11 +131,11 @@ class NewExpenseForm(ModelForm):
                     FieldWithButtons('vendor', StrictButton('<i class="far fa-user-plus"></i>', id='add_vendor_button', css_class='btn-secondary')),
                     css_class='form-group col-md-8 mb-0'
                     ),
-                Column('category', css_class='form-group col-md-4 mb-0'),
+                Column('payee', css_class='form-group col-md-4 mb-0'),
                 css_class='form-row',
             ),
             Row(
-                Column('expected_date', css_class='form-group col-md-4 mb-0'),
+                Column('category', css_class='form-group col-md-4 mb-0'),
                 Column('amount', css_class='form-group col-md-4 mb-0'),
                 Column('description', css_class="form-group col-md-4 mb-0"),
                 css_class='form-row',
@@ -143,7 +143,7 @@ class NewExpenseForm(ModelForm):
             Row(
                 Column('payment_ref', css_class='form-group col-md-4 mb-0'),
                 Column('payment_method', css_class='form-group col-md-4 mb-0'),
-                Column('payee', css_class='form-group col-md-4 mb-0'),
+                Column('expected_date', css_class='form-group col-md-4 mb-0'),
                 css_class='form-row',
             ),
             Row(
