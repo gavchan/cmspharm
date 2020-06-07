@@ -76,12 +76,13 @@ class DrugDeliveryUpdateForm(ModelForm):
 class BillDrugDeliveryAddDrugModalForm(BSModalForm):
 
     def __init__(self, *args, **kwargs):
-        self.request = kwargs.pop('request', None)
+        # self.request = kwargs.pop('request', None)
         self.bill_obj = kwargs.pop('bill_obj', None)
         self.drug_obj = kwargs.pop('drug_obj', None)
+        super(BillDrugDeliveryAddDrugModalForm, self).__init__(*args, **kwargs)
         self.bill_id = self.bill_obj.id
         print(self.bill_obj.id, self.drug_obj.reg_no)
-        super(BillDrugDeliveryAddDrugModalForm, self).__init__(*args, **kwargs)
+        
         self.helper = FormHelper()
         self.helper.render_unmentioned_fields = False
         self.helper.form_id = 'id-DrugDeliveryBillAddForm'
