@@ -112,6 +112,8 @@
 <hr>
 <p><a class="btn btn-sm btn-light btn-block" href="{% url 'ledger:ExpenseCategoryList' %}">Show Categories</a></p>
 <p><a class="btn btn-sm btn-secondary btn-block" href="{% url 'inventory:VendorList' %}">Show Vendors</a></p>
+<hr>
+<p><a class="btn btn-sm btn-warning btn-block" href="{% url 'ledger:ExpenseExportCsv' %}">Export Expenses</a></p>
 {% endblock %}
 
 {% block extrascripts %}

@@ -7,6 +7,7 @@ urlpatterns = [
     path('expenses/category/<int:pk>/delete/', views.ExpenseCategoryDelete.as_view(), name='ExpenseCategoryDelete'),
     path('expenses/category/new/', views.NewExpenseCategory.as_view(), name='NewExpenseCategory'),
     path('expenses/category/', views.ExpenseCategoryList.as_view(), name='ExpenseCategoryList'),
+    path('expenses/export/csv/', views.ExpenseExportCsv, name='ExpenseExportCsv'),
     path('expenses/<int:pk>/update/', views.ExpenseUpdate.as_view(), name='ExpenseUpdate'),
     path('expenses/<int:pk>/update/modal', views.ExpenseUpdateModal.as_view(), name='ExpenseUpdateModal'),
     path('expenses/<int:pk>/delete/', views.ExpenseDelete.as_view(), name='ExpenseDelete'),

@@ -1,4 +1,6 @@
 from datetime import date
+import csv
+from django.http import HttpResponse
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse, reverse_lazy
@@ -149,3 +151,16 @@ class NewExpense(CreateView, LoginRequiredMixin):
             'vendor_obj': self.vendor_obj,
             })
         return kwargs
+
+def ExpenseExportCsv(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="expenses.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow(['Expected_date', 'Settled_date', 'Entry_date', 'Amount', 'Category', 'Payee', 'Payment_method', 'Payment_ref', 'Invoice_date', 'Invoice_no', 'Description', 'Remarks'])
+
+    expenses = Expense.objects.all().values_list('expected_date', 'settled_date', 'entry_date', 'amount', 'category', 'payee', 'payment_method', 'payment_ref', 'invoice_date', 'invoice_no', 'description', 'remarks')
+    for expense in expenses:
+        writer.writerow(expense)
+
+    return response
