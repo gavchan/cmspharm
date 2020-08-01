@@ -13,21 +13,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
-
-# Read secret key from a file
-with open('dj_secret.key') as f:
-    SECRET_KEY = f.read().strip()
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = ['*']
-
+BASE_DIR = os.path.dirname(os.path.realpath(os.path.dirname(__file__) + "/.."))
 
 # Application definition
 
@@ -92,44 +78,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'config.wsgi.application'
-
-# Database
-# https://docs.djangoproject.com/en/3.0/ref/settings/#databases
-
-# Read postgres password from a file
-with open('pg_settings.env') as f:
-    POSTGRES_PASS = f.read().strip().split("=")[1]
-
-with open('cms.key') as f:
-    CMS_PASS = f.read().strip()
-
-DATABASE_ROUTERS = ['db_routers.cms.CmsDbRouter', ]
-DATABASE_APPS_MAPPING = {
-    'cmsacc': 'cms_db',
-    'cmsinv': 'cms_db',
-    'cmssys': 'cms_db',
-    'drugdb': 'default',
-   }
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'postgres',
-        'PASSWORD': POSTGRES_PASS,
-        'HOST': 'db',
-        'PORT': 5432,
-    },
-    'cms_db': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'cmsyw',
-        'USER': 'root',
-        'PASSWORD': CMS_PASS,
-        'HOST': 'host.docker.internal',
-        'PORT': '3306',
-    },
-}
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
