@@ -3,7 +3,8 @@ backend/pg_settings.env
 backend/db_settings_dev.yml
 backend/db_settings_prod.yml
 backend/dbbackup/
-backend/static/lib/
+backend/static/
+backend/staticfiles/
 *.key
 *.csv
 
