@@ -7,6 +7,9 @@ backend/static/
 backend/staticfiles/
 *.key
 *.csv
+backend/config/asgi.py
+backend/config/wsgi.py
+backend/manage.py
 
 # Server configuration files
 data/
