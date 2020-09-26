@@ -10,6 +10,7 @@ backend/staticfiles/
 backend/config/asgi.py
 backend/config/wsgi.py
 backend/manage.py
+dcdevup.bat
 
 # Server configuration files
 data/
