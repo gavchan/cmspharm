@@ -17,7 +17,7 @@
 
   {% block stylesheets %}
   <!-- Font awesome CSS -->
-  <link href="{% static '/lib/css/all.css' %}" rel="stylesheet">
+  <link href="{% static '/assets/css/all.css' %}" rel="stylesheet">
   <!-- Custom CSS-->
   <link href="{% static '/assets/css/cmsman.css' %}" rel="stylesheet">
   <title>
@@ -59,9 +59,9 @@
 
   <!-- Javascript -->
   {% block scripts %}
-  <script src="{% static '/lib/js/popper.min.js' %}"></script>
-  <script src="{% static 'js/jquery.bootstrap.modal.forms.min.js' %}"></script>
-  <script src="{% static '/lib/js/moment.js' %}"></script>
+  <script src="{% static '/assets/js/popper.min.js' %}"></script>
+  <script src="{% static '/js/jquery.bootstrap.modal.forms.min.js' %}"></script>
+  <script src="{% static '/assets/js/moment.js' %}"></script>
   {% endblock scripts %}
 
   {% block extrascripts %}{% endblock extrascripts %}
