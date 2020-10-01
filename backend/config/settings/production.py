@@ -48,3 +48,11 @@ DATABASES = {
         'PORT': cms_db['port'],
     },
 }
+
+# Misc security settings
+SECURE_HSTS_SECONDS = True
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+SECURE_SSL_REDIRECT = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
