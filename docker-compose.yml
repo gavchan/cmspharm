@@ -23,8 +23,8 @@ services:
     #  - 8000:8000
     expose:
       - 8000
-    environment:
-      MYSQL_HOST: host.docker.internal
+        #environment:
+          #MYSQL_HOST: host.docker.internal
     depends_on:
       - db
   nginx:
@@ -32,6 +32,7 @@ services:
     build: ./nginx
     volumes:
       - static-vol:/app/backend/staticfiles/
+      - ./data/logs:/var/log/nginx/
       - ./data/certbot/conf:/etc/letsencrypt/
       - ./data/certbot/www:/var/www/certbot/
     ports:
