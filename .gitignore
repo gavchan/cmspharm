@@ -7,6 +7,10 @@ backend/static/
 backend/staticfiles/
 *.key
 *.csv
+backend/config/asgi.py
+backend/config/wsgi.py
+backend/manage.py
+dcdevup.bat
 
 # Server configuration files
 data/

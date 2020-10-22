@@ -18,6 +18,7 @@ services:
     tty: true
     command: python manage.py runserver 0.0.0.0:8000
     environment:
+      DJ_RUNENV: dev
       MYSQL_HOST: host.docker.internal
     depends_on:
       - db

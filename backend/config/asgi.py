@@ -11,7 +11,10 @@ import os
 
 from django.core.asgi import get_asgi_application
 
-# os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings.development')
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings.production')
+# Get environment to determine Django settings, default to production
+if os.getenv('DJ_RUNENV') == 'dev':
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings.development')
+else:
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings.production')
 
 application = get_asgi_application()
