@@ -19,8 +19,9 @@ from django.contrib.auth import views as auth_views
 from django.views.generic.base import TemplateView
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('auth/', include('django.contrib.auth.urls')),
+    path('admin/', include('admin_honeypot.urls', namespace='admin_honeypot')),
+    path('cms-admin/', admin.site.urls),
+    path('cms-auth/', include('django.contrib.auth.urls')),
     path('cmsinv/', include('cmsinv.urls')),
     path('drugdb/', include('drugdb.urls')),
     path('inventory/', include('inventory.urls')),

@@ -11,4 +11,5 @@ COPY requirements.txt $APP_HOME
 RUN pip3 install --upgrade pip -r requirements.txt
 COPY . $APP_HOME
 
+CMD python3 manage.py collectstatic --noinput
 

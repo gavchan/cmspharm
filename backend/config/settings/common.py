@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_extensions',
+    'admin_honeypot',
     'bootstrap4',
     'crispy_forms',
     'bootstrap_modal_forms',
