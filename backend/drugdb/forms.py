@@ -94,6 +94,8 @@ class BillDrugDeliveryAddDrugModalForm(BSModalForm):
         self.initial['product_name'] = self.drug_obj.name
         self.initial['reg_no'] = self.drug_obj.reg_no
         self.initial['version'] = 1
+        self.initial['received_date'] = self.bill_obj.invoice_date
+        self.initial['delivery_note_no'] = self.bill_obj.invoice_no
         self.ingredient_str = f"<p><em>Ingredients:</em> {self.drug_obj.ingredients}</p>"
         self.helper.layout = Layout(
             Row(
@@ -134,8 +136,8 @@ class BillDrugDeliveryAddDrugModalForm(BSModalForm):
                 Column('expiry_date', css_class='form-group col-md-4 mb-0'),
             ),
             Row(
-                Column('other_ref', css_class='form-group col-md-4 mb-0'),
                 Column('remark', css_class='form-group col-md-4 mb-0'),
+                Column('other_ref', css_class='form-group col-md-4 mb-0'),
                 css_class="form-row",            
             ),
             

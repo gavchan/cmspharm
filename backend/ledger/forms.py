@@ -136,25 +136,24 @@ class NewExpenseForm(ModelForm):
             ),
             Row(
                 Column('category', css_class='form-group col-md-4 mb-0'),
+                Column('invoice_no', css_class='form-group col-md-4 mb-0'),
+                Column('invoice_date', css_class='form-group col-md-4 mb-0'),
+                css_class='form-row',
+            ),
+            Row(
+                Column('payment_method', css_class='form-group col-md-4 mb-0'),
                 Column('amount', css_class='form-group col-md-4 mb-0'),
-                Column('description', css_class="form-group col-md-4 mb-0"),
+                Column('description', css_class='form-group col-md-4 mb-0'),
                 css_class='form-row',
             ),
             Row(
                 Column('payment_ref', css_class='form-group col-md-4 mb-0'),
-                Column('payment_method', css_class='form-group col-md-4 mb-0'),
                 Column('expected_date', css_class='form-group col-md-4 mb-0'),
-                css_class='form-row',
-            ),
-            Row(
-                Column('invoice_no', css_class='form-group col-md-4 mb-0'),
-                Column('invoice_date', css_class='form-group col-md-4 mb-0'),
                 Column('settled_date', css_class='form-group col-md-4 mb-0'),
-                css_class="form-row",
-            ),
+                css_class="form-row",            ),
             Row(
-                Column('other_ref', css_class='form-group col-md-4 mb-0'),
                 Column(Field('remarks', css_class='form-group col-md-8 mb-0', rows="1")),
+                Column('other_ref', css_class='form-group col-md-4 mb-0'),
                 css_class="form-row",            
             ),
             FormActions(
