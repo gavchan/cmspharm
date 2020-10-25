@@ -38,9 +38,6 @@
         $("#add_vendor_button").modalForm({
             formURL: "{% url 'inventory:NewVendorModal' %}"
         });
-        $("#set-settled-eq-expected").click(function() {
-            $("#id_settled_date").val($('#id_expected_date').val());
-        });
         $("#id_vendor").change(function() {
             $("#id_payee").val($("#id_vendor option:selected").text());
         });

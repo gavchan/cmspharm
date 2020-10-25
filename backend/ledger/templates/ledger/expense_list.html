@@ -64,8 +64,10 @@
     <table class="table table-sm table-striped">
         <thead>
             <tr>
-                <th scope="col">Date</th>
-                <th scope="col">Category/Payee</th>
+                <th scope="col">Invoice</th>
+                <th scope="col">Paid Date</th>
+                <th scope="col">Payee</th>
+                <th scope="col">Category</th>
                 <th scope="col">Amount</th>
                 <th scope="col">Action</th>
             </tr>
@@ -74,10 +76,10 @@
             {% for expense in expense_list_obj %}
             
             <tr>
-                <td>{{ expense.entry_date }}</td>
-                <td>{{ expense.category }}
-                    <br>{{ expense.payee }}
-                </td>
+                <td>{{ expense.invoice_date|date:"d-m-y" }}</td>
+                <td>{{ expense.expected_date|date:"d-m-y" }}</td>
+                <td>{{ expense.payee }}</td>
+                <td>{{ expense.category.name }}</td>
                 <td class="text-monospace text-right">{{ expense.amount }}</td>
                 <td>
                     <button type="button" class="expense_item_update btn btn-sm btn-primary"

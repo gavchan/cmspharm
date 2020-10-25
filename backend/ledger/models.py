@@ -42,10 +42,8 @@ class LedgerEntry(models.Model):
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     description = models.CharField(max_length=255, blank=True, null=True)
     remarks = models.TextField(blank=True, null=True)
-    expected_date = models.DateField(verbose_name="Cheque/due date", blank=True, null=True)
-    # expected_date: refers to due date (for income), cheque date (for cheque expense)
-    settled_date = models.DateField(verbose_name="Settlement/paid date", blank=True, null=True)
-    # settled_date: refers to the date payment deducted (cheque expense) or received
+    expected_date = models.DateField(verbose_name="Cheque/paid date", blank=True, null=True)
+    # expected_date: refers to due/paid date, cheque date (for cheque expense)
     date_created = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
     updated_by = models.CharField(max_length=255, blank=True, null=True)
