@@ -109,6 +109,10 @@ class NewVendorModalForm(BSModalForm):
                 css_class='form-row',
             ),
             Row(
+                Column('default_exp_category', css_class="col-md-8 mb-0"),
+                Column('default_description', css_class="col-md-4 mb-0"),
+            ),
+            Row(
                 Column(Field('address', rows='3'), css_class='form-group col-md-4 mb-0'),
                 Column('email', css_class='form-group col-md-4 mb-0'),
                 Column(Field('remarks', rows='3'), css_class='form-group col-md-4 mb-0'),
@@ -148,3 +152,54 @@ class VendorUpdateForm(ModelForm):
         model = Vendor
         exclude = ['id', 'version', 'date_created', 'last_updated',]
 
+class VendorUpdateModalForm(BSModalForm):
+
+    def __init__(self, *args, **kwargs):
+        super(VendorUpdateModalForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.render_unmentioned_fields = False
+        self.helper.form_id = 'id-VendorUpdateModalForm'
+        self.helper.form_class = 'cmmForms'
+        self.helper.form_method = 'post'
+        self.helper.form_action = reverse(
+            'inventory:VendorUpdateModal', args=(self.instance.pk,))
+        self.helper.layout = Layout(
+            Row(
+                Column('name', css_class='form-group col-md-4 mb-0'),
+                Column('account_no', css_class='form-group col-md-4 mb-0'),
+                Column('website', css_class='form-group col-md-4 mb-0'),
+                css_class='form-row',
+            ),
+            Row(
+                Column('default_exp_category', css_class="col-md-8 mb-0"),
+                Column('default_description', css_class="col-md-4 mb-0"),
+            ),
+            Row(
+                Column(Field('address', rows='3'), css_class='form-group col-md-4 mb-0'),
+                Column('email', css_class='form-group col-md-4 mb-0'),
+                Column(Field('remarks', rows='3'), css_class='form-group col-md-4 mb-0'),
+                css_class='form-row',
+            ),
+            Row(
+                Column('contact_person', css_class='form-group col-md-4 mb-0'),
+                Column('tel_main', css_class='form-group col-md-4 mb-0'),
+                Column('tel_mobile', css_class='form-group col-md-4 mb-0'),
+                css_class='form-row',
+            ),
+            Row(
+                Column('tel_office', css_class='form-group col-md-4 mb-0'),
+                Column('fax', css_class='form-group col-md-4 mb-0'),
+                Column('active', css_class='form-group col-md-4 mb-0'),
+                css_class='form-row',
+            ),
+            FormActions(
+                Submit('submit', 'Submit'),
+                HTML("""
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                """),
+            ),
+        )
+
+    class Meta:
+        model = Vendor
+        exclude = ['id', 'version', 'date_created', 'last_updated',]

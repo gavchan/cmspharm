@@ -157,9 +157,9 @@ def ExpenseExportCsv(request):
     response['Content-Disposition'] = 'attachment; filename="expenses.csv"'
 
     writer = csv.writer(response)
-    writer.writerow(['Expected_date', 'Settled_date', 'Entry_date', 'Amount', 'Category', 'Payee', 'Payment_method', 'Payment_ref', 'Invoice_date', 'Invoice_no', 'Description', 'Remarks'])
+    writer.writerow(['Expected_date', 'Entry_date', 'Amount', 'Category', 'Payee', 'Payment_method', 'Payment_ref', 'Invoice_date', 'Invoice_no', 'Description', 'Remarks'])
 
-    expenses = Expense.objects.all().values_list('expected_date', 'settled_date', 'entry_date', 'amount', 'category', 'payee', 'payment_method', 'payment_ref', 'invoice_date', 'invoice_no', 'description', 'remarks')
+    expenses = Expense.objects.all().values_list('expected_date', 'entry_date', 'amount', 'category', 'payee', 'payment_method', 'payment_ref', 'invoice_date', 'invoice_no', 'description', 'remarks')
     for expense in expenses:
         writer.writerow(expense)
 

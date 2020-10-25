@@ -1,5 +1,6 @@
 from django.db import models
 from django.urls import reverse
+# from ledger.models import ExpenseCategory
 
 class ItemType(models.Model):
     """
@@ -66,6 +67,12 @@ class Vendor(models.Model):
     active = models.BooleanField(default=True)
     website = models.CharField(max_length=255, blank=True, null=True)
     remarks = models.TextField(blank=True, null=True)
+    default_exp_category = models.ForeignKey(
+        'ledger.ExpenseCategory', on_delete=models.PROTECT,
+        verbose_name="Default expense category",
+        blank=True, null=True
+    )
+    default_description = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
         ordering = ['name']

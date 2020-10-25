@@ -80,9 +80,10 @@
                 <td>{{ vendor.tel_main }}</td>
                 <td>{{ vendor.email }}</td>
                 <td>
-                    <a href="{% url 'inventory:VendorUpdate' vendor.id %}" class="btn btn-sm btn-info">
+                    <button type="button" class="vendor_update btn btn-sm btn-primary"
+                        data-id="{% url 'inventory:VendorUpdateModal' vendor.pk %}">
                         <i class="fad fa-file-alt"></i>
-                    </a>
+                    </button>
                     <a href="{% url 'inventory:NewItem' vendor.id %}" class="btn btn-sm btn-primary">
                         <i class="fad fa-cart-plus"></i>
                     </a>
@@ -106,5 +107,36 @@
 {% endblock %}
 
 {% block sidebar %}
-<p><a class="btn btn-sm btn-light btn-block" href="{% url 'inventory:NewVendor' %}">Add Vendor</a></p>
+<!-- <p><a class="btn btn-sm btn-light btn-block" href="{% url 'inventory:NewVendorModal' %}">Add Vendor</a></p> -->
+<p><button id="add_vendor_button" class="btn btn-sm btn-light btn-block">Add Vendor</button></p>
+{% endblock %}
+
+{% block extrascripts %}
+{{ form.media }}
+
+<script type="text/javascript">
+    // function showAddPopup(triggeringLink) {
+    //     var name = triggeringLink.id.replace(/^add_/, '');
+    //     print(name);
+    //     href = triggeringLink.href;
+    //     print(href);
+    //     var win = window.open(href, name, 'height=500,width=800,resizable=yes,scrollbars=yes');
+    //     win.focus();
+    //     return false;
+    // }
+    // function closePopup(win, newID, newRepr, id) {
+    //     $(id).append('<option value=' + newID + ' selected >' + newRepr + '</option>')
+    //     win.close();
+    // }
+    $(document).ready(function () {
+        $("#add_vendor_button").modalForm({
+            formURL: "{% url 'inventory:NewVendorModal' %}"
+        });
+        $(".vendor_update").each(function() {
+            $(this).modalForm({
+                formURL: $(this).data('id')
+            });
+        });
+    });
+</script>
 {% endblock %}

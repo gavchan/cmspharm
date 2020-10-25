@@ -7,6 +7,7 @@ from django.db.models import Q
 from django.views.decorators.csrf import csrf_exempt
 from bootstrap_modal_forms.generic import (
     BSModalCreateView,
+    BSModalUpdateView,
 )
 from .models import (
     Category,
@@ -16,7 +17,7 @@ from .models import (
 )
 from .forms import (
     NewCategoryForm, CategoryUpdateForm,
-    NewVendorForm, NewVendorModalForm, VendorUpdateForm,
+    NewVendorForm, NewVendorModalForm, VendorUpdateForm, VendorUpdateModalForm,
     NewItemForm, ItemUpdateForm,
     NewItemDeliveryForm, ItemDeliveryUpdateForm,
 )
@@ -193,7 +194,7 @@ class NewVendorModal(BSModalCreateView):
     model = Vendor
     template_name = 'inventory/new_vendor_modal.html'
     form_class = NewVendorModalForm
-    success_message = 'Success: VendorModal was created.'
+    success_message = 'Success: Vendor was created.'
     # success_url = reverse_lazy('ledger:NewExpense') 
     def get_success_url(self):
         return reverse('ledger:NewExpenseFromVendor', kwargs={'vendor': self.object.pk})
@@ -221,6 +222,13 @@ class VendorUpdate(UpdateView, LoginRequiredMixin):
     model = Vendor
     form_class = VendorUpdateForm
     template_name = 'inventory/vendor_update.html'
+    success_url = reverse_lazy('inventory:VendorList')
+
+class VendorUpdateModal(BSModalUpdateView, LoginRequiredMixin):
+    model = Vendor
+    template_name = 'inventory/vendor_update_modal.html'
+    form_class = VendorUpdateModalForm
+    success_message = 'Success: Vendor was updated.'
     success_url = reverse_lazy('inventory:VendorList')
 
 
