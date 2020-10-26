@@ -12,7 +12,8 @@ urlpatterns = [
     path('expenses/<int:pk>/update/modal', views.ExpenseUpdateModal.as_view(), name='ExpenseUpdateModal'),
     path('expenses/<int:pk>/delete/', views.ExpenseDelete.as_view(), name='ExpenseDelete'),
     path('expenses/<int:pk>', views.ExpenseDetail.as_view(), name='ExpenseDetail'),
-    path('expenses/vendor/<int:vendor>/new', views.NewExpense.as_view(), name='NewExpenseFromVendor'),
-    path('expenses/new/', views.NewExpense.as_view(), name='NewExpense'),
+    # path('expenses/vendor/<int:vendor_id>/new/', views.NewExpenseByVendorModal.as_view(), name='NewExpenseByVendorModal'),
+    path('expenses/new/modal', views.NewExpenseModal.as_view(), name='NewExpenseModal'),
+    path('expenses/new/', views.NewExpenseSelectVendorView, name='NewExpense'),
     path('expenses/', views.ExpenseList.as_view(), name='ExpenseList'),
     ]

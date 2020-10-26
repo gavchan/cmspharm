@@ -14,7 +14,7 @@ from crispy_forms.bootstrap import (
 )
 from bootstrap_datepicker_plus import DatePickerInput
 from bootstrap_modal_forms.forms import BSModalForm
-from .models import ExpenseCategory, Expense, PaymentMethod
+from .models import ExpenseCategory, Expense, PaymentMethod, Vendor
 
 
 class NewExpenseCategoryForm(ModelForm):
@@ -264,6 +264,89 @@ class ExpenseUpdateForm(ModelForm):
                     ),
                 }
 
+
+class NewExpenseModalForm(BSModalForm):
+
+    def __init__(self, *args, **kwargs):
+        self.vendor_obj= kwargs.pop('vendor_obj', None)
+        
+        super(NewExpenseModalForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.render_unmentioned_fields = False
+        self.helper.form_id = 'id-ExpenseForm'
+        self.helper.form_class = 'cmmForms'
+        self.helper.form_method = 'post'
+        self.helper.form_action = reverse(
+            'ledger:NewExpense')
+        #self.initial['entry_date'] = date.today().strftime('%Y-%m-%d')
+        today_date = date.today().strftime('%Y-%m-%d')
+        self.initial['payment_method'] = PaymentMethod.objects.get(name='Cheque').pk
+        self.initial['version'] = 1
+        if self.vendor_obj:
+            self.initial['vendor'] = self.vendor_obj.id
+            self.initial['payee'] = self.vendor_obj.name
+            self.initial['category'] = self.vendor_obj.default_exp_category if not None else ''
+            self.initial['description'] = self.vendor_obj.default_description if not None else ''
+        self.helper.layout = Layout(
+            Hidden('entry_date', today_date),
+            Hidden('version', '1'),
+            Row(
+                Column(
+                    FieldWithButtons('vendor', StrictButton('<i class="far fa-user-plus"></i>', id='add_vendor_button', css_class='btn-secondary')),
+                    css_class='form-group col-md-8 mb-0'
+                    ),
+                Column('payee', css_class='form-group col-md-4 mb-0'),
+                css_class='form-row',
+            ),
+            Row(
+                Column('category', css_class='form-group col-md-4 mb-0'),
+                Column('invoice_no', css_class='form-group col-md-4 mb-0'),
+                Column('invoice_date', css_class='form-group col-md-4 mb-0'),
+                css_class='form-row',
+            ),
+            Row(
+                Column('payment_method', css_class='form-group col-md-4 mb-0'),
+                Column('amount', css_class='form-group col-md-4 mb-0'),
+                Column('description', css_class='form-group col-md-4 mb-0'),
+                css_class='form-row',
+            ),
+            Row(
+                Column('payment_ref', css_class='form-group col-md-4 mb-0'),
+                Column('expected_date', css_class='form-group col-md-4 mb-0'),
+                Column('other_ref', css_class='form-group col-md-4 mb-0'),
+                css_class="form-row",            ),
+            Row(
+                Column(Field('remarks', css_class='form-group col-md-8 mb-0', rows="1")),
+                css_class="form-row",            
+            ),
+            FormActions(
+                Submit('submit', 'Submit'),
+            ),
+        )
+
+    class Meta:
+        model = Expense
+        exclude = ['id', ]
+        widgets = {
+                    'expected_date': DatePickerInput(
+                        options={
+                            "format": "YYYY-MM-DD",
+                            "showClose": True,
+                            "showClear": True,
+                            "showTodayButton": True,
+                        }
+                    ),
+                    'invoice_date': DatePickerInput(
+                        options={
+                            "format": "YYYY-MM-DD",
+                            "showClose": True,
+                            "showClear": True,
+                            "showTodayButton": True,
+                        }
+                    ),
+                }
+
+
 class ExpenseUpdateModalForm(BSModalForm):
 
     def __init__(self, *args, **kwargs):
@@ -345,3 +428,4 @@ class ExpenseUpdateModalForm(BSModalForm):
                         }
                     ),
                 }
+
