@@ -2,22 +2,24 @@
 
 <!-- Header -->
 <header>
-    <nav class="navbar navbar-expand-lg navbar-dark cmm-masthead">
+    <nav class="navbar navbar-expand-sm navbar-dark cmm-masthead">
         <a class="navbar-brand" href="{% url 'home' %}"><i class="fad fa-laptop-medical"></i></a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarBaseToggler"
+        <button class="navbar-toggler mr-auto" type="button" data-toggle="collapse" data-target="#navbarBaseToggler"
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
 
         <div class= "collapse navbar-collapse" id="navbarBaseToggler">
-            <ul class="navbar-nav navbar-center mr-auto mt-2 mt-lg-0">
+            <ul class="navbar-nav mr-auto mt-2 mt-sm-0">
+                <li class="nav-item">
+                    <a href="{% url 'ledger:NewExpense' %}" class="nav-link">Add Expense</a>
+                </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="{% url 'ledger:ExpenseList' %}"
                         id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Expenses
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                        <a href="{% url 'ledger:NewExpense' %}" class="dropdown-item">Add Expense</a>
                         <a href="{% url 'ledger:ExpenseList' %}" class="dropdown-item">Show Expenses</a>
                         <a href="{% url 'ledger:ExpenseCategoryList' %}" class="dropdown-item">Show Categories</a>
                         <a href="{% url 'inventory:VendorList' %}" class="dropdown-item">Show Vendors</a>
@@ -56,7 +58,7 @@
                 </li>
             {% endcomment %}
             </ul>
-            <ul class="navbar-nav my-2 my-lg-0">
+            <ul class="navbar-nav my-2 my-sm-0">
                 <li class="nav-item dropdown">
                     <a href="{% url 'logout' %}" class="nav-link">Logout</a>
                 </li>
