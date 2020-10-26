@@ -148,6 +148,8 @@ class Delivery(models.Model):
     remark = models.CharField(max_length=255, blank=True, null=True)
     received_date = models.DateField()
     received_by = models.CharField(max_length=255, blank=True, null=True)
+    expiry_month = models.CharField(max_length=8, default="", blank=True, null=True)
+    # expiry_month: format of yyyymm, or yyyymmdd; to supercede expiry_date
     expiry_date = models.DateField(blank=True, null=True)
     date_created = models.DateTimeField(auto_now_add=True)
     version = models.PositiveIntegerField(default=1)

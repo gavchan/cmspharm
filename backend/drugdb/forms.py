@@ -133,7 +133,7 @@ class BillDrugDeliveryAddDrugModalForm(BSModalForm):
             ),
             Row(
                 Column('batch_num', css_class='form-group col-md-4 mb-0'),
-                Column('expiry_date', css_class='form-group col-md-4 mb-0'),
+                Column('expiry_month', css_class='form-group col-md-4 mb-0'),
             ),
             Row(
                 Column('remark', css_class='form-group col-md-4 mb-0'),
@@ -161,9 +161,9 @@ class BillDrugDeliveryAddDrugModalForm(BSModalForm):
                             "showTodayButton": True,
                         }
                     ),
-                    'expiry_date': DatePickerInput(
+                    'expiry_month': DatePickerInput(
                         options={
-                            "format": "YYYY-MM-DD",
+                            "format": "YYYYMMDD",
                             "showClose": True,
                             "showClear": True,
                             "showTodayButton": True,
