@@ -195,17 +195,9 @@ class NewVendorModal(BSModalCreateView):
     template_name = 'inventory/new_vendor_modal.html'
     form_class = NewVendorModalForm
     success_message = 'Success: Vendor was created.'
-    # success_url = reverse_lazy('ledger:NewExpense') 
+    
     def get_success_url(self):
-        return reverse('ledger:NewExpenseFromVendor', kwargs={'vendor': self.object.pk})
-
-# def NewVendorModal(request):
-#     form = NewVendorModalForm(request.POST or None)
-#     if form.is_valid():
-#         instance = form.save()
-#         return HttpResponseRedirect(reverse('ledger:NewExpense', args=()))
-#     return render(request, "inventory/new_vendor_modal.html", {"form": form})
-
+        return f"{reverse('ledger:NewExpense')}?vendor={self.object.pk}"
 
 @csrf_exempt
 def get_vendor_id(request):
