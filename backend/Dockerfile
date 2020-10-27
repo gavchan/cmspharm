@@ -8,6 +8,7 @@ WORKDIR /app/backend
 
 COPY requirements.txt /app/backend
 RUN pip3 install --upgrade pip -r requirements.txt
+RUN pip3 install jupyter ipython 
 COPY . /app/backend
 
 EXPOSE 8000

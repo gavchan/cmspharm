@@ -13,7 +13,7 @@ services:
       - ./backend:/app/backend
     ports:
       - 51010:8000
-      - 51111:8001
+      - 51111:8888
     stdin_open: true
     tty: true
     command: python manage.py runserver 0.0.0.0:8000
