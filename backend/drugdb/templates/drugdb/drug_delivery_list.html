@@ -4,7 +4,7 @@
   Drug Deliveries
 {% endblock %}
   
-{% block main %}
+{% block content %}
 
     <h1>Drug Delivery List</h1>
     
@@ -78,7 +78,7 @@
             {% for drug in drug_delivery_list %}
             
             <tr>
-                <td>{{ drug.date_created }}</td>
+                <td>{{ drug.date_created|date:"d-m-Y" }}</td>
                 <td>{{ drug.product_name }}</td>
                 <td>{{ drug.reg_no }}</td>
                 <td>{{ drug.purchase_quantity }}+{{ drug.bonus_quantity }}</td>
@@ -110,14 +110,6 @@
 
     {% endif %}
     
-
-  
-{% endblock %}
-
-{% block sidebar %}
-
-Filter
-
 {% endblock %}
 
 {% block extrascripts %}

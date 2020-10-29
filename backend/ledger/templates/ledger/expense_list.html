@@ -4,7 +4,7 @@
   Expenses
 {% endblock %}
 
-{% block main %}
+{% block content %}
     <h1>Expense Entries</h1>
     <nav class="row">
         <div class="col-4">
@@ -106,16 +106,6 @@
 
     {% endif %}
 
-{% endblock %}
-
-{% block sidebar %}
-<p><a class="btn btn-sm btn-primary btn-block" href="{% url 'ledger:NewExpense' %}">Add Expense</a></p>
-<p><a class="btn btn-sm btn-info btn-block" href="{% url 'ledger:NewExpenseCategory' %}">Add Category</a></p>
-<hr>
-<p><a class="btn btn-sm btn-light btn-block" href="{% url 'ledger:ExpenseCategoryList' %}">Show Categories</a></p>
-<p><a class="btn btn-sm btn-secondary btn-block" href="{% url 'inventory:VendorList' %}">Show Vendors</a></p>
-<hr>
-<p><a class="btn btn-sm btn-warning btn-block" href="{% url 'ledger:ExpenseExportCsv' %}">Export Expenses</a></p>
 {% endblock %}
 
 {% block extrascripts %}

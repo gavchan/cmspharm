@@ -2,14 +2,14 @@
 
 {% load crispy_forms_tags %}
 
-{% block main %}
+{% block content %}
 <div class="card">
     <div class="card-header">
         Add New Expense
     </div>
     <div class="card-body">
         <div class="input-group input-group-sm">
-            <div class="input-group-prepend" width="10em">
+            <div class="input-group-prepend">
                 <span class="input-group-text" id="select-vendor">Add expense by vendor:</span>
             </div>
             <select class="form-control" name="vendors" id="select-vendor">
