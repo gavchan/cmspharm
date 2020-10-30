@@ -3,15 +3,17 @@ import yaml
 
 print("Using production settings")
 
-# Read secret key from a file
-with open('dj_secret.key') as f:
+with open(os.path.join(CONFIG_DIR, 'dj_secret.key')) as f:
     SECRET_KEY = f.read().strip()
+
+# Database
+# https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
 # Read settings from yaml file
-with open('db_settings_prod.yml') as f:
+with open(os.path.join(CONFIG_DIR, 'db_settings_prod.yml')) as f:
     data = yaml.load(f, Loader=yaml.FullLoader)
     default_db = data['default'][0]
     cms_db = data['cms_db'][0]

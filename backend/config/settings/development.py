@@ -13,7 +13,7 @@ NOTEBOOK_ARGUMENTS = [
     '--allow-root',
 ]
 # Read secret key from a file
-with open('dj_secret.key') as f:
+with open(os.path.join(CONFIG_DIR, 'dj_secret.key')) as f:
     SECRET_KEY = f.read().strip()
 
 ALLOWED_HOSTS = ['*']
@@ -22,17 +22,10 @@ ALLOWED_HOSTS = ['*']
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
 # Read settings from yaml file
-with open('db_settings_dev.yml') as f:
+with open(os.path.join(CONFIG_DIR, 'db_settings_dev.yml')) as f:
     data = yaml.load(f, Loader=yaml.FullLoader)
     default_db = data['default'][0]
     cms_db = data['cms_db'][0]
-
-# Read postgres password from a file
-# with open('pg_settings.env') as f:
-#     POSTGRES_PASS = f.read().strip().split("=")[1]
-
-# with open('cms.key') as f:
-#     CMS_PASS = f.read().strip()
 
 DATABASE_ROUTERS = ['db_routers.cms.CmsDbRouter', ]
 DATABASE_APPS_MAPPING = {
