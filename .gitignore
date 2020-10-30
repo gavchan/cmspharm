@@ -5,6 +5,7 @@ backend/config/db_settings_prod.yml
 backend/dbbackup/
 backend/static/
 backend/staticfiles/
+backend/dev
 *.key
 *.csv
 backend/config/asgi.py
