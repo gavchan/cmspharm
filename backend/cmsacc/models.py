@@ -1,4 +1,5 @@
 from django.db import models
+from cmssys.models import Encounter
 
 class Bill(models.Model):
     """
@@ -7,7 +8,10 @@ class Bill(models.Model):
     id = models.BigAutoField(primary_key=True)
     version = models.BigIntegerField(default=1)
     date_created = models.DateTimeField(auto_now_add=True)
-    encounter_id = models.BigIntegerField(blank=True, null=True)
+    encounter = models.ForeignKey(
+        Encounter, on_delete=models.PROTECT,
+        db_column='encounter_id'
+    )
     invoice_print_status = models.BooleanField(default=False)
     last_updated = models.DateTimeField(auto_now=True)
     receipt_print_status = models.BooleanField(default=False)
@@ -135,3 +139,4 @@ class ChargeItem(models.Model):
 
     def __str__(self):
         return f"{self.alias} | ${self.standard_amount} - {self.description_chinese} {self.description}"
+

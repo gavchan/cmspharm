@@ -111,7 +111,7 @@ class CmsUser(models.Model):
         return reverse('cmssys.views.details', args=[str(self.id)])
 
     def __str__(self):
-        return f"{self.id} | {self.username} - {self.name}"
+        return f"{self.id} | {self.name} [{self.username}]"
 
 class UserProfile(models.Model):
     """
@@ -131,3 +131,45 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return f"{self.id} | ver.{self.version}"
+
+class EncounterType(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    version = models.BigIntegerField()
+    label = models.CharField(max_length=255)
+    value = models.CharField(max_length=255)
+
+    class Meta:
+        managed = False
+        db_table = 'encounter_type'
+
+    def __str__(self):
+        return f"{self.id} | label={self.label}; value={self.value}"
+
+
+class Encounter(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    version = models.BigIntegerField()
+    # bill_id = models.BigIntegerField()
+    consultation_notes_id = models.BigIntegerField(blank=True, null=True)
+    date_created = models.DateTimeField()
+    doctor = models.ForeignKey(
+        CmsUser, on_delete=models.PROTECT,
+        db_column='doctor_id',
+    )
+    last_updated = models.DateTimeField()
+    patient_id = models.BigIntegerField()
+    prescription_id = models.BigIntegerField(blank=True, null=True)
+    encounter_type = models.ForeignKey(
+        EncounterType, on_delete=models.PROTECT,
+        db_column='type_id',
+    )
+    vital_sign_id = models.BigIntegerField(blank=True, null=True)
+    consumable_id = models.BigIntegerField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'encounter'
+
+    def __str__(self):
+        return f"{self.date_created} | Doctor: {self.doctor};  ${self.encounter_type}"
+
