@@ -12,13 +12,18 @@ class RegisteredDrug(models.Model):
     # name: Product Name
     reg_no = models.CharField(unique=True, max_length=255, blank=True, null=True)
     # reg_no: equivalent to "permit_no" in drug database
-    ingredients = models.TextField(blank=True, null=True)
+    ingredient_list = models.TextField(blank=True, null=True)
     # Company Name and Company Address
+    ingredients = models.ManyToManyField(
+        'Ingredient', 
+        related_name='registereddrugs',
+    )
     company = models.ForeignKey(
         'Company', on_delete=models.PROTECT,
         )
     date_created = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
+    is_active = models.BooleanField(default=True)
 
     class Meta:
         ordering = ['reg_no']
@@ -39,6 +44,7 @@ class Company(models.Model):
     # is_supplier: Companies may also be a supplier
     date_created = models.DateTimeField(auto_now_add=True)
     last_updated  = models.DateTimeField(auto_now=True)
+    is_active = models.BooleanField(default=True)
 
     class Meta:
         ordering = ['name']
@@ -46,6 +52,18 @@ class Company(models.Model):
 
     def __str__(self):
         return f"{self.name}"
+
+class Ingredient(models.Model):
+    """
+    Stores list of ingredients
+    """
+    name = models.CharField(unique=True, max_length=255)
+
+    class Meta:
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name
 
 class DrugDelivery(Delivery):
     """
