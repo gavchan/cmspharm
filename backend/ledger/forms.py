@@ -11,6 +11,7 @@ from crispy_forms.bootstrap import (
     FormActions,
     FieldWithButtons,
     StrictButton,
+    UneditableField,
 )
 from bootstrap_datepicker_plus import DatePickerInput
 from bootstrap_modal_forms.forms import BSModalForm
@@ -198,7 +199,7 @@ class ExpenseUpdateForm(ModelForm):
         self.helper.layout = Layout(
             Row(
                 Column('entry_date', css_class='form-group col-md-4 mb-0'),
-                Column('version', css_class='form-group col-md-4 mb-0'),
+                Column(UneditableField('version', css_class='form-control col-md-4 mb-0')),
             ),
             Row(
                 Column('vendor', css_class='form-group col-md-8 mb-0'),
@@ -363,7 +364,7 @@ class ExpenseUpdateModalForm(BSModalForm):
         self.helper.layout = Layout(
             Row(
                 Column('entry_date', css_class='form-group col-md-4 mb-0'),
-                Column('version', css_class='form-group col-md-4 mb-0'),
+                Column(UneditableField('version', css_class='form-group col-md-4 mb-0')),
             ),
             Row(
                 Column('vendor', css_class='form-group col-md-8 mb-0'),

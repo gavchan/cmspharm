@@ -4,107 +4,112 @@
   Expenses
 {% endblock %}
 
+{% load crispy_forms_tags %}
+
 {% block content %}
-    <h1>Expense Entries</h1>
-    <nav class="row">
-        <div class="col-4">
-            <form action="{% url 'ledger:ExpenseList' %}" method="get">
-                <input name="q" type="text" placeholder="Search expense entries..." />
-            </form>
-        </div>
-        <div class="col-4">
-            {% if last_query %}
-            Results for "{{ last_query }}" ({{ last_query_count }})
-            {% endif %}
-        </div>
-        <div class="col-4">
-            {% if is_paginated %}
-        
-            <ul class="pagination">
-                <li class="page-item">
-                    <a href="{% url 'ledger:ExpenseList' %}?q={{ last_query }}&page=1"
-                    class="page-link">
-                        First
-                    </a>
-                </li>
-                {% if page_obj.has_previous %}
-                <li class="page-item">
-                    <a href="{% url 'ledger:ExpenseList' %}?q={{ last_query }}&page={{ page_obj.previous_page_number }}" 
-                    class="page-link">
-                        {{ page_obj.previous_page_number }}
-                    </a>
-                </li>
-                {% endif %}
-                <li class="page-item active">
-                    <a href="{% url 'ledger:ExpenseList' %}?q={{ last_query }}&page={{ page_obj.number }}" 
-                    class="page-link">
-                        {{ page_obj.number }}
-                    </a>
-                </li>
-                {% if page_obj.has_next %}
-                <li class="page-item">
-                    <a href="{% url 'ledger:ExpenseList' %}?q={{ last_query }}&page={{ page_obj.next_page_number }}" 
-                    class="page-link">
-                        {{ page_obj.next_page_number }}
-                    </a>
-                </li>
-                {% endif %}
-                <li class="page-item">
-                    <a href="{% url 'ledger:ExpenseList' %}?q={{ last_query }}&page=last"
-                    class="page-link">
-                        Last ({{ page_obj.paginator.num_pages }}) 
-                    </a>
-                </li>
-            </ul>
-        {% endif %}    
-        </div>
-    </nav>
 
-    {% if expense_list_obj %}
-    <table class="table table-sm table-striped">
-        <thead>
-            <tr>
-                <th scope="col">Invoice</th>
-                <th scope="col">Paid Date</th>
-                <th scope="col">Payee</th>
-                <th scope="col">Category</th>
-                <th scope="col">Amount</th>
-                <th scope="col">Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for expense in expense_list_obj %}
-            
-            <tr>
-                <td>{{ expense.invoice_date|date:"d-m-y" }}</td>
-                <td>{{ expense.expected_date|date:"d-m-y" }}</td>
-                <td>{{ expense.payee }}</td>
-                <td>{{ expense.category.name }}</td>
-                <td class="text-monospace text-right">{{ expense.amount }}</td>
-                <td>
-                    <button type="button" class="expense_item_update btn btn-sm btn-primary"
-                        data-id="{% url 'ledger:ExpenseUpdateModal' expense.pk %}">
-                        <i class="fad fa-file-alt"></i>
-                    </button>
-                    {% if expense.category.name == "Drugs" %}
-                    <a href="{% url 'drugdb:BillDrugDeliveryView' expense.pk %}" class="btn btn-sm btn-info">
-                        <!-- Placeholder for adding drug item-->
-                        <i class="fad fa-layer-plus"></i>
-                    </a>
-                    {% endif %}
-                </td>
-            </tr>
+{% include "_modal.html" %}
 
-            {% endfor %}
-
-        </tbody>
-    </table>
-
-    {% else %}
+<h1>Expense Entries</h1>
+<nav class="row">
+    <div class="col-4">
+        <form action="{% url 'ledger:ExpenseList' %}" method="get">
+            <input name="q" type="text" placeholder="Search expense entries..." />
+        </form>
+    </div>
+    <div class="col-4">
+        {% if last_query %}
+        Results for "{{ last_query }}" ({{ last_query_count }})
+        {% endif %}
+    </div>
+    <div class="col-4">
+        {% if is_paginated %}
     
-    <p>No categories in database</p>
+        <ul class="pagination">
+            <li class="page-item">
+                <a href="{% url 'ledger:ExpenseList' %}?q={{ last_query }}&page=1"
+                class="page-link">
+                    First
+                </a>
+            </li>
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a href="{% url 'ledger:ExpenseList' %}?q={{ last_query }}&page={{ page_obj.previous_page_number }}" 
+                class="page-link">
+                    {{ page_obj.previous_page_number }}
+                </a>
+            </li>
+            {% endif %}
+            <li class="page-item active">
+                <a href="{% url 'ledger:ExpenseList' %}?q={{ last_query }}&page={{ page_obj.number }}" 
+                class="page-link">
+                    {{ page_obj.number }}
+                </a>
+            </li>
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a href="{% url 'ledger:ExpenseList' %}?q={{ last_query }}&page={{ page_obj.next_page_number }}" 
+                class="page-link">
+                    {{ page_obj.next_page_number }}
+                </a>
+            </li>
+            {% endif %}
+            <li class="page-item">
+                <a href="{% url 'ledger:ExpenseList' %}?q={{ last_query }}&page=last"
+                class="page-link">
+                    Last ({{ page_obj.paginator.num_pages }}) 
+                </a>
+            </li>
+        </ul>
+    {% endif %}    
+    </div>
+</nav>
 
-    {% endif %}
+{% if expense_list_obj %}
+<table class="table table-sm table-striped">
+    <thead>
+        <tr>
+            <th scope="col">Invoice</th>
+            <th scope="col">Paid Date</th>
+            <th scope="col">Payee</th>
+            <th scope="col">Category</th>
+            <th scope="col">Amount</th>
+            <th scope="col">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for expense in expense_list_obj %}
+        
+        <tr>
+            <td>{{ expense.invoice_date|date:"d-m-y" }}</td>
+            <td>{{ expense.expected_date|date:"d-m-y" }}</td>
+            <td>{{ expense.payee }}</td>
+            <td>{{ expense.category.name }}</td>
+            <td class="text-monospace text-right">{{ expense.amount }}</td>
+            <td>
+                <button type="button" class="expense-item-update btn btn-sm btn-primary"
+                    data-id="{% url 'ledger:ExpenseUpdateModal' expense.pk %}">
+                    <i class="fad fa-file-alt"></i>
+                </button>
+                {% if expense.category.name == "Drugs" %}
+                <a href="{% url 'drugdb:BillDrugDeliveryView' expense.pk %}" class="btn btn-sm btn-info">
+                    <!-- Placeholder for adding drug item-->
+                    <i class="fad fa-layer-plus"></i>
+                </a>
+                {% endif %}
+            </td>
+        </tr>
+
+        {% endfor %}
+
+    </tbody>
+</table>
+
+{% else %}
+
+<p>No categories in database</p>
+
+{% endif %}
 
 {% endblock %}
 
@@ -112,7 +117,7 @@
 
 <script type="text/javascript">
    $(document).ready(function () {
-        $(".expense_item_update").each(function() {
+        $(".expense-item-update").each(function() {
             $(this).modalForm({
                 formURL: $(this).data('id')
             });
