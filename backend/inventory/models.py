@@ -43,6 +43,7 @@ class Vendor(models.Model):
     """
     # Fields matching drugdb.Company
     name = models.CharField(unique=True, max_length=255, blank=True, null=True)
+    alias = models.CharField(unique=True, max_length=255, blank=True, null=True)
     address = models.TextField(blank=True, null=True)
     date_created = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
