@@ -12,7 +12,7 @@ class RegisteredDrug(models.Model):
     # name: Product Name
     reg_no = models.CharField(unique=True, max_length=255, blank=True, null=True)
     # reg_no: equivalent to "permit_no" in drug database
-    ingredient_list = models.TextField(blank=True, null=True)
+    ingredients_str = models.TextField(blank=True, null=True)
     # Company Name and Company Address
     ingredients = models.ManyToManyField(
         'Ingredient', 
@@ -29,8 +29,14 @@ class RegisteredDrug(models.Model):
         ordering = ['reg_no']
         verbose_name = 'Registered drug'
   
+    @property
+    def ingredients_list(self):
+        return ", ".join([i.name for i in self.ingredients.all()])
+    
     def __str__(self):
         return f"{self.reg_no} | {self.name}"
+
+    
 
 class Company(models.Model):
     """

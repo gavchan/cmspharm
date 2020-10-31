@@ -76,7 +76,7 @@
             <tr>
                 <td>{{ drug.reg_no}}</td>
                 <td><b>{{ drug.name }}</b>
-                <br>{{ drug.ingredient_list }}</td>
+                <br>{{ drug.ingredients_list }}</td>
                 <td>{{ drug.company }}</td>
                 <td>
                         <a href="{% url 'cmsinv:MatchInventoryItemList' drug.reg_no %}"
