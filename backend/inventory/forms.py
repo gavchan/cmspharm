@@ -104,29 +104,31 @@ class NewVendorModalForm(BSModalForm):
         self.helper.layout = Layout(
             Row(
                 Column('name', css_class='form-group col-md-4 mb-0'),
+                Column('alias', css_class='form-group col-md-4 mb-0'),
                 Column('account_no', css_class='form-group col-md-4 mb-0'),
-                Column('website', css_class='form-group col-md-4 mb-0'),
                 css_class='form-row',
             ),
             Row(
-                Column('default_exp_category', css_class="col-md-8 mb-0"),
+                Column('default_exp_category', css_class="col-md-4 mb-0"),
                 Column('default_description', css_class="col-md-4 mb-0"),
+                Column('contact_person', css_class='form-group col-md-4 mb-0'),
+                css_class='form-row,'
             ),
             Row(
+                Column(Field('remarks', rows='3'), css_class='form-group col-md-4 mb-0'),
                 Column(Field('address', rows='3'), css_class='form-group col-md-4 mb-0'),
                 Column('email', css_class='form-group col-md-4 mb-0'),
-                Column(Field('remarks', rows='3'), css_class='form-group col-md-4 mb-0'),
                 css_class='form-row',
             ),
             Row(
-                Column('contact_person', css_class='form-group col-md-4 mb-0'),
                 Column('tel_main', css_class='form-group col-md-4 mb-0'),
                 Column('tel_mobile', css_class='form-group col-md-4 mb-0'),
+                Column('tel_office', css_class='form-group col-md-4 mb-0'),
                 css_class='form-row',
             ),
             Row(
-                Column('tel_office', css_class='form-group col-md-4 mb-0'),
                 Column('fax', css_class='form-group col-md-4 mb-0'),
+                Column('website', css_class='form-group col-md-4 mb-0'),
                 Column('active', css_class='form-group col-md-4 mb-0'),
                 css_class='form-row',
             ),
@@ -166,29 +168,31 @@ class VendorUpdateModalForm(BSModalForm):
         self.helper.layout = Layout(
             Row(
                 Column('name', css_class='form-group col-md-4 mb-0'),
+                Column('alias', css_class='form-group col-md-4 mb-0'),
                 Column('account_no', css_class='form-group col-md-4 mb-0'),
-                Column('website', css_class='form-group col-md-4 mb-0'),
                 css_class='form-row',
             ),
             Row(
-                Column('default_exp_category', css_class="col-md-8 mb-0"),
+                Column('default_exp_category', css_class="col-md-4 mb-0"),
                 Column('default_description', css_class="col-md-4 mb-0"),
+                Column('contact_person', css_class='form-group col-md-4 mb-0'),
+                css_class='form-row,'
             ),
             Row(
+                Column(Field('remarks', rows='3'), css_class='form-group col-md-4 mb-0'),
                 Column(Field('address', rows='3'), css_class='form-group col-md-4 mb-0'),
                 Column('email', css_class='form-group col-md-4 mb-0'),
-                Column(Field('remarks', rows='3'), css_class='form-group col-md-4 mb-0'),
                 css_class='form-row',
             ),
             Row(
-                Column('contact_person', css_class='form-group col-md-4 mb-0'),
                 Column('tel_main', css_class='form-group col-md-4 mb-0'),
                 Column('tel_mobile', css_class='form-group col-md-4 mb-0'),
+                Column('tel_office', css_class='form-group col-md-4 mb-0'),
                 css_class='form-row',
             ),
             Row(
-                Column('tel_office', css_class='form-group col-md-4 mb-0'),
                 Column('fax', css_class='form-group col-md-4 mb-0'),
+                Column('website', css_class='form-group col-md-4 mb-0'),
                 Column('active', css_class='form-group col-md-4 mb-0'),
                 css_class='form-row',
             ),

@@ -221,7 +221,9 @@ class VendorUpdateModal(BSModalUpdateView, LoginRequiredMixin):
     template_name = 'inventory/vendor_update_modal.html'
     form_class = VendorUpdateModalForm
     success_message = 'Success: Vendor was updated.'
-    success_url = reverse_lazy('inventory:VendorList')
+
+    def get_success_url(self):
+        return reverse('inventory:VendorList')
 
 
 class VendorDelete(DeleteView, LoginRequiredMixin):
