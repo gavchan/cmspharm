@@ -65,6 +65,7 @@ class Vendor(models.Model):
 
     # Extra fields
     account_no = models.CharField(max_length=255, blank=True, null=True)
+    is_supplier = models.BooleanField(default=False)
     active = models.BooleanField(default=True)
     website = models.CharField(max_length=255, blank=True, null=True)
     remarks = models.TextField(blank=True, null=True)
