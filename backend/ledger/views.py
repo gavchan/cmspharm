@@ -2,7 +2,8 @@ from datetime import date
 import csv
 from django.http import HttpResponse
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.decorators import login_required, permission_required
 from django.urls import reverse, reverse_lazy
 from django.db.models import Q
 
@@ -59,19 +60,22 @@ class ExpenseCategoryList(ListView, LoginRequiredMixin):
         data['last_query_count'] = self.last_query_count
         return data
 
-class ExpenseCategoryUpdate(UpdateView, LoginRequiredMixin):
+class ExpenseCategoryUpdate(UpdateView, LoginRequiredMixin, PermissionRequiredMixin):
+    permission_required = ('ledger.change_expensecategory',)
     model = ExpenseCategory
     form_class = ExpenseCategoryUpdateForm
     template_name = "ledger/expense_category_update.html"
     success_url = reverse_lazy('ledger:ExpenseCategoryList')
 
-class ExpenseCategoryDelete(DeleteView, LoginRequiredMixin):
+class ExpenseCategoryDelete(DeleteView, LoginRequiredMixin, PermissionRequiredMixin):
+    permission_required = ('ledger.delete_expensecategory',)
     model = ExpenseCategory
     template_name = "ledger/expense_category_confirm_delete.html"
     success_url = reverse_lazy('ledger:ExpenseCategoryList')
 
-class NewExpenseCategory(CreateView, LoginRequiredMixin):
+class NewExpenseCategory(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
     """Add new vendor"""
+    permission_required = ('ledger.add_expensecategory')
     model = ExpenseCategory
     template_name = 'ledger/new_expense_category.html'
     form_class = NewExpenseCategoryForm
@@ -80,7 +84,9 @@ class NewExpenseCategory(CreateView, LoginRequiredMixin):
 # Expense Views
 # =============
 
-class ExpenseList(ListView, LoginRequiredMixin):
+class ExpenseList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
+    """Lists Expenses"""
+    permission_required = ('ledger.view_expense')
     model = Expense
     template_name = "ledger/expense_list.html"
     context_object_name = 'expense_list_obj'
@@ -109,12 +115,16 @@ class ExpenseList(ListView, LoginRequiredMixin):
         data['last_query_count'] = self.last_query_count
         return data
 
-class ExpenseDetail(DetailView, LoginRequiredMixin):
+class ExpenseDetail(DetailView, LoginRequiredMixin, PermissionRequiredMixin):
+    """View Expense Detail"""
+    permission_required = ('ledger.view_expense')
     model = Expense
     template_name = "ledger/expense_detail.html"
     context_object_name = "expense_obj"
 
-class ExpenseUpdate(UpdateView, LoginRequiredMixin):
+class ExpenseUpdate(UpdateView, LoginRequiredMixin, PermissionRequiredMixin):
+    """Update Expense"""
+    permission_required = ('ledger.change_expense',)
     model = Expense
     form_class = ExpenseUpdateForm
     template_name = "ledger/expense_update.html"
@@ -122,14 +132,17 @@ class ExpenseUpdate(UpdateView, LoginRequiredMixin):
     def get_success_url(self):
         return reverse('ledger:ExpenseDetail', args=(self.object.pk,))
 
-class ExpenseUpdateModal(BSModalUpdateView, LoginRequiredMixin):
+class ExpenseUpdateModal(BSModalUpdateView, LoginRequiredMixin, PermissionRequiredMixin):
+    """Update Expense modal"""
+    permission_required = ('ledger.change_expense',)
     model = Expense
     template_name = 'ledger/expense_update_modal.html'
     form_class = ExpenseUpdateModalForm
     success_message = 'Success: Book was updated.'
     success_url = reverse_lazy('ledger:ExpenseList')
 
-class ExpenseDelete(DeleteView, LoginRequiredMixin):
+class ExpenseDelete(DeleteView, LoginRequiredMixin, PermissionRequiredMixin):
+    permission_required = ('ledger.delete_expense',)
     model = Expense
     template_name = "ledger/expense_confirm_delete.html"
     success_url = reverse_lazy('ledger:ExpenseList')
@@ -161,7 +174,9 @@ class ExpenseDelete(DeleteView, LoginRequiredMixin):
 #             })
 #         return kwargs
 
-class NewExpenseModal(BSModalCreateView, LoginRequiredMixin):
+class NewExpenseModal(BSModalCreateView, LoginRequiredMixin, PermissionRequiredMixin):
+    """Add new expense modal"""
+    permission_required = ('ledger.add_expense', )
     template_name = 'ledger/new_expense_modal.html'
     form_class = NewExpenseModalForm
     success_url = reverse_lazy('ledger:ExpenseList')
@@ -188,7 +203,8 @@ class NewExpenseModal(BSModalCreateView, LoginRequiredMixin):
             })
         return kwargs
 
-
+@login_required
+@permission_required('ledger.add_expense',)
 def NewExpenseSelectVendorView(request, *args, **kwargs):
     """Select Vendor for New Expense"""
     vendors = Vendor.objects.all()
@@ -222,6 +238,8 @@ def NewExpenseSelectVendorView(request, *args, **kwargs):
 
     return render(request, "ledger/new_expense_view.html", {'vendors': vendors, 'vendor_obj': vendor_obj})
 
+@login_required
+@permission_required('ledger.view_expense')
 def ExpenseExportCsv(request):
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="expenses.csv"'

@@ -24,8 +24,9 @@ from .forms import (
 )
 
 
-class CategoryList(ListView, LoginRequiredMixin):
+class CategoryList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
     """List of inventory categories"""
+    permission_required = ('inventory.view_category',)
     template_name = 'inventory/category_list.html'
     model = Category
     context_object_name = 'category_list'
@@ -54,7 +55,9 @@ class CategoryList(ListView, LoginRequiredMixin):
         return data
 
 
-class NewCategory(CreateView, LoginRequiredMixin):
+class NewCategory(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
+    """Add category"""
+    permission_required = ('inventory.add_category', )
     model = Category
     form_class = NewCategoryForm
     template_name = 'inventory/new_category.html'
@@ -74,8 +77,9 @@ class NewCategory(CreateView, LoginRequiredMixin):
 #     #     context = super().get_context_data(**kwargs)
 
 
-class CategoryUpdate(UpdateView, LoginRequiredMixin):
+class CategoryUpdate(UpdateView, LoginRequiredMixin, PermissionRequiredMixin):
     """Update details for category"""
+    permission_required = ('inventory.change_category', )
     model = Category
     form_class = CategoryUpdateForm
     template_name = 'inventory/category_update.html'
@@ -84,13 +88,15 @@ class CategoryUpdate(UpdateView, LoginRequiredMixin):
     # def get_success_url(self):
     #     return reverse('inventory:CategoryList')
 
-class CategoryDelete(DeleteView, LoginRequiredMixin):
+class CategoryDelete(DeleteView, LoginRequiredMixin, PermissionRequiredMixin):
     """Delete category"""
+    permission_required = ('inventory.delete_category')
     model = Category
     success_url = reverse_lazy('inventory:CategoryList')
 
-class ItemList(ListView, LoginRequiredMixin):
+class ItemList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
     """List of inventory items"""
+    permission_required = ('inventory.view_item', )
     template_name = 'inventory/item_list.html'
     model = Item
     context_object_name = 'item_list'
@@ -120,8 +126,9 @@ class ItemList(ListView, LoginRequiredMixin):
         return data
 
 
-class ItemDetail(DetailView, LoginRequiredMixin):
+class ItemDetail(DetailView, LoginRequiredMixin, PermissionRequiredMixin):
     """Display details for item"""
+    permission_required = ('inventory.view_item', )
     model = Item
     template_name = 'inventory/item_detail.html'
     context_object_name = 'item_detail'
@@ -130,8 +137,9 @@ class ItemDetail(DetailView, LoginRequiredMixin):
     #     context = super().get_context_data(**kwargs)
 
 
-class ItemUpdate(UpdateView, LoginRequiredMixin):
+class ItemUpdate(UpdateView, LoginRequiredMixin, PermissionRequiredMixin):
     """Update details for item"""
+    permission_required = ('inventory.change_item', )
     model = Item
     form_class = ItemUpdateForm
     template_name = 'inventory/item_update_form.html'
@@ -140,14 +148,42 @@ class ItemUpdate(UpdateView, LoginRequiredMixin):
         return reverse('inventory:ItemDetail', args=(self.object.pk,))
 
 
-class ItemDelete(DeleteView, LoginRequiredMixin):
+class ItemDelete(DeleteView, LoginRequiredMixin, PermissionRequiredMixin):
     """Delete item"""
+    permission_required = ('inventory.delete_item', )
     model = Item
     success_url = reverse_lazy('inventory:ItemList')
 
 
-class VendorList(ListView, LoginRequiredMixin):
+class NewItem(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
+    """Add new item"""
+    permission_required = ('inventory.add_item', )
+    model = Item
+    form_class = NewItemForm
+    template_name = 'inventory/new_item.html'
+    vendor_id = ''
+
+    def dispatch(self, request, *args, **kwargs):
+        if 'vendor_id' in kwargs:
+            self.vendor_id = kwargs['vendor_id']
+        else:
+            self.vendor_id = ''
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        if self.vendor_id:
+            data['vendor_id'] = self.vendor_id
+            vendor_obj = Vendor.objects.get(id=self.vendor_id)
+            data['vendor_name'] = vendor_obj.name
+        else:
+            data['vendor_name'] = ''
+        return data
+
+
+class VendorList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
     """List of Vendors"""
+    permission_required = ('inventory.view_vendor', )
     model = Vendor
     template_name = 'inventory/vendor_list.html'
     context_object_name = 'vendor_list'
@@ -182,21 +218,25 @@ class VendorList(ListView, LoginRequiredMixin):
         return data
 
 
-class VendorDetail(DetailView, LoginRequiredMixin):
+class VendorDetail(DetailView, LoginRequiredMixin, PermissionRequiredMixin):
     """Display details for vendor"""
+    permission_required = ('inventory.view_vendor', )
     model = Vendor
     template_name = 'inventory/vendor_detail.html'
     context_object_name = 'vendor_detail'
 
 
-class NewVendor(CreateView, LoginRequiredMixin):
+class NewVendor(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
     """Add new vendor"""
+    permission_required = ('inventory.add_vendor', )
     model = Vendor
     template_name = 'inventory/new_vendor.html'
     form_class = NewVendorForm
     success_url = reverse_lazy('inventory:VendorList')
 
-class NewVendorModal(BSModalCreateView):
+class NewVendorModal(BSModalCreateView, LoginRequiredMixin, PermissionRequiredMixin):
+    """Add new vendor modal"""
+    permission_required = ('inventory.add_vendor', )
     model = Vendor
     template_name = 'inventory/new_vendor_modal.html'
     form_class = NewVendorModalForm
@@ -215,14 +255,17 @@ def get_vendor_id(request):
     return HttpResponse("/")
 
 
-class VendorUpdate(UpdateView, LoginRequiredMixin):
+class VendorUpdate(UpdateView, LoginRequiredMixin, PermissionRequiredMixin):
     """Update details for vendor"""
+    permission_required = ('inventory.change_vendor', )
     model = Vendor
     form_class = VendorUpdateForm
     template_name = 'inventory/vendor_update.html'
     success_url = reverse_lazy('inventory:VendorList')
 
-class VendorUpdateModal(BSModalUpdateView, LoginRequiredMixin):
+class VendorUpdateModal(BSModalUpdateView, LoginRequiredMixin, PermissionRequiredMixin):
+    """Update vendor details modal"""
+    permission_required = ('inventory.change_vendor', )
     model = Vendor
     template_name = 'inventory/vendor_update_modal.html'
     form_class = VendorUpdateModalForm
@@ -232,15 +275,18 @@ class VendorUpdateModal(BSModalUpdateView, LoginRequiredMixin):
         return reverse('inventory:VendorList')
 
 
-class VendorDelete(DeleteView, LoginRequiredMixin):
+class VendorDelete(DeleteView, LoginRequiredMixin, PermissionRequiredMixin):
+    """Delete Vendor"""
+    permission_required = ('inventory.delete_vendor', )
     model = Vendor
     success_url = reverse_lazy('inventory:VendorList')
 
 
-class ItemDeliveryList(ListView, LoginRequiredMixin):
+class ItemDeliveryList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
     """
     Lists item deliveries
     """
+    permission_required = ('inventory.view_itemdelivery', )
     template_name = 'inventory/item_delivery_list.html'
     model = ItemDelivery
     context_object_name = 'item_delivery_list'
@@ -270,15 +316,17 @@ class ItemDeliveryList(ListView, LoginRequiredMixin):
         return data
 
 
-class ItemDeliveryDetail(DetailView, LoginRequiredMixin):
+class ItemDeliveryDetail(DetailView, LoginRequiredMixin, PermissionRequiredMixin):
     """Display details of item delivery"""
+    permission_required = ('inventory.view_itemdelivery', )
     model = ItemDelivery
     template_name = 'inventory/item_delivery_detail.html'
     context_object_name = 'delivery_obj'
 
 
-class ItemDeliveryUpdate(UpdateView, LoginRequiredMixin):
+class ItemDeliveryUpdate(UpdateView, LoginRequiredMixin, PermissionRequiredMixin):
     """Update details of item delivery"""
+    permission_required = ('inventory.change_itemdelivery', )
     model = ItemDelivery
     form_class = ItemDeliveryUpdateForm
     template_name = 'inventory/item_delivery_update_form.html'
@@ -287,14 +335,16 @@ class ItemDeliveryUpdate(UpdateView, LoginRequiredMixin):
         return reverse('inventory:ItemDeliveryDetail', args=(self.object.pk,))
 
 
-class ItemDeliveryDelete(DeleteView, LoginRequiredMixin):
+class ItemDeliveryDelete(DeleteView, LoginRequiredMixin, PermissionRequiredMixin):
     """Delete item delivery record"""
+    permission_required = ('inventory.delete_itemdelivery', )
     model = ItemDelivery
     success_url = reverse_lazy('inventory:ItemDeliveryList')
 
 
-class NewItemDelivery(CreateView, LoginRequiredMixin):
+class NewItemDelivery(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
     """Add new item delivery"""
+    permission_required = ('inventory.add_itemdelivery', )
     model = ItemDelivery
     template_name = 'inventory/new_item_delivery.html'
     form_class = NewItemDeliveryForm
@@ -320,26 +370,3 @@ class NewItemDelivery(CreateView, LoginRequiredMixin):
             data['item_name'] = ''
         return data
 
-
-class NewItem(CreateView, LoginRequiredMixin):
-    model = Item
-    form_class = NewItemForm
-    template_name = 'inventory/new_item.html'
-    vendor_id = ''
-
-    def dispatch(self, request, *args, **kwargs):
-        if 'vendor_id' in kwargs:
-            self.vendor_id = kwargs['vendor_id']
-        else:
-            self.vendor_id = ''
-        return super().dispatch(request, *args, **kwargs)
-
-    def get_context_data(self, **kwargs):
-        data = super().get_context_data(**kwargs)
-        if self.vendor_id:
-            data['vendor_id'] = self.vendor_id
-            vendor_obj = Vendor.objects.get(id=self.vendor_id)
-            data['vendor_name'] = vendor_obj.name
-        else:
-            data['vendor_name'] = ''
-        return data

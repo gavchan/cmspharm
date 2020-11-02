@@ -1,5 +1,6 @@
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.decorators import login_required, permission_required
 from django.urls import reverse, reverse_lazy
 from django.db.models import Q
 from bootstrap_modal_forms.generic import BSModalCreateView
@@ -20,8 +21,9 @@ from .forms import (
     BillDrugDeliveryAddDrugModalForm,
 )
 
-class RegisteredDrugList(ListView, LoginRequiredMixin):
+class RegisteredDrugList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
     """List of registered drugs"""
+    permission_required = ('drugdb.view_registereddrug', )
     template_name = 'drugdb/drug_list.html'
     model = RegisteredDrug
     context_object_name = 'drug_list'
@@ -51,8 +53,9 @@ class RegisteredDrugList(ListView, LoginRequiredMixin):
         data['last_query_count'] = self.last_query_count
         return data
 
-class RegisteredDrugDetail(DetailView, LoginRequiredMixin):
+class RegisteredDrugDetail(DetailView, LoginRequiredMixin, PermissionRequiredMixin):
     """Display details for registered drug"""
+    permission_required = ('drugdb.view_registereddrug', )
     model = RegisteredDrug
     template_name = 'drugdb/drug_detail.html'
     context_object_name = 'drug_detail'
@@ -60,8 +63,9 @@ class RegisteredDrugDetail(DetailView, LoginRequiredMixin):
     # def get_context_data(self, **kwargs):
     #     context = super().get_context_data(**kwargs)
 
-class CompanyList(ListView, LoginRequiredMixin):
+class CompanyList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
     """List of Companies"""
+    permission_required = ('drugdb.view_company', )
     template_name = 'drugdb/company_list.html'
     model = Company
     context_object_name = 'company_list'
@@ -70,10 +74,11 @@ class CompanyList(ListView, LoginRequiredMixin):
     def get_queryset(self):
         return Company.objects.all()
   
-class DrugDeliveryList(ListView, LoginRequiredMixin):
+class DrugDeliveryList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
     """
     Lists drug deliveries
     """
+    permission_required = ('drugdb.view_drugdelivery')
     template_name = 'drugdb/drug_delivery_list.html'
     model = DrugDelivery
     context_object_name = 'drug_delivery_list'
@@ -102,28 +107,33 @@ class DrugDeliveryList(ListView, LoginRequiredMixin):
         data['last_query_count'] = self.last_query_count
         return data
 
-class DrugDeliveryDetail(DetailView, LoginRequiredMixin):
+class DrugDeliveryDetail(DetailView, LoginRequiredMixin, PermissionRequiredMixin):
     """Display details of drug delivery"""
+    permission_required = ('drugdb.view_drugdelivery')
     model = DrugDelivery
     template_name = 'drugdb/drug_delivery_detail.html'
     context_object_name = 'delivery_obj'
 
-class DrugDeliveryUpdate(UpdateView, LoginRequiredMixin):
+class DrugDeliveryUpdate(UpdateView, LoginRequiredMixin, PermissionRequiredMixin):
     """Update details of drug delivery"""
+    permission_required = ('drugdb.change_drugdelivery', )
     model = DrugDelivery
     form_class = DrugDeliveryUpdateForm
     template_name = 'drugdb/drug_delivery_update_form.html'
 
+
     def get_success_url(self):
         return reverse('drugdb:DrugDeliveryDetail', args=(self.object.pk,))
 
-class DrugDeliveryDelete(DeleteView, LoginRequiredMixin):
+class DrugDeliveryDelete(DeleteView, LoginRequiredMixin, PermissionRequiredMixin):
     """Delete drug delivery record"""
+    permission_required = ('drugdb.view_drugdelivery', 'drugdb.delete_drugdelivery')
     model = DrugDelivery
     success_url = reverse_lazy('drugdb:DrugDeliveryList')
 
-class NewDrugDelivery(CreateView, LoginRequiredMixin):
+class NewDrugDelivery(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
     """Add new drug delivery"""
+    permission_required = ('drugdb.view_drugdelivery', 'drugdb.add_drugdelivery')
     model = DrugDelivery
     template_name = 'drugdb/new_drug_delivery.html'
     form_class = NewDrugDeliveryForm
@@ -177,6 +187,8 @@ class NewDrugDelivery(CreateView, LoginRequiredMixin):
 #             data['bill_obj'] = self.bill_obj
 #         return data
 
+@login_required
+@permission_required('drugdb.view_drugdelivery', 'ledger.view_bill')
 def BillDrugDeliveryView(request, *args, **kwargs):
     """View Bill with DrugDelivery items"""
     MAX_QUERY_COUNT = 20
@@ -257,8 +269,9 @@ def BillDrugDeliveryView(request, *args, **kwargs):
 #         data['last_query_count'] = self.last_query_count
 #         return data
 
-class BillDrugDeliveryAddDrugModal(BSModalCreateView, LoginRequiredMixin):
+class BillDrugDeliveryAddDrugModal(BSModalCreateView, LoginRequiredMixin, PermissionRequiredMixin):
     """Add new drug delivery to bill"""
+    permission_required = ('drugdb.add_drugdelivery', 'ledger.add_bill')
     template_name = 'drugdb/bill_drugdelivery_add_modal.html'
     form_class = BillDrugDeliveryAddDrugModalForm
     bill_obj = None
