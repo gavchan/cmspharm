@@ -4,12 +4,20 @@
   DrugDB
 {% endblock %}
 
-{% block main %}
-    <h1>Registered Drug List</h1>
+{% block content %}
+<div class="card shadow">
+    <div class="card-header text-white bg-dark">
+      <div class="d-flex justify-content-between align-items-center">
+        <span><i class="fa fa-table" aria-hidden="true"></i>
+        Registered Drug List</span>
+        <a href="https://www.drugoffice.gov.hk/eps/do/en/healthcare_providers/search_drug_database.html">Link to HKGov Drug Office</a>     
+      </div>
+    </div>
+    <div class="card-body">
     <nav class="row">
         <div class="col-4">
             <form action="{% url 'drugdb:DrugList' %}" method="get">
-                <input name="q" type="text" placeholder="Search Drugs..." />
+                <input class="form-control" name="q" type="text" placeholder="Search Drugs..." />
             </form>
         </div>
         <div class="col-4">

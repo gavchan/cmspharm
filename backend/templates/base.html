@@ -13,7 +13,6 @@
   <!-- Required meta tags -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta charset="UTF-8">
 
   {% block stylesheets %}
   <!-- Font awesome CSS -->
@@ -26,37 +25,36 @@
   {% endblock stylesheets %}
 </head>
 
-<body>
-  {% if user.is_authenticated %}
+<body id="page-top">
+  <div id="wrapper">
+    {% if user.is_authenticated %}
 
-  <!-- Includes -->
-  {% include "_header.html" %}
+    <!-- Includes -->
+    {% include "_header.html" %}
 
-  <div class="container-fluid">
-    {% block content %}
-
-    {% include "_modal.html" %}
-
-    <div class="row">
-      <div class="col-sm-10">
-        {% block main %}{% endblock main %}
+    <div class="container-fluid">
+      {% block content %}
+      
+      <div class="row">
+        <div class="col-sm-10">
+          {% block main %}{% endblock main %}
+        </div>
+        <div class="col-sm-2">
+          {% block sidebar %}{% endblock sidebar %}
+        </div>
       </div>
-      <div class="col-sm-2">
-        {% block sidebar %}{% endblock sidebar %}
+      {% endblock content %}
+      {% include "_footer.html" %}
+    </div>
+
+    {% else %}
+    <div class="container mt-4">
+      <div class="alert alert-danger" role="alert">
+        You are not logged in. <a class="alert-link" href="{% url 'login' %}">Click here to Login</a>
       </div>
     </div>
-    {% endblock content %}
-  </div>
-  {% include "_footer.html" %}
-
-  {% else %}
-  <div class="container mt-4">
-    <div class="alert alert-danger" role="alert">
-      You are not logged in. <a class="alert-link" href="{% url 'login' %}">Click here to Login</a>
+    {% endif %}
     </div>
-  </div>
-  {% endif %}
-
   <!-- Javascript -->
   {% block scripts %}
   <script src="{% static '/assets/js/popper.min.js' %}"></script>

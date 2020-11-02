@@ -1,4 +1,6 @@
-{% extends 'base.html' %} {% block content %}
+{% extends 'base.html' %} 
+
+{% block content %}
 
 <p>Logged in as {{ user.username }}</p>
 
@@ -8,27 +10,39 @@
     </div>
     <div class="card-body">
       <ul class="nav flex-column">
-      <li class="nav-item">
-        <a
-          href="{% url 'ledger:NewExpense' %}"
-          class="btn btn-sm btn-success mb-1"
-          >Add New Expense</a
-        >
-      </li>
-      <li class="nav-item">
-        <a
-          href="{% url 'ledger:ExpenseList' %}"
-          class="btn btn-sm btn-info mb-1"
-          >Show Expenses</a
-        >
-      </li>
-      <li class="nav item">
-        <a
-          href="{% url 'drugdb:DrugList' %}"
-          class="btn btn-sm btn-primary mb-1"
-          >Search Registered Drug</a
-        >
-      </li>
+        {% if perms.ledger.can_add_expense %}
+        <li class="nav-item">
+          <a
+            href="{% url 'ledger:NewExpense' %}"
+            class="btn btn-sm btn-success mb-1"
+            >Add New Expense</a
+          >
+        </li>
+        {% endif %}
+        {% if perms.ledger.can_view_expense %}
+        <li class="nav-item">
+          <a
+            href="{% url 'ledger:ExpenseList' %}"
+            class="btn btn-sm btn-info mb-1"
+            >Show Expenses</a
+          >
+        </li>
+        {% endif %}
+        <li class="nav item">
+          <a
+            href="{% url 'drugdb:DrugList' %}"
+            class="btn btn-sm btn-primary mb-1"
+            >Search Registered Drug</a
+          >
+        </li>
+        {% if perms.inventory.can_view_supplier %}
+        <li class="nav item">
+          <a href="{% url 'inventory:VendorList' %}?s=1"
+            class="btn btn-sm btn-secondary mb-1"
+          >View Suppliers
+          </a>
+        </li>
+        {% endif %}
     </ul>
       <!-- <p><a
           href="{% url 'ledger:NewExpense' %}"

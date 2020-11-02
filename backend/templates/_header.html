@@ -11,9 +11,18 @@
 
         <div class= "collapse navbar-collapse" id="navbarBaseToggler">
             <ul class="navbar-nav mr-auto mt-2 mt-sm-0">
+                {% if perms.ledger.can_add_expense %}
                 <li class="nav-item">
                     <a href="{% url 'ledger:NewExpense' %}" class="nav-link">Add Expense</a>
                 </li>
+                {% endif %}
+                {% if perms.drugdb.can_add_drugdelivery %}
+                <li class="nav-item">
+                    <a href="#" class="nav-link">New Delivery</a>
+                </li>
+                {% endif %}
+
+                {% if perms.ledger.can_view_expense %}
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="{% url 'ledger:ExpenseList' %}"
                         id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -30,6 +39,8 @@
                         <a href="{% url 'ledger:ExpenseExportCsv' %}" class="dropdown-item">Export Expenses</a></p>
                     </div>
                 </li>
+                {% endif %}
+
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="{% url 'cmsinv:InventoryItemList' %}"
                         id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -60,6 +71,11 @@
             {% endcomment %}
             </ul>
             <ul class="navbar-nav my-2 my-sm-0">
+                {% if user.username == 'admin' %}
+                <li class="nav-item dropdown">
+                    <a href="{% url 'admin:index' %}" class="nav-link">djAdmin</a>
+                </li>
+                {% endif%}
                 <li class="nav-item dropdown">
                     <a href="{% url 'logout' %}" class="nav-link">Logout</a>
                 </li>

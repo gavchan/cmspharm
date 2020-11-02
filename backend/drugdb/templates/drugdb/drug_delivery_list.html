@@ -5,13 +5,19 @@
 {% endblock %}
   
 {% block content %}
-
-    <h1>Drug Delivery List</h1>
-    
+<div class="card shadow">
+    <div class="card-header text-white bg-info">
+      <div class="d-flex justify-content-between align-items-center">
+        <span><i class="fa fa-table" aria-hidden="true"></i>
+        Drug Deliveries</span>
+      </div>
+    </div>
+    <div class="card-body">
+ 
     <nav class="row">
         <div class="col-4">
             <form action="{% url 'drugdb:DrugDeliveryList' %}" method="get">
-                <input name="q" type="text" placeholder="Search Drugs Deliveries..." />
+                <input class="form-control" name="q" type="text" placeholder="Search Drugs Deliveries..." />
             </form>
         </div>
         <div class="col-4">
@@ -111,7 +117,8 @@
     {% endif %}
     
 {% endblock %}
-
+  </div>
+</div>
 {% block extrascripts %}
 
 <script type="text/javascript">
