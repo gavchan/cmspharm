@@ -78,7 +78,10 @@ class Vendor(models.Model):
 
     class Meta:
         ordering = ['name']
-
+        permissions = (
+            ('can_view_supplier', 'Can view supplier'),
+            ('can_change_supplier', 'Can change supplier'),
+        )
     def get_absolute_url(self):
         return reverse('inventory:VendorUpdate', kwargs={'pk': self.pk})
 
