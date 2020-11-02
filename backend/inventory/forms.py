@@ -129,7 +129,7 @@ class NewVendorModalForm(BSModalForm):
             Row(
                 Column('fax', css_class='form-group col-md-4 mb-0'),
                 Column('website', css_class='form-group col-md-4 mb-0'),
-                Column('active', css_class='form-group col-md-4 mb-0'),
+                Column(Field('active'), Field('is_supplier'), css_class='form-group col-md-4 mb-0'),
                 css_class='form-row',
             ),
             FormActions(
@@ -193,7 +193,7 @@ class VendorUpdateModalForm(BSModalForm):
             Row(
                 Column('fax', css_class='form-group col-md-4 mb-0'),
                 Column('website', css_class='form-group col-md-4 mb-0'),
-                Column('active', css_class='form-group col-md-4 mb-0'),
+                Column(Field('active'), Field('is_supplier'), css_class='form-group col-md-4 mb-0'),
                 css_class='form-row',
             ),
             FormActions(

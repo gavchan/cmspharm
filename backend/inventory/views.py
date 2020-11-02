@@ -1,7 +1,8 @@
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.decorators import login_required, permission_required
 from django.urls import reverse, reverse_lazy
 from django.db.models import Q
 from django.views.decorators.csrf import csrf_exempt
@@ -153,8 +154,10 @@ class VendorList(ListView, LoginRequiredMixin):
     paginate_by = 20
     last_query = ''
     last_query_count = 0
+    suppliers_only = False
 
     def get_queryset(self):
+        self.suppliers_only = self.request.GET.get('s')
         query = self.request.GET.get('q')
         if query:
             self.last_query = query
@@ -162,17 +165,20 @@ class VendorList(ListView, LoginRequiredMixin):
                 Q(name__icontains=query) |
                 Q(alias__icontains=query)
             )
-            self.last_query_count = object_list.count
         else:
             self.last_query = ''
             object_list = Vendor.objects.all()
-            self.last_query_count = object_list.count
+        if self.suppliers_only:
+            object_list = object_list.filter(is_supplier=True)
+        self.last_query_count = object_list.count
+
         return object_list
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         data['last_query'] = self.last_query
         data['last_query_count'] = self.last_query_count
+        data['suppliers_only'] = self.suppliers_only
         return data
 
 

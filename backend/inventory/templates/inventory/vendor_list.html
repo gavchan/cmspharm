@@ -1,6 +1,14 @@
 {% extends 'base.html' %}
 
-{% block title %} Vendors {% endblock %} 
+{% block title %} 
+
+{% if suppliers_only %}
+Suppliers
+{% else %}
+Vendors
+{% endif%}
+
+{% endblock %} 
 
 {% load crispy_forms_tags %}
 
@@ -8,15 +16,45 @@
 
 {% include "_modal.html" %}
 
-<h1>Vendors</h1>
-<nav class="row">
+<div class="card shadow">
+  <div class="card-header">
+    <div class="d-flex justify-content-between align-items-center">
+    <ul class="nav nav-tabs card-header-tabs">
+      <li class="nav-item">
+        {% if suppliers_only %}
+        <a class="nav-link" href="{% url 'inventory:VendorList' %}">All Vendors</a>
+        {% else %}
+        <a class="nav-link active" href="#"><i class="fa fa-table" aria-hidden="true"></i>&nbsp;All Vendors</a>
+        {% endif %}
+      </li>
+      <li class="nav-item">
+        {% if suppliers_only %}
+        <a class="nav-link active" href="#"><i class="fa fa-table" aria-hidden="true"></i>&nbsp;Suppliers</a>
+        {% else %}
+        <a class="nav-link" href="{% url 'inventory:VendorList' %}?s=1">Suppliers</a>
+        {% endif %}
+      </li>
+      <li class="nav-item">
+        <a class="nav-link disabled" href="#">Inactive</a>
+      </li>
+    </ul>
+    {% if perms.inventory.can_add_vendor and suppliers_only %}
+    <button id="btn_add_supplier" class="btn btn-sm btn-primary">New Supplier</button>
+    {% elif perms.inventory.can_add_vendor and not suppliers_only %}
+    <button id="btn_add_supplier" class="btn btn-sm btn-primary">New Vendor</button>
+    {% endif %}
+  </div>
+  </div>
+  <div class="card-body">
+
+    <nav class="row">
   <div class="col-4">
     <form action="{% url 'inventory:VendorList' %}" method="get">
       <input
         class="form-control"
         name="q"
         type="text"
-        placeholder="Search Vendors..."
+        placeholder="Search name"
       />
     </form>
   </div>
@@ -77,13 +115,11 @@
   </div>
 </nav>
 
-<button id="btn_add_vendor" class="btn btn-sm btn-primary">New Vendor</button>
-
 {% if vendor_list %}
 <table class="table table-sm table-striped">
   <thead>
     <tr>
-      <th scope="col">Vendor</th>
+      <th scope="col">Name</th>
       <th scope="col">Alias</th>
       <th scope="col">Category</th>
       <th scope="col">Contact</th>
@@ -116,12 +152,14 @@
         >
           <i class="fad fa-cart-plus"></i>
         </a>
+        {% if perms.inventory.can_delete_vendor %}
         <a
           href="{% url 'inventory:VendorDelete' vendor.id %}"
           class="btn btn-sm btn-danger"
         >
           <i class="fad fa-trash-alt"></i>
         </a>
+        {% endif %}
       </td>
     </tr>
 
@@ -136,7 +174,8 @@
 {% endif %}
 
 {% endblock %} 
-
+</div>
+</div>
 {% block extrascripts %}
 
 <script type="text/javascript">
