@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% load crispy_forms_tags %}
-{% block main %}
+{% block content %}
     {% include 'drugdb/_bill_summary.html' %}
     {% include 'drugdb/_bill_drugdelivery_items.html' %}
     {% include 'drugdb/_drugdelivery_choose_drug.html' %}
@@ -26,9 +26,7 @@
         const search_icon = $('#search-icon')
         const results_div = $('#search-results')
         var bill_id = JSON.parse(document.getElementById("bill_id").textContent)
-        console.log('Bill ID: ' + bill_id)
         const endpoint = '/drugdb/bill/' + bill_id + '/delivery/'
-        console.log(endpoint)
         const delay_by_in_ms = 300
         let scheduled_function = false
 

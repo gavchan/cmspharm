@@ -3,11 +3,11 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.contrib.auth.decorators import login_required, permission_required
 from django.urls import reverse, reverse_lazy
 from django.db.models import Q
-from bootstrap_modal_forms.generic import BSModalCreateView
-
 from django.template.loader import render_to_string
 from django.http import JsonResponse
 from django.shortcuts import render
+
+from bootstrap_modal_forms.generic import BSModalCreateView
 from ledger.models import (
     Expense,
 )
