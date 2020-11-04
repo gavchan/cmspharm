@@ -6,6 +6,10 @@ print("Using development settings")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+# Make django-crispy-forms fail loud instead of logging
+CRISPY_FAIL_SILENTLY = not DEBUG
+
+
 NOTEBOOK_ARGUMENTS = [
     '--ip=0.0.0.0',
     '--port=8888',
