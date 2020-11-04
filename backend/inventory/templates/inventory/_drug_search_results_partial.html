@@ -1,0 +1,43 @@
+{% if drug_list %}
+<table class="table table-sm table-striped mt-2">
+    <thead>
+        <tr>
+            <th scope="col">Reg no.</th>
+            <th scope="col">Product name / Ingredients</th>
+            <th scope="col">Cert Holder</th>
+            <th scope="col">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for drug in drug_list %}
+        
+        <tr>
+            <td>{{ drug.reg_no}}</td>
+            <td>
+                <b>{{ drug.name }}</b>
+                <br>{{ drug.ingredients_list }}
+            </td>
+            <td>{{ drug.company }}</td>
+            <td>
+                <button type="button"
+                    data-id="{% url 'inventory:DeliveryOrderAddDrugModal' delivery_id=delivery_id %}?reg_no={{drug.reg_no}}" 
+                    class="add-drug-to-order btn btn-sm btn-info"
+                >
+                    <i class="fad fa-layer-plus"></i>
+                </button>
+            </td>
+        </tr>
+
+        {% endfor %}
+
+    </tbody>
+</table>
+
+<script type="text/javascript">
+$(".add-drug-to-order").each(function () {
+    $(this).modalForm({
+        formURL: $(this).data('id')
+    });
+});
+</script>
+{% endif %}

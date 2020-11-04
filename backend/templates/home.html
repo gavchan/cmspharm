@@ -43,6 +43,14 @@
           </a>
         </li>
         {% endif %}
+        {% if perms.inventory.can_view_deliveryorder %}
+        <li class="nav item">
+          <a href="{% url 'inventory:DeliveryOrderList' %}?s=1"
+            class="btn btn-sm btn-secondary mb-1"
+          >View Delivery Order
+          </a>
+        </li>
+        {% endif %}
     </ul>
       <!-- <p><a
           href="{% url 'ledger:NewExpense' %}"

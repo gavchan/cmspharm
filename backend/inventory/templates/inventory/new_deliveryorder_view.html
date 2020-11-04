@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title%} New Expense {% endblock %}
+{% block title%} New Delivery Order {% endblock %}
 
 {% block content %}
 
@@ -16,26 +16,26 @@
                 <span class="input-group-text" id="select-vendor">Select vendor:</span>
             </div>
             <select class="form-control" name="vendors" id="select-vendor">
-                <option value="" disabled selected>Click to select</option>
+                <option value="" disabled selected>Click to select...</option>
                 {% for vendor in vendors %}
                 <option 
                     value={{vendor.id}} 
                     class="vendor-option"
-                    data-id="{% url 'ledger:NewExpenseModal' %}?q={{vendor.id}}"
+                    data-id="{% url 'inventory:NewDeliveryOrderModal' %}?q={{vendor.id}}"
                 >{{vendor.name}}</option>
                 {% endfor %}
             </select>
             <div class="input-group-append">
-                <button id="btn-add-selected" class="btn btn-sm btn-primary" type="submit">Add expense</button>
+                <button id="btn-add-selected" class="btn btn-sm btn-secondary" type="submit">Add order</button>
             </div>
         </div>
         <hr>
-        <button id="btn-add-expense" class="btn btn-sm btn-primary">Add expense without vendor</button>
+        <button id="btn-add-expense" class="btn btn-sm btn-primary">Add order without vendor</button>
         {% if vendor_obj %}
         <button 
-            id="btn-add-expense-vendor" 
+            id="btn-add-order-vendor" 
             class="btn btn-sm btn-success"
-            data-id="{% url 'ledger:NewExpenseModal' %}?q={{vendor_obj.id}}"
+            data-id="{% url 'inventory:NewDeliveryOrderModal' %}?q={{vendor_obj.id}}"
         >Add expense for vendor: "{{ vendor_obj.name }}"</button>
         {% endif %}
         <hr>
@@ -46,7 +46,7 @@
             <input class="form-control" id="user-input" placeholder="Search by name, category, description" size="50">
         </div>
         <div id="search-results">               
-            {% include 'ledger/_new_expense_choose_vendor.html' %}
+            {% include 'inventory/_new_deliveryorder_choose_vendor.html' %}
         </div>
     </div>
 </div>
@@ -109,11 +109,11 @@
             });
         });
 
-        $("#btn-add-expense").modalForm({
-            formURL: "{% url 'ledger:NewExpenseModal' %}"
+        $("#btn-add-order").modalForm({
+            formURL: "{% url 'inventory:NewDeliveryOrder' %}"
         });
 
-        $(".btn-add-expense-vendor").each(function() {
+        $(".btn-add-order-vendor").each(function() {
             $(this).modalForm({
                 formURL: $(this).data('id')
             })

@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  Deliveries Orders
+{% endblock %}
+  
+{% block content %}
+<div class="card shadow">
+    <div class="card-header">
+      <div class="d-flex justify-content-between align-items-center">
+      <ul class="nav nav-tabs card-header-tabs">
+        {% if disp_type == '2' %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'inventory:DeliveryOrderList' %}?t=1">Drug Orders</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" href="#"><i class="fa fa-table" aria-hidden="true"></i>&nbsp;Consumables</a>
+        </li>
+        {% else %}
+        <li class="nav-item">
+          <a class="nav-link active" href="#"><i class="fa fa-table" aria-hidden="true"></i>&nbsp;Drug Orders</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'inventory:DeliveryOrderList' %}?t=2">Consumables</a>
+        </li>
+        {% endif %}
+        <li class="nav-item">
+          <a class="nav-link disabled" href="#">All</a>
+        </li>
+      </ul>
+      {% if perms.inventory.can_add_deliveryorder %}
+      <button id="btn_add_delivery" class="btn btn-sm btn-primary">New Order/Delivery</button>
+      {% endif %}
+    </div>
+    </div>
+    <div class="card-body">
+  
+    <nav class="row">
+        <div class="col-4">
+            <form action="{% url 'inventory:DeliveryOrderList' %}" method="get">
+                <input class="form-control" name="q" type="text" placeholder="Search Delivery Orders..." />
+            </form>
+        </div>
+        <div class="col-4">
+            {% if last_query %}
+            Results for "{{ last_query }}" ({{ last_query_count }})
+            {% endif %}
+        </div>
+        <div class="col-4">
+            {% if is_paginated %}
+        
+            <ul class="pagination">
+                <li class="page-item">
+                    <a href="{% url 'inventory:DeliveryOrderList' %}?q={{ last_query }}&page=1"
+                    class="page-link">
+                        First
+                    </a>
+                </li>
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a href="{% url 'inventory:DeliveryOrderList' %}?q={{ last_query }}&page={{ page_obj.previous_page_number }}" 
+                    class="page-link">
+                        {{ page_obj.previous_page_number }}
+                    </a>
+                </li>
+                {% endif %}
+                <li class="page-item active">
+                    <a href="{% url 'inventory:DeliveryOrderList' %}?q={{ last_query }}&page={{ page_obj.number }}" 
+                    class="page-link">
+                        {{ page_obj.number }}
+                    </a>
+                </li>
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a href="{% url 'inventory:DeliveryOrderList' %}?q={{ last_query }}&page={{ page_obj.next_page_number }}" 
+                    class="page-link">
+                        {{ page_obj.next_page_number }}
+                    </a>
+                </li>
+                {% endif %}
+                <li class="page-item">
+                    <a href="{% url 'inventory:DeliveryOrderList' %}?q={{ last_query }}&page=last"
+                    class="page-link">
+                        Last ({{ page_obj.paginator.num_pages }}) 
+                    </a>
+                </li>
+            </ul>
+        {% endif %}    
+        </div>
+    </nav>
+
+    {% if deliveryorder_list %}
+    <table class="table table-sm table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Invoice date</th>
+                <th scope="col">Received date</th>
+                <th scope="col">Vendor</th>
+                <th scope="col">Amount</th>
+                <th scope="col">Paid?</th>
+                <th scope="col">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for record in deliveryorder_list %}
+            
+            <tr>
+                <td>{{ record.invoice_date }}</td>
+                <td>{{ record.product_name }}</td>
+                <td>{{ record.vendor.name}}</td>
+                <td>{{ record.amount }}</td>
+                <td>{{ record.is_paid }}</td>
+                <td>
+                    <a href="{% url 'inventory:DeliveryOrderDetail' record.id %}" class="btn btn-sm btn-info"> # </a>
+                </td>
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+    </table>
+
+    {% else %}
+    
+    <p>No delivery order in database</p>
+
+    {% endif %}
+    
+{% endblock %}
