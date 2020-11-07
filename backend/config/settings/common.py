@@ -36,7 +36,8 @@ INSTALLED_APPS = [
     'crispy_forms',
     'corsheaders',
     'bootstrap_modal_forms',
-    'bootstrap_datepicker_plus',    
+    'bootstrap_datepicker_plus',  
+    'tempus_dominus', 
     *CMS_APPS,
     'drugdb',
     'inventory',
@@ -46,6 +47,8 @@ BOOTSTRAP4 = {
     'include_jquery': True,
 }
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+TEMPUS_DOMINUS_INCLUDE_ASSETS = False
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
