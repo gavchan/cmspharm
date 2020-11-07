@@ -21,7 +21,7 @@ class ItemType(models.Model):
 
 class Category(models.Model):
     """
-    Model for non-drug inventory items category
+    Model for item category
     """
     name = models.CharField(max_length=255)
     description = models.CharField(max_length=255)
@@ -136,8 +136,10 @@ class Item(models.Model):
         (CONSUMABLE, 'Consumable'),
         (MISC, 'Other'),
     ]
-    name = models.CharField(max_length=255, blank=True, null=True)
-    alias = models.CharField(max_length=255, blank=True, null=True)
+    name = models.CharField(max_length=255, blank=True, null=True, unique=True)
+    label = models.CharField(max_length=255, blank=True, null=True) 
+    generic_name = models.CharField(max_length=255, blank=True, null=True)
+    alias = models.CharField(max_length=255, blank=True, null=True, unique=True)
     description = models.CharField(max_length=255, blank=True, null=True)
     remarks = models.TextField(blank=True, null=True)
 
@@ -148,13 +150,10 @@ class Item(models.Model):
         blank=True, null=True,
     )
     # Drug related fields
-    reg_drug = models.ForeignKey(
-        'drugdb.RegisteredDrug', on_delete=models.PROTECT,
-        blank=True, null=True
-    )
-    label = models.CharField(max_length=255, blank=True, null=True) 
+    reg_no = models.CharField(unique=True, max_length=255, blank=True, null=True)
+    # permit_no matches RegisteredDrug.permit_no
     clinic_no = models.CharField(max_length=255, blank=True, null=True)
-    dangerous_drug = models.BooleanField(blank=True, null=True)
+    dangerous_drug = models.BooleanField(default=False)
     
     date_created = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(blank=True, null=True)
@@ -328,12 +327,13 @@ class DeliveryItem(models.Model):
     unit_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     discount = models.DecimalField(max_digits=4, decimal_places=0, default=0)
     # discount: percentage discount applied to unit_price in calculation of total; e.g. 25 = 25% off
-    items_per_purchase = models.DecimalField(max_digits=10, decimal_places=2, default=1)
+    items_per_purchase = models.DecimalField(max_digits=10, decimal_places=0, default=1)
     # items_per_purchase: number of granular items per unit of purchase. E.g. 1 pack can contain 100 items
     # items_unit: defined in respective model (ConsumableDelivery, DrugDelivery)
     batch_num = models.CharField(max_length=100, blank=True, null=True)
     other_ref = models.CharField(max_length=100, blank=True, null=True)
     expiry_month = models.CharField(verbose_name='Expiry (YYYYMM)',max_length=8, default="", blank=True, null=True)
+    is_sample = models.BooleanField(default=False)
     # expiry_month: format of yyyymm, or yyyymmdd; to supercede expiry_date
     version = models.PositiveIntegerField(default=1)
 
