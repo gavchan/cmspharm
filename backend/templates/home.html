@@ -45,9 +45,15 @@
         {% endif %}
         {% if perms.inventory.can_view_deliveryorder %}
         <li class="nav item">
-          <a href="{% url 'inventory:DeliveryOrderList' %}?s=1"
+          <a href="{% url 'inventory:DeliveryOrderList' %}"
             class="btn btn-sm btn-secondary mb-1"
           >View Delivery Order
+          </a>
+        </li>
+        <li class="nav item">
+          <a href="{% url 'inventory:ItemList' %}"
+            class="btn btn-sm btn-secondary mb-1"
+          >View Inventory Items
           </a>
         </li>
         {% endif %}

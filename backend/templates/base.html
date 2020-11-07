@@ -3,8 +3,9 @@
 {% load bootstrap4 %}
 
 {# Load CSS and JavaScript #}
-{% bootstrap_css %}
-{% bootstrap_javascript jquery='full' %}
+{#  {% bootstrap_css %} #}
+{#  {% bootstrap_javascript jquery='full' %} #}
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -15,6 +16,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
   {% block stylesheets %}
+  <!-- Bootstrap CSS -->
+  <link href="{% static '/assets/bootstrap/css/bootstrap.css' %}" rel="stylesheet">
   <!-- Font awesome CSS -->
   <link href="{% static '/assets/css/all.css' %}" rel="stylesheet">
   <!-- Custom CSS-->
@@ -57,6 +60,8 @@
     </div>
   <!-- Javascript -->
   {% block scripts %}
+  <script src="{% static '/assets/js/jquery.min.js' %}"></script>
+  <script src="{% static '/assets/bootstrap/js/bootstrap.bundle.js' %}"></script>
   <script src="{% static '/assets/js/popper.min.js' %}"></script>
   <script src="{% static '/js/jquery.bootstrap.modal.forms.min.js' %}"></script>
   <script src="{% static '/assets/js/moment.js' %}"></script>
