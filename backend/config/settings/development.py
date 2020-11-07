@@ -9,7 +9,9 @@ DEBUG = True
 # Make django-crispy-forms fail loud instead of logging
 CRISPY_FAIL_SILENTLY = not DEBUG
 
-
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:51010",
+]
 NOTEBOOK_ARGUMENTS = [
     '--ip=0.0.0.0',
     '--port=8888',
