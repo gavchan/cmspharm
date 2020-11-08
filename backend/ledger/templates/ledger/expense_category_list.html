@@ -10,13 +10,10 @@
       <div class="d-flex justify-content-between align-items-center">
         <span><i class="fa fa-table" aria-hidden="true"></i>
             Expense Categories</span>
-        {% if perms.ledger.can_add_expensecategory %}
-        <a class="btn btn-sm btn-primary" href="{% url 'ledger:NewExpenseCategory' %}">Add Category</a>
-        {% endif %}
       </div>
     </div>
     <div class="card-body">
-      <nav class="row">
+      <nav class="row mb-3">
           <div class="col-4">
               <form action="{% url 'ledger:ExpenseCategoryList' %}" method="get">
                   <input class="form-control" name="q" type="text" placeholder="Search Categories..." />
@@ -96,9 +93,6 @@
                       <a href="{% url 'ledger:ExpenseCategoryUpdate' category.pk %}" class="btn btn-sm btn-info">
                           <i class="fad fa-file-alt"></i>
                       </a>
-                      {% endif %}
-                      {% if perms.ledger.can_delete_expensecategory %}
-                      <a href="{% url 'ledger:ExpenseCategoryDelete' category.pk %}" class="btn btn-sm btn-danger"> Delete </a>
                       {% endif %}
                   </td>
               </tr>

@@ -2,17 +2,32 @@
 {% load crispy_forms_tags %}
 
 {% block title %}
-  Update Category: {{ object.name }}
+  Update Category: {{ object.label }}
 {% endblock %}
 
-
-{% block main %}
-
-  <h1>Update {{ object.name }}</h1>
-  {% crispy form %}
-  
-{% endblock %}
-
-{% block sidebar %}
+{% block content %}
+<div class="card shadow">
+  <div class="card-header">
+    <div class="d-flex justify-content-between align-items-center">
+      Update expense category: [ {{ object.label }} ]
+      <span>
+        <button id="btn_save_details" class="btn btn-sm btn-success">
+          Save Details
+        </button>
+        <a
+          href="{% url 'ledger:ExpenseList' %}"
+          id="btn_cancel"
+          class="btn btn-sm btn-secondary"
+        >
+          Cancel
+        </a>
+      </span>
+    </div>
+  </div>
+  <div class="card-body">
+      {% crispy form %}
+      {{form.media}}
+  </div>
+</div>
 
 {% endblock %}

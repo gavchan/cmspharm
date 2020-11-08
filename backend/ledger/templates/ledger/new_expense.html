@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+
 {% load crispy_forms_tags %}
 
 {% block content %}
@@ -8,17 +9,10 @@
 <div class="card shadow">
     <div class="card-header">
       <div class="d-flex justify-content-between align-items-center">
-        <span>Expense Entry ID # {{ expense.pk }}</span>
+        Expense: Add new entry
         <span>
           <button id="btn_save_details" class="btn btn-sm btn-success">
             Save Details
-          </button>
-          <button 
-            id="btn_delete" 
-            class="bs-modal btn btn-sm btn-danger" 
-            data-form-url="{% url 'ledger:ExpenseDeleteModal' expense_obj.pk %}"
-          >
-            Delete
           </button>
           <a
             href="{% url 'ledger:ExpenseList' %}"
@@ -41,9 +35,16 @@
 {% block extrascripts %}
 <script type="text/javascript">
     $(document).ready(function () {
-      
+        $("#add_vendor_button").modalForm({
+            formURL: "{% url 'inventory:NewVendorModal' %}"
+        });
+
+        $("#id_vendor").change(function() {
+            $("#id_payee").val($("#id_vendor option:selected").text());
+        });
+
       $("#btn_save_details").click(function() {
-        $('#id-ExpenseForm').submit()
+        $('#form').submit()
       });
 
       $(".bs-modal").each(function() {

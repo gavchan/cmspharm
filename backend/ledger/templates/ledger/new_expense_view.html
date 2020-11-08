@@ -6,35 +6,36 @@
 
 {% include "_modal.html" %}
 
-<div class="card">
+<div class="card shadow">
     <div class="card-header">
         Add New Expense
     </div>
     <div class="card-body">
-        <div class="input-group input-group-sm">
-            <div class="input-group-prepend">
-                <span class="input-group-text" id="select-vendor">Select vendor:</span>
+        <form method="GET" action="{% url 'ledger:NewExpense' %}">
+            <div class="input-group input-group-sm">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">Select vendor:</span>
+                </div>
+                <select class="form-control" name="vendor" id="select-vendor">
+                    <option value="" disabled selected>Click to select</option>
+                    {% for vendor in vendors %}
+                    <option 
+                        value={{vendor.id}} 
+                        class="vendor-option"
+                        data-id="{% url 'ledger:NewExpenseModal' %}?q={{vendor.id}}"
+                    >{{vendor.name}}</option>
+                    {% endfor %}
+                </select>
+                <div class="input-group-append">
+                    <button id="btn-add_selected" class="btn btn-sm btn-primary" type="submit" value="submit">Add expense</button>
+                </div>
             </div>
-            <select class="form-control" name="vendors" id="select-vendor">
-                <option value="" disabled selected>Click to select</option>
-                {% for vendor in vendors %}
-                <option 
-                    value={{vendor.id}} 
-                    class="vendor-option"
-                    data-id="{% url 'ledger:NewExpenseModal' %}?q={{vendor.id}}"
-                >{{vendor.name}}</option>
-                {% endfor %}
-            </select>
-            <div class="input-group-append">
-                <button id="btn-add-selected" class="btn btn-sm btn-primary" type="submit">Add expense</button>
-            </div>
-        </div>
+        </form>
         <hr>
-        <button id="btn-add-expense" class="btn btn-sm btn-primary">Add expense without vendor</button>
+        <button id="btn-add_expense" class="btn btn-sm btn-primary">Add expense without vendor</button>
         {% if vendor_obj %}
         <button 
-            id="btn-add-expense-vendor" 
-            class="btn btn-sm btn-success"
+            class="btn-add_expense_vendor btn btn-sm btn-success"
             data-id="{% url 'ledger:NewExpenseModal' %}?q={{vendor_obj.id}}"
         >Add expense for vendor: "{{ vendor_obj.name }}"</button>
         {% endif %}
@@ -61,7 +62,7 @@
         const user_input = $("#user-input")
         const search_icon = $('#search-icon')
         const results_div = $('#search-results')
-        const endpoint = '/ledger/expenses/new/'
+        const endpoint = '/ledger/expenses/new/selectvendor/'
         const delay_by_in_ms = 300
         let scheduled_function = false
 
@@ -109,15 +110,24 @@
             });
         });
 
-        $("#btn-add-expense").modalForm({
+        $("#btn-add_expense").modalForm({
             formURL: "{% url 'ledger:NewExpenseModal' %}"
         });
 
-        $(".btn-add-expense-vendor").each(function() {
+        $(".btn-add_expense_vendor").each(function() {
             $(this).modalForm({
                 formURL: $(this).data('id')
             })
         })
+
+        $("#btn-add_selected").click(function() {
+            var sel = document.getElementById('select-vendor').value;
+            console.log(sel);
+            sel_url = "{% url 'ledger:NewExpense' %}?q=" + sel
+            $(this).modalForm({
+                formURL: sel_url
+            })
+        });
     })
 </script>
 {% endblock %}

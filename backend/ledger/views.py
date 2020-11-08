@@ -11,7 +11,7 @@ from django.template.loader import render_to_string
 from django.http import JsonResponse
 from django.shortcuts import render
 
-from bootstrap_modal_forms.generic import BSModalCreateView, BSModalUpdateView
+from bootstrap_modal_forms.generic import BSModalCreateView, BSModalUpdateView, BSModalDeleteView
 from .models import (
     ExpenseCategory,
     Expense
@@ -67,12 +67,6 @@ class ExpenseCategoryUpdate(UpdateView, LoginRequiredMixin, PermissionRequiredMi
     template_name = "ledger/expense_category_update.html"
     success_url = reverse_lazy('ledger:ExpenseCategoryList')
 
-class ExpenseCategoryDelete(DeleteView, LoginRequiredMixin, PermissionRequiredMixin):
-    permission_required = ('ledger.delete_expensecategory',)
-    model = ExpenseCategory
-    template_name = "ledger/expense_category_confirm_delete.html"
-    success_url = reverse_lazy('ledger:ExpenseCategoryList')
-
 class NewExpenseCategory(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
     """Add new vendor"""
     permission_required = ('ledger.add_expensecategory')
@@ -93,9 +87,15 @@ class ExpenseList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
     paginate_by = 20
     last_query = ''
     last_query_count = 0
+    today =  date.today().strftime('%Y-%m-%d')
+    begin = ''
+    end = ''
 
     def get_queryset(self):
         query = self.request.GET.get('q')
+        self.begin = self.request.GET.get('begin')
+        self.end = self.request.GET.get('end')
+        print(f"Date from: {self.begin} to: {self.end}")
         if query:
             self.last_query = query
             object_list = Expense.objects.filter(
@@ -107,20 +107,24 @@ class ExpenseList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
             self.last_query = ''
             object_list = Expense.objects.all().order_by('-expected_date')
             self.last_query_count = object_list.count
+        if self.begin and self.end:
+            # Filter date range if both parameters given
+            object_list = object_list.filter(expected_date__range=[self.begin, self.end])
+        elif self.begin and not self.end:
+            # Filter for items later than begin date
+            object_list = object_list.filter(expected_date__gte=self.begin)
+        elif self.end and not self.begin:
+            object_list = object_list.filter(expected_date__lte=self.end)
+
         return object_list
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         data['last_query'] = self.last_query
         data['last_query_count'] = self.last_query_count
+        data['begin'] = self.begin
+        data['end'] = self.end
         return data
-
-class ExpenseDetail(DetailView, LoginRequiredMixin, PermissionRequiredMixin):
-    """View Expense Detail"""
-    permission_required = ('ledger.view_expense')
-    model = Expense
-    template_name = "ledger/expense_detail.html"
-    context_object_name = "expense_obj"
 
 class ExpenseUpdate(UpdateView, LoginRequiredMixin, PermissionRequiredMixin):
     """Update Expense"""
@@ -128,23 +132,20 @@ class ExpenseUpdate(UpdateView, LoginRequiredMixin, PermissionRequiredMixin):
     model = Expense
     form_class = ExpenseUpdateForm
     template_name = "ledger/expense_update.html"
-
-    def get_success_url(self):
-        return reverse('ledger:ExpenseDetail', args=(self.object.pk,))
-
-class ExpenseUpdateModal(BSModalUpdateView, LoginRequiredMixin, PermissionRequiredMixin):
-    """Update Expense modal"""
-    permission_required = ('ledger.change_expense',)
-    model = Expense
-    template_name = 'ledger/expense_update_modal.html'
-    form_class = ExpenseUpdateModalForm
-    success_message = 'Success: Book was updated.'
+    success_message = 'Success: Expense was updated'
     success_url = reverse_lazy('ledger:ExpenseList')
 
-class ExpenseDelete(DeleteView, LoginRequiredMixin, PermissionRequiredMixin):
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        data['expense_obj'] = self.object
+        return data
+
+class ExpenseDeleteModal(BSModalDeleteView, LoginRequiredMixin, PermissionRequiredMixin):
+    """Update Expense modal"""
     permission_required = ('ledger.delete_expense',)
     model = Expense
-    template_name = "ledger/expense_confirm_delete.html"
+    template_name = 'ledger/expense_confirm_delete_modal.html'
+    success_message = 'Success: Expense was deleted.'
     success_url = reverse_lazy('ledger:ExpenseList')
 
 # class NewExpenseByVendorModal(BSModalCreateView, LoginRequiredMixin):
@@ -174,6 +175,35 @@ class ExpenseDelete(DeleteView, LoginRequiredMixin, PermissionRequiredMixin):
 #             })
 #         return kwargs
 
+class NewExpense(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
+    """Add new expense modal"""
+    permission_required = ('ledger.add_expense', )
+    template_name = 'ledger/new_expense.html'
+    form_class = NewExpenseForm
+    success_url = reverse_lazy('ledger:ExpenseList')
+    vendor_obj = None
+
+    def dispatch(self, request, *args, **kwargs):
+        vendor_id = request.GET.get('vendor')
+        if vendor_id:
+            self.vendor_obj = Vendor.objects.get(id=vendor_id)
+        else:
+            self.vendor_obj = None
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        data['today'] = date.today().strftime('%Y-%m-%d')
+        data['vendor_obj'] = self.vendor_obj
+        return data
+
+    def get_form_kwargs(self):
+        kwargs = super(NewExpense, self).get_form_kwargs()
+        kwargs.update({
+            'vendor_obj': self.vendor_obj,
+            })
+        return kwargs
+
 class NewExpenseModal(BSModalCreateView, LoginRequiredMixin, PermissionRequiredMixin):
     """Add new expense modal"""
     permission_required = ('ledger.add_expense', )
@@ -202,6 +232,7 @@ class NewExpenseModal(BSModalCreateView, LoginRequiredMixin, PermissionRequiredM
             'vendor_obj': self.vendor_obj,
             })
         return kwargs
+
 
 @login_required
 @permission_required('ledger.add_expense',)
