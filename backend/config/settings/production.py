@@ -12,6 +12,11 @@ with open(os.path.join(CONFIG_DIR, 'dj_secret.key')) as f:
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
+ALLOWED_HOSTS = [hostname]
+
+# Database
+# https://docs.djangoproject.com/en/3.0/ref/settings/#databases
+
 # Read settings from yaml file
 with open(os.path.join(CONFIG_DIR, 'db_settings_prod.yml')) as f:
     data = yaml.load(f, Loader=yaml.FullLoader)
@@ -19,10 +24,7 @@ with open(os.path.join(CONFIG_DIR, 'db_settings_prod.yml')) as f:
     cms_db = data['cms_db'][0]
     hostname = data['allowed_hosts']
 
-ALLOWED_HOSTS = [hostname]
-
-# Database
-# https://docs.djangoproject.com/en/3.0/ref/settings/#databases
+print(f'Using CMS MySql database at {cms_db["host"]}:{cms_db["port"]}')
 
 DATABASE_ROUTERS = ['db_routers.cms.CmsDbRouter', ]
 DATABASE_APPS_MAPPING = {

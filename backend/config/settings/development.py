@@ -1,8 +1,6 @@
 from config.settings.common import *
 import yaml
 
-print("Using development settings")
-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -33,7 +31,10 @@ with open(os.path.join(CONFIG_DIR, 'db_settings_dev.yml')) as f:
     default_db = data['default'][0]
     cms_db = data['cms_db'][0]
 
+print(f'Using CMS MySql database at {cms_db["host"]}:{cms_db["port"]}')
+
 DATABASE_ROUTERS = ['db_routers.cms.CmsDbRouter', ]
+
 DATABASE_APPS_MAPPING = {
     'cmsacc': 'cms_db',
     'cmsinv': 'cms_db',
