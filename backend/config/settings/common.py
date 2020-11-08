@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'bootstrap_modal_forms',
     'bootstrap_datepicker_plus',  
-    'tempus_dominus', 
+    # 'tempus_dominus', 
     *CMS_APPS,
     'drugdb',
     'inventory',
@@ -113,9 +113,11 @@ LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'Asia/Hong_Kong'
 
+DATE_INPUT_FORMATS = ['%Y-%m-%d']
+
 USE_I18N = True
 
-USE_L10N = True
+USE_L10N = False
 
 USE_TZ = True
 
