@@ -13,7 +13,7 @@
             <ul class="navbar-nav mr-auto mt-2 mt-sm-0">
                 {% if perms.ledger.can_add_expense %}
                 <li class="nav-item">
-                    <a href="{% url 'ledger:NewExpense' %}" class="nav-link">+Expense</a>
+                    <a href="{% url 'ledger:NewExpenseSelectVendor' %}" class="nav-link">+Expense</a>
                 </li>
                 {% endif %}
                 {% if perms.drugdb.can_add_drugdelivery %}

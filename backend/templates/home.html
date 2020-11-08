@@ -13,7 +13,7 @@
         {% if perms.ledger.can_add_expense %}
         <li class="nav-item">
           <a
-            href="{% url 'ledger:NewExpense' %}"
+            href="{% url 'ledger:NewExpenseSelectVendor' %}"
             class="btn btn-sm btn-success mb-1"
             >Add New Expense</a
           >
@@ -59,7 +59,7 @@
         {% endif %}
     </ul>
       <!-- <p><a
-          href="{% url 'ledger:NewExpense' %}"
+          href="{% url 'ledger:NewExpenseSelectVendor' %}"
           class="btn btn-sm btn-success mb-1"
           >Add New Expense</a
         ></p>

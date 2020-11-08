@@ -1,0 +1,57 @@
+<div class="col-sm-4">
+    <div class="form-group">
+      <div class="input-group input-group-sm date" id="datepicker_from" data-target-input="nearest">
+        <div class="input-group-prepend">
+          <span class="input-group-text">From:</span>
+        </div>
+        <input type="text" 
+               class="form-control form-control-sm datetimepicker-input"
+               data-target="#datepicker_from"
+               placeholder="YYYY-MM-DD"
+               value="{{ begin }}"
+               name="begin"
+        >
+        <div class="input-group-append" data-target="#datepicker_from" data-toggle="datetimepicker">
+          <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-4">
+    <div class="form-group">
+      <div class="input-group input-group-sm date" id="datepicker_to" data-target-input="nearest">
+        <div class="input-group-prepend">
+          <span class="input-group-text">To:</span>
+        </div>
+        <input type="text" 
+               class="form-control form-control-sm datetimepicker-input"
+               data-target="#datepicker_to"
+               placeholder="YYYY-MM-DD"
+               value="{{ end }}"
+               name="end"
+
+        >
+        <div class="input-group-append" data-target="#datepicker_to" data-toggle="datetimepicker">
+          <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script type="text/javascript">
+    $(function () {
+      $('#datepicker_from').datetimepicker({
+        format: 'YYYY-MM-DD'
+      });
+      $('#datepicker_to').datetimepicker({
+        format: 'YYYY-MM-DD',
+        useCurrent: false
+      });
+      $("#datepicker_from").on("change.datetimepicker", function (e) {
+          $('#datepicker_to').datetimepicker('minDate', e.date);
+      });
+      $("#datepicker_from").on("change.datetimepicker", function (e) {
+          $('#datepickerto').datetimepicker('maxDate', e.date);
+      });
+    })
+
+  </script>
