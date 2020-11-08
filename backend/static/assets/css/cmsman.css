@@ -1,4 +1,5 @@
 .cmm-masthead {
+    font-size: 10px;
     background-color: #334445;
     margin-bottom: 1em;
 }
@@ -8,4 +9,20 @@
     margin-right: auto;
     left: 0;
     right: 0;
+}
+
+html, body {
+    /* default is 1rem or 16px */
+    font-size: 10px important!;
+    line-height: 1.2;
+    }
+     
+/* Increase all font sizes on mobile */
+@media (max-width: 767px) { 
+
+    html, body {
+        /* default is 1rem or 16px */
+        font-size: 12px;
+    }
+     
 }
