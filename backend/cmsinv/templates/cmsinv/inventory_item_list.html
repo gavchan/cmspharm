@@ -1,111 +1,239 @@
 {% extends 'base.html' %}
 
-{% block title %}
-CMS Inventory Items
-{% endblock %}
+{% block title %} CMS Inventory Items {% endblock %}
 
-{% block content %}
+{% block content %} 
 
 {% include "_modal.html" %}
-<div class="card shadow">
-    <div class="card-header text-white bg-info">
-      <div class="d-flex justify-content-between align-items-center">
-        <span><i class="fa fa-table" aria-hidden="true"></i>
-        CMS Inventory Item List</span>
-      </div>
-    </div>
-    <div class="card-body">
- 
-<nav class="row">
-    <div class="col-4">
-        <form action="{% url 'cmsinv:InventoryItemList' %}" method="get">
-            <input class="form-control" name="q" type="text" placeholder="Search CMS Inventory Items..." />
-        </form>
-    </div>
-    <div class="col-4">
-        {% if last_query %}
-        <p>
-            Results for <em>"{{ last_query }}"</em>
-            <span class="badge badge-secondary">{{ last_query_count }}</span>
-        </p>
-        {% endif %}
-    </div>
-    <div class="col-4">
-        {% if is_paginated %}
 
-        <ul class="pagination">
+<div class="card shadow">
+  <div class="card-header text-white bg-info">
+    <div class="d-flex justify-content-between align-items-center">
+      <span>
+        <i class="fa fa-table" aria-hidden="true"></i>
+        Inventory Items</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <form action="{% url 'cmsinv:InventoryItemList' %}" method="get">
+      <div class="row mb-2">
+        <div class="col-sm-3">
+          <div class="input-group input-group-sm">
+            <div class="input-group-prepend">
+              <label 
+                for="inputGroupSelectType" 
+                class="input-group-text"
+                >Type
+              </label>
+            </div>
+            <select 
+              name="inv_type" 
+              id="inputGroupSelectType" 
+              class="custom-select"
+              >
+              <option value="1"
+                {% if type == '1' %} selected {% endif %}
+              >Drugs</option>
+              <option value="2"
+                {% if type == '2' %} selected {% endif %}
+              >Consumables</option>
+            </select>
+          </div>
+        </div>
+        <div class="col-sm-3">
+          <div class="input-group input-group-sm">
+            <div class="input-group-prepend">
+              <label
+                class="input-group-text input-group-sm"
+                for="inputGroupSelectActive"
+                >Status</label
+              >
+            </div>
+            <select
+              name="status"
+              class="custom-select input-group-sm"
+              id="inputGroupSelectActive"
+            >
+              <option value="1"
+                {% if status == '1' %} selected {% endif %}
+              >Active</option>
+              <option value="0"
+                {% if status == '0' %} selected {% endif %}
+              >Inactive</option>
+              <option value="any"
+                {% if status == 'any' %} selected {% endif %}
+              >Any</option>
+            </select>
+          </div>
+        </div>
+        <div class="col-sm-2">
+          <div class="input-group input-group-sm">
+            <div class="input-group-prepend">
+              <label
+                class="input-group-text input-group-sm"
+                for="inputGroupSelectDD"
+                >D.D.</label
+              >
+            </div>
+            <select
+              name="dd"
+              class="custom-select input-group-sm"
+              id="inputGroupSelectActive"
+            >
+              <option value="any" 
+                {% if dd == 'any' %} selected {% endif %}
+              >Any</option>
+              <option value="1"
+                {% if dd == '1' %} selected {% endif %}
+              >Show D.D.</option>
+              <option value="0"
+                {% if dd == '0' %} selected {% endif %}
+              >Non-D.D.</option>
+            </select>
+          </div>
+        </div>
+        <div class="col-sm-2">
+          <a
+            href=""
+            id="btn_new_delivery"
+            class="btn btn-sm btn-secondary btn-block"
+            >New Delivery</a
+          >
+        </div>
+        <div class="col-sm-2">
+          <a href="" id="btn_new_item" class="btn btn-sm btn-success btn-block"
+            >New Item
+          </a>
+        </div>
+      </div>
+      <div class="row mb-2">
+        <div class="col-sm-4">
+          <div class="input-group input-group-sm">
+            <input
+              class="form-control
+              name="q"
+              value="{{ last_query }}"
+              type="text"
+              placeholder="Search vendor"
+            />
+            <div class="input-group-append">
+              <button class="btn btn-sm btn-secondary">Search</button>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-6">
+          {% if is_paginated %}
+          <ul class="pagination pagination-sm">
             <li class="page-item">
-                <a href="{% url 'cmsinv:InventoryItemList' %}?q={{ last_query }}&page=1" class="page-link">
-                    First
-                </a>
+              <a
+                href="{% url 'cmsinv:InventoryItemList' %}?q={{ last_query }}&inv_type={{ type }}&status={{ status }}&dd={{ dd }}&page=1"
+                class="page-link"
+              >
+                First
+              </a>
             </li>
             {% if page_obj.has_previous %}
             <li class="page-item">
-                <a href="{% url 'cmsinv:InventoryItemList' %}?q={{ last_query }}&page={{ page_obj.previous_page_number }}"
-                    class="page-link">
-                    {{ page_obj.previous_page_number }}
-                </a>
+              <a
+                href="{% url 'cmsinv:InventoryItemList' %}?q={{ last_query }}&inv_type={{ type }}&status={{ status }}&dd={{ dd }}&page={{ page_obj.previous_page_number }}"
+                class="page-link"
+              >
+                {{ page_obj.previous_page_number }}
+              </a>
             </li>
             {% endif %}
             <li class="page-item active">
-                <a href="{% url 'cmsinv:InventoryItemList' %}?q={{ last_query }}&page={{ page_obj.number }}"
-                    class="page-link">
-                    {{ page_obj.number }}
-                </a>
+              <a
+                href="{% url 'cmsinv:InventoryItemList' %}?q={{ last_query }}&inv_type={{ type }}&status={{ status }}&dd={{ dd }}&page={{ page_obj.number }}"
+                class="page-link"
+              >
+                {{ page_obj.number }}
+              </a>
             </li>
             {% if page_obj.has_next %}
             <li class="page-item">
-                <a href="{% url 'cmsinv:InventoryItemList' %}?q={{ last_query }}&page={{ page_obj.next_page_number }}"
-                    class="page-link">
-                    {{ page_obj.next_page_number }}
-                </a>
+              <a
+                href="{% url 'cmsinv:InventoryItemList' %}?q={{ last_query }}&inv_type={{ type }}&status={{ status }}&dd={{ dd }}&page={{ page_obj.next_page_number }}"
+                class="page-link"
+              >
+                {{ page_obj.next_page_number }}
+              </a>
             </li>
             {% endif %}
             <li class="page-item">
-                <a href="{% url 'cmsinv:InventoryItemList' %}?q={{ last_query }}&page=last" class="page-link">
-                    Last ({{ page_obj.paginator.num_pages }})
-                </a>
+              <a
+                href="{% url 'cmsinv:InventoryItemList' %}?q={{ last_query }}&inv_type={{ type }}&status={{ status }}&dd={{ dd }}&page=last"
+                class="page-link"
+              >
+                Last ({{ page_obj.paginator.num_pages }})
+              </a>
             </li>
-        </ul>
-        {% endif %}
-    </div>
-</nav>
+          </ul>
+          {% endif %}
+        </div>
+        <div class="col-sm-2">
+          <button id="btn-export_excel" class="btn btn-sm btn-info btn-block">
+           Disabled 
+          </button>
+        </div>
+      </div>
+    </form>
 
-{% if match_item_list_obj %}
+    {% if match_item_list_obj %} 
+    
+    {% include 'cmsinv/_inventory_item_list_table.html' %}
+    
+    {% else %}
 
-{% include 'cmsinv/_inventory_item_list_table.html' %}
+    <p>No CMS item in database</p>
 
-{% else %}
-
-<p>No CMS item in database</p>
-
-{% endif %}
-
-{% endblock %}
-
-    </div>
+    {% endif %} {% endblock %}
+  </div>
 </div>
 
 {% block extrascripts %}
 
 <script type="text/javascript">
-    $(document).ready(function () {
-        $(".show-item-details").each(function () {
-            $(this).modalForm({
-                formURL: $(this).data('id')
-            });
-        });
-        $(".item-action-cell")
-        .append(
-            `<div class="dropdown">
-                <a class="btn btn-sm btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></a>
-                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                    <a class="dropdown-item" href="#">Add new delivery</a>
-                    <a class="dropdown-item" href="#">Toggle active status</a>
-                    <a class="dropdown-item" href="#">Edit</a>
-                </div>
-            </div>
-            `)
+  $(document).ready(function () {
+    $(".expense-item-update").each(function () {
+      $(this).modalForm({
+        formURL: $(this).data("id"),
+      });
     });
+
+    $("#btn-add_expense").modalForm({
+      formURL: "{% url 'ledger:NewExpenseModal' %}",
+    });
+    $("#datepicker_from").datetimepicker({
+      format: "L",
+    });
+    $("#datepicker_to").datetimepicker({
+      format: "L",
+      useCurrent: false,
+    });
+    $("#datepicker_from").on("change.datetimepicker", function (e) {
+      $("#datepicker_to").datetimepicker("minDate", e.date);
+    });
+    $("#datepicker_from").on("change.datetimepicker", function (e) {
+      $("#datepickerto").datetimepicker("maxDate", e.date);
+    });
+
+    $(".show-item-details").each(function () {
+      $(this).modalForm({
+        formURL: $(this).data("id"),
+      });
+    });
+    $(".item-action-cell").append(
+      `<div class="dropdown">
+            <a class="btn btn-sm btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></a>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                <a class="dropdown-item" href="#">Add new delivery</a>
+                <a class="dropdown-item" href="#">Toggle active status</a>
+                <a class="dropdown-item" href="#">Edit</a>
+            </div>
+        </div>
+        `
+    );
+  });
 </script>
-{% endblock extrascripts %}
+{% endblock %}

@@ -7,8 +7,10 @@
     <thead>
         <tr>
             <th scope="col">Ref no.</th>
+            <th scope="col">Alias/Permit</th>
             <th scope="col">Product name/Ingredients</th>
-            <th scope="col">Alias/Vendor</th>
+            <th scope="col">Label/Generic</th>
+            <th scope="col">Stock Qty</th>
             <th scope="col">Action</th>
         </tr>
     </thead>
@@ -26,11 +28,19 @@
                 {% else %}
                 <br>{{ item.clinic_drug_no }}</td>
                 {% endif %}
-            <td><b>{{ item.product_name }}</b>
+                <td>
+                    <b>{{ item.alias }}</b>
+                    <br>{{ item.certificate_holder }}
+                </td>
+                <td><b>{{ item.product_name }}</b>
                 <br>{{ item.ingredient }}</td>
-            <td><b>{{ item.alias }}</b>
-                <br>{{ item.certificate_holder }}
-            </td>
+                <td>
+                    <b>{{ item.label_name }}</b>
+                    <br>{{ item.generic_name }}
+                </td>
+                <td>
+                    {{item.stock_qty}}
+                </td>
             <td class="item-action-cell">
                 {% if item.registration_no %} 
                 <button type="button" class="show-item-details btn btn-sm btn-primary"

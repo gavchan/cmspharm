@@ -34,6 +34,9 @@ class InventoryItemList(ListView, LoginRequiredMixin):
 
     def get_queryset(self):
         query = self.request.GET.get('q')
+        self.inv_type = self.request.GET.get('type') or '1'
+        self.status = self.request.GET.get('status') or '1'
+        self.dd = self.request.GET.get('dd') or 'any'
         if query:
             self.last_query = query
             object_list = InventoryItem.objects.filter(
@@ -42,12 +45,19 @@ class InventoryItemList(ListView, LoginRequiredMixin):
                 Q(alias__icontains=query) |
                 Q(clinic_drug_no__icontains=query) |
                 Q(ingredient__icontains=query)
-            ).order_by('discontinue', 'product_name')
-            self.last_query_count = object_list.count
+            )
         else:
             self.last_query = ''
             object_list = InventoryItem.objects.all()
-            self.last_query_count = object_list.count
+        if self.status == '1':
+            object_list = object_list.filter(discontinue=False)
+        elif self.status == '0':
+            object_list = object_list.filter(discontinue=True)
+        if self.dd == '1':
+            object_list = object_list.filter(dangerous_sign=True)
+        elif self.dd == '0':
+            object_list = object_list.filter(dangerous_sign=False)
+        self.last_query_count = object_list.count
         return object_list
 
     def get_context_data(self, **kwargs):
@@ -55,6 +65,9 @@ class InventoryItemList(ListView, LoginRequiredMixin):
         data['last_query'] = self.last_query
         data['last_query_count'] = self.last_query_count
         data['next_clinic_drug_no'] = InventoryItem.generateNextClinicDrugNo()
+        data['type'] = self.inv_type
+        data['status'] = self.status
+        data['dd'] = self.dd
         return data
 
 class InventoryItemDetail(DetailView, LoginRequiredMixin):
