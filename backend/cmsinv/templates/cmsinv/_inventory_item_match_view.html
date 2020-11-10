@@ -2,7 +2,7 @@
 Include View for inventory item, registered drug, drug delivery match
 Requires the following parameters:
 - item_obj
-- reg_drug_obj
+- drug_obj
 - delivery_obj_list
 -->
 
@@ -11,24 +11,22 @@ Requires the following parameters:
     
     <div
         {% if item_obj.discontinue %}
-        class="card-header bg-white text-muted">
+            class="card-header bg-white text-muted d-flex justify-content-between align-items-center"
         {% else %}
-        class="card-header bg-info">
+            class="card-header bg-info d-flex justify-content-between align-items-center"
         {% endif %}
-        <div class="row">
-            <div class="col-md-8">
-                <h5>
-                    CMS Inventory Item matching {{ item_obj.registration_no }}
-                    {% if item_obj.discontinue %}
-                    <span class="badge badge-danger">Inactive/Discontinued</span>
-                    {% endif %}
-                </h5>
-            </div>
-            <div class="col-md-4">
-                <a href="{% url 'cmsinv:InventoryItemUpdate' item_obj.pk %}" class="btn btn-sm btn-light"> Edit </a>
-                <a href="{% url 'cmsinv:InventoryItemMatchUpdate' item_obj.pk %}" class="btn btn-sm btn-success"> Match Update</a>
-            </div>
-        </div>
+        >
+        <span>
+                CMS Inventory Item matching {{ item_obj.registration_no }}
+                {% if item_obj.discontinue %}
+                <span class="badge badge-danger">Inactive/Discontinued</span>
+                {% endif %}
+        </span>
+        <span>
+            <a href="{% url 'cmsinv:InventoryItemUpdate' item_obj.pk %}" class="btn btn-sm btn-light"> Edit </a>
+            <a href="{% url 'cmsinv:InventoryItemMatchUpdate' item_obj.pk %}" class="btn btn-sm btn-success"> Match Update</a>
+            <a href="{% url 'cmsinv:InventoryItemList' %}" class="btn btn-sm btn-outline-light">Item List</a>
+        </span>
     </div>
     <div class="card-body">
         <div class="row">
@@ -105,17 +103,11 @@ Requires the following parameters:
 {% endif %}
 
 
-{% if reg_drug_obj %}
+{% if drug_obj %}
 <div class="card">
-    <div class="card-header">
-        <div class="row">
-            <div class="col-md-8">
-                <h5>Matching Registered Drug Record</h5>
-            </div>
-            <div class="col-md-4">
-                <a href="#" class="btn btn-sm btn-secondary"> Push to CMS </a>
-            </div>
-        </div>
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5>Matching Registered Drug Record</h5>
+        <a href="#" class="btn btn-sm btn-secondary"> Push to CMS </a>
     </div>
     <div class="card-body">
         <div class="row">
@@ -123,7 +115,7 @@ Requires the following parameters:
                 Permit No.
             </div>
             <div class="col-md-9">
-                {{ reg_drug_obj.reg_no }}
+                {{ drug_obj.reg_no }}
             </div>
         </div>
         <div class="row">
@@ -131,7 +123,7 @@ Requires the following parameters:
                 Product Name
             </div>
             <div class="col-md-9">
-                {{ reg_drug_obj.name }}
+                {{ drug_obj.name }}
             </div>
         </div>
         <div class="row">
@@ -139,7 +131,7 @@ Requires the following parameters:
                 Ingredients
             </div>
             <div class="col-md-9">
-                {{ reg_drug_obj.ingredients_list }}
+                {{ drug_obj.ingredients_list }}
             </div>
         </div>
         <div class="row">
@@ -147,47 +139,43 @@ Requires the following parameters:
                 Cert. Holder
             </div>
             <div class="col-md-9">
-                {{ reg_drug_obj.company.name }}
+                {{ drug_obj.company.name }}
             </div>
         </div>
 
     </div>
 </div>
 {% else %}
-<div class="alert alert-danger" role="alert">
-    <div class="row">
-        <div class="col-md-8">
-            No matching registered drug no.
-        </div>
-        <div class="col-md-4">
-            <div class="btn-group mr-2" role="group" aria-label="Search by group">
-                <button type="button" class="btn btn-sm btn-light" disabled>Search by</button>
-                {% if item_obj.registration_no %}
-                <a href="{% url 'cmsinv:MatchInventoryItemList' item_obj.registration_no %}"
-                    class="btn btn-sm btn-secondary">
-                    Reg. no.
-                </a>
-                {% endif %}
-                {% if item_obj.ingredient %}
-                <a href="{% url 'cmsinv:InventoryItemList' %}?q={{ item_obj.ingredient }}"
-                    class="btn btn-sm btn-secondary">
-                    Ingredients
-                {% else %}
-                </a><a href="{% url 'cmsinv:InventoryItemList' %}?q={{ item_obj.product_name }}"
-                    class="btn btn-sm btn-secondary">
-                    Product name
-                </a> 
-                {% endif %}
-                
-              </div>
-        </div>
+<div class="alert alert-danger d-flex justify-content-between align-items-center" role="alert">
+    <span>No matching registered drug no.</span>
+    <div class="btn-group mr-2" role="group" aria-label="Search by group">
+      <button type="button" class="btn btn-sm btn-light" disabled>Search by</button>
+      {% if item_obj.registration_no %}
+      <a href="{% url 'cmsinv:MatchInventoryItemList' item_obj.registration_no %}"
+          class="btn btn-sm btn-secondary">
+          {{ item_obj.registration_no }}
+      </a>
+      {% endif %}
+      {% if item_obj.ingredient %}
+      <a href="{% url 'cmsinv:InventoryItemList' %}?q={{ item_obj.ingredient }}"
+          class="btn btn-sm btn-secondary">
+          Ingredients
+      </a>
+      {% else %}
+      <a href="{% url 'cmsinv:InventoryItemList' %}?q={{ item_obj.product_name }}"
+          class="btn btn-sm btn-secondary">
+          Product name
+      </a> 
+      {% endif %}
+        
     </div>
+  <!-- </div> -->
 </div>
 {% endif %}
 
 {% if delivery_obj_list %}
 <div class="card">
-    <div class="card-header">
+    <div class="card-header d-flex justify-content-between align-items-center">
         Recent Delivery Records
     </div>
     <div class="card-body">
@@ -227,18 +215,12 @@ Requires the following parameters:
 
 {% else %}
 
-<div class="alert alert-warning" role="alert">
-    <div class="row">
-        <div class="col-md-8">
-            No drug delivery record
-        </div>
-        {% if reg_drug_obj %}
-        <div class="col-md-4">
-            <a href="{% url 'drugdb:NewDrugDelivery' reg_drug_obj.reg_no %}" class="btn btn-sm btn-secondary">Add
-                new
-                delivery</a>
-        </div>
-        {% endif %}
-    </div>
+<div class="alert alert-warning d-flex justify-content-between align-items-center" role="alert">
+  <span>No drug delivery record</span>
+  {% if drug_obj %}
+    <a href="{% url 'drugdb:NewDrugDelivery' drug_obj.reg_no %}" class="btn btn-sm btn-secondary">
+      Add drug delivery
+    </a>
+  {% endif %}
 </div>
 {% endif %}

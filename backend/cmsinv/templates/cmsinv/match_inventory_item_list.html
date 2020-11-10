@@ -4,7 +4,9 @@
 CMS Inventory Items
 {% endblock %}
 
-{% block main %}
+{% block content %}
+
+{% include "_modal.html" %}
 
 {% include 'cmsinv/_inventory_item_match_view.html' %}
 
@@ -32,6 +34,11 @@ CMS Inventory Items
 <script type="text/javascript">
     $(document).ready(function () {
         $(".show-item-details").each(function () {
+            $(this).modalForm({
+                formURL: $(this).data('id')
+            });
+        });
+        $(".btn_quickedit").each(function () {
             $(this).modalForm({
                 formURL: $(this).data('id')
             });

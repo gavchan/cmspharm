@@ -1,13 +1,22 @@
 {% extends 'base.html' %}
 
 {% block title %}
-CMS Inventory Item: {{ item_obj.registration_no }}
+  Item: {{ item_obj.product_name }}
 {% endblock %}
 
-{% block main %}
 
-{% include 'cmsinv/_inventory_item_match_view.html' %}
-{% endblock %}
+{% block content %}
+<div class="card shadow">
+  <div class="card-header text-white bg-info">
+    <div class="d-flex justify-content-between align-items-center">
+      <span>
+        <i class="fad fa-file-alt"></i>
+        Inventory Item [ {{ item_obj.id }} ] {{ item_obj.product_name }}</span>
+    </div>
+  </div>
+  <div class="card-body">
+    {% include 'cmsinv/_inventory_item_match_view.html' %}
+  </div>
+</div>
 
-{% block sidebar %}
 {% endblock %}

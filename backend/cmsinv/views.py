@@ -14,9 +14,10 @@ from .models import (
 from .forms import (
     InventoryItemUpdateForm,
     InventoryItemMatchUpdateForm,
+    InventoryItemQuickEditModalForm,
 )
 
-from bootstrap_modal_forms.generic import BSModalReadView
+from bootstrap_modal_forms.generic import BSModalReadView, BSModalUpdateView
 
 # InventoryItem Views
 # ===================
@@ -34,6 +35,7 @@ class InventoryItemList(ListView, LoginRequiredMixin):
 
     def get_queryset(self):
         query = self.request.GET.get('q')
+        print(f"query={query}")
         self.inv_type = self.request.GET.get('type') or '1'
         self.status = self.request.GET.get('status') or '1'
         self.dd = self.request.GET.get('dd') or 'any'
@@ -42,6 +44,7 @@ class InventoryItemList(ListView, LoginRequiredMixin):
             object_list = InventoryItem.objects.filter(
                 Q(registration_no__icontains=query) |
                 Q(product_name__icontains=query) |
+                Q(generic_name__icontains=query) |
                 Q(alias__icontains=query) |
                 Q(clinic_drug_no__icontains=query) |
                 Q(ingredient__icontains=query)
@@ -74,22 +77,13 @@ class InventoryItemDetail(DetailView, LoginRequiredMixin):
     """Display details of inventory item"""
     model = InventoryItem
     template_name = 'cmsinv/inventory_item_detail.html'
-    item_obj = None
-    reg_drug_obj = None
-    drug_delivery_obj = None
-   
-    def get_context_data(self, **kwargs):
-        data = super().get_context_data(**kwargs)
-        data['reg_drug_obj'] =  self.reg_drug_obj
-        data['item_obj'] = self.object
-        print(data['reg_drug_obj'])
-        data['delivery_obj_list'] = self.delivery_obj_list
-        return data
-
+    drug_obj = None
+    delivery_obj_list = None
+    
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         try:
-            self.reg_drug_obj = RegisteredDrug.objects.get(reg_no=self.object.registration_no)
+            self.drug_obj = RegisteredDrug.objects.get(reg_no=self.object.registration_no)
         except RegisteredDrug.DoesNotExist:
             print("No registration no. for {self.object.product_name}")
         try:
@@ -97,7 +91,7 @@ class InventoryItemDetail(DetailView, LoginRequiredMixin):
         except DrugDelivery.DoesNotExist:
             self.delivery_obj_list = None
             print(f"No delivery record for {self.object.product_name}")
-        data['reg_drug_obj'] = self.reg_drug_obj
+        data['drug_obj'] = self.drug_obj
         data['delivery_obj_list'] = self.delivery_obj_list
         data['item_obj'] = self.object
         return data
@@ -108,14 +102,6 @@ class InventoryItemModalDetail(BSModalReadView, LoginRequiredMixin):
     item_obj = None
     reg_drug_obj = None
     drug_delivery_obj = None
-   
-    def get_context_data(self, **kwargs):
-        data = super().get_context_data(**kwargs)
-        data['reg_drug_obj'] =  self.reg_drug_obj
-        data['item_obj'] = self.object
-        print(data['reg_drug_obj'])
-        data['delivery_obj_list'] = self.delivery_obj_list
-        return data
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
@@ -132,6 +118,34 @@ class InventoryItemModalDetail(BSModalReadView, LoginRequiredMixin):
         data['delivery_obj_list'] = self.delivery_obj_list
         data['item_obj'] = self.object
         return data
+
+class InventoryItemQuickEditModal(BSModalUpdateView, LoginRequiredMixin):
+    model = InventoryItem
+    template_name = 'cmsinv/inventory_item_quickedit_modal.html'
+    form_class = InventoryItemQuickEditModalForm
+    item_obj = None
+    drug_obj = None
+   
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        try:
+            self.drug_obj = RegisteredDrug.objects.get(reg_no=self.object.registration_no)
+        except RegisteredDrug.DoesNotExist:
+            print("No registration no. for {self.object.product_name}")
+        data['drug_obj'] = self.drug_obj
+        data['item_obj'] = self.object
+        return data
+
+    def get_form_kwargs(self):
+        kwargs = super(InventoryItemQuickEditModal, self).get_form_kwargs()
+        kwargs.update({
+            'drug_obj': self.drug_obj,
+            'item_obj': self.object,
+            })
+        return kwargs
+
+    def get_success_url(self):
+        return reverse('cmsinv:InventoryItemList')
 
 class InventoryItemUpdate(UpdateView, LoginRequiredMixin):
     """Update details of drug delivery"""
@@ -284,7 +298,7 @@ class InventoryItemMatchUpdate(UpdateView, LoginRequiredMixin):
         try:
             self.drug_obj = RegisteredDrug.objects.get(reg_no=self.object.registration_no)
         except RegisteredDrug.DoesNotExist:
-            print("No registration no. for {self.object.product_name}")
+            print(f"No registration no. for {self.object.product_name}")
         try:
             self.delivery_obj_list = DrugDelivery.objects.filter(reg_no=self.object.registration_no).order_by('-received_date')[:5]
         except DrugDelivery.DoesNotExist:

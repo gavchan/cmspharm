@@ -10,7 +10,7 @@
   <div class="card-header text-white bg-info">
     <div class="d-flex justify-content-between align-items-center">
       <span>
-        <i class="fa fa-table" aria-hidden="true"></i>
+        <i class="fad fa-table" aria-hidden="true"></i>
         Inventory Items</span>
     </div>
   </div>
@@ -110,11 +110,11 @@
         <div class="col-sm-4">
           <div class="input-group input-group-sm">
             <input
-              class="form-control
+              class="form-control"
               name="q"
               value="{{ last_query }}"
               type="text"
-              placeholder="Search vendor"
+              placeholder="Search by name, ingredients, reg_no"
             />
             <div class="input-group-append">
               <button class="btn btn-sm btn-secondary">Search</button>
@@ -223,17 +223,22 @@
         formURL: $(this).data("id"),
       });
     });
-    $(".item-action-cell").append(
-      `<div class="dropdown">
-            <a class="btn btn-sm btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></a>
-            <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                <a class="dropdown-item" href="#">Add new delivery</a>
-                <a class="dropdown-item" href="#">Toggle active status</a>
-                <a class="dropdown-item" href="#">Edit</a>
-            </div>
-        </div>
-        `
-    );
+    $(".btn_quickedit").each(function () {
+      $(this).modalForm({
+          formURL: $(this).data('id')
+      });
+    });
+    // $(".item-action-cell").append(
+    //   `<div class="btn-group dropleft ml-1">
+    //         <a class="btn btn-md btn-link dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></a>
+    //         <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+    //             <a class="dropdown-item" href="#">Add new delivery</a>
+    //             <a class="dropdown-item" href="#">Toggle active status</a>
+    //             <a class="dropdown-item" href="#">Edit</a>
+    //         </div>
+    //     </div>
+    //     `
+    // );
   });
 </script>
 {% endblock %}

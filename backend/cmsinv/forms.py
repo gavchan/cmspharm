@@ -2,8 +2,17 @@ from django import forms
 from django.forms import ModelForm
 from django.urls import reverse
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Row, Column, Field, Fieldset, Submit, Button
-from crispy_forms.bootstrap import FormActions
+from crispy_forms.layout import (
+    Layout, Row, Column, Div, HTML, Submit, Button, Hidden,
+    Field, Fieldset,
+)
+from crispy_forms.bootstrap import (
+    FormActions,
+    FieldWithButtons,
+    StrictButton,
+    InlineCheckboxes,
+    UneditableField,
+)
 from bootstrap_modal_forms.forms import BSModalForm
 from .models import InventoryItem
 
@@ -140,4 +149,72 @@ class InventoryItemMatchUpdateForm(ModelForm):
         }
         disabled_widget = forms.CheckboxInput(attrs={'disabled': True})
 
+class InventoryItemQuickEditModalForm(BSModalForm):
+    def __init__(self, *args, **kwargs):
+        self.item_obj = kwargs.pop('item_obj', None)
+        self.drug_obj = kwargs.pop('drug_obj', None)
+        super(InventoryItemQuickEditModalForm, self).__init__(*args, **kwargs)
+        
+        self.helper = FormHelper()
+        self.helper.render_unmentioned_fields = False
+        self.helper.form_id = 'id-InventoryItemQuickEditModalForm'
+        self.helper.form_class = 'cmmForms'
+        self.helper.form_method = 'post'
+        self.helper.form_action = reverse(
+            'cmsinv:InventoryItemQuickEditModal', args=(self.item_obj.pk, )
+            )
+        self.initial['version'] = 1
+        self.helper.layout = Layout(
+            Row(
+                Column('discontinue', css_class='form-group col-sm-2 mb-0'),
+                Column('alias', css_class='form-group col-sm-10 mb-0'),
+                css_class='form-row mb-0',
+            ),
+            Row(
+                Column(
+                    StrictButton('RegDrug <i class="fad fa-arrow-circle-right"></i>', css_class="btn_update_product btn-sm btn-secondary"), 
+                    css_class="form-group col-sm-2 mb-0"
+                    ),
+                Column('product_name', css_class='form-group col-sm-10 mb-0'),
+                css_class='form-row',
+            ),
+            Row(
+                Column(
+                    StrictButton('RegDrug <i class="fad fa-arrow-circle-right"></i>', css_class="btn_update_label btn-sm btn-secondary"),
+                    css_class="form-group col-sm-2 mb-0"
+                ),
+                Column('label_name', css_class='form-group col-sm-10 mb-0'),
+                css_class='form-row',
+            ),
+            Row(
+                Column(
+                    StrictButton('RegDrug <i class="fad fa-arrow-circle-right"></i>', css_class="btn_update_generic btn-sm btn-secondary"),
+                    css_class="form-group col-sm-2 mb-0"
+                ),
+                Column('generic_name', css_class='form-group col-sm-10 mb-0'),
+                css_class='form-row',
+            ),
+            Row(
+                Column(
+                    StrictButton('RegDrug <i class="fad fa-arrow-circle-right"></i>', css_class="btn_update_ingredient btn-sm btn-secondary"),
+                    css_class="form-group col-sm-2 mb-0"
+                ),
+                Column(
+                    Field('ingredient', css_class='form-group col-md-10 mb-0', rows="2"),
+                ),
+                css_class='form-row'
+            ),
+            FormActions(
+                Submit('submit', 'Submit' ),
+                HTML("""
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                """)
+            ),
+        )
 
+    class Meta:
+        model = InventoryItem
+        fields = [
+            'discontinue', 'alias',
+            'product_name', 'label_name', 'generic_name', 'ingredient',
+        ]

@@ -7,10 +7,11 @@
     <thead>
         <tr>
             <th scope="col">Ref no.</th>
-            <th scope="col">Alias/Permit</th>
-            <th scope="col">Product name/Ingredients</th>
+            <th scope="col">Alias/CertHolder</th>
+            <th scope="col">Product/Ingredients</th>
             <th scope="col">Label/Generic</th>
             <th scope="col">Stock Qty</th>
+            <th scope="col">Cost</th>
             <th scope="col">Action</th>
         </tr>
     </thead>
@@ -26,33 +27,40 @@
                 {% if item.discontinue %}
                 <br><span class="badge badge-secondary">Inactive</span>
                 {% else %}
-                <br>{{ item.clinic_drug_no }}</td>
+                <br>{{ item.clinic_drug_no }}
+            </td>
                 {% endif %}
-                <td>
-                    <b>{{ item.alias }}</b>
-                    <br>{{ item.certificate_holder }}
-                </td>
-                <td><b>{{ item.product_name }}</b>
-                <br>{{ item.ingredient }}</td>
-                <td>
-                    <b>{{ item.label_name }}</b>
-                    <br>{{ item.generic_name }}
-                </td>
-                <td>
-                    {{item.stock_qty}}
-                </td>
+            <td>
+                <b>{{ item.alias }}</b>
+                <br>{{ item.certificate_holder }}
+            </td>
+            <td><b>{{ item.product_name }}</b>
+            <br>{{ item.ingredient }}</td>
+            <td>
+                <b>{{ item.label_name }}</b>
+                <br>{{ item.generic_name }}
+            </td>
+            <td>
+                {{ item.stock_qty }}
+            </td>
+            <td>
+                {{ item.standard_cost }}
+            </td>
             <td class="item-action-cell">
-                {% if item.registration_no %} 
-                <button type="button" class="show-item-details btn btn-sm btn-primary"
-                    data-id="{% url 'cmsinv:InventoryItemModalDetail' item.pk %}">
-                    <i class="fad fa-file-alt"></i>
+                <button 
+                    type="button" 
+                    {% if item.registration_no %}
+                        class="show-item-details btn btn-link"
+                    {% else %}
+                        <button type="button" class="show-item-details btn btn-sm btn-danger"
+                    {% endif %}
+                    data-id="{% url 'cmsinv:InventoryItemModalDetail' item.pk %}"
+                    ><i class="fad fa-file"></i></button>
+                <button
+                  class="btn_quickedit btn btn-link"
+                  data-id="{% url 'cmsinv:InventoryItemQuickEditModal' item.pk %}"  
+                ><i class="fad fa-edit"></i>
                 </button>
-                {% else %}
-                <button type="button" class="show-item-details btn btn-sm btn-danger"
-                    data-id="{% url 'cmsinv:InventoryItemModalDetail' item.pk %}">
-                    <i class="fad fa-file-alt"></i>
-                </button>
-                {% endif %}
             </td>
         </tr>
 
@@ -63,13 +71,4 @@
 
 {% block extrascripts %}
 
-{{ bill_obj.id|json_script:"bill_id" }}
-<script type="text/javascript">
-    $(document).ready(function () {
-        $(".add-drug-to-bill").each(function () {
-            $(this).modalForm({
-                formURL: $(this).data('id')
-            });
-        });
-</script>
 {% endblock %}

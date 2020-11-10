@@ -1,0 +1,118 @@
+{% load crispy_forms_tags %}
+
+<div class="modal-header">
+  <h5 class="modal-title">Quick Edit: {{ item_obj.product_name }}</h5>
+  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+
+<div class="modal-body">
+  {% if drug_obj %}
+  <div class="card">
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-8">
+            <h5>[ {{drug_obj.reg_no}} ] Matching Registered Drug</h5>
+        </div>
+        
+      </div>
+      <div class="row">
+        <div class="col-md-3">
+            Product Name
+        </div>
+        <div class="col-md-9">
+            {{ drug_obj.name }}
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-3">
+            Ingredients
+        </div>
+        <div class="col-md-9">
+            {{ drug_obj.ingredients_list }}
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-3">
+            Cert. Holder
+        </div>
+        <div class="col-md-9">
+            {{ drug_obj.company.name }}
+        </div>
+      </div>
+    </div>
+  </div>
+  {% else %}
+  <div class="alert alert-danger d-flex justify-content-between align-items-center" role="alert">
+    No matching registered drug no.
+    <div class="btn-group" role="group" aria-label="Search by group">
+        <button type="button" class="btn btn-sm btn-light" disabled>Search by</button>
+        {% if item_obj.registration_no %}
+        <a href="{% url 'cmsinv:MatchInventoryItemList' item_obj.registration_no %}"
+            class="btn btn-sm btn-secondary">
+            Reg. no.
+        </a>
+        {% endif %}
+        {% if item_obj.ingredient %}
+        <a href="{% url 'cmsinv:InventoryItemList' %}?q={{ item_obj.ingredient }}"
+            class="btn btn-sm btn-secondary">
+            Ingredients
+        </a>
+            {% else %}
+        <a href="{% url 'cmsinv:InventoryItemList' %}?q={{ item_obj.product_name }}"
+            class="btn btn-sm btn-secondary">
+            Product name
+        </a> 
+        {% endif %}
+    </div>
+  </div>
+  {% endif %}
+  <div class="card">
+    <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+      <div>
+        Edit CMS Inventory Item
+        <span class="badge badge-danger">Inactive/Discontinued</span>
+      </div>
+      <span>
+        <div class="btn-group" role="group" aria-label="Reference">
+          {% if item_obj.registration_no %}
+          <button type="button" class="btn btn-sm btn-light" disabled>Reg # {{ item_obj.registration_no }}</button>
+          {% endif %}
+          {% if item_obj.clinic_drug_no %}
+          <button type="button" class="btn btn-sm btn-light" disabled># {{ item_obj.clinic_drug_no }}</button>
+          {% endif %}
+        </div>
+        <div class="btn-group" role="group" aria-label="Detail Edit Actions">
+          <a href="{% url 'cmsinv:InventoryItemUpdate' item_obj.pk %}" class="btn btn-sm btn-light"><i class="fad fa-edit"></i></a>
+          <a href="{% url 'cmsinv:InventoryItemMatchUpdate' item_obj.pk %}" class="btn btn-sm btn-light"><i class="fad fa-copy"></i></a>
+        </div>
+      </span>
+    </div>
+    <div class="card-body">
+      {% crispy form %}
+    </div>
+  </div>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+</div>
+
+{{ drug_obj.name|json_script:"product_name" }}
+{{ drug_obj.ingredients_list|json_script:"ingredients"}}
+<script type="text/javascript">
+product_name = JSON.parse(document.getElementById("product_name").textContent)
+ingredients = JSON.parse(document.getElementById("ingredients").textContent)
+$(".btn_update_product").click(function() {
+    $("#id_product_name").val(product_name)
+});
+$(".btn_update_label_name").click(function() {
+    $("#id_label").val(product_name)
+});
+$(".btn_update_ingredient").click(function() {
+    $("#id_ingredient").val(ingredients)
+});
+$(".btn_update_generic").click(function() {
+    $("#id_generic_name").val(ingredients)
+});
+</script>
