@@ -13,12 +13,12 @@
             <ul class="navbar-nav mr-auto mt-2 mt-sm-0">
                 {% if perms.ledger.can_add_expense %}
                 <li class="nav-item">
-                    <a href="{% url 'ledger:NewExpenseSelectVendor' %}" class="nav-link">+Expense</a>
+                    <a href="{% url 'ledger:NewExpenseSelectVendor' %}" class="nav-link"><i class="fal fa-plus"></i> Expense</a>
                 </li>
                 {% endif %}
                 {% if perms.drugdb.can_add_drugdelivery %}
                 <li class="nav-item">
-                    <a href="{% url 'inventory:NewDeliveryOrder' %}" class="nav-link">+Delivery</a>
+                    <a href="{% url 'inventory:NewDeliveryOrder' %}" class="nav-link"><i class="fal fa-plus"></i> Delivery</a>
                 </li>
                 {% endif %}
 
@@ -31,6 +31,8 @@
                     <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                         <a href="{% url 'ledger:NewExpense' %}" class="dropdown-item">Add Expense</a>
                         <a href="{% url 'ledger:ExpenseList' %}" class="dropdown-item">Show Expenses</a>
+                        <a href="{% url 'inventory:DeliveryOrderList' %}" class="dropdown-item">Show Delivery Orders</a>
+                        <a href="{% url 'drugdb:DrugDeliveryList' %}" class="dropdown-item">Show Delivered Drugs</a>
                         <a href="{% url 'ledger:ExpenseCategoryList' %}" class="dropdown-item">Show Categories</a>
                         <a href="{% url 'inventory:VendorList' %}" class="dropdown-item">Show Vendors</a>
                     {% comment %}    
@@ -44,24 +46,25 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#"
                         id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Inventory
+                        CMS+
                     </a>
                     <div class="dropdown-menu">
-                        <a href="{% url 'inventory:DeliveryOrderList' %}" class="dropdown-item">Show Delivery Orders</a>
-                        <a href="{% url 'inventory:ItemList' %}" class="dropdown-item">Show Item List</a>
+                        <a href="{% url 'cmsinv:InventoryItemList' %}" class="dropdown-item">
+                            Show Item Inventory List
+                        </a>
+                        <a href="{% url 'cmsinv:SupplierList' %}" class="dropdown-item">
+                            Show Supplier List
+                        </a>
                     </div>
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="{% url 'cmsinv:InventoryItemList' %}"
                         id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Drugs
+                        Reference 
                     </a>
                     <div class="dropdown-menu">
-                        <a href=""
-                        <a href="{% url 'cmsinv:InventoryItemList' %}" class="dropdown-item">Show CMS Drug Inventory
-                            List</a>
                         <a href="{% url 'drugdb:DrugList' %}" class="dropdown-item">Show Registered Drugs</a>
-                        <a href="{% url 'drugdb:DrugDeliveryList' %}" class="dropdown-item">Show Delivered Drugs</a>
+                        <a href="{% url 'inventory:ItemList' %}" class="dropdown-item">Show Item List</a>
                     </div>
                 </li>
             
