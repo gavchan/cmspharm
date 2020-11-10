@@ -14,7 +14,7 @@ from crispy_forms.bootstrap import (
     UneditableField,
 )
 from bootstrap_modal_forms.forms import BSModalForm
-from .models import InventoryItem
+from .models import InventoryItem, Supplier
 
 
 class InventoryItemUpdateForm(ModelForm):
@@ -217,4 +217,51 @@ class InventoryItemQuickEditModalForm(BSModalForm):
         fields = [
             'discontinue', 'alias',
             'product_name', 'label_name', 'generic_name', 'ingredient',
+        ]
+
+class SupplierQuickEditModalForm(BSModalForm):
+    def __init__(self, *args, **kwargs):
+        self.supplier_obj = kwargs.pop('supplier_obj', None)
+        super(SupplierQuickEditModalForm, self).__init__(*args, **kwargs)
+        
+        self.helper = FormHelper()
+        self.helper.render_unmentioned_fields = False
+        self.helper.form_id = 'id_SupplierQuickEditModalForm'
+        self.helper.form_class = 'cmmForms'
+        self.helper.form_method = 'post'
+        self.helper.form_action = reverse(
+            'cmsinv:SupplierQuickEditModal', args=(self.supplier_obj.pk, )
+            )
+        self.helper.layout = Layout(
+            Row(
+                Column('name', css_class="form-group col-sm-4 mb-0"),
+                Column(Field('address', rows=3),css_class='form-group col-sm-4 mb-0'),
+                Column('supp_type', css_class='form-group col-sm-4 mb-0'),
+                css_class='form-row',
+            ),
+            Row(
+                Column('contact_person', css_class="form-group col-sm-4 mb-0"),
+                Column('tel_mobile', css_class='form-group col-sm-4 mb-0'),
+                Column('tel_home', css_class='form-group col-sm-4 mb-0'),
+                css_class='form-row',
+            ),
+            Row(
+                Column('tel_office', css_class="form-group col-sm-4 mb-0"),
+                Column('fax', css_class='form-group col-sm-4 mb-0'),
+                Column('email', css_class='form-group col-sm-4 mb-0'),
+                css_class='form-row',
+            ),
+            FormActions(
+                Submit('submit', 'Submit' ),
+                HTML("""
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                """)
+            ),
+        )
+
+    class Meta:
+        model = Supplier 
+        fields = [
+            'name', 'address', 'supp_type', 'contact_person', 'tel_mobile',
+            'tel_home', 'tel_office', 'tel_office', 'fax', 'email',
         ]

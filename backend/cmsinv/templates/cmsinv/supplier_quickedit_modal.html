@@ -1,0 +1,96 @@
+{% load crispy_forms_tags %}
+
+<div class="modal-header">
+  <h5 class="modal-title">Quick Edit: {{ supplier_obj.name }}</h5>
+  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+
+<div class="modal-body">
+  <div class="card">
+    <div class="card-body">
+      {% if company_obj_list %}
+      <table class="table table-sm table-striped">
+        <thead>
+          <tr>
+            <th scope="col" style="width: 8.33%">Action</th>
+            <th scope="col">Certificate Holders</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for company_obj in company_obj_list %}
+          <tr>
+            <td class="company-action-cell">
+              <button
+                class="btn_match_cert btn btn-sm btn-link"
+                data-match="{{ company_obj.name }}"  
+              ><i class="fad fa-copy"></i>
+              </button>
+            </td>
+            <td>{{ company_obj.name }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div class="alert alert-danger d-flex justify-content-between align-items-center" role="alert">
+        No matching company name
+      </div>
+      {% endif %}
+      {% if vendor_obj_list %}
+      <table class="table table-sm table-striped">
+        <thead>
+          <tr>
+            <th scope="col" style="width: 8.33%">Action</th>
+            <th scope="col">Vendors</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for vendor_obj in vendor_obj_list %}
+          <tr>
+            <td class="vendor-action-cell">
+              <button
+                class="btn_match_vendor btn btn-sm btn-link"
+                data-match="{{ vendor_obj.name }}"  
+              ><i class="fad fa-copy"></i>
+              </button>
+            </td>
+            <td>{{ vendor_obj.name }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div class="alert alert-danger d-flex justify-content-between align-items-center" role="alert">
+        No matching vendor name
+      </div>
+      {% endif %}
+    </div>
+  </div>
+    
+ 
+
+  <div class="card">
+    <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+        Edit CMS Supplier/Manufacturer
+    </div>
+    <div class="card-body">
+      {% crispy form %}
+    </div>
+  </div>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+</div>
+
+<script type="text/javascript">
+  $(".btn_match_cert").click(function() {
+      $("#id_name").val($(this).data('match'))
+      $("#id_supp_type").val('Certificate Holder')
+  });
+  $(".btn_match_vendor").click(function() {
+      $("#id_name").val($(this).data('match'))
+      $("#id_supp_type").val('Supplier')
+  });
+</script>

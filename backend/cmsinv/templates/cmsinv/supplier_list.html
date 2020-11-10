@@ -1,0 +1,198 @@
+{% extends 'base.html' %}
+
+{% block title %} CMS Suppliers {% endblock %}
+
+{% block content %} 
+
+{% include "_modal.html" %}
+
+<div class="card shadow">
+  <div class="card-header text-white bg-info">
+    <div class="d-flex justify-content-between align-items-center">
+      <span>
+        <i class="fad fa-table" aria-hidden="true"></i>
+        Supplier Manufacturer List</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <form action="{% url 'cmsinv:SupplierList' %}" method="get">
+      <div class="row mb-2">
+        <div class="col-sm-3">
+          <div class="input-group input-group-sm">
+            <div class="input-group-prepend">
+              <label 
+                for="inputGroupSelectType" 
+                class="input-group-text"
+                >Type
+              </label>
+            </div>
+            <select 
+              name="stype" 
+              id="inputGroupSelectType" 
+              class="custom-select"
+              >
+              <option value="any"
+                {% if stype == 'any' %} selected {% endif %}
+              >Any</option>
+              <option value="cert"
+                {% if stype == 'cert' %} selected {% endif %}
+              >Certificate Holder</option>
+              <option value="supp"
+                {% if stype == 'supp' %} selected {% endif %}
+              >Supplier</option>
+              <option value="manf"
+                {% if stype == 'manf' %} selected {% endif %}
+              >Manufacturer</option>
+            </select>
+          </div>
+        </div>
+        <div class="col-sm-2">
+          <a
+            href=""
+            id="btn_new_delivery"
+            class="btn btn-sm btn-secondary btn-block disabled"
+            >New Supplier</a
+          >
+        </div>
+        <div class="col-sm-2">
+          <a href="" id="btn_new_item" class="btn btn-sm btn-success btn-block disabled"
+            >Disabled 
+          </a>
+        </div>
+      </div>
+      <div class="row mb-2">
+        <div class="col-sm-4">
+          <div class="input-group input-group-sm">
+            <input
+              class="form-control"
+              name="q"
+              value="{{ last_query }}"
+              type="text"
+              placeholder="Search by name, ingredients, reg_no"
+            />
+            <div class="input-group-append">
+              <button class="btn btn-sm btn-secondary">Search</button>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-6">
+          {% if is_paginated %}
+          <ul class="pagination pagination-sm">
+            <li class="page-item">
+              <a
+                href="{% url 'cmsinv:SupplierList' %}?q={{ last_query }}&stype={{ stype }}&page=1"
+                class="page-link"
+              >
+                First
+              </a>
+            </li>
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+              <a
+                href="{% url 'cmsinv:SupplierList' %}?q={{ last_query }}&stype={{ stype }}&page={{ page_obj.previous_page_number }}"
+                class="page-link"
+              >
+                {{ page_obj.previous_page_number }}
+              </a>
+            </li>
+            {% endif %}
+            <li class="page-item active">
+              <a
+                href="{% url 'cmsinv:SupplierList' %}?q={{ last_query }}&stype={{ stype }}&page={{ page_obj.number }}"
+                class="page-link"
+              >
+                {{ page_obj.number }}
+              </a>
+            </li>
+            {% if page_obj.has_next %}
+            <li class="page-item">
+              <a
+                href="{% url 'cmsinv:SupplierList' %}?q={{ last_query }}&stype={{ stype }}&page={{ page_obj.next_page_number }}"
+                class="page-link"
+              >
+                {{ page_obj.next_page_number }}
+              </a>
+            </li>
+            {% endif %}
+            <li class="page-item">
+              <a
+                href="{% url 'cmsinv:SupplierList' %}?q={{ last_query }}&stype={{ stype }}&page=last"
+                class="page-link"
+              >
+                Last ({{ page_obj.paginator.num_pages }}pgs)
+              </a>
+            </li>
+          </ul>
+          {% endif %}
+        </div>
+        <div class="col-sm-2">
+          <button id="btn-export_excel" class="btn btn-sm btn-info btn-block">
+           Disabled 
+          </button>
+        </div>
+      </div>
+    </form>
+
+    {% if supplier_obj_list %} 
+    
+    {% include 'cmsinv/_supplier_list_table.html' %}
+    
+    {% else %}
+
+    <p>No CMS item in database</p>
+
+    {% endif %} {% endblock %}
+  </div>
+</div>
+
+{% block extrascripts %}
+
+<script type="text/javascript">
+  $(document).ready(function () {
+    $(".expense-item-update").each(function () {
+      $(this).modalForm({
+        formURL: $(this).data("id"),
+      });
+    });
+
+    $("#btn-add_expense").modalForm({
+      formURL: "{% url 'ledger:NewExpenseModal' %}",
+    });
+    $("#datepicker_from").datetimepicker({
+      format: "L",
+    });
+    $("#datepicker_to").datetimepicker({
+      format: "L",
+      useCurrent: false,
+    });
+    $("#datepicker_from").on("change.datetimepicker", function (e) {
+      $("#datepicker_to").datetimepicker("minDate", e.date);
+    });
+    $("#datepicker_from").on("change.datetimepicker", function (e) {
+      $("#datepickerto").datetimepicker("maxDate", e.date);
+    });
+
+    $(".show-item-details").each(function () {
+      $(this).modalForm({
+        formURL: $(this).data("id"),
+      });
+    });
+    $(".btn_quickedit").each(function () {
+      $(this).modalForm({
+          formURL: $(this).data('id')
+      });
+    });
+    // $(".item-action-cell").append(
+    //   `<div class="btn-group dropleft ml-1">
+    //         <a class="btn btn-md btn-link dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></a>
+    //         <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+    //             <a class="dropdown-item" href="#">Add new delivery</a>
+    //             <a class="dropdown-item" href="#">Toggle active status</a>
+    //             <a class="dropdown-item" href="#">Edit</a>
+    //         </div>
+    //     </div>
+    //     `
+    // );
+  });
+</script>
+{% endblock %}

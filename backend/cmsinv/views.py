@@ -5,16 +5,22 @@ from django.urls import reverse, reverse_lazy
 from django.db.models import Q
 from drugdb.models import (
     RegisteredDrug,
+    Company,
     DrugDelivery,
+)
+from inventory.models import (
+    Vendor,
 )
 from .models import (
     InventoryItem,
+    Supplier,
 )
 
 from .forms import (
     InventoryItemUpdateForm,
     InventoryItemMatchUpdateForm,
     InventoryItemQuickEditModalForm,
+    SupplierQuickEditModalForm,
 )
 
 from bootstrap_modal_forms.generic import BSModalReadView, BSModalUpdateView
@@ -189,6 +195,9 @@ class InventoryItemUpdate(UpdateView, LoginRequiredMixin):
 #         return data
 
 class MatchDeliveryInventoryItemList(ListView, LoginRequiredMixin):
+    """
+    CMS Inventory Item List Matching Non-CMS Delivery Record
+    """
     model = InventoryItem
     template_name = "cmsinv/match_delivery_inventory_item_list.html"
     context_object_name = 'match_item_list_obj'
@@ -223,6 +232,9 @@ class MatchDeliveryInventoryItemList(ListView, LoginRequiredMixin):
         return object_list
 
 class MatchInventoryItemList(ListView, LoginRequiredMixin):
+    """
+    CMS Inventory Item List Matching Non-CMS Delivery Record
+    """
     model = InventoryItem
     template_name = "cmsinv/match_inventory_item_list.html"
     context_object_name = 'match_item_list_obj'
@@ -282,6 +294,9 @@ class MatchInventoryItemList(ListView, LoginRequiredMixin):
         return object_list
 
 class InventoryItemMatchUpdate(UpdateView, LoginRequiredMixin):
+    """
+    CMS Inventory Item List Matching Non-CMS Delivery Record
+    """
     model = InventoryItem
     template_name = 'cmsinv/inventory_item_match_update.html'
     form_class = InventoryItemMatchUpdateForm
@@ -311,3 +326,79 @@ class InventoryItemMatchUpdate(UpdateView, LoginRequiredMixin):
         data['delivery_obj_list'] = self.delivery_obj_list
         data['item_obj'] = self.object
         return data
+
+class SupplierList(ListView, LoginRequiredMixin):
+    """
+    Lists CMS suppliers
+    """
+    template_name = 'cmsinv/supplier_list.html'
+    model = Supplier
+    context_object_name = 'supplier_obj_list'
+    paginate_by = 20
+    last_query = ''
+    last_query_count = 0
+
+    def get_queryset(self):
+        query = self.request.GET.get('q')
+        print(f"query={query}")
+        self.stype = self.request.GET.get('stype') or 'any'
+        if query:
+            self.last_query = query
+            object_list = Supplier.objects.filter(
+                name__icontains=query
+            )
+        else:
+            self.last_query = ''
+            object_list = Supplier.objects.all()
+        if self.stype == 'cert':
+            object_list = object_list.filter(supp_type='Certificate Holder')
+        elif self.stype == 'supp':
+            object_list = object_list.filter(supp_type='Supplier')
+        elif self.stype == 'manf':
+            object_list = object_list.filter(supp_type='Manufacturer')
+        self.last_query_count = object_list.count
+        return object_list
+
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        data['last_query'] = self.last_query
+        data['last_query_count'] = self.last_query_count
+        data['stype'] = self.stype
+        data
+        return data
+
+class SupplierQuickEditModal(BSModalUpdateView, LoginRequiredMixin):
+    model = Supplier
+    template_name = 'cmsinv/supplier_quickedit_modal.html'
+    context_object_name = 'supplier_obj'
+    form_class = SupplierQuickEditModalForm
+    company_obj_list = None
+    vendor_obj_list = None
+   
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+
+        # Search for similar names based on the first word in supplier name
+        keyword = self.object.name.split()[0]
+        try:
+            self.company_obj_list = Company.objects.filter(Q(name__icontains=keyword))
+        except Company.DoesNotExist:
+            print(f"No company for {keyword}")
+        try:
+            self.vendor_obj_list = Vendor.objects.filter(Q(name__icontains=keyword))
+        except Vendor.DoesNotExist:
+            print(f"No vendor for {keyword}")
+        data['supplier_obj'] = self.object
+        data['company_obj_list'] = self.company_obj_list
+        data['vendor_obj_list'] = self.vendor_obj_list
+        return data
+
+    def get_form_kwargs(self):
+        kwargs = super(SupplierQuickEditModal, self).get_form_kwargs()
+        kwargs.update({
+            'supplier_obj': self.object,
+            })
+        return kwargs
+
+    def get_success_url(self):
+        return reverse('cmsinv:SupplierList')
