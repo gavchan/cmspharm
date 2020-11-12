@@ -8,15 +8,19 @@ class ExpenseCategory(models.Model):
     Model definition for ExpenseCategory
     """
     name = models.CharField(max_length=255, unique=True)
-    label = models.CharField(max_length=255, unique=True)
+    code = models.CharField(max_length=255, unique=True)
     description = models.CharField(max_length=255, blank=True, null=True)
     active = models.BooleanField(default=True)
 
     class Meta:
-        ordering = ['label','-active']
+        ordering = ['code','-active']
         verbose_name = 'Expense category'
         verbose_name_plural = 'Expense categories'
     
+    @property
+    def label(self):
+        return '-'.join([self.code, self.name])
+
     def __str__(self):
         return f"{self.label}"
 
