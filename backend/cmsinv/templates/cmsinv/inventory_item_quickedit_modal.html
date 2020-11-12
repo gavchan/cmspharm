@@ -13,9 +13,12 @@
     <div class="card-body">
       <div class="row">
         <div class="col-md-8">
+            {% if set_match_drug %}
+            <h5>Set Registration No. to Matching Drug: [ {{drug_obj.reg_no}} ]</h5>
+            {% else %}
             <h5>[ {{drug_obj.reg_no}} ] Matching Registered Drug</h5>
+            {% endif %}
         </div>
-        
       </div>
       <div class="row">
         <div class="col-md-3">
@@ -43,7 +46,43 @@
       </div>
     </div>
   </div>
-  {% else %}
+  {% elif match_drug_list %}
+  <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+          No match registration number match. Possible matching registered drugs:
+          <a href="#" class="btn btn-sm btn-secondary"> Push to CMS </a>
+      </div>
+      <div class="card-body">
+        <table class="table table-sm table-striped">
+          <thead>
+              <tr>
+                  <th scope="col">Reg No.</th>
+                  <th scope="col">Product Name</th>
+                  <th scope="col">Ingredients</th>
+                  <th scope="col">Action</th>
+              </tr>
+          </thead>
+          <tbody>
+            {% for drug in match_drug_list %}
+              <tr>
+                  <td>{{ drug.reg_no }}</td>
+                  <td>{{ drug.name }}</td>
+                  <td>{{ drug.ingredients_list }}</td>
+                  <td class="match-drug-action-cell">
+                      <button
+                        class="btn_quickedit_reg btn btn-link"
+                        data-id="{% url 'cmsinv:InventoryItemQuickEditModal' item_obj.id %}?reg_no={{drug.reg_no}}"  
+                      ><i class="fad fa-edit"></i>
+                      </button>
+                  </td>
+              </tr>
+              {% endfor %}
+      
+          </tbody>
+        </table>
+      </div>
+  </div>
+  {% else %}  
   <div class="alert alert-danger d-flex justify-content-between align-items-center" role="alert">
     No matching registered drug no.
     <div class="btn-group" role="group" aria-label="Search by group">
@@ -71,7 +110,7 @@
   <div class="card">
     <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
       <div>
-        Edit CMS Inventory Item
+        Edit Item&nbsp;<button class="btn btn_update_all btn-sm btn-secondary">Match RegDrug <i class="fad fa-arrow-circle-down"></i></button>
         {% if item_obj.discontinue %}
         <span class="badge badge-danger">Inactive/Discontinued</span>
         {% endif %}
@@ -79,7 +118,12 @@
       <span>
         <div class="btn-group" role="group" aria-label="Reference">
           {% if item_obj.registration_no %}
-          <button type="button" class="btn btn-sm btn-light" disabled>Reg # {{ item_obj.registration_no }}</button>
+          <button type="button" class="btn btn-sm btn-light" disabled>
+            Reg # {{ item_obj.registration_no }}
+          {% elif set_match_drug %}
+          <button type="button" class="btn btn-sm btn-warning" disabled>
+            Reg # None <i class="fad fa-arrow-to-right"></i> {{ drug_obj.reg_no }}
+          </button>
           {% endif %}
           {% if item_obj.clinic_drug_no %}
           <button type="button" class="btn btn-sm btn-light" disabled># {{ item_obj.clinic_drug_no }}</button>
@@ -102,9 +146,17 @@
 
 {{ drug_obj.name|json_script:"product_name" }}
 {{ drug_obj.ingredients_list|json_script:"ingredients"}}
+{{ generic_name|json_script:"generic_name"}}
 <script type="text/javascript">
 product_name = JSON.parse(document.getElementById("product_name").textContent)
 ingredients = JSON.parse(document.getElementById("ingredients").textContent)
+generic_name = JSON.parse(document.getElementById("generic_name").textContent)
+$(".btn_update_all").click(function() {
+    $("#id_product_name").val(product_name)
+    $("#id_label_name").val(product_name)
+    $("#id_ingredient").val(ingredients)
+    $("#id_generic_name").val(generic_name)
+})
 $(".btn_update_product").click(function() {
     $("#id_product_name").val(product_name)
 });
@@ -115,6 +167,11 @@ $(".btn_update_ingredient").click(function() {
     $("#id_ingredient").val(ingredients)
 });
 $(".btn_update_generic").click(function() {
-    $("#id_generic_name").val(ingredients)
+    $("#id_generic_name").val(generic_name)
 });
+$(".btn_quickedit_reg").each(function () {
+    $(this).modalForm({
+        formURL: $(this).data('id')
+    });
+  });    
 </script>

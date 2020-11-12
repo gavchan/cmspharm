@@ -8,8 +8,8 @@
         <tr>
             <th scope="col">Ref no.</th>
             <th scope="col">Alias/CertHolder</th>
-            <th scope="col">Product/Ingredients</th>
-            <th scope="col">Label/Generic</th>
+            <th scope="col">Product/Label</th>
+            <th scope="col">Generic/Ingredients</th>
             <th scope="col">Stock Qty</th>
             <th scope="col">Cost</th>
             <th scope="col">Action</th>
@@ -35,10 +35,10 @@
                 <br>{{ item.certificate_holder }}
             </td>
             <td><b>{{ item.product_name }}</b>
-            <br>{{ item.ingredient }}</td>
+            <br>{{ item.label_name }}</td>
             <td>
-                <b>{{ item.label_name }}</b>
-                <br>{{ item.generic_name }}
+                <b>{{ item.generic_name }}</b>
+                <br>{{ item.ingredient }}
             </td>
             <td>
                 {{ item.stock_qty }}

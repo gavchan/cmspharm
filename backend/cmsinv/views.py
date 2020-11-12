@@ -108,13 +108,17 @@ class InventoryItemModalDetail(BSModalReadView, LoginRequiredMixin):
     item_obj = None
     reg_drug_obj = None
     drug_delivery_obj = None
+    match_drug_list = None
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         try:
             self.reg_drug_obj = RegisteredDrug.objects.get(reg_no=self.object.registration_no)
         except RegisteredDrug.DoesNotExist:
-            print("No registration no. for {self.object.product_name}")
+            print(f"No registration no. for {self.object.product_name}")
+            # Try match name using first word of product name
+            keyword = self.object.product_name.split()[0]
+            self.match_drug_list = RegisteredDrug.objects.filter(Q(name__icontains=keyword))
         try:
             self.delivery_obj_list = DrugDelivery.objects.filter(reg_no=self.object.registration_no)[:5]
         except DrugDelivery.DoesNotExist:
@@ -123,6 +127,7 @@ class InventoryItemModalDetail(BSModalReadView, LoginRequiredMixin):
         data['reg_drug_obj'] = self.reg_drug_obj
         data['delivery_obj_list'] = self.delivery_obj_list
         data['item_obj'] = self.object
+        data['match_drug_list'] = self.match_drug_list
         return data
 
 class InventoryItemQuickEditModal(BSModalUpdateView, LoginRequiredMixin):
@@ -131,22 +136,52 @@ class InventoryItemQuickEditModal(BSModalUpdateView, LoginRequiredMixin):
     form_class = InventoryItemQuickEditModalForm
     item_obj = None
     drug_obj = None
-   
+    match_drug_list = None
+    set_match_drug = False
+
+    def dispatch(self, request, *args, **kwargs):
+        if 'pk' in kwargs:
+            self.object = InventoryItem.objects.get(id=kwargs['pk'])
+        else:
+            print("Error: missing pk")
+        self.item_obj = self.object
+        new_reg = self.request.GET.get('reg_no')
+        if new_reg:
+            self.set_match_drug = True
+        try:
+            self.drug_obj = RegisteredDrug.objects.get(reg_no=self.item_obj.registration_no)
+        except RegisteredDrug.DoesNotExist:
+            print(f"No registration no. for {self.item_obj.product_name}")
+            if self.set_match_drug:
+                try:
+                    self.drug_obj = RegisteredDrug.objects.get(reg_no=new_reg)
+                except RegisteredDrug.DoesNotExist:
+                    print(f"Error. No registration no. Expecting {new_reg}")
+                if self.drug_obj:
+                    print(f"Found {self.drug_obj.reg_no} | {self.drug_obj.name}")
+            else:
+                # Try match name using first word of product name
+                keyword = self.item_obj.product_name.split()[0]
+                self.match_drug_list = RegisteredDrug.objects.filter(Q(name__icontains=keyword))
+        return super().dispatch(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
-        try:
-            self.drug_obj = RegisteredDrug.objects.get(reg_no=self.object.registration_no)
-        except RegisteredDrug.DoesNotExist:
-            print("No registration no. for {self.object.product_name}")
+        
         data['drug_obj'] = self.drug_obj
-        data['item_obj'] = self.object
+        data['item_obj'] = self.item_obj
+        data['match_drug_list'] = self.match_drug_list
+        data['set_match_drug'] = self.set_match_drug
+        print(' '.join([self.drug_obj.gen_generic, self.drug_obj.gen_dosage]))
+        data['generic_name'] = ' '.join([self.drug_obj.gen_generic, self.drug_obj.gen_dosage])
         return data
 
     def get_form_kwargs(self):
         kwargs = super(InventoryItemQuickEditModal, self).get_form_kwargs()
         kwargs.update({
             'drug_obj': self.drug_obj,
-            'item_obj': self.object,
+            'item_obj': self.item_obj,
+            'set_match_drug': self.set_match_drug,
             })
         return kwargs
 
@@ -302,6 +337,7 @@ class InventoryItemMatchUpdate(UpdateView, LoginRequiredMixin):
     form_class = InventoryItemMatchUpdateForm
     item_obj = None
     drug_obj = None
+    possible_drug_list = None
     delivery_obj = None
     delivery_obj_list = None
     
@@ -314,6 +350,7 @@ class InventoryItemMatchUpdate(UpdateView, LoginRequiredMixin):
             self.drug_obj = RegisteredDrug.objects.get(reg_no=self.object.registration_no)
         except RegisteredDrug.DoesNotExist:
             print(f"No registration no. for {self.object.product_name}")
+            
         try:
             self.delivery_obj_list = DrugDelivery.objects.filter(reg_no=self.object.registration_no).order_by('-received_date')[:5]
         except DrugDelivery.DoesNotExist:
@@ -380,6 +417,9 @@ class SupplierQuickEditModal(BSModalUpdateView, LoginRequiredMixin):
 
         # Search for similar names based on the first word in supplier name
         keyword = self.object.name.split()[0]
+        if len(keyword) <=2:
+            # Use first two word if first word is only 1-2 characters in length
+            keyword = ' '.join(self.object.name.split()[:2])
         try:
             self.company_obj_list = Company.objects.filter(Q(name__icontains=keyword))
         except Company.DoesNotExist:

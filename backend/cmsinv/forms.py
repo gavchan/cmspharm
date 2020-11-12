@@ -153,6 +153,7 @@ class InventoryItemQuickEditModalForm(BSModalForm):
     def __init__(self, *args, **kwargs):
         self.item_obj = kwargs.pop('item_obj', None)
         self.drug_obj = kwargs.pop('drug_obj', None)
+        self.set_match_drug = kwargs.pop('set_match_drug', None)
         super(InventoryItemQuickEditModalForm, self).__init__(*args, **kwargs)
         
         self.helper = FormHelper()
@@ -164,10 +165,15 @@ class InventoryItemQuickEditModalForm(BSModalForm):
             'cmsinv:InventoryItemQuickEditModal', args=(self.item_obj.pk, )
             )
         self.initial['version'] = 1
+        if self.set_match_drug and self.drug_obj:
+            # print(f"{self.item_obj.registration_no} set to {self.drug_obj.reg_no}")
+            self.initial['registration_no'] = self.drug_obj.reg_no
+
         self.helper.layout = Layout(
             Row(
                 Column('discontinue', css_class='form-group col-sm-2 mb-0'),
-                Column('alias', css_class='form-group col-sm-10 mb-0'),
+                Column('alias', css_class='form-group col-sm-8 mb-0'),
+                Column('registration_no', css_class='form-group col-sm-2 mb-0'),
                 css_class='form-row mb-0',
             ),
             Row(
@@ -215,7 +221,7 @@ class InventoryItemQuickEditModalForm(BSModalForm):
     class Meta:
         model = InventoryItem
         fields = [
-            'discontinue', 'alias',
+            'discontinue', 'alias', 'registration_no',
             'product_name', 'label_name', 'generic_name', 'ingredient',
         ]
 
