@@ -2,22 +2,7 @@ from django.db import models
 from django.urls import reverse
 # from drugdb.models import RegisteredDrug
 # from ledger.models import ExpenseCategory
-
-class ItemType(models.Model):
-    """
-    Model for type of inventory items, correlates to cmsinv.InventoryItemType
-    To reserve id=1 for Drug, id=2 for Consumable
-    """
-    name = models.CharField(max_length=255)
-    description = models.CharField(max_length=255)
-    active = models.BooleanField(default=True)
-
-    class Meta:
-        ordering = ['id']
-        verbose_name = 'Item type'
-
-    def __str__(self):
-        return f"{self.id} | {self.name}"
+from cmsinv.models import InventoryItem
 
 class Category(models.Model):
     """
@@ -26,14 +11,14 @@ class Category(models.Model):
     name = models.CharField(max_length=255)
     description = models.CharField(max_length=255)
     active = models.BooleanField(default=True)
-    version = models.PositiveIntegerField(default=1)
+    value = models.CharField(max_length=255, unique=True, null=True, blank=True)
 
     class Meta:
-        ordering = ['id']
+        ordering = ['value']
         verbose_name_plural = 'Categories'
 
     def __str__(self):
-        return f"{self.name}"
+        return f"{self.value} | {self.name}"
 
     def get_absolute_url(self):
         return reverse('inventory:CategoryUpdate', kwargs={'pk': self.pk})
@@ -89,6 +74,23 @@ class Vendor(models.Model):
     def __str__(self):
         return f"{self.name}"
 
+class ItemType(models.Model):
+    """
+    Model for type of inventory items, correlates to cmsinv.InventoryItemType
+    To reserve id=1 for Drug, id=2 for Consumable
+    """
+    name = models.CharField(max_length=255)
+    description = models.CharField(max_length=255)
+    active = models.BooleanField(default=True)
+    value = models.CharField(max_length=255, unique=True, null=True, blank=True)
+
+    class Meta:
+        ordering = ['id']
+        verbose_name = 'Item type'
+
+    def __str__(self):
+        return f"{self.value} | {self.name}"
+
 class Item(models.Model):
     """
     Model for non-drug inventory items
@@ -125,36 +127,20 @@ class Item(models.Model):
         (UNIT, 'Unit'),
         (VIAL, 'Vial'),
     ]
-
-    # ITEM_TYPE Choices
-    DRUG = 'DRUG'
-    CONSUMABLE = 'CONS'
-    MISC = 'MISC'
-
-    ITEM_TYPE_CHOICES = [
-        (DRUG, 'Drug'),
-        (CONSUMABLE, 'Consumable'),
-        (MISC, 'Other'),
-    ]
-    name = models.CharField(max_length=255, blank=True, null=True, unique=True)
-    label = models.CharField(max_length=255, blank=True, null=True) 
-    generic_name = models.CharField(max_length=255, blank=True, null=True)
-    alias = models.CharField(max_length=255, blank=True, null=True, unique=True)
-    description = models.CharField(max_length=255, blank=True, null=True)
-    remarks = models.TextField(blank=True, null=True)
-
-    item_type = models.CharField(max_length=4, choices=ITEM_TYPE_CHOICES, default=DRUG)
+    name = models.CharField(max_length=255, blank=True, null=True)
+    cms = models.ForeignKey(
+        InventoryItem, on_delete=models.PROTECT,
+        blank=True, null=True,
+    )
+    item_type = models.ForeignKey(
+        ItemType, on_delete=models.PROTECT,
+        blank=True, null=True,
+    )
     item_unit = models.CharField(max_length=100, choices=ITEM_UNIT_CHOICES, default=TAB)
     category = models.ForeignKey(
         Category, on_delete=models.PROTECT,
         blank=True, null=True,
     )
-    # Drug related fields
-    reg_no = models.CharField(unique=True, max_length=255, blank=True, null=True)
-    # permit_no matches RegisteredDrug.permit_no
-    clinic_no = models.CharField(max_length=255, blank=True, null=True)
-    dangerous_drug = models.BooleanField(default=False)
-    
     date_created = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(blank=True, null=True)
     updated_by = models.CharField(max_length=255, blank=True, null=True)
@@ -170,7 +156,7 @@ class Item(models.Model):
     def __str__(self):
         return f"{self.name}"
 
-class Delivery(models.Model):
+class Delivery(models.Model):  ### To be superceded by DeliveryOrder ###
     """
     Abstract base class that is inherited by `DrugDelivery`
     """

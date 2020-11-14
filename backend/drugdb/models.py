@@ -3,6 +3,7 @@ from django.urls import reverse
 from cmsinv.models import InventoryItem
 from inventory.models import Delivery
 from ledger.models import Expense
+import re
 
 class RegisteredDrug(models.Model):
     """
@@ -21,6 +22,10 @@ class RegisteredDrug(models.Model):
     company = models.ForeignKey(
         'Company', on_delete=models.PROTECT,
         )
+    cmsinv_item = models.ForeignKey(
+        InventoryItem, on_delete=models.PROTECT,
+        blank=True, null=True,
+        )
     date_created = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
     is_active = models.BooleanField(default=True)
@@ -32,6 +37,45 @@ class RegisteredDrug(models.Model):
     @property
     def ingredients_list(self):
         return ", ".join([i.name for i in self.ingredients.all()])
+
+    @property
+    def gen_dosage(self):
+        """
+        Tries to get dosage from product name
+        Patterns:
+        - Oral meds:    [Number] [MG]
+                        [Number] [MCG]
+        - Syrup meds:   [Number][MG]/[Number][ML]
+        - Injections:   [Number][MCG/ML]
+        - Inhaled:      [Number][MCG/SPRAY]
+        - External:     [Number]%
+        """
+        pattern = re.compile(r'(\d*\.?\d*\s?(MC?G)\/?(\d*\.?\d*)?(MG|MCG|ML|SPRAY)?)|(\d*\.?\d*\%)/g', re.IGNORECASE)
+        dose_search = pattern.search(self.name)
+
+        if dose_search:
+            return dose_search.group()
+        else:
+            return ""
+
+    @property
+    def gen_generic(self):
+        """
+        Generate generic name from ingredients
+        For drugs with <= 3 ingredients, use first word of ingredient
+        For drugs with >3 ingredients, return "COMBO"
+        """
+
+        first_words = []
+        if len(self.ingredients.all()) <=5:
+            for ingr in self.ingredients.all():
+                first_words.append(ingr.name.split()[0])
+            return " / ".join(first_words)
+        else:
+            for ingr in self.ingredients.all():
+                first_words.append(ingr.name.split()[0])
+            return "COMBO: " + " / ".join(first_words[:5]) + "..."
+
     
     def __str__(self):
         return f"{self.reg_no} | {self.name}"

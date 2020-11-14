@@ -159,9 +159,19 @@ class InventoryItem(models.Model):
         blank=True, null=True
         )
 
-    # N.B. inventory_type is not ever used in CMS App, perhaps it 
-    # duplicates the database 'type_id' field
-    inventory_type = models.CharField(max_length=255, blank=True, null=True)
+    # N.B. inventory_type is not ever used in CMS App - by default all are set to Null
+    # To make use of this, to set as:
+    # - "Drug": Registered Drug (reg_no)
+    # - "Supplement": Health supplement and vitamins
+    # - "Nutrition": Nutritional supplement, e.g. Ensure
+    DRUG = 'Drug'
+    SUPP = 'Supplement'
+    INVENTORY_TYPE_CHOICES = [
+        (DRUG, 'Drug'),         # Registered Drug
+        (SUPP, 'Supplement'),   # Health supplements, vitamins, etc.
+    ]
+
+    inventory_type = models.CharField(choices=INVENTORY_TYPE_CHOICES, max_length=255, blank=True, null=True)
     is_clinic_drug_list = TextBooleanField()  # MySQL text field, behaves like Boolean
     is_master_drug_list = TextBooleanField()  # MySQL text field, behaves like Boolean
     label_name = models.CharField(max_length=255, blank=True, null=True)

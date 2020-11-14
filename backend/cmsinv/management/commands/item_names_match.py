@@ -25,7 +25,7 @@ class Command(BaseCommand):
             try:
                 drug_obj = RegisteredDrug.objects.get(reg_no=item.registration_no) or None
             except RegisteredDrug.DoesNotExist:
-                self.stdout.write(f"\n#{item.id:4} | Skip [{item.registration_no}] {item.product_name} - No matching Reg Drug.")
+                self.stdout.write(f"#{item.id:4} | Skip [{item.registration_no}] {item.product_name} - No matching Reg Drug.")
                 continue
             if drug_obj:
                 updated_count += 1
@@ -40,6 +40,7 @@ class Command(BaseCommand):
                 item.product_name = drug_obj.name
                 item.label_name = drug_obj.name
                 item.ingredient = drug_obj.ingredients_list
+                item.inventory_type = 'Drug'
                 # item.generic_name = ' '.join([drug_obj.gen_generic, drug_obj.gen_dosage]).strip()
                 # Above commented version tags on generated dosage to generic_name
                 item.generic_name = drug_obj.gen_generic.strip()
@@ -47,9 +48,10 @@ class Command(BaseCommand):
                 self.stdout.write(f"#{item.id:4} | PRODUCT [{old_product_name}] => [{item.product_name}]")
                 self.stdout.write(f"#{item.id:4} | LABEL   [{old_label_name}] => [{item.label_name}]")
                 self.stdout.write(f"#{item.id:4} | GENERIC [{old_generic_name}] => [{item.generic_name}]")
-                self.stdout.write(f"#{item.id:4} | INGR => [{item.ingredient}]=====")
-
+                self.stdout.write(f"#{item.id:4} | INGR => [{item.ingredient}]\n=====")
                 item.save()
+                # Match RegisteredDrug to CMS Inventory Item
+
             # drug_count += 1
             # active_ingr = drug.ingredient_list.split(',')
             # for ingredient in active_ingr:
@@ -60,4 +62,4 @@ class Command(BaseCommand):
             #         self.stdout.write(f"Added {ingr} from {drug.name}")
             #         ingr_count += 1
 
-        self.stdout.write(f"\n==== Done ====\nParsed {item_count} drugs; updated {updated_count} ingredients")
+        self.stdout.write(f"\n==== Done ====\nParsed {item_count} drugs; updated {updated_count} items")
