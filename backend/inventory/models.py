@@ -82,7 +82,7 @@ class ItemType(models.Model):
     name = models.CharField(max_length=255)
     description = models.CharField(max_length=255)
     active = models.BooleanField(default=True)
-    value = models.CharField(max_length=255, unique=True, null=True, blank=True)
+    value = models.CharField(max_length=255, unique=True)
 
     class Meta:
         ordering = ['id']
@@ -93,50 +93,17 @@ class ItemType(models.Model):
 
 class Item(models.Model):
     """
-    Model for non-drug inventory items
+    Model to link CMS inventory item from external database, registered drug
     """
-    # ITEM_UNIT Choices
-    AMPOULE = 'AMPOULE'
-    BOTTLE = 'BOTTLE'
-    BOX = 'BOX'
-    CAPSULE = 'CAP'
-    DOSE = 'DOSE'
-    GRAM = 'GRAM'
-    INJECTION = 'INJECTION'
-    MG = 'MG'
-    ML = 'ML'
-    PACK = 'PACK'
-    TAB = 'TAB'
-    TUBE = 'TUBE'
-    UNIT = 'UNIT'
-    VIAL = 'VIAL'
-
-    ITEM_UNIT_CHOICES = [
-        (AMPOULE, 'Ampoule'),
-        (BOTTLE, 'Bottle'),
-        (BOX, 'Box'),
-        (CAPSULE, 'Cap'),
-        (DOSE, 'Dose'),
-        (GRAM, 'gram'),
-        (INJECTION, 'Injection'),
-        (MG, 'mg'),
-        (ML, 'mL'),
-        (PACK, 'Pack'),
-        (TAB, 'Tablet'),
-        (TUBE, 'Tube'),
-        (UNIT, 'Unit'),
-        (VIAL, 'Vial'),
-    ]
+    
     name = models.CharField(max_length=255, blank=True, null=True)
-    cms = models.ForeignKey(
-        InventoryItem, on_delete=models.PROTECT,
-        blank=True, null=True,
-    )
+    note = models.CharField(max_length=255, blank=True, null=True)
+    cmsid = models.PositiveIntegerField(blank=True, null=True)
+    reg_no = models.CharField(max_length=255, blank=True, null=True)
     item_type = models.ForeignKey(
         ItemType, on_delete=models.PROTECT,
         blank=True, null=True,
     )
-    item_unit = models.CharField(max_length=100, choices=ITEM_UNIT_CHOICES, default=TAB)
     category = models.ForeignKey(
         Category, on_delete=models.PROTECT,
         blank=True, null=True,
@@ -144,7 +111,7 @@ class Item(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(blank=True, null=True)
     updated_by = models.CharField(max_length=255, blank=True, null=True)
-    active = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=True)
     version = models.PositiveIntegerField(default=1)
 
     class Meta:
@@ -284,6 +251,9 @@ class DeliveryOrder(models.Model):
     class Meta:
         ordering = ['-invoice_date']
 
+    def __str__(self):
+        return f"{self.id:5} | {self.received_date} : ${self.amount} | {self.vendor}"
+
     def get_absolute_url(self):
         return reverse('inventory:DeliveryOrderDetail', kwargs={'pk': self.pk})
 
@@ -308,7 +278,7 @@ class DeliveryItem(models.Model):
         on_delete = models.CASCADE,
     )
     purchase_quantity = models.DecimalField(max_digits=10, decimal_places=1, default=0)
-    purchase_unit = models.CharField(max_length=100, choices=PURCHASE_UNIT_CHOICES, default=PACK)
+    purchase_unit = models.CharField(max_length=100, choices=PURCHASE_UNIT_CHOICES, default=BOX)
     bonus_quantity = models.DecimalField(max_digits=10, decimal_places=1, default=0)
     unit_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     discount = models.DecimalField(max_digits=4, decimal_places=0, default=0)

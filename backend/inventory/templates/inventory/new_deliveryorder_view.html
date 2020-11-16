@@ -8,20 +8,20 @@
 
 <div class="card">
     <div class="card-header">
-        Add New Expense
+        Add New Delivery
     </div>
     <div class="card-body">
         <div class="input-group input-group-sm">
             <div class="input-group-prepend">
-                <span class="input-group-text" id="select-vendor">Select vendor:</span>
+                <span class="input-group-text">Select vendor:</span>
             </div>
             <select class="form-control" name="vendors" id="select-vendor">
                 <option value="" disabled selected>Click to select...</option>
                 {% for vendor in vendors %}
                 <option 
                     value={{vendor.id}} 
-                    class="vendor-option"
-                    data-id="{% url 'inventory:NewDeliveryOrderModal' %}?q={{vendor.id}}"
+                    class="vendor-option btn_trigger_modal"
+                    data-id="{% url 'inventory:NewDeliveryOrderModal' %}?vendor={{vendor.id}}"
                 >{{vendor.name}}</option>
                 {% endfor %}
             </select>
@@ -35,8 +35,8 @@
         <button 
             id="btn-add-order-vendor" 
             class="btn btn-sm btn-success"
-            data-id="{% url 'inventory:NewDeliveryOrderModal' %}?q={{vendor_obj.id}}"
-        >Add expense for vendor: "{{ vendor_obj.name }}"</button>
+            data-id="{% url 'inventory:NewDeliveryOrderModal' %}?vendor={{vendor_obj.id}}"
+        >Add delivery order for vendor: "{{ vendor_obj.name }}"</button>
         {% endif %}
         <hr>
         <div class="input-group input-group-sm">
@@ -61,7 +61,7 @@
         const user_input = $("#user-input")
         const search_icon = $('#search-icon')
         const results_div = $('#search-results')
-        const endpoint = '/ledger/expenses/new/'
+        const endpoint = '/inventory/delivery/vendor/new/'
         const delay_by_in_ms = 300
         let scheduled_function = false
 
@@ -103,21 +103,17 @@
             scheduled_function = setTimeout(ajax_call, delay_by_in_ms, endpoint, request_parameters)
         })
 
-        $(".vendor-option").each(function () {
+        $("#btn-add-selected").click(function() {
+            $(this).modalForm({
+                formURL: $('#select-vendor').find(':selected').data('id')
+            });
+        });
+        $(".btn_modal_trigger").each(function () {
             $(this).modalForm({
                 formURL: $(this).data('id')
             });
         });
 
-        $("#btn-add-order").modalForm({
-            formURL: "{% url 'inventory:NewDeliveryOrder' %}"
-        });
-
-        $(".btn-add-order-vendor").each(function() {
-            $(this).modalForm({
-                formURL: $(this).data('id')
-            })
-        })
     })
 </script>
 {% endblock %}

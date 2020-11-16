@@ -1,0 +1,35 @@
+{% load crispy_forms_tags %}
+<div class="modal-header">
+    <h3 class="modal-title">New Inventory Item</h3>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  
+  <div class="modal-body">
+    {% if drug_obj %}
+    <div class="row">
+      <div class="col-md-3">
+          <b>{{ drug_obj.reg_no }}:</b>
+      </div>
+      <div class="col-md-9">
+          {{ drug_obj.name }}
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-3">
+          Ingredients:
+      </div>
+      <div class="col-md-9">
+          {{ drug_obj.ingredients_list }}
+      </div>
+    </div>
+    <hr>
+    {% endif %}
+    {% crispy form %}
+    {{form.media}}
+  </div>
+  
+  <div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+  </div>

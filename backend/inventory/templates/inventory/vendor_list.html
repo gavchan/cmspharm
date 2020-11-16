@@ -2,8 +2,8 @@
 
 {% block title %} 
 
-{% if suppliers_only %}
-Suppliers
+{% if vtype == 'supp' %}
+Suppliers 
 {% else %}
 Vendors
 {% endif%}
@@ -17,165 +17,184 @@ Vendors
 {% include "_modal.html" %}
 
 <div class="card shadow">
-  <div class="card-header">
+  <div class="card-header text-white bg-info">
     <div class="d-flex justify-content-between align-items-center">
-    <ul class="nav nav-tabs card-header-tabs">
-      <li class="nav-item">
-        {% if suppliers_only %}
-        <a class="nav-link" href="{% url 'inventory:VendorList' %}">All Vendors</a>
+      <span>
+        <i class="fad fa-table" aria-hidden="true"></i>
+        {% if vtype == 'supp' %}
+        Suppliers List
         {% else %}
-        <a class="nav-link active" href="#"><i class="fa fa-table" aria-hidden="true"></i>&nbsp;All Vendors</a>
-        {% endif %}
-      </li>
-      <li class="nav-item">
-        {% if suppliers_only %}
-        <a class="nav-link active" href="#"><i class="fa fa-table" aria-hidden="true"></i>&nbsp;Suppliers</a>
-        {% else %}
-        <a class="nav-link" href="{% url 'inventory:VendorList' %}?s=1">Suppliers</a>
-        {% endif %}
-      </li>
-      <li class="nav-item">
-        <a class="nav-link disabled" href="#">Inactive</a>
-      </li>
-    </ul>
-    {% if perms.inventory.can_add_vendor and suppliers_only %}
-    <button id="btn_add_supplier" class="btn btn-sm btn-primary">New Supplier</button>
-    {% elif perms.inventory.can_add_vendor and not suppliers_only %}
-    <button id="btn_add_supplier" class="btn btn-sm btn-primary">New Vendor</button>
-    {% endif %}
-  </div>
+        Vendors List
+        {% endif%}
+      </span>
+    </div>
   </div>
   <div class="card-body">
-
-    <nav class="row">
-  <div class="col-4">
     <form action="{% url 'inventory:VendorList' %}" method="get">
-      <input
-        class="form-control"
-        name="q"
-        type="text"
-        placeholder="Search name"
-      />
+      <div class="row mb-2">
+        <div class="col-sm-3">
+          <div class="input-group input-group-sm">
+            <div class="input-group-prepend">
+              <label 
+                for="inputGroupSelectType" 
+                class="input-group-text"
+                >Type
+              </label>
+            </div>
+            <select 
+              name="vtype" 
+              id="inputGroupSelectType" 
+              class="custom-select"
+              >
+              <option value="supp"
+                {% if vtype == 'supp' %} selected {% endif %}
+              >Supplier</option>
+              <option value="misc"
+                {% if vtype == 'misc' %} selected {% endif %}
+              >Misc</option>
+              <option value="any"
+                {% if vtype == 'any' %} selected {% endif %}
+              >Any</option>
+            </select>
+          </div>
+        </div>
+        <div class="col-sm-7"></div>
+        <div class="col-sm-2">
+          <a href="" id="btn_new_vendor" class="btn btn-sm btn-success btn-block disabled"
+            >New Vendor 
+          </a>
+        </div>
+      </div>
+      <div class="row mb-2">
+        <div class="col-sm-4">
+          <div class="input-group input-group-sm">
+            <input
+              class="form-control"
+              name="q"
+              value="{{ last_query }}"
+              type="text"
+              placeholder="Search by name"
+            />
+            <div class="input-group-append">
+              <button class="btn btn-sm btn-secondary">Search</button>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-6">
+          {% if is_paginated %}
+          <ul class="pagination pagination-sm">
+            <li class="page-item">
+              <a
+                href="{% url 'inventory:VendorList' %}?q={{ last_query }}&vtype={{ vtype }}&page=1"
+                class="page-link"
+              >
+                First
+              </a>
+            </li>
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+              <a
+                href="{% url 'inventory:VendorList' %}?q={{ last_query }}&vtype={{ vtype }}&page={{ page_obj.previous_page_number }}"
+                class="page-link"
+              >
+                {{ page_obj.previous_page_number }}
+              </a>
+            </li>
+            {% endif %}
+            <li class="page-item active">
+              <a
+                href="{% url 'inventory:VendorList' %}?q={{ last_query }}&vtype={{ vtype }}&page={{ page_obj.number }}"
+                class="page-link"
+              >
+                {{ page_obj.number }}
+              </a>
+            </li>
+            {% if page_obj.has_next %}
+            <li class="page-item">
+              <a
+                href="{% url 'inventory:VendorList' %}?q={{ last_query }}&vtype={{ vtype }}&page={{ page_obj.next_page_number }}"
+                class="page-link"
+              >
+                {{ page_obj.next_page_number }}
+              </a>
+            </li>
+            {% endif %}
+            <li class="page-item">
+              <a
+                href="{% url 'inventory:VendorList' %}?q={{ last_query }}&vtype={{ vtype }}&page=last"
+                class="page-link"
+              >
+                Last ({{ page_obj.paginator.num_pages }}pgs)
+              </a>
+            </li>
+          </ul>
+          {% endif %}
+        </div>
+        <div class="col-sm-2">
+          <button id="btn-export_excel" class="btn btn-sm btn-info btn-block">
+           Disabled 
+          </button>
+        </div>
+      </div>
     </form>
-  </div>
-  <div class="col-4">
-    {% if last_query %} Results for "{{ last_query }}" ({{ last_query_count }})
+
+    {% if vendor_list %} 
+    <table class="table table-sm table-striped">
+      <thead>
+        <tr>
+          <th scope="col">Name</th>
+          <th scope="col">Alias</th>
+          <th scope="col">Category</th>
+          <th scope="col">Contact</th>
+          <th scope="col">Tel</th>
+          <th scope="col">Email</th>
+          <th scope="col">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for vendor in vendor_list %}
+    
+        <tr>
+          <td>{{ vendor.name }}</td>
+          <td>{{ vendor.alias }}</td>
+          <td>{{ vendor.default_exp_category }}</td>
+          <td>{{ vendor.contact_person }}</td>
+          <td>{{ vendor.tel_main }}</td>
+          <td>{{ vendor.email }}</td>
+          <td>
+            {% if vendor.is_supplier and perms.inventory.can_add_deliveryorder %}
+            <button
+              type="button"
+              class="btn_modal_trigger btn btn-sm btn-success"
+              data-id="{% url 'inventory:NewDeliveryOrderModal' %}?vendor={{ vendor.id }}"
+            ><i class="fad fa-box-alt"></i>
+            </button>
+            {% endif %}
+            {% if perms.inventory.can_change_vendor %}
+            <button
+              type="button"
+              class="btn_modal_trigger btn btn-sm btn-info"
+              data-id="{% url 'inventory:VendorUpdateModal' vendor.pk %}"
+            ><i class="fad fa-edit"></i>
+            </button>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+
+    <div class="alert alert-secondary" role="alert">
+      No Vendors
+    </div>
+
     {% endif %}
   </div>
-  <div class="col-4">
-    {% if is_paginated %}
-
-    <ul class="pagination">
-      <li class="page-item">
-        <a
-          href="{% url 'inventory:VendorList' %}?q={{ last_query }}&page=1"
-          class="page-link"
-        >
-          First
-        </a>
-      </li>
-      {% if page_obj.has_previous %}
-      <li class="page-item">
-        <a
-          href="{% url 'inventory:VendorList' %}?q={{ last_query }}&page={{ page_obj.previous_page_number }}"
-          class="page-link"
-        >
-          {{ page_obj.previous_page_number }}
-        </a>
-      </li>
-      {% endif %}
-      <li class="page-item active">
-        <a
-          href="{% url 'inventory:VendorList' %}?q={{ last_query }}&page={{ page_obj.number }}"
-          class="page-link"
-        >
-          {{ page_obj.number }}
-        </a>
-      </li>
-      {% if page_obj.has_next %}
-      <li class="page-item">
-        <a
-          href="{% url 'inventory:VendorList' %}?q={{ last_query }}&page={{ page_obj.next_page_number }}"
-          class="page-link"
-        >
-          {{ page_obj.next_page_number }}
-        </a>
-      </li>
-      {% endif %}
-      <li class="page-item">
-        <a
-          href="{% url 'inventory:VendorList' %}?q={{ last_query }}&page=last"
-          class="page-link"
-        >
-          Last ({{ page_obj.paginator.num_pages }})
-        </a>
-      </li>
-    </ul>
-    {% endif %}
-  </div>
-</nav>
-
-{% if vendor_list %}
-<table class="table table-sm table-striped">
-  <thead>
-    <tr>
-      <th scope="col">Name</th>
-      <th scope="col">Alias</th>
-      <th scope="col">Category</th>
-      <th scope="col">Contact</th>
-      <th scope="col">Tel</th>
-      <th scope="col">Email</th>
-      <th scope="col">Action</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for vendor in vendor_list %}
-
-    <tr>
-      <td>{{ vendor.name }}</td>
-      <td>{{ vendor.alias }}</td>
-      <td>{{ vendor.default_exp_category }}</td>
-      <td>{{ vendor.contact_person }}</td>
-      <td>{{ vendor.tel_main }}</td>
-      <td>{{ vendor.email }}</td>
-      <td>
-        <button
-          type="button"
-          class="btn_vendor_update btn btn-sm btn-primary"
-          data-id="{% url 'inventory:VendorUpdateModal' vendor.pk %}"
-        >
-          <i class="fad fa-file-alt"></i>
-        </button>
-        <a
-          href="{% url 'inventory:NewItem' vendor.id %}"
-          class="btn btn-sm btn-primary"
-        >
-          <i class="fad fa-cart-plus"></i>
-        </a>
-        {% if perms.inventory.can_delete_vendor %}
-        <a
-          href="{% url 'inventory:VendorDelete' vendor.id %}"
-          class="btn btn-sm btn-danger"
-        >
-          <i class="fad fa-trash-alt"></i>
-        </a>
-        {% endif %}
-      </td>
-    </tr>
-
-    {% endfor %}
-  </tbody>
-</table>
-
-{% else %}
-
-<p>No vendors in database</p>
-
-{% endif %}
-
-{% endblock %} 
 </div>
-</div>
+
+{% endblock %}
+
 {% block extrascripts %}
 
 <script type="text/javascript">
@@ -183,11 +202,11 @@ Vendors
    $("#btn_add_vendor").modalForm({
        formURL: "{% url 'inventory:NewVendorModal' %}"
    });
-   $(".btn_vendor_update").each(function() {
-       $(this).modalForm({
-           formURL: $(this).data('id')
-       });
-   });
+   $(".btn_modal_trigger").each(function () {
+        $(this).modalForm({
+            formURL: $(this).data('id')
+        });
+    });
   });
 </script>
 

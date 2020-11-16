@@ -1,114 +1,162 @@
 {% extends 'base.html' %}
 
 {% block title %}
-Item
+  Inventory Items
 {% endblock %}
 
-{% block main %}
-<h1>Items</h1>
-<nav class="row">
-    <div class="col-4">
-        <form action="{% url 'inventory:ItemList' %}" method="get">
-            <input name="q" type="text" placeholder="Search Items..." />
-        </form>
-    </div>
-    <div class="col-4">
-        {% if last_query %}
-        Results for "{{ last_query }}" ({{ last_query_count }})
+{% block content %}
+
+{% include "_modal.html" %}
+
+<div class="card shadow">
+    <div class="card-header">
+      <div class="d-flex justify-content-between align-items-center">
+      <ul class="nav nav-tabs card-header-tabs">
+        {% if disp_type == '2' %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'inventory:ItemList' %}?t=1">Drug Items</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" href="#"><i class="fa fa-table" aria-hidden="true"></i>&nbsp;Consumable Items</a>
+        </li>
+        {% else %}
+        <li class="nav-item">
+          <a class="nav-link active" href="#"><i class="fa fa-table" aria-hidden="true"></i>&nbsp;Drug Items</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'inventory:ItemList' %}?t=2">Consumable Items</a>
+        </li>
         {% endif %}
+        <li class="nav-item">
+          <a class="nav-link disabled" href="#">All</a>
+        </li>
+      </ul>
+      {% if perms.inventory.can_add_item %}
+      <a href="{% url 'inventory:ItemSelectDrugView' %}" id="btn_add-item" class="btn btn-sm btn-primary">Add New Drug Item</a>
+      {% endif %}
     </div>
-    <div class="col-4">
-        {% if is_paginated %}
-
-        <ul class="pagination">
-            <li class="page-item">
-                <a href="{% url 'inventory:ItemList' %}?q={{ last_query }}&page=1" class="page-link">
-                    First
-                </a>
-            </li>
-            {% if page_obj.has_previous %}
-            <li class="page-item">
-                <a href="{% url 'inventory:ItemList' %}?q={{ last_query }}&page={{ page_obj.previous_page_number }}"
-                    class="page-link">
-                    {{ page_obj.previous_page_number }}
-                </a>
-            </li>
-            {% endif %}
-            <li class="page-item active">
-                <a href="{% url 'inventory:ItemList' %}?q={{ last_query }}&page={{ page_obj.number }}"
-                    class="page-link">
-                    {{ page_obj.number }}
-                </a>
-            </li>
-            {% if page_obj.has_next %}
-            <li class="page-item">
-                <a href="{% url 'inventory:ItemList' %}?q={{ last_query }}&page={{ page_obj.next_page_number }}"
-                    class="page-link">
-                    {{ page_obj.next_page_number }}
-                </a>
-            </li>
-            {% endif %}
-            <li class="page-item">
-                <a href="{% url 'inventory:ItemList' %}?q={{ last_query }}&page=last" class="page-link">
-                    Last ({{ page_obj.paginator.num_pages }})
-                </a>
-            </li>
-        </ul>
-        {% endif %}
     </div>
-</nav>
+    <div class="card-body">
+  
+    <nav class="row">
+        <div class="col-4">
+            <form action="{% url 'inventory:ItemList' %}" method="get">
+                <input class="form-control" name="q" type="text" placeholder="Search by Name" />
+            </form>
+        </div>
+        <div class="col-4">
+            {% if last_query %}
+            Results for "{{ last_query }}" ({{ last_query_count }})
+            {% endif %}
+        </div>
+        <div class="col-4">
+            {% if is_paginated %}
+        
+            <ul class="pagination">
+                <li class="page-item">
+                    <a href="{% url 'inventory:ItemList' %}?q={{ last_query }}&page=1"
+                    class="page-link">
+                        First
+                    </a>
+                </li>
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a href="{% url 'inventory:ItemList' %}?q={{ last_query }}&page={{ page_obj.previous_page_number }}" 
+                    class="page-link">
+                        {{ page_obj.previous_page_number }}
+                    </a>
+                </li>
+                {% endif %}
+                <li class="page-item active">
+                    <a href="{% url 'inventory:ItemList' %}?q={{ last_query }}&page={{ page_obj.number }}" 
+                    class="page-link">
+                        {{ page_obj.number }}
+                    </a>
+                </li>
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a href="{% url 'inventory:ItemList' %}?q={{ last_query }}&page={{ page_obj.next_page_number }}" 
+                    class="page-link">
+                        {{ page_obj.next_page_number }}
+                    </a>
+                </li>
+                {% endif %}
+                <li class="page-item">
+                    <a href="{% url 'inventory:ItemList' %}?q={{ last_query }}&page=last"
+                    class="page-link">
+                        Last ({{ page_obj.paginator.num_pages }}) 
+                    </a>
+                </li>
+            </ul>
+        {% endif %}    
+        </div>
+    </nav>
 
-{% if item_list %}
-<table class="table table-sm table-striped">
-    <thead>
-        <tr>
-            <th scope="col">Product name</th>
-            <th scope="col">Alias</th>
-            <th scope="col">Category</th>
-            <th scope="col">Vendor</th>
-            <th scope="col">Action</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for item in item_list %}
+    {% if item_list %}
+    <table class="table table-sm table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Reg No.</th>
+                <th scope="col">CMS ID</th>
+                <th scope="col">Name</th>
+                <th scope="col">Type</th>
+                <th scope="col">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for record in item_list %}
+            
+            <tr
+                {% if not record.is_active %}
+                class="table-secondary text-muted"
+                {% endif %}
+            >
+                <td>{{ record.reg_drug.reg_no }}</td>
+                <td>{{ record.cmsid }}</td>
+                <td>{{ record.name }}</td>
+                <td>{{ record.item_type.name }}
+                    <br>
+                    {% if not record.is_active %}
+                    <span class="badge badge-secondary">Inactive</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <button
+                        type="button"
+                        class="btn_item-update btn btn-sm btn-primary"
+                        data-id="{% url 'inventory:ItemUpdateModal' record.pk %}"
+                    ><i class="fad fa-file-alt"></i>
+                    </button>
+                </td>
+            </tr>
 
-        <tr>
-            <td>{{ item.name }}</td>
-            <td>{{ item.alias }}</td>
-            <td>{{ item.category }}</td>
-            <td>{{ item.vendor }}</td>
-            <td>
-                <a href="{% url 'inventory:ItemDetail' item.pk %}"><svg class="bi bi-window" width="1.5em" height="1.5em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                    <path fill-rule="evenodd" d="M14 2H2a1 1 0 00-1 1v10a1 1 0 001 1h12a1 1 0 001-1V3a1 1 0 00-1-1zM2 1a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V3a2 2 0 00-2-2H2z" clip-rule="evenodd"/>
-                    <path fill-rule="evenodd" d="M15 6H1V5h14v1z" clip-rule="evenodd"/>
-                    <path d="M3 3.5a.5.5 0 11-1 0 .5.5 0 011 0zm1.5 0a.5.5 0 11-1 0 .5.5 0 011 0zm1.5 0a.5.5 0 11-1 0 .5.5 0 011 0z"/>
-                  </svg></a>
-                <a href="{% url 'inventory:NewItemDelivery' item.pk %}">
-                    <svg class="bi bi-plus-square-fill" width="1.5em" height="1.5em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                        <path fill-rule="evenodd" d="M2 0a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V2a2 2 0 00-2-2H2zm6.5 4a.5.5 0 00-1 0v3.5H4a.5.5 0 000 1h3.5V12a.5.5 0 001 0V8.5H12a.5.5 0 000-1H8.5V4z" clip-rule="evenodd"/>
-                      </svg>
-                </a>
-            </td>
-        </tr>
+            {% endfor %}
 
-        {% endfor %}
+        </tbody>
+    </table>
 
-    </tbody>
-</table>
+    {% else %}
+    
+    <div class="alert alert-secondary" role="alert">
+        No Inventory Items 
+    </div>
 
-{% else %}
+    {% endif %}
+    </div>
+</div>
+{% endblock %}
 
-<p>No items in database</p>
+{% block extrascripts %}
 
-{% endif %}
+<script type="text/javascript">
+  $(document).ready(function () {
+    $(".btn_item_update").each(function() {
+       $(this).modalForm({
+           formURL: $(this).data('id')
+       });
+    });
+  });
+</script>
 
 {% endblock %}
 
-{% block sidebar %}
-<p><a class="btn btn-sm btn-primary btn-block" href="{% url 'inventory:NewItem' %}">Add Item</a></p>
-<p><a class="btn btn-sm btn-info btn-block" href="{% url 'inventory:NewCategory' %}">Add Category</a></p>
-<p><a class="btn btn-sm btn-info btn-block" href="{% url 'inventory:NewVendor' %}">Add Vendor</a></p>
-<hr>
-<p><a class="btn btn-sm btn-light btn-block" href="{% url 'inventory:CategoryList' %}">Show Categories</a></p>
-<p><a class="btn btn-sm btn-light btn-block" href="{% url 'inventory:VendorList' %}">Show Vendors</a></p>
-{% endblock %}

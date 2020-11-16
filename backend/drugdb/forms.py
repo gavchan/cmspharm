@@ -79,6 +79,7 @@ class BillDrugDeliveryAddDrugModalForm(BSModalForm):
         # self.request = kwargs.pop('request', None)
         self.bill_obj = kwargs.pop('bill_obj', None)
         self.drug_obj = kwargs.pop('drug_obj', None)
+        self.action = kwargs.pop('action', None)
         super(BillDrugDeliveryAddDrugModalForm, self).__init__(*args, **kwargs)
         self.bill_id = self.bill_obj.id
         print(self.bill_obj.id, self.drug_obj.reg_no)
@@ -142,7 +143,7 @@ class BillDrugDeliveryAddDrugModalForm(BSModalForm):
             ),
             
             FormActions(
-                Submit('submit', 'Submit'),
+                Submit('submit', self.action),
                 HTML("""
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                 """)

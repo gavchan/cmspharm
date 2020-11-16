@@ -22,10 +22,6 @@ class RegisteredDrug(models.Model):
     company = models.ForeignKey(
         'Company', on_delete=models.PROTECT,
         )
-    cmsinv_item = models.ForeignKey(
-        InventoryItem, on_delete=models.PROTECT,
-        blank=True, null=True,
-        )
     date_created = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
     is_active = models.BooleanField(default=True)

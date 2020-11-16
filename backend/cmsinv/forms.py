@@ -172,7 +172,8 @@ class InventoryItemQuickEditModalForm(BSModalForm):
         self.helper.layout = Layout(
             Row(
                 Column('discontinue', css_class='form-group col-sm-2 mb-0'),
-                Column('alias', css_class='form-group col-sm-8 mb-0'),
+                Column('alias', css_class='form-group col-sm-6 mb-0'),
+                Column('inventory_type', css_class='form-group col-sm-2 mb-0'),
                 Column('registration_no', css_class='form-group col-sm-2 mb-0'),
                 css_class='form-row mb-0',
             ),
@@ -221,7 +222,7 @@ class InventoryItemQuickEditModalForm(BSModalForm):
     class Meta:
         model = InventoryItem
         fields = [
-            'discontinue', 'alias', 'registration_no',
+            'discontinue', 'alias', 'registration_no', 'inventory_type',
             'product_name', 'label_name', 'generic_name', 'ingredient',
         ]
 

@@ -1,0 +1,65 @@
+{% load crispy_forms_tags %}
+<div class="modal-header">
+  <h5 class="modal-title">Update Delivery Item</h5>
+  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+
+<div class="modal-body">
+  {% include 'inventory/_item_summary_table.html' %}
+  <hr />
+  <div class="row">
+    <div class="col-sm-11">{% crispy form %} {{form.media}}</div>
+    <div class="col-sm-1">
+      <button
+        id="btn_calc"
+        style="position: absolute; bottom: 50px"
+        class="btn btn-secondary"
+      >
+        <i class="fad fa-calculator-alt"></i>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-default" data-dismiss="modal">
+    Close
+  </button>
+</div>
+
+<script type="text/javascript">
+$(document).ready(function () {
+  $(".btn_modal_trigger").each(function() {
+      $(this).modalForm({
+          formURL: $(this).data('id')
+      });
+  });
+  $("#btn_calc").click(function() {
+    let purchase = parseFloat($("#id_purchase_quantity").val());
+    let bonus = parseFloat($("#id_bonus_quantity").val());
+    let itemspp = parseFloat($("#id_items_per_purchase").val());
+    let unitprice = parseFloat($("#id_unit_price").val());
+    let discount = parseFloat($("#id_discount").val());
+    let quantity = (purchase + bonus) * itemspp
+    let stdcost = 0
+    let avgcost = 0
+    let totalcost = purchase * unitprice * (1 - discount)
+    if (quantity !== 0) {
+      stdcost = totalcost / (purchase * itemspp);
+      avgcost = totalcost / quantity; 
+    }
+    console.log(purchase, bonus, itemspp, unitprice, discount)
+    console.log(quantity, stdcost, avgcost, totalcost)
+    $('#ds_quantity').text(quantity)
+    $('#ds_stdcost').text(stdcost.toFixed(2))
+    $('#ds_avgcost').text(avgcost.toFixed(2))
+    $('#ds_total').text(totalcost.toFixed(2))
+  });
+  $("#btn_cancel").click(function() {
+    window.history.back()
+  });
+  $("#btn_calc").trigger('click');
+});
+</script>

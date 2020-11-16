@@ -71,7 +71,7 @@ class Expense(LedgerEntry):
     payee = models.CharField(max_length=255, blank=True, null=True)
     # vendor: can be the same as the payee; occasionally the payee name is different.
     vendor = models.ForeignKey(
-        Vendor, blank=True, null=True,
+        'inventory.Vendor', blank=True, null=True,
         on_delete = models.PROTECT
         )
     payment_method = models.ForeignKey(

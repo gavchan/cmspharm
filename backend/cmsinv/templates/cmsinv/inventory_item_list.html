@@ -32,11 +32,14 @@
               class="custom-select"
               >
               <option value="1"
-                {% if type == '1' %} selected {% endif %}
-              >Drugs</option>
+                {% if inv_type == '1' %} selected {% endif %}
+              >Drug</option>
               <option value="2"
-                {% if type == '2' %} selected {% endif %}
-              >Consumables</option>
+                {% if inv_type == '2' %} selected {% endif %}
+              >Supplement</option>
+              <option value="0"
+                {% if inv_type == '0' %} selected {% endif %}
+              >Any</option>
             </select>
           </div>
         </div>

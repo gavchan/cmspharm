@@ -42,7 +42,7 @@ class InventoryItemList(ListView, LoginRequiredMixin):
     def get_queryset(self):
         query = self.request.GET.get('q')
         print(f"query={query}")
-        self.inv_type = self.request.GET.get('type') or '1'
+        self.inv_type = self.request.GET.get('inv_type') or '1'
         self.status = self.request.GET.get('status') or '1'
         self.dd = self.request.GET.get('dd') or 'any'
         if query:
@@ -62,6 +62,10 @@ class InventoryItemList(ListView, LoginRequiredMixin):
             object_list = object_list.filter(discontinue=False)
         elif self.status == '0':
             object_list = object_list.filter(discontinue=True)
+        if self.inv_type =='1':
+            object_list = object_list.filter(inventory_type='Drug')
+        elif self.inv_type == '2':
+            object_list = object_list.filter(inventory_type='Supplement')
         if self.dd == '1':
             object_list = object_list.filter(dangerous_sign=True)
         elif self.dd == '0':
@@ -74,7 +78,7 @@ class InventoryItemList(ListView, LoginRequiredMixin):
         data['last_query'] = self.last_query
         data['last_query_count'] = self.last_query_count
         data['next_clinic_drug_no'] = InventoryItem.generateNextClinicDrugNo()
-        data['type'] = self.inv_type
+        data['inv_type'] = self.inv_type
         data['status'] = self.status
         data['dd'] = self.dd
         return data
@@ -172,8 +176,9 @@ class InventoryItemQuickEditModal(BSModalUpdateView, LoginRequiredMixin):
         data['item_obj'] = self.item_obj
         data['match_drug_list'] = self.match_drug_list
         data['set_match_drug'] = self.set_match_drug
-        print(' '.join([self.drug_obj.gen_generic, self.drug_obj.gen_dosage]))
-        data['generic_name'] = ' '.join([self.drug_obj.gen_generic, self.drug_obj.gen_dosage])
+        if self.drug_obj:
+            data['generic_name'] = self.drug_obj.gen_generic
+
         return data
 
     def get_form_kwargs(self):

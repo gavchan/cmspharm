@@ -3,28 +3,42 @@
     <thead>
         <tr>
             <th scope="col">Reg no.</th>
+            <th scope="col">Alias / Cert</th>
             <th scope="col">Product name / Ingredients</th>
-            <th scope="col">Cert Holder</th>
+            <th scope="col">Stock Qty</th>
             <th scope="col">Action</th>
         </tr>
     </thead>
     <tbody>
-        {% for drug in drug_list %}
-        
-        <tr>
-            <td>{{ drug.reg_no}}</td>
+        {% for drug_obj in drug_list %}
+        <tr 
+              {% if drug_obj.discontinue %}
+              class="table-secondary text-muted"
+              {% endif %}
+          >
+              <td><b>{{ drug_obj.registration_no }}</b>
+                  {% if drug_obj.discontinue %}
+                  <br><span class="badge badge-secondary">Inactive</span>
+                  {% else %}
+                  <br>{{ drug_obj.clinic_drug_no }}
+              </td>
+                  {% endif %}
+              <td>
+                  <b>{{ drug_obj.alias }}</b>
+                  <br>{{ drug_obj.certificate_holder }}
+              </td>
+              <td><b>{{ drug_obj.product_name }}
+                  <br>{{ drug_obj.ingredient }}
+              </td>
+              <td>
+                  {{ drug_obj.stock_qty }}
+              </td>
             <td>
-                <b>{{ drug.name }}</b>
-                <br>{{ drug.ingredients_list }}
-            </td>
-            <td>{{ drug.company }}</td>
-            <td>
-                <button type="button"
-                    data-id="{% url 'inventory:DeliveryOrderAddDrugModal' delivery_id=delivery_id %}?reg_no={{drug.reg_no}}" 
-                    class="add-drug-to-order btn btn-sm btn-info"
-                >
-                    <i class="fad fa-layer-plus"></i>
-                </button>
+                <a type="button"
+                    href="{% url 'inventory:DeliveryOrderAddDeliveryItem' delivery_id=delivery_id cmsitem_id=drug_obj.id %}" 
+                    class="btn_modal_trigger btn btn-sm btn-info"
+                ><i class="fad fa-layer-plus"></i>
+                </a>
             </td>
         </tr>
 
@@ -34,10 +48,10 @@
 </table>
 
 <script type="text/javascript">
-$(".add-drug-to-order").each(function () {
-    $(this).modalForm({
-        formURL: $(this).data('id')
+    $(".btn_modal_trigger").each(function () {
+        $(this).modalForm({
+            formURL: $(this).data('id')
+        });
     });
-});
 </script>
 {% endif %}

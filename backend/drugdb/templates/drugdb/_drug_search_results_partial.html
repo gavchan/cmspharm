@@ -1,5 +1,5 @@
 {% if drug_list %}
-<table class="table table-sm table-striped">
+<table class="table table-sm table-striped mt-2">
     <thead>
         <tr>
             <th scope="col">Reg no.</th>
@@ -15,13 +15,13 @@
             <td>{{ drug.reg_no}}</td>
             <td>
                 <b>{{ drug.name }}</b>
-                <br>{{ drug.ingredients }}
+                <br>{{ drug.ingredientsi_list }}
             </td>
             <td>{{ drug.company }}</td>
             <td>
                 <button type="button"
                     data-id="{% url 'drugdb:BillDrugDeliveryAddDrugModal' bill_id=bill_id reg_no=drug.reg_no %}" 
-                    class="add-drug-to-bill btn btn-sm btn-info"
+                    class="btn-add_drug_to_bill btn btn-sm btn-info"
                 >
                     <i class="fad fa-layer-plus"></i>
                 </button>
@@ -34,7 +34,7 @@
 </table>
 
 <script type="text/javascript">
-$(".add-drug-to-bill").each(function () {
+$(".btn-add_drug_to_bill").each(function () {
     $(this).modalForm({
         formURL: $(this).data('id')
     });

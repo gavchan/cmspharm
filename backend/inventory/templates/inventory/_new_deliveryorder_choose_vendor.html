@@ -22,8 +22,8 @@
                 <td>{{ vendor.default_description }}</td>
                 <td>
                     <button type="button"
-                        data-id="{% url 'inventory:NewDeliveryOrderModal' %}?q={{vendor.id}}" 
-                        class="add-order-by-vendor btn btn-sm btn-info"
+                        data-id="{% url 'inventory:NewDeliveryOrderModal' %}?vendor={{vendor.id}}" 
+                        class="btn_modal_trigger btn btn-sm btn-info"
                     >
                         <i class="fad fa-layer-plus"></i>
                     </button>
@@ -35,13 +35,4 @@
         </tbody>
     </table>
 
-    
-    <script type="text/javascript">
-    $(".add-order-by-vendor").each(function () {
-        $(this).modalForm({
-            formURL: $(this).data('id')
-        });
-    });
-    </script>
-    
     {% endif %}

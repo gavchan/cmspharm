@@ -6,12 +6,6 @@
 
 {% if delivery_items_list %}
 <div class="card">
-    <div class="card-header bg-light">
-        <div class="row">
-            <div class="col-sm-12"><h6>Delivery Drug Items</h6>
-            </div>
-        </div>
-    </div>
     <div class="card-body">
         <table class="table table-sm table-striped">
             <thead>
@@ -19,33 +13,36 @@
                     <th scope="col">Product name</th>
                     <th scope="col">Permit no.</th>
                     <th scope="col">Quantity</th>
-                    <th scope="col" class="text-center">Total price</th>
-                    <th scope="col" class="text-center">Cost</th>
+                    <th scope="col">Bonus</th>
+                    <th scope="col" class="text-center">Std Cost</th>
+                    <th scope="col" class="text-center">Avg Cost</th>
+                    <th scope="col" class="text-center">Total</th>
                     <th scope="col" class="text-center">Action</th>
                 </tr>
             </thead>
             <tbody>
-                {% for drug in delivery_items_list %}
+                {% for listitem in delivery_items_list %}
                 
                 <tr>
-                    <td>{{ drug.product_name }}</td>
-                    <td>{{ drug.reg_no }}</td>
-                    <td>{{ drug.purchase_quantity }}+{{ drug.bonus_quantity }}</td>
-                    <td class="text-monospace text-right">${{ drug.total_price }}</td>
-                    <td class="text-monospace text-right">${{ drug.average_cost }}/{{ drug.items_unit }}</td>
+                    <td>{{ listitem.item.name }}</td>
+                    <td>{{ listitem.item.reg_no }}</td>
+                    <td class="text-monospace text-right">{{ listitem.purchase_quantity }}</td>
+                    <td class="text-monospace text-right">{{ listitem.bonus_quantity }}</td>
+                    <td class="text-monospace text-right">@ ${{ listitem.standard_cost }}</td>
+                    <td class="text-monospace text-right">@ ${{ listitem.average_cost }}</td>
+                    <td class="text-monospace text-right">${{ listitem.total_price }}</td>
                     <td class="text-center">
-                        <a href="{% url 'drugdb:DrugDeliveryDetail' drug.id %}" class="btn btn-sm btn-info"> # </a>
-                        {% if drug.cmsinv_item %}
-                        <button type="button" class="show-item-details btn btn-sm btn-primary"
-                            data-id="{% url 'cmsinv:InventoryItemModalDetail' drug.cmsinv_item.pk %}">
-                            <i class="fad fa-file-alt"></i>
+                        <button type="button" class="btn_modal_trigger btn btn-sm btn-info"
+                            data-id="{% url 'inventory:DeliveryItemUpdateModal' delivery_id=delivery_obj.id pk=listitem.id %}"
+                        ><i class="fad fa-edit"></i>
+                        </button> 
+                        {% if perms.can_delete_deliveryitem %}
+                        <button type="button" 
+                            class="btn_modal_trigger btn btn-sm btn-danger"
+                            data-id="{% url 'inventory:DeliveryItemDeleteModal' delivery_id=delivery_obj.id pk=listitem.id %}" 
+                        ><i class="fad fa-trash"></i>
                         </button>
                         {% endif %}
-                        <a href="{% url 'cmsinv:MatchDeliveryInventoryItemList' drug.id %}" class="btn btn-sm btn-success"> = </a>
-                        <a href="{% url 'cmsinv:MatchInventoryItemList' drug.reg_no %}" 
-                            class="btn btn-sm btn-success">
-                            <i class="fad fa-file-search"></i>
-                        </a>
                     </td>
                 </tr>
     
@@ -57,7 +54,7 @@
     </div>
 </div>
 {% else %}
-<div class="alert alert-danger" role="alert">
+<div class="alert alert-secondary" role="alert">
     No Drug Delivery Items Record 
 </div>
 {% endif %}

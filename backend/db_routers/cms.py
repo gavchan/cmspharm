@@ -30,10 +30,9 @@ class CmsDbRouter:
         """
         Do not allow relations involving the cms_db
         """
-        pass
-        # if (obj1._meta.app_label == 'cmsinv' or obj2._meta.app_label == 'cmsinv'):
-        #     return False
-        # return 'default'
+        if (obj1._meta.app_label == 'cmsinv' or obj2._meta.app_label == 'cmsinv'):
+            return True 
+        return 'default'
 
     def allow_migrate(self, db, app_label, model_name=None, **hints):
         """

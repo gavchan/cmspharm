@@ -1,0 +1,21 @@
+{# % load widget_tweaks % #}
+
+<div class="modal-header">
+  <h5 class="modal-title">Delete Delivery Order</h5>
+  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+
+<div class="modal-body">
+  <form id="form-modal-delete" method="post" action="{% url 'inventory:DeliveryOrderDeleteModal' pk=object.pk %}">
+      {% csrf_token %}
+      <p>Are you sure you want to delete the following delivery order record:</p>
+      <p><strong>#{{ object.pk}}: {{ object.received_date }} - {{ object.vendor.name }} </strong>?</p>
+    <button type="submit" class="btn btn-danger">Delete</button>
+  </form>
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+</div>

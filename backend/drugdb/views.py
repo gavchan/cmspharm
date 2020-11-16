@@ -7,7 +7,7 @@ from django.template.loader import render_to_string
 from django.http import JsonResponse
 from django.shortcuts import render
 
-from bootstrap_modal_forms.generic import BSModalCreateView
+from bootstrap_modal_forms.generic import BSModalCreateView, BSModalUpdateView
 from ledger.models import (
     Expense,
 )
@@ -38,7 +38,7 @@ class RegisteredDrugList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
             object_list = RegisteredDrug.objects.filter(
                 Q(name__icontains=query) |
                 Q(reg_no__icontains=query) |
-                Q(ingredients__icontains=query)
+                Q(ingredients__name__icontains=query)
             )
             self.last_query_count = object_list.count
         else:
@@ -214,7 +214,7 @@ def BillDrugDeliveryView(request, *args, **kwargs):
         object_list = RegisteredDrug.objects.filter(
             Q(name__icontains=query) |
             Q(reg_no__icontains=query) |
-            Q(ingredients__icontains=query)
+            Q(ingredients__name__icontains=query)
         )[:MAX_QUERY_COUNT]
         last_query_count = object_list.count
     else:
@@ -303,5 +303,46 @@ class BillDrugDeliveryAddDrugModal(BSModalCreateView, LoginRequiredMixin, Permis
         kwargs.update({
             'bill_obj': self.bill_obj,
             'drug_obj': self.drug_obj,
+            'action': 'Submit',
+            })
+        return kwargs
+
+class BillDrugDeliveryUpdateDrugModal(BSModalUpdateView, LoginRequiredMixin, PermissionRequiredMixin):
+    """Add new drug delivery to bill"""
+    permission_required = ('drugdb.change_drugdelivery', 'ledger.change_bill')
+    template_name = 'drugdb/bill_drugdelivery_add_modal.html'
+    form_class = BillDrugDeliveryAddDrugModalForm
+    bill_obj = None
+    drug_obj = None
+    success_message = 'Success: Drug updated'
+
+    def get_object(self, queryset=None):
+        return
+    def dispatch(self, request, *args, **kwargs):
+        if 'bill_id' in kwargs:
+            self.bill_obj = Expense.objects.get(id=kwargs['bill_id'])
+        else:
+            print('Error: no bill_id')
+        if 'reg_no' in kwargs:
+            self.drug_obj = RegisteredDrug.objects.get(reg_no=kwargs['reg_no'])
+        else:
+            print('Error: no drug reg_no')
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        if self.bill_obj:
+            data['bill_obj'] = self.bill_obj
+        return data
+
+    def get_success_url(self):
+        return reverse('drugdb:BillDrugDeliveryView', args=(self.bill_obj.pk,))
+
+    def get_form_kwargs(self):
+        kwargs = super(BillDrugDeliveryUpdateDrugModal, self).get_form_kwargs()
+        kwargs.update({
+            'bill_obj': self.bill_obj,
+            'drug_obj': self.drug_obj,
+            'action': 'Update',
             })
         return kwargs

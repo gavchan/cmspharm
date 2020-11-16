@@ -18,7 +18,7 @@
                 {% endif %}
                 {% if perms.drugdb.can_add_drugdelivery %}
                 <li class="nav-item">
-                    <a href="{% url 'inventory:NewDeliveryOrder' %}" class="nav-link"><i class="fal fa-plus"></i> Delivery</a>
+                    <a href="{% url 'inventory:NewDeliveryOrderSelectVendor' %}" class="nav-link"><i class="fal fa-plus"></i> Delivery</a>
                 </li>
                 {% endif %}
 
@@ -31,7 +31,6 @@
                     <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                         <a href="{% url 'ledger:NewExpense' %}" class="dropdown-item">Add Expense</a>
                         <a href="{% url 'ledger:ExpenseList' %}" class="dropdown-item">Show Expenses</a>
-                        <a href="{% url 'inventory:DeliveryOrderList' %}" class="dropdown-item">Show Delivery Orders</a>
                         <a href="{% url 'drugdb:DrugDeliveryList' %}" class="dropdown-item">Show Delivered Drugs</a>
                         <a href="{% url 'ledger:ExpenseCategoryList' %}" class="dropdown-item">Show Categories</a>
                         <a href="{% url 'inventory:VendorList' %}" class="dropdown-item">Show Vendors</a>
@@ -40,6 +39,20 @@
                         <a href="{% url 'inventory:NewVendor' %}" class="dropdown-item">Add Vendor</a>
                     {% endcomment %}
                         <a href="{% url 'ledger:ExpenseExportCsv' %}" class="dropdown-item">Export Expenses</a></p>
+                    </div>
+                </li>
+                {% endif %}
+                {% if perms.inventory.can_view_deliveryorder %}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="{% url 'inventory:DeliveryOrderList' %}"
+                        id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Delivery/Orders 
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                        <a href="{% url 'inventory:NewDeliveryOrderSelectVendor' %}" class="dropdown-item">New Delivery</a>
+                        <a href="{% url 'inventory:NewVendor' %}" class="dropdown-item">Add Vendor</a>
+                        <a href="{% url 'inventory:DeliveryOrderList' %}" class="dropdown-item">Show Delivery Orders</a>
+                        <a href="{% url 'inventory:VendorList' %}" class="dropdown-item">Show Suppliers</a>
                     </div>
                 </li>
                 {% endif %}
@@ -53,7 +66,7 @@
                             Show Item Inventory List
                         </a>
                         <a href="{% url 'cmsinv:SupplierList' %}" class="dropdown-item">
-                            Show Supplier List
+                            Show Supplier Manufacturer List
                         </a>
                     </div>
                 </li>

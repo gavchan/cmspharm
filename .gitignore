@@ -8,6 +8,7 @@ backend/staticfiles/
 backend/dev
 *.key
 *.csv
+xx_*
 backend/config/asgi.py
 backend/config/wsgi.py
 backend/manage.py
