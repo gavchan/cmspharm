@@ -1,6 +1,6 @@
 from datetime import date
 import csv
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.decorators import login_required, permission_required
@@ -16,13 +16,16 @@ from .models import (
     ExpenseCategory,
     Expense
 )
-
+from inventory.models import (
+    DeliveryOrder,
+)
 from .forms import (
     NewExpenseCategoryForm, ExpenseCategoryUpdateForm,
     NewExpenseForm, ExpenseUpdateForm,
     ExpenseUpdateModalForm,
     # NewExpenseByVendorModalForm,
     NewExpenseModalForm,
+    DeliveryPaymentModalForm,
 )
 from inventory.models import (
     Vendor,
@@ -268,6 +271,71 @@ def NewExpenseSelectVendorView(request, *args, **kwargs):
         return JsonResponse(data=data_dict, safe=False)
 
     return render(request, "ledger/new_expense_view.html", {'vendors': vendors, 'vendor_obj': vendor_obj})
+
+class DeliveryPaymentModal(BSModalCreateView, LoginRequiredMixin, PermissionRequiredMixin):
+    """Add new expense modal"""
+    permission_required = ('ledger.add_expense', )
+    template_name = 'ledger/delivery_payment_modal.html'
+    form_class = DeliveryPaymentModalForm
+    vendor_obj = None
+    existing_bill = False
+
+    def dispatch(self, request, *args, **kwargs):
+        if 'delivery_id' in kwargs:
+            self.delivery_obj = DeliveryOrder.objects.get(id=kwargs['delivery_id'])
+        else:
+            print("Error: no delivery_obj")
+        
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        data['today'] = date.today().strftime('%Y-%m-%d')
+        data['delivery_obj'] = self.delivery_obj
+        return data
+
+    def get_form_kwargs(self):
+        kwargs = super(DeliveryPaymentModal, self).get_form_kwargs()
+        kwargs.update({
+            'delivery_obj': self.delivery_obj,
+            })
+        return kwargs
+
+    def get_success_url(self):
+        return reverse('ledger:ExpenseDetail', args=(self.object.id,))
+
+    def form_valid(self, form):
+        self.object = form.save()
+        self.delivery_obj.bill = self.object
+        return HttpResponseRedirect(self.get_success_url())
+
+class ExpenseDetail(DetailView, LoginRequiredMixin, PermissionRequiredMixin):
+    """Show Expense Details for Drug Category, allow add delivery"""
+    permission_required = ('ledger.view_expense',)
+    template_name = 'ledger/expense_detail.html'
+    context_object_name = 'expense_obj'
+    model = Expense
+    delivery_orders_list = None
+    unpaid_deliveries_list = None
+
+    def dispatch(self, request, *args, **kwargs):
+        try:
+            self.delivery_orders_list = DeliveryOrder.objects.filter(bill=expense_obj.id)
+        except:
+            print("No delivery orders")
+        try:
+            self.unpaid_deliveries_list = DeliveryOrder.objects.filter(is_paid=False)
+        except:
+            print("No unpaid delivery orders")
+        
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        data['today'] = date.today().strftime('%Y-%m-%d')
+        data['delivery_orders_list'] = self.delivery_orders_list
+        data['expense_obj'] = self.object
+        return data
 
 @login_required
 @permission_required('ledger.view_expense')

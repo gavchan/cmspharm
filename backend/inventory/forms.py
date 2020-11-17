@@ -171,33 +171,27 @@ class NewDeliveryOrderModalForm(BSModalForm):
             self.initial['payee'] = self.vendor_obj.name
         self.helper.layout = Layout(
             Hidden('version', '1'),
+            Hidden('is_paid', False),
             Row(
                 Column(
                     FieldWithButtons('vendor', StrictButton('<i class="far fa-user-plus"></i>', id='add_vendor_button', css_class='btn-secondary')),
                     css_class='form-group col-md-8 mb-0'
                     ),
-                Column('payee', css_class='form-group col-md-4 mb-0'),
-                css_class='form-row',
-            ),
-            Row(
-                Column('invoice_no', css_class='form-group col-md-4 mb-0'),
-                Column('invoice_date', css_class='form-group col-md-4 mb-0'),
                 Column('received_date', css_class='form-group col-md-4 mb-0'),
                 css_class='form-row',
             ),
             Row(
-                Column('amount', css_class='form-group col-md-4 mb-0'),
-                Column('is_paid', css_class='form-group col-md-4 mb-0'),
-                Column('payment_method', css_class='form-group col-md-4 mb-0'),
+                Column('invoice_no', css_class='form-group col-md-8 mb-0'),
+                Column('invoice_date', css_class='form-group col-md-4 mb-0'),
                 css_class='form-row',
             ),
             Row(
-                Column('payment_ref', css_class='form-group col-md-4 mb-0'),
-                Column('expected_date', css_class='form-group col-md-4 mb-0'),
                 Column('other_ref', css_class='form-group col-md-4 mb-0'),
-                css_class="form-row",            ),
+                Column('amount', css_class='form-group col-md-4 mb-0'),
+                Column('due_date', css_class='form-group col-md-4 mb-0'),
+            ),
             Row(
-                Column(Field('remarks', css_class='form-group col-md-8 mb-0', rows="1")),
+                Column(Field('remarks', css_class='form-group col-md-12 mb-0', rows="2")),
                 css_class="form-row",            
             ),
             FormActions(
@@ -209,7 +203,7 @@ class NewDeliveryOrderModalForm(BSModalForm):
         model = DeliveryOrder
         exclude = ['id', 'version', 'date_created', 'last_updated',]
         widgets = {
-                    'expected_date': DatePickerInput(
+                    'received_date': DatePickerInput(
                         options={
                             "format": "YYYY-MM-DD",
                             "showClose": True,
@@ -218,6 +212,14 @@ class NewDeliveryOrderModalForm(BSModalForm):
                         }
                     ),
                     'invoice_date': DatePickerInput(
+                        options={
+                            "format": "YYYY-MM-DD",
+                            "showClose": True,
+                            "showClear": True,
+                            "showTodayButton": True,
+                        }
+                    ),
+                    'due_date': DatePickerInput(
                         options={
                             "format": "YYYY-MM-DD",
                             "showClose": True,

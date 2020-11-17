@@ -533,3 +533,92 @@ class ExpenseUpdateModalForm(BSModalForm):
                 }
             ),
         }
+
+class DeliveryPaymentModalForm(BSModalForm):
+
+    def __init__(self, *args, **kwargs):
+        self.delivery_obj = kwargs.pop('delivery_obj', None)
+        super(DeliveryPaymentModalForm, self).__init__(*args, **kwargs)
+        if self.delivery_obj:
+            print(f"Payment for delivery # {self.delivery_obj.id}")
+        else:
+            print(f"Error: no delivery_obj")
+        self.helper = FormHelper()
+        self.helper.render_unmentioned_fields = False
+        self.helper.form_id = 'id-DeliveryPaymentForm'
+        self.helper.form_class = 'cmmForms'
+        self.helper.form_method = 'post'
+        self.helper.form_action = reverse(
+            'ledger:DeliveryPaymentModal', args=(self.delivery_obj.id,))
+        #self.initial['entry_date'] = date.today().strftime('%Y-%m-%d')
+        today_date = date.today().strftime('%Y-%m-%d')
+        self.initial['payment_method'] = PaymentMethod.objects.get(
+            name='Cheque').pk
+        self.initial['vendor'] = self.delivery_obj.vendor.id
+        self.initial['payee'] = self.delivery_obj.vendor.name
+        self.initial['invoice_no'] = self.delivery_obj.invoice_no
+        self.initial['invoice_date'] = self.delivery_obj.invoice_date
+        self.initial['other_ref'] = self.delivery_obj.other_ref
+        self.initial['amount'] = self.delivery_obj.amount
+        self.initial['category'] = self.delivery_obj.vendor.default_exp_category if not None else ''
+        self.initial['description'] = self.delivery_obj.vendor.default_description if not None else ''
+            
+        self.helper.layout = Layout(
+            Hidden('entry_date', today_date),
+            Hidden('version', '1'),
+            Row(
+                Column(
+                    UneditableField('vendor'),
+                    css_class='form-group col-md-8 mb-0'
+                ),
+                Column('payee', css_class='form-group col-md-4 mb-0'),
+                css_class='form-row',
+            ),
+            Row(
+                Column(UneditableField('category'), css_class='form-group col-md-4 mb-0'),
+                Column(UneditableField('invoice_no'), css_class='form-group col-md-4 mb-0'),
+                Column(UneditableField('invoice_date'), css_class='form-group col-md-4 mb-0'),
+                css_class='form-row',
+            ),
+            Row(
+                Column('payment_method', css_class='form-group col-md-4 mb-0'),
+                Column('amount', css_class='form-group col-md-4 mb-0'),
+                Column('description', css_class='form-group col-md-4 mb-0'),
+                css_class='form-row',
+            ),
+            Row(
+                Column('payment_ref', css_class='form-group col-md-4 mb-0'),
+                Column('expected_date', css_class='form-group col-md-4 mb-0'),
+                Column(UneditableField('other_ref'), css_class='form-group col-md-4 mb-0'),
+                css_class="form-row",),
+            Row(
+                Column(
+                    Field('remarks', css_class='form-group col-md-8 mb-0', rows="1")),
+                css_class="form-row",
+            ),
+            FormActions(
+                Submit('submit', 'Submit'),
+            ),
+        )
+
+    class Meta:
+        model = Expense
+        exclude = ['id', 'date_created', 'last_updated']
+        widgets = {
+            'expected_date': DatePickerInput(
+                options={
+                    "format": "YYYY-MM-DD",
+                    "showClose": True,
+                    "showClear": True,
+                    "showTodayButton": True,
+                }
+            ),
+            'invoice_date': DatePickerInput(
+                options={
+                    "format": "YYYY-MM-DD",
+                    "showClose": True,
+                    "showClear": True,
+                    "showTodayButton": True,
+                }
+            ),
+        }

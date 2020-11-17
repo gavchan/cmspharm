@@ -3,14 +3,16 @@ from . import views
 
 app_name = 'ledger'
 urlpatterns = [
-    path('expenses/category/<int:pk>/update/', views.ExpenseCategoryUpdate.as_view(), name='ExpenseCategoryUpdate'),
-    path('expenses/category/', views.ExpenseCategoryList.as_view(), name='ExpenseCategoryList'),
-    path('expenses/export/csv/', views.ExpenseExportCsv, name='ExpenseExportCsv'),
-    path('expenses/<int:pk>/update/', views.ExpenseUpdate.as_view(), name='ExpenseUpdate'),
-    path('expenses/<int:pk>/delete/modal', views.ExpenseDeleteModal.as_view(), name='ExpenseDeleteModal'),
+    path('expense/category/<int:pk>/update/', views.ExpenseCategoryUpdate.as_view(), name='ExpenseCategoryUpdate'),
+    path('expense/category/', views.ExpenseCategoryList.as_view(), name='ExpenseCategoryList'),
+    path('expense/export/csv/', views.ExpenseExportCsv, name='ExpenseExportCsv'),
+    path('expense/<int:pk>/update/', views.ExpenseUpdate.as_view(), name='ExpenseUpdate'),
+    path('expense/<int:pk>/delete/modal', views.ExpenseDeleteModal.as_view(), name='ExpenseDeleteModal'),
     # path('expenses/vendor/<int:vendor_id>/new/', views.NewExpenseByVendorModal.as_view(), name='NewExpenseByVendorModal'),
-    path('expenses/new/modal', views.NewExpenseModal.as_view(), name='NewExpenseModal'),
-    path('expenses/new/selectvendor', views.NewExpenseSelectVendorView, name='NewExpenseSelectVendor'),
-    path('expenses/new', views.NewExpense.as_view(), name='NewExpense'),
-    path('expenses/', views.ExpenseList.as_view(), name='ExpenseList'),
+    path('expense/<int:pk>/', views.ExpenseDetail.as_view(), name='ExpenseDetail'),
+    path('expense/new/modal', views.NewExpenseModal.as_view(), name='NewExpenseModal'),
+    path('expense/new/selectvendor', views.NewExpenseSelectVendorView, name='NewExpenseSelectVendor'),
+    path('expense/new/delivery/<int:delivery_id>/modal/', views.DeliveryPaymentModal.as_view(), name='DeliveryPaymentModal'),
+    path('expense/new', views.NewExpense.as_view(), name='NewExpense'),
+    path('expense/', views.ExpenseList.as_view(), name='ExpenseList'),
     ]

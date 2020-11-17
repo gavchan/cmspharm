@@ -9,9 +9,21 @@
         <button
           class="btn_modal_trigger btn btn-sm btn-light"
           data-id="{% url 'inventory:DeliveryOrderUpdateModal' delivery_obj.id %}"
-        >
-          Edit
+        >Edit
         </button>
+        {% if delivery_obj.bill %}
+        <button
+          class="btn_modal_trigger btn btn-sm btn-secondary"
+          data-id="{% url 'ledger:ExpenseDetail' delivery_obj.bill.id %}"
+        >Bill
+        </button>
+        {% else %}
+        <button
+          class="btn_modal_trigger btn btn-sm btn-secondary"
+          data-id="{% url 'ledger:DeliveryPaymentModal' delivery_obj.id %}"
+        >Payment
+        </button>
+        {% endif %}
       </span>
     </div>
   </div>

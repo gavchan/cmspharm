@@ -227,20 +227,13 @@ class DeliveryOrder(models.Model):
         Vendor, blank=True, null=True,
         on_delete = models.PROTECT
         )
-    payee = models.CharField(max_length=255, blank=True, null=True)
-    # vendor: can be the same as the payee; occasionally the payee name is different.
     amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     is_paid = models.BooleanField(default=False)
     bill = models.ForeignKey(
         'ledger.Expense', on_delete=models.PROTECT,
         blank=True, null=True,
     )
-    payment_method = models.ForeignKey(
-        'ledger.PaymentMethod', on_delete=models.PROTECT,
-    )
-    # payment_ref: used for cheque number or other
-    payment_ref = models.CharField(verbose_name="Cheque/ref no.", max_length=255, blank=True, null=True)
-    expected_date = models.DateField(verbose_name="Cheque/paid date", blank=True, null=True)
+    due_date = models.DateField(blank=True, null=True)
     other_ref = models.CharField(max_length=255, blank=True, null=True)
     remarks = models.TextField(blank=True, null=True)
     date_created = models.DateTimeField(auto_now_add=True)

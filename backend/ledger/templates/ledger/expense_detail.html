@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  Expense Record: {{ expense_obj.entry_date }}
+{% endblock %}
+
+{% block content %}
+  {% include '_modal.html' %}
+
+  Delivery: {{ delivery_obj.received_date }}, {{ delivery_obj.amount}}
+{% endblock %}
