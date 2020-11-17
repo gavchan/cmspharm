@@ -59,7 +59,7 @@ class LedgerEntry(models.Model):
         verbose_name_plural = 'Ledger entries'
 
     def __str__(self):
-        return f"{self.entry_date} | ${self.amount} - {self.description}"
+        return f"{self.entry_date} | ${self.amount}"
 
 class Expense(LedgerEntry):
     """Model definition for Expense"""
@@ -90,3 +90,6 @@ class Expense(LedgerEntry):
 
     def get_absolute_url(self):
         return reverse('ledger:ExpenseDetail', kwargs={'pk': self.pk})
+
+    def __str__(self):
+        return f"{self.entry_date} | ${self.amount} - {self.payee}"

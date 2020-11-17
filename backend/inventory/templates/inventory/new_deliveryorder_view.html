@@ -6,11 +6,12 @@
 
 {% include "_modal.html" %}
 
-<div class="card">
+<div class="card shadow">
     <div class="card-header">
         Add New Delivery
     </div>
     <div class="card-body">
+      <form method="GET" action="{% url 'inventory:NewDeliveryOrderSelectVendor' %}">
         <div class="input-group input-group-sm">
             <div class="input-group-prepend">
                 <span class="input-group-text">Select vendor:</span>
@@ -20,24 +21,18 @@
                 {% for vendor in vendors %}
                 <option 
                     value={{vendor.id}} 
-                    class="vendor-option btn_trigger_modal"
+                    class="vendor-option"
                     data-id="{% url 'inventory:NewDeliveryOrderModal' %}?vendor={{vendor.id}}"
                 >{{vendor.name}}</option>
                 {% endfor %}
             </select>
             <div class="input-group-append">
-                <button id="btn-add-selected" class="btn btn-sm btn-secondary" type="submit">Add order</button>
+                <button id="btn_add_selected" class="btn btn-sm btn-secondary" type="submit">Add order</button>
             </div>
         </div>
+    </form>
         <hr>
-        <button id="btn-add-expense" class="btn btn-sm btn-primary">Add order without vendor</button>
-        {% if vendor_obj %}
-        <button 
-            id="btn-add-order-vendor" 
-            class="btn btn-sm btn-success"
-            data-id="{% url 'inventory:NewDeliveryOrderModal' %}?vendor={{vendor_obj.id}}"
-        >Add delivery order for vendor: "{{ vendor_obj.name }}"</button>
-        {% endif %}
+        <button id="btn_add_expense" class="btn_modal_trigger btn btn-sm btn-primary">Add order without vendor</button>
         <hr>
         <div class="input-group input-group-sm">
             <div class="input-group-prepend">
@@ -101,19 +96,25 @@
 
         // setTimeout returns the ID of the function to be executed
             scheduled_function = setTimeout(ajax_call, delay_by_in_ms, endpoint, request_parameters)
-        })
-
-        $("#btn-add-selected").click(function() {
-            $(this).modalForm({
-                formURL: $('#select-vendor').find(':selected').data('id')
-            });
         });
-        $(".btn_modal_trigger").each(function () {
+
+        $(".vendor-option").each(function () {
             $(this).modalForm({
                 formURL: $(this).data('id')
             });
         });
 
-    })
+        $("#btn_add_selected").click(function() {
+            var sel = document.getElementById('select-vendor').value;
+            console.log(sel);
+            sel_url = "{% url 'ledger:NewExpenseModal' %}?vendor=" + sel
+            $(this).modalForm({
+                formURL: sel_url
+            })
+        });
+        $(".btn_modal_trigger").modalForm({
+            formURL: $(this).data('id')
+        });
+    });
 </script>
 {% endblock %}

@@ -204,6 +204,7 @@ class ExpenseUpdateForm(ModelForm):
         self.helper.form_method = 'post'
         self.helper.form_action = reverse(
             'ledger:ExpenseUpdate', args=(self.instance.pk,))
+        print(self.instance)
         self.helper.layout = Layout(
             Row(
                 Column('entry_date', css_class='form-group col-md-4 mb-0'),
@@ -247,9 +248,6 @@ class ExpenseUpdateForm(ModelForm):
             ),
         )
 
-    class Meta:
-        model = Expense
-        exclude = ['id', ]
     class Meta:
         model = Expense
         exclude = ['id', ]
@@ -466,11 +464,11 @@ class ExpenseUpdateModalForm(BSModalForm):
         self.helper.layout = Layout(
             Row(
                 Column('entry_date', css_class='form-group col-md-4 mb-0'),
-                Column(UneditableField(
-                    'version', css_class='form-group col-md-4 mb-0')),
+                Column(Field('version', disabled=True),
+                    css_class='form-group col-md-4 mb-0'),
             ),
             Row(
-                Column('vendor', css_class='form-group col-md-8 mb-0'),
+                Column(UneditableField('vendor'), css_class='form-group col-md-8 mb-0'),
                 Column('payee', css_class='form-group col-md-4 mb-0'),
                 css_class='form-row',
             ),
@@ -482,7 +480,7 @@ class ExpenseUpdateModalForm(BSModalForm):
             ),
             Row(
                 Column('payment_method', css_class='form-group col-md-4 mb-0'),
-                Column('amount', css_class='form-group col-md-4 mb-0'),
+                Column(PrependedText('amount', '$'), css_class='form-group col-md-4 mb-0'),
                 Column('description', css_class='form-group col-md-4 mb-0'),
                 css_class='form-row',
             ),
@@ -496,11 +494,13 @@ class ExpenseUpdateModalForm(BSModalForm):
                     Field('remarks', css_class='form-group col-md-8 mb-0', rows="1")),
                 css_class="form-row",
             ),
+            Hidden('vendor', self.instance.vendor.pk),
+            Hidden('version', self.instance.version +1),
             FormActions(
                 Submit('submit', 'Submit'),
                 HTML("""
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                """)
+                <a class="btn btn-light" href="{% url 'ledger:ExpenseList' %}">Cancel</a>
+                """),
             ),
         )
 
@@ -544,7 +544,7 @@ class DeliveryPaymentModalForm(BSModalForm):
         else:
             print(f"Error: no delivery_obj")
         self.helper = FormHelper()
-        self.helper.render_unmentioned_fields = False
+        self.helper.render_unmentioned_fields = True
         self.helper.form_id = 'id-DeliveryPaymentForm'
         self.helper.form_class = 'cmmForms'
         self.helper.form_method = 'post'
@@ -552,20 +552,21 @@ class DeliveryPaymentModalForm(BSModalForm):
             'ledger:DeliveryPaymentModal', args=(self.delivery_obj.id,))
         #self.initial['entry_date'] = date.today().strftime('%Y-%m-%d')
         today_date = date.today().strftime('%Y-%m-%d')
+        self.exp_category_drug = ExpenseCategory.objects.get(code='1').id
+        self.initial['entry_date'] = today_date
         self.initial['payment_method'] = PaymentMethod.objects.get(
             name='Cheque').pk
         self.initial['vendor'] = self.delivery_obj.vendor.id
         self.initial['payee'] = self.delivery_obj.vendor.name
-        self.initial['invoice_no'] = self.delivery_obj.invoice_no
+        self.initial['invoice_no'] = 'Drug Delivery'
         self.initial['invoice_date'] = self.delivery_obj.invoice_date
         self.initial['other_ref'] = self.delivery_obj.other_ref
         self.initial['amount'] = self.delivery_obj.amount
-        self.initial['category'] = self.delivery_obj.vendor.default_exp_category if not None else ''
-        self.initial['description'] = self.delivery_obj.vendor.default_description if not None else ''
+        self.initial['category'] = self.exp_category_drug
+        self.initial['description'] = 'Drug/Supplement'
             
         self.helper.layout = Layout(
-            Hidden('entry_date', today_date),
-            Hidden('version', '1'),
+            
             Row(
                 Column(
                     UneditableField('vendor'),
@@ -589,13 +590,19 @@ class DeliveryPaymentModalForm(BSModalForm):
             Row(
                 Column('payment_ref', css_class='form-group col-md-4 mb-0'),
                 Column('expected_date', css_class='form-group col-md-4 mb-0'),
-                Column(UneditableField('other_ref'), css_class='form-group col-md-4 mb-0'),
+                Column('other_ref', css_class='form-group col-md-4 mb-0'),
                 css_class="form-row",),
             Row(
                 Column(
                     Field('remarks', css_class='form-group col-md-8 mb-0', rows="1")),
                 css_class="form-row",
             ),
+            Hidden('entry_date', today_date),
+            Hidden('version', '1'),
+            Hidden('vendor', self.delivery_obj.vendor.id),
+            Hidden('invoice_no', self.delivery_obj.invoice_no),
+            Hidden('invoice_date', self.delivery_obj.invoice_date),
+            Hidden('category', self.exp_category_drug),
             FormActions(
                 Submit('submit', 'Submit'),
             ),

@@ -29,14 +29,12 @@
                         Expenses
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                        <a href="{% url 'ledger:NewExpense' %}" class="dropdown-item">Add Expense</a>
-                        <a href="{% url 'ledger:ExpenseList' %}" class="dropdown-item">Show Expenses</a>
-                        <a href="{% url 'drugdb:DrugDeliveryList' %}" class="dropdown-item">Show Delivered Drugs</a>
-                        <a href="{% url 'ledger:ExpenseCategoryList' %}" class="dropdown-item">Show Categories</a>
-                        <a href="{% url 'inventory:VendorList' %}" class="dropdown-item">Show Vendors</a>
+                        <a href="{% url 'inventory:VendorList' %}" class="dropdown-item">View Vendors</a>
+                        <a href="{% url 'ledger:ExpenseList' %}" class="dropdown-item">View Expenses</a>
+                        <a href="{% url 'ledger:ExpenseCategoryList' %}" class="dropdown-item">View Categories</a>
+                        <a href="{% url 'inventory:NewVendor' %}" class="dropdown-item">Add Vendor</a>
                     {% comment %}    
                         <a href="{% url 'ledger:NewExpenseCategory' %}" class="dropdown-item">Add Category</a>
-                        <a href="{% url 'inventory:NewVendor' %}" class="dropdown-item">Add Vendor</a>
                     {% endcomment %}
                         <a href="{% url 'ledger:ExpenseExportCsv' %}" class="dropdown-item">Export Expenses</a></p>
                     </div>
@@ -49,10 +47,9 @@
                         Delivery/Orders 
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                        <a href="{% url 'inventory:NewDeliveryOrderSelectVendor' %}" class="dropdown-item">New Delivery</a>
+                        <a href="{% url 'inventory:VendorList' %}" class="dropdown-item">View Suppliers</a>
+                        <a href="{% url 'inventory:DeliveryOrderList' %}" class="dropdown-item">View Delivery Orders</a>
                         <a href="{% url 'inventory:NewVendor' %}" class="dropdown-item">Add Vendor</a>
-                        <a href="{% url 'inventory:DeliveryOrderList' %}" class="dropdown-item">Show Delivery Orders</a>
-                        <a href="{% url 'inventory:VendorList' %}" class="dropdown-item">Show Suppliers</a>
                     </div>
                 </li>
                 {% endif %}
@@ -63,10 +60,10 @@
                     </a>
                     <div class="dropdown-menu">
                         <a href="{% url 'cmsinv:InventoryItemList' %}" class="dropdown-item">
-                            Show Item Inventory List
+                            View Item Inventory List
                         </a>
                         <a href="{% url 'cmsinv:SupplierList' %}" class="dropdown-item">
-                            Show Supplier Manufacturer List
+                            View Supplier Manufacturer List
                         </a>
                     </div>
                 </li>
@@ -76,8 +73,9 @@
                         Reference 
                     </a>
                     <div class="dropdown-menu">
-                        <a href="{% url 'drugdb:DrugList' %}" class="dropdown-item">Show Registered Drugs</a>
-                        <a href="{% url 'inventory:ItemList' %}" class="dropdown-item">Show Item List</a>
+                        <a href="{% url 'drugdb:DrugList' %}" class="dropdown-item">View Registered Drugs</a>
+                        <a href="{% url 'drugdb:DrugDeliveryList' %}" class="dropdown-item">View Delivered Drugs</a>
+                        <a href="{% url 'inventory:ItemList' %}" class="dropdown-item">View Item List</a>
                     </div>
                 </li>
             

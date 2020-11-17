@@ -24,7 +24,7 @@
                 <td>{{ vendor.default_description }}</td>
                 <td>
                     <button type="button"
-                        data-id="{% url 'ledger:NewExpenseModal' %}?q={{vendor.id}}" 
+                        data-id="{% url 'ledger:NewExpenseModal' %}?vendor={{ vendor.id }}" 
                         class="add-expense-by-vendor btn btn-sm btn-info"
                     >
                         <i class="fad fa-layer-plus"></i>

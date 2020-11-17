@@ -1,0 +1,32 @@
+<table class="table table-hover table-sm table-striped">
+    <thead>
+        <tr>
+            <th scope="col">Invoice date</th>
+            <th scope="col">Received date</th>
+            <th scope="col">Vendor</th>
+            <th scope="col">Amount</th>
+            <th scope="col">Paid?</th>
+            <th scope="col" class="text-right">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for record in deliveryorder_list %}
+        
+        <tr>
+            <td>{{ record.invoice_date|date:"d-m-y" }}</td>
+            <td>{{ record.received_date|date:"d-m-y" }}</td>
+            <td>{{ record.vendor.name}}</td>
+            <td>{{ record.amount }}</td>
+            <td>{{ record.is_paid }}</td>
+            <td class="text-right">
+                <a href="{% url 'inventory:DeliveryOrderDetail' record.id %}" 
+                  class="btn btn-sm btn-info"
+                ><i class="fad fa-file-alt"></i>
+                </a>
+            </td>
+        </tr>
+
+        {% endfor %}
+
+    </tbody>
+</table>

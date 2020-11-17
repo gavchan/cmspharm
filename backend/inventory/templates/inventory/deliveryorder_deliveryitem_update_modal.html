@@ -36,6 +36,13 @@ $(document).ready(function () {
           formURL: $(this).data('id')
       });
   });
+  $('#id_is_sample').on('change', function () {
+        if ($('#id_is_sample').is(':checked')) {
+          $('#id_purchase_quantity').val('0');
+          $('#id_unit_price').val('0');
+          $('#id_discount').val('1');
+        }
+      });
   $("#btn_calc").click(function() {
     let purchase = parseFloat($("#id_purchase_quantity").val());
     let bonus = parseFloat($("#id_bonus_quantity").val());
@@ -50,8 +57,7 @@ $(document).ready(function () {
       stdcost = totalcost / (purchase * itemspp);
       avgcost = totalcost / quantity; 
     }
-    console.log(purchase, bonus, itemspp, unitprice, discount)
-    console.log(quantity, stdcost, avgcost, totalcost)
+    if (isNaN(stdcost)) { stdcost = 0 }
     $('#ds_quantity').text(quantity)
     $('#ds_stdcost').text(stdcost.toFixed(2))
     $('#ds_avgcost').text(avgcost.toFixed(2))

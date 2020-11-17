@@ -1,4 +1,5 @@
 {% load crispy_forms_tags %}
+{{form.media}}
 <div class="modal-header">
     <h3 class="modal-title">New Expense Entry</h3>
     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -8,16 +9,11 @@
 
 <div class="modal-body">
     {% crispy form %}
-    {{form.media}}
-
 </div>
 
 <div class="modal-footer">
     <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
 </div>
-
-{% block extrascripts %}
-{{ form.media }}
 
 <script type="text/javascript">
     $(document).ready(function () {
@@ -29,4 +25,3 @@
         });
     })
 </script>
-{% endblock %}

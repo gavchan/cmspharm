@@ -5,6 +5,7 @@
 {% block content %}
 
 {% include "_modal.html" %}
+{{form.media}}
 
 <div class="card shadow">
     <div class="card-header">
@@ -26,7 +27,6 @@
     </div>
     <div class="card-body">
         {% crispy form %}
-        {{form.media}}
     </div>
 </div>
 

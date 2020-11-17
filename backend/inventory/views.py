@@ -227,7 +227,7 @@ class VendorList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
         data['vtype'] = self.vtype
         return data
 
-class VendorSelectModal(BSModalReadView, LoginRequiredMixin, PermissionRequiredMixin):
+class VendorSelectModal(ListView, LoginRequiredMixin, PermissionRequiredMixin):
     """List Vendors"""
     permission_required = ('inventory.view_vendor', )
     model = Vendor
@@ -365,13 +365,12 @@ class DeliveryOrderList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
         data['disp_type'] = self.disp_type
         return data
 
-
 class DeliveryOrderUpdateModal(BSModalUpdateView, LoginRequiredMixin, PermissionRequiredMixin):
     """Update details of item delivery"""
     permission_required = ('inventory.change_deliveryorder', )
     model = DeliveryOrder
     form_class = DeliveryOrderUpdateModalForm
-    template_name = 'inventory/deliveryorder_update_modal_form.html'
+    template_name = 'inventory/deliveryorder_update_modal.html'
     vendor_obj = None
 
     def get_success_url(self):

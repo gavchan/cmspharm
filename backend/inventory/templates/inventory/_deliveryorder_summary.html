@@ -14,7 +14,7 @@
         {% if delivery_obj.bill %}
         <button
           class="btn_modal_trigger btn btn-sm btn-secondary"
-          data-id="{% url 'ledger:ExpenseDetail' delivery_obj.bill.id %}"
+          data-id="{% url 'ledger:DeliveryPaymentModal' delivery_obj.id %}"
         >Bill
         </button>
         {% else %}
@@ -30,27 +30,33 @@
   <div class="card-body">
     <div class="form-row">
       <div class="col-md-2 mb-0">Supplier</div>
-      <div class="col-md-6 mb-0">{{ delivery_obj.vendor.name }}</div>
+      <div class="col-md-4 mb-0">{{ delivery_obj.vendor.name }}</div>
       <div class="col-md-2 mb-0">Received Date</div>
-      <div class="col-md-2 mb-0">{{ delivery_obj.received_date}}</div>
+      <div class="col-md-4 mb-0">{{ delivery_obj.received_date}}</div>
     </div>
     <div class="form-row">
       <div class="col-md-2 mb-0">Invoice No.</div>
-      <div class="col-md-6 mb-0">{{ delivery_obj.invoice_no }}</div>
+      <div class="col-md-4 mb-0">{{ delivery_obj.invoice_no }}</div>
       <div class="col-md-2 mb-0">Invoice Date</div>
-      <div class="col-md-2 mb-0">{{ delivery_obj.invoice_date }}</div>
+      <div class="col-md-4 mb-0">{{ delivery_obj.invoice_date }}</div>
     </div>
     <div class="form-row">
-      <div class="col-md-2 mb-0">Remarks</div>
-      <div class="col-md-6 mb-0">{{ delivery_obj.remarks }}</div>
-      <div class="col-md-2 mb-0">
-        Amount&nbsp; {% if delivery_obj.is_paid %}
+      <div class="col-md-2 mb-0">Amount&nbsp;
+        {% if delivery_obj.is_paid %}
         <span class="badge badge-success">Paid</span>
         {% else %}
         <span class="badge badge-danger">Due</span>
         {% endif %}
       </div>
-      <div class="col-md-2 mb-0">${{ delivery_obj.amount}}</div>
+      <div class="col-md-4 mb-0">$ {{ delivery_obj.amount }}</div>
+      <div class="col-md-2 mb-0">Due Date</div>
+      <div class="col-md-4 mb-0">{{ delivery_obj.due_date }}</div>
+    </div>
+    <div class="form-row">
+      <div class="col-md-2 mb-0">Remarks</div>
+      <div class="col-md-4 mb-0">{{ delivery_obj.remarks }}</div>
+      <div class="col-md-2 mb-0">Other Ref</div>
+      <div class="col-md-4 mb-0">{{ delivery_obj.other_ref }}</div>
     </div>
   </div>
 </div>

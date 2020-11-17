@@ -248,35 +248,24 @@ class DeliveryOrderUpdateModalForm(BSModalForm):
                     UneditableField('vendor'),
                     css_class='form-group col-md-8 mb-0'
                     ),
-                Column(
-                    UneditableField('payee'),
-                    css_class='form-group col-md-4 mb-0'
-                    ),
-                css_class='form-row',
-            ),
-            Row(
-                Column('invoice_no', css_class='form-group col-md-4 mb-0'),
-                Column('invoice_date', css_class='form-group col-md-4 mb-0'),
                 Column('received_date', css_class='form-group col-md-4 mb-0'),
                 css_class='form-row',
             ),
             Row(
-                Column('amount', css_class='form-group col-md-4 mb-0'),
-                Column('is_paid', css_class='form-group col-md-4 mb-0'),
-                Column('payment_method', css_class='form-group col-md-4 mb-0'),
+                Column('invoice_no', css_class='form-group col-md-8 mb-0'),
+                Column('invoice_date', css_class='form-group col-md-4 mb-0'),
                 css_class='form-row',
             ),
             Row(
-                Column('payment_ref', css_class='form-group col-md-4 mb-0'),
-                Column('expected_date', css_class='form-group col-md-4 mb-0'),
                 Column('other_ref', css_class='form-group col-md-4 mb-0'),
-                css_class="form-row",            ),
+                Column('amount', css_class='form-group col-md-4 mb-0'),
+                Column('due_date', css_class='form-group col-md-4 mb-0'),
+            ),
             Row(
-                Column(Field('remarks', css_class='form-group col-md-8 mb-0', rows="1")),
+                Column(Field('remarks', css_class='form-group col-md-12 mb-0', rows="2")),
                 css_class="form-row",            
             ),
             Hidden('vendor', self.instance.vendor.pk),
-            Hidden('payee', self.instance.payee),
             Hidden('version', self.instance.version + 1),
             FormActions(
                 Submit('submit', 'Submit'),
@@ -285,9 +274,9 @@ class DeliveryOrderUpdateModalForm(BSModalForm):
 
     class Meta:
         model = DeliveryOrder
-        exclude = ['id', 'items', 'date_created', 'last_updated',]
+        exclude = ['id', 'items', 'is_paid', 'bill, ''date_created', 'last_updated',]
         widgets = {
-                    'expected_date': DatePickerInput(
+                    'received_date': DatePickerInput(
                         options={
                             "format": "YYYY-MM-DD",
                             "showClose": True,
@@ -303,6 +292,14 @@ class DeliveryOrderUpdateModalForm(BSModalForm):
                             "showTodayButton": True,
                         }
                     ),
+                    'due_date': DatePickerInput(
+                        options={
+                            "format": "YYYY-MM-DD",
+                            "showClose": True,
+                            "showClear": True,
+                            "showTodayButton": True,
+                        }
+                    )
                 }
 class DeliveryItemUpdateModalForm(BSModalForm):
 

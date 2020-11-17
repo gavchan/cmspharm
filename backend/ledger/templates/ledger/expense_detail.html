@@ -7,5 +7,78 @@
 {% block content %}
   {% include '_modal.html' %}
 
-  Delivery: {{ delivery_obj.received_date }}, {{ delivery_obj.amount}}
+  <div class="card shadow">
+    <div class="card-header text-white bg-info">
+      <div class="d-flex justify-content-between align-items-center">
+        <span>
+          <i class="fad fa-table" aria-hidden="true"></i>
+          Expense on {{ expense_obj.entry_date }}
+        </span>
+        <span>
+          <button
+            class="btn_modal_trigger btn btn-sm btn-light"
+            data-id="{% url 'ledger:ExpenseUpdateModal' expense_obj.id %}"
+          >Edit
+          </button>
+        </span>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="form-row">
+        <div class="col-md-2 mb-0">Payee</div>
+        <div class="col-md-4 mb-0">{{ expense_obj.payee }}</div>
+        <div class="col-md-2 mb-0">Category</div>
+        <div class="col-md-4 mb-0">{{ expense_obj.category.name }}</div>
+      </div>
+      <div class="form-row">
+        <div class="col-md-2 mb-0">Description</div>
+        <div class="col-md-4 mb-0">{{ expense_obj.description }}</div>
+        <div class="col-md-2 mb-0">Entry Date</div>
+        <div class="col-md-4 mb-0">{{ expense_obj.entry_date|date:"d-m-Y" }}</div>
+      </div>
+      <div class="form-row">
+        <div class="col-md-2 mb-0">Amount</div>
+        <div class="col-md-4 mb-0">$ {{ expense_obj.amount }}</div>
+        <div class="col-md-2 mb-0">Invoice Date</div>
+        <div class="col-md-4">{{ expense_obj.invoice_date |date:"d-m-Y"}}</div>
+      </div>
+      <div class="form-row">
+        <div class="col-md-2 mb-0">Invoice No.</div>
+        <div class="col-md-4 mb-0">{{ expense_obj.invoice_no }}</div>
+        <div class="col-md-2 mb-0">Cheque/Paid Date</div>
+        <div class="col-md-4 mb-0">{{ expense_obj.expected_date|date:"d-m-Y"}}</div>
+      </div>
+      <div class="form-row">
+        <div class="col-md-2 mb-0">Cheque No.</div>
+        <div class="col-md-4 mb-0">{{ expense_obj.payment_ref }}</div>
+        <div class="col-md-2 mb-0">Payment</div>
+        <div class="col-md-4 mb-0">{{ expense_obj.payment_method.name }}</div>
+      </div>
+      <div class="form-row">
+        <div class="col-md-2 mb-0">Remarks</div>
+        <div class="col-md-4 mb-0">{{ expense_obj.remarks }}</div>
+        <div class="col-md-2 mb-0">Other Ref</div>
+        <div class="col-md-4 mb-0">{{ expense_obj.other_ref }}</div> 
+      </div>
+      <hr>
+      {% if deliveryorder_list %}
+          {% include 'ledger/_deliveryorder_list_table.html' %}
+      {% else %}    
+          <p>No delivery order in database</p>
+      {% endif %}
+    </div>
+  </div>
+  {% include 'ledger/_unpaid_delivery_orders.html' %}
+{% endblock %}
+
+{% block extrascripts %}
+<script type="text/javascript">
+  $(document).ready(function () {
+      $(".btn_modal_trigger").each(function() {
+          $(this).modalForm({
+              formURL: $(this).data('id')
+          });
+      });
+  });
+</script>
 {% endblock %}

@@ -245,7 +245,7 @@ class DeliveryOrder(models.Model):
         ordering = ['-invoice_date']
 
     def __str__(self):
-        return f"{self.id:5} | {self.received_date} : ${self.amount} | {self.vendor}"
+        return f"{self.received_date} : ${self.amount} | {self.vendor.name}"
 
     def get_absolute_url(self):
         return reverse('inventory:DeliveryOrderDetail', kwargs={'pk': self.pk})

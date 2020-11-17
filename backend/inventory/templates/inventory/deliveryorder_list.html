@@ -2,8 +2,6 @@
 
 {% block title %} Delivery/Orders {% endblock %} 
 
-{% load crispy_forms_tags %} 
-
 {% block content %} 
 
 {% include "_modal.html" %}
@@ -26,121 +24,100 @@
     </div>
   </div>
   <div class="card-body">
-    <form action="{% url 'inventory:DeliveryOrderList' %}" method="get">
-      <div class="row">
-        {% include "_datepicker_from_to.html" %}
-        <div class="col-sm-2 px-1">
-          <button id="btn_filter_results" class="btn btn-sm btn-secondary btn-block">Filter by Date</button>
-        </div>
-        <div class="col-sm-2 px-1">
-          <button 
-            id="btn_new_delivery" 
-            class="btn btn-sm btn-success btn-block"
-            data-id="{% url 'inventory:VendorSelectModal' %}?vtype=supp"
-            data-toggle="modal" data-target="#vendor_select_modal"
+    <div class="row">
+      <div class="col-md-10">
+        <form action="{% url 'inventory:DeliveryOrderList' %}" method="get">
+          <div class="row">
+            {% include "_datepicker_from_to.html" %}
+            <div class="col-sm-2 px-1">
+              <button id="btn_filter_results" class="btn btn-sm btn-secondary btn-block">Filter by Date</button>
+            </div>
+          </div>
+          <div class="row mb-2">
+            <div class="col-sm-4">
+              <input
+                class="form-control form-control-sm"
+                name="q"
+                type="text"
+                placeholder="Search vendor"
+              />
+            </div>
+            <div class="col-sm-6">
+              {% if is_paginated %}
+              <ul class="pagination pagination-sm">
+                <li class="page-item">
+                  <a
+                    href="{% url 'inventory:DeliveryOrderList' %}?q={{ last_query }}&page=1"
+                    class="page-link"
+                  >
+                    First
+                  </a>
+                </li>
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                  <a
+                    href="{% url 'inventory:DeliveryOrderList' %}?q={{ last_query }}&page={{ page_obj.previous_page_number }}"
+                    class="page-link"
+                  >
+                    {{ page_obj.previous_page_number }}
+                  </a>
+                </li>
+                {% endif %}
+                <li class="page-item active">
+                  <a
+                    href="{% url 'inventory:DeliveryOrderList' %}?q={{ last_query }}&page={{ page_obj.number }}"
+                    class="page-link"
+                  >
+                    {{ page_obj.number }}
+                  </a>
+                </li>
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                  <a
+                    href="{% url 'inventory:DeliveryOrderList' %}?q={{ last_query }}&page={{ page_obj.next_page_number }}"
+                    class="page-link"
+                  >
+                    {{ page_obj.next_page_number }}
+                  </a>
+                </li>
+                {% endif %}
+                <li class="page-item">
+                  <a
+                    href="{% url 'inventory:DeliveryOrderList' %}?q={{ last_query }}&page=last"
+                    class="page-link"
+                  >
+                    Last ({{ page_obj.paginator.num_pages }})
+                  </a>
+                </li>
+              </ul>
+            {% endif %}
+            </div>
+            <div class="col-sm-2 px-1">
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="col-md-2">
+        <div class="row mb-2">
+          <div class="col-sm-12">
+            <button 
+              id="btn_new_delivery" 
+              class="btn btn-sm btn-success btn-block"
+              data-id="{% url 'inventory:VendorSelectModal' %}?vtype=supp"
           >New Delivery
           </button>
+          </div>
+        </div>
+        <div class="row mb-2">
+          <div class="col-sm-12">
+            <button id="btn-export_excel" class="btn btn-sm btn-info btn-block" disabled>Export Excel</button>
+          </div>
         </div>
       </div>
-      <div class="row mb-2">
-        <div class="col-sm-4">
-          <input
-            class="form-control form-control-sm"
-            name="q"
-            type="text"
-            placeholder="Search vendor"
-          />
-        </div>
-        <div class="col-sm-6">
-          {% if is_paginated %}
-          <ul class="pagination pagination-sm">
-            <li class="page-item">
-              <a
-                href="{% url 'inventory:DeliveryOrderList' %}?q={{ last_query }}&page=1"
-                class="page-link"
-              >
-                First
-              </a>
-            </li>
-            {% if page_obj.has_previous %}
-            <li class="page-item">
-              <a
-                href="{% url 'inventory:DeliveryOrderList' %}?q={{ last_query }}&page={{ page_obj.previous_page_number }}"
-                class="page-link"
-              >
-                {{ page_obj.previous_page_number }}
-              </a>
-            </li>
-            {% endif %}
-            <li class="page-item active">
-              <a
-                href="{% url 'inventory:DeliveryOrderList' %}?q={{ last_query }}&page={{ page_obj.number }}"
-                class="page-link"
-              >
-                {{ page_obj.number }}
-              </a>
-            </li>
-            {% if page_obj.has_next %}
-            <li class="page-item">
-              <a
-                href="{% url 'inventory:DeliveryOrderList' %}?q={{ last_query }}&page={{ page_obj.next_page_number }}"
-                class="page-link"
-              >
-                {{ page_obj.next_page_number }}
-              </a>
-            </li>
-            {% endif %}
-            <li class="page-item">
-              <a
-                href="{% url 'inventory:DeliveryOrderList' %}?q={{ last_query }}&page=last"
-                class="page-link"
-              >
-                Last ({{ page_obj.paginator.num_pages }})
-              </a>
-            </li>
-          </ul>
-        {% endif %}
-        </div>
-        <div class="col-sm-2 px-1">
-          <button id="btn-export_excel" class="btn btn-sm btn-info btn-block">Export Excel</button>
-        </div>
-      </div>
-    </form>
-
+    </div>
+    
     {% if deliveryorder_list %}
-    <table class="table table-hover table-sm table-striped">
-        <thead>
-            <tr>
-                <th scope="col">Invoice date</th>
-                <th scope="col">Received date</th>
-                <th scope="col">Vendor</th>
-                <th scope="col">Amount</th>
-                <th scope="col">Paid?</th>
-                <th scope="col">Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for record in deliveryorder_list %}
-            
-            <tr>
-                <td>{{ record.invoice_date }}</td>
-                <td>{{ record.received_date }}</td>
-                <td>{{ record.vendor.name}}</td>
-                <td>{{ record.amount }}</td>
-                <td>{{ record.is_paid }}</td>
-                <td>
-                    <a href="{% url 'inventory:DeliveryOrderDetail' record.id %}" 
-                      class="btn btn-sm btn-info"
-                    ><i class="fad fa-file-alt"></i>
-                    </a>
-                </td>
-            </tr>
-
-            {% endfor %}
-
-        </tbody>
-    </table>
-
+    {% include 'inventory/_deliveryorder_list_table.html' %}
     {% else %}
     
     <p>No delivery order in database</p>
@@ -153,10 +130,8 @@
 
 <script type="text/javascript">
   $(document).ready(function () {
-    $("#btn_new_delivery").each(function() {
-       $(this).modalForm({
-           formURL: $(this).data('id')
-       });
+    $("#btn_new_delivery").modalForm({
+      formURL: $(this).data('id')
     });
   });
 </script>

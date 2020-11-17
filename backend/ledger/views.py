@@ -143,6 +143,20 @@ class ExpenseUpdate(UpdateView, LoginRequiredMixin, PermissionRequiredMixin):
         data['expense_obj'] = self.object
         return data
 
+class ExpenseUpdateModal(BSModalUpdateView, LoginRequiredMixin, PermissionRequiredMixin):
+    """Update Expense"""
+    permission_required = ('ledger.change_expense',)
+    model = Expense
+    form_class = ExpenseUpdateModalForm
+    template_name = "ledger/expense_update_modal.html"
+    success_message = 'Success: Expense was updated'
+    success_url = reverse_lazy('ledger:ExpenseList')
+
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        data['expense_obj'] = self.object
+        return data
+
 class ExpenseDeleteModal(BSModalDeleteView, LoginRequiredMixin, PermissionRequiredMixin):
     """Update Expense modal"""
     permission_required = ('ledger.delete_expense',)
@@ -216,7 +230,7 @@ class NewExpenseModal(BSModalCreateView, LoginRequiredMixin, PermissionRequiredM
     vendor_obj = None
 
     def dispatch(self, request, *args, **kwargs):
-        vendor_id = request.GET.get('q')
+        vendor_id = request.GET.get('vendor')
         if vendor_id:
             self.vendor_obj = Vendor.objects.get(id=vendor_id)
         else:
@@ -307,20 +321,22 @@ class DeliveryPaymentModal(BSModalCreateView, LoginRequiredMixin, PermissionRequ
     def form_valid(self, form):
         self.object = form.save()
         self.delivery_obj.bill = self.object
+        self.delivery_obj.is_paid = True
+        self.delivery_obj.save()
         return HttpResponseRedirect(self.get_success_url())
 
 class ExpenseDetail(DetailView, LoginRequiredMixin, PermissionRequiredMixin):
     """Show Expense Details for Drug Category, allow add delivery"""
     permission_required = ('ledger.view_expense',)
     template_name = 'ledger/expense_detail.html'
-    context_object_name = 'expense_obj'
     model = Expense
-    delivery_orders_list = None
+    deliveryorder_list = None
     unpaid_deliveries_list = None
 
     def dispatch(self, request, *args, **kwargs):
+        self.expense_obj = Expense.objects.get(id=kwargs['pk']) 
         try:
-            self.delivery_orders_list = DeliveryOrder.objects.filter(bill=expense_obj.id)
+            self.deliveryorder_list = DeliveryOrder.objects.filter(bill=self.expense_obj.id)
         except:
             print("No delivery orders")
         try:
@@ -333,9 +349,34 @@ class ExpenseDetail(DetailView, LoginRequiredMixin, PermissionRequiredMixin):
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         data['today'] = date.today().strftime('%Y-%m-%d')
-        data['delivery_orders_list'] = self.delivery_orders_list
-        data['expense_obj'] = self.object
+        data['deliveryorder_list'] = self.deliveryorder_list
+        data['unpaid_deliveries_list'] = self.unpaid_deliveries_list
+        data['expense_obj'] = self.expense_obj
         return data
+
+@login_required
+@permission_required('ledger.change_expense', 'inventory.change_deliveryorder')
+def ExpenseAddDeliveryOrder(request, *args, **kwargs):
+    expense_obj = Expense.objects.get(pk=kwargs['expense_id']) or None
+    delivery_obj = DeliveryOrder.objects.get(pk=kwargs['delivery_id']) or None
+    if expense_obj and delivery_obj:
+        delivery_obj.bill = expense_obj
+        delivery_obj.is_paid = True
+        delivery_obj.save()
+        print(f"Delivery #{delivery_obj.id} added to expense #{expense_obj.id}")
+    return HttpResponseRedirect(reverse('ledger:ExpenseDetail', args=(expense_obj.id,)))
+
+@login_required
+@permission_required('ledger.change_expense', 'inventory.change_deliveryorder')
+def ExpenseRemoveDeliveryOrder(request, *args, **kwargs):
+    expense_obj = Expense.objects.get(pk=kwargs['expense_id']) or None
+    delivery_obj = DeliveryOrder.objects.get(pk=kwargs['delivery_id']) or None
+    if expense_obj and delivery_obj:
+        delivery_obj.bill = None
+        delivery_obj.is_paid = False
+        delivery_obj.save()
+        print(f"Delivery #{delivery_obj.id} removed from expense #{expense_obj.id}")
+    return HttpResponseRedirect(reverse('ledger:ExpenseDetail', args=(expense_obj.id,)))
 
 @login_required
 @permission_required('ledger.view_expense')

@@ -3,36 +3,42 @@
     Requires:
     - vendor_list
 -->
-    {% if vendor_list %}
-    
-    <table class="table table-sm table-striped">
-        <thead>
-            <tr>
-                <th scope="col">Vendor</th>
-                <th scope="col">Category</th>
-                <th scope="col">Description</th>
-                <th scope="col">Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for vendor in vendor_list %}
-            <tr>
-                <td>{{ vendor.name }}</td>
-                <td>{{ vendor.default_exp_category }}</td>
-                <td>{{ vendor.default_description }}</td>
-                <td>
-                    <button type="button"
-                        data-id="{% url 'inventory:NewDeliveryOrderModal' %}?vendor={{vendor.id}}" 
-                        class="btn_modal_trigger btn btn-sm btn-info"
-                    >
-                        <i class="fad fa-layer-plus"></i>
-                    </button>
-                </td>
-            </tr>
+{% if vendor_list %}
 
-            {% endfor %}
+<table class="table table-sm table-striped">
+    <thead>
+        <tr>
+            <th scope="col">Vendor</th>
+            <th scope="col">Category</th>
+            <th scope="col">Description</th>
+            <th scope="col">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for vendor in vendor_list %}
+        <tr>
+            <td>{{ vendor.name }}</td>
+            <td>{{ vendor.default_exp_category }}</td>
+            <td>{{ vendor.default_description }}</td>
+            <td>
+                <button type="button"
+                    data-id="{% url 'inventory:NewDeliveryOrderModal' %}?vendor={{vendor.id}}" 
+                    class="btn_modal_trigger btn btn-sm btn-info"
+                >
+                    <i class="fad fa-layer-plus"></i>
+                </button>
+            </td>
+        </tr>
 
-        </tbody>
-    </table>
+        {% endfor %}
 
-    {% endif %}
+    </tbody>
+</table>
+
+{% endif %}
+
+<script type="text/javascript">
+$(".btn_modal_trigger").modalForm({
+    formURL: $(this).data('id')
+})
+</script>

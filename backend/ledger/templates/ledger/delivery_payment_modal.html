@@ -1,6 +1,13 @@
 {% load crispy_forms_tags %}
+{{form.media}}
 <div class="modal-header">
-    <h3 class="modal-title">New Expense Entry</h3>
+    <h5 class="modal-title">
+    {% if delivery_obj.bill %}
+        Delivery Order Paid - Expense Record Summary
+    {% else %}
+        Delivery Order Payment - New Expense
+    {% endif %}
+      </h5>
     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
         <span aria-hidden="true">&times;</span>
     </button>
@@ -14,8 +21,8 @@
             <th scope="col">Invoice</th>
             <th scope="col">Paid Date</th>
             <th scope="col">Payee</th>
-            <th scope="col">Category</th>
             <th scope="col">Amount</th>
+            <th scope="col">Payment</th>
             <th scope="col">Action</th>
           </tr>
         </thead>
@@ -24,21 +31,29 @@
             <td>{{ delivery_obj.bill.invoice_date|date:"d-m-y" }}</td>
             <td>{{ delivery_obj.bill.expected_date|date:"d-m-y" }}</td>
             <td>{{ delivery_obj.bill.payee }}</td>
-            <td>{{ delivery_obj.bill.category.name }}</td>
             <td class="text-monospace text-right">{{ delivery_obj.bill.amount }}</td>
             <td>
+              {{ delivery_obj.bill.payment_method }}
+              {% if delivery_obj.bill.payment_ref %}
+                # {{ delivery_obj.bill.payment_ref }}
+              {% endif %}
+            </td>
+            <td>
+              <a
+                href="{% url 'ledger:ExpenseDetail' delivery_obj.bill.pk %}"
+                class="btn btn-sm btn-info"
+              ><i class="fad fa-file-alt"></i>
+              </a>
               <a
                 href="{% url 'ledger:ExpenseUpdate' delivery_obj.bill.pk %}"
                 class="btn-expense_update btn btn-sm btn-primary"
-              >
-                <i class="fad fa-file-alt"></i>
-              </button>
+              ><i class="fad fa-edit"></i>
+              </a>
               {% if delivery_obj.bill.category.name == "Drugs" %}
               <a
                 href="{% url 'drugdb:BillDrugDeliveryView' delivery_obj.bill.pk %}"
                 class="btn btn-sm btn-info"
-              >
-                <i class="fad fa-layer-plus"></i>
+              > x <!-- To delete later-->
               </a>
               {% endif %}
             </td>
@@ -47,16 +62,12 @@
       </table>
     {% else %}
     {% crispy form %}
-    {{form.media}}
     {% endif %}
 </div>
 
 <div class="modal-footer">
     <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
 </div>
-
-{% block extrascripts %}
-{{ form.media }}
 
 <script type="text/javascript">
     $(document).ready(function () {
@@ -68,4 +79,3 @@
         });
     })
 </script>
-{% endblock %}
