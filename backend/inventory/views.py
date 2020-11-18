@@ -201,7 +201,7 @@ class VendorList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
     suppliers_only = False
 
     def get_queryset(self):
-        self.vtype = self.request.GET.get('vtype') or 'supp'
+        self.vtype = self.request.GET.get('vtype') or 'any'
         query = self.request.GET.get('q')
         if query:
             self.last_query = query

@@ -29,7 +29,7 @@
                         Expenses
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                        <a href="{% url 'inventory:VendorList' %}" class="dropdown-item">View Vendors</a>
+                        <a href="{% url 'inventory:VendorList' %}?vtype=any" class="dropdown-item">View Vendors</a>
                         <a href="{% url 'ledger:ExpenseList' %}" class="dropdown-item">View Expenses</a>
                         <a href="{% url 'ledger:ExpenseCategoryList' %}" class="dropdown-item">View Categories</a>
                         <a href="{% url 'inventory:NewVendor' %}" class="dropdown-item">Add Vendor</a>
@@ -47,7 +47,7 @@
                         Delivery/Orders 
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                        <a href="{% url 'inventory:VendorList' %}" class="dropdown-item">View Suppliers</a>
+                        <a href="{% url 'inventory:VendorList' %}?vtype=supp" class="dropdown-item">View Suppliers</a>
                         <a href="{% url 'inventory:DeliveryOrderList' %}" class="dropdown-item">View Delivery Orders</a>
                         <a href="{% url 'inventory:NewVendor' %}" class="dropdown-item">Add Vendor</a>
                     </div>
