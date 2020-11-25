@@ -1,12 +1,29 @@
 <table class="table table-hover table-sm table-striped">
     <thead>
+        
         <tr>
             <th scope="col">Invoice date</th>
             <th scope="col">Received date</th>
-            <th scope="col">Vendor</th>
-            <th scope="col">Amount</th>
-            <th scope="col">Paid?</th>
+            <th scope="col" colspan="5" class="text-center bg-secondary text-white">Purchase</th>
+            <th scope="col" class="text-right">Amount</th>
             <th scope="col" class="text-right">Action</th>
+        </tr>
+        <tr>
+            <th scope="col" colspan="2"></th>
+            <th scope="col" colspan=5">
+                <table width="100%">
+                    <tr>
+                        <th scope="col" width="45%" class="bg-light">Product name</th>
+                        <th scope="col" width="10%" class="text-right bg-light">Quantity</th>
+                        <th scope="col" width="10%" class="text-right bg-light">Bonus</th>
+                        <th scope="col" width="10%" class="text-right bg-light">Std $</th>
+                        <th scope="col" width="10%" class="text-right bg-light">Avg $</th>
+                        <th scope="col" width="15%" class="text-right bg-light">Total $</th>
+                    </tr>
+                </table>
+            </th>
+           
+            <th scope="col" colspan="2"></th>
         </tr>
     </thead>
     <tbody>
@@ -15,9 +32,33 @@
         <tr>
             <td>{{ record.invoice_date|date:"d-m-Y" }}</td>
             <td>{{ record.received_date|date:"d-m-Y" }}</td>
-            <td>{{ record.vendor.name}}</td>
-            <td>{{ record.amount }}</td>
-            <td>{{ record.is_paid }}</td>
+            <td colspan="5">
+                <table width="100%">
+                    {% for listitem in record.items %}
+                    <tr>
+                        <td width="45%">{{ listitem.name }}</td>
+                        <td width="10%" class="text-monospace text-right">
+                            {% if listitem.is_sample %}
+                            <span class="badge badge-info ml-2 mt-0"
+                            >Sample
+                            </span>
+                            {% else %}
+                            {{ listitem.purchase_quantity }}
+                            {% endif %}
+                        </td>
+                        <td width="10%" class="text-monospace text-right">
+                            {% if listitem.bonus_quantity %}
+                            + {{ listitem.bonus_quantity }}
+                            {% endif %}
+                        </td>
+                        <td width="10%" class="text-monospace text-right">{{ listitem.standard_cost }}</td>
+                        <td width="10%" class="text-monospace text-right">{{ listitem.average_cost }}</td>
+                        <td width="15%" class="text-monospace text-right">{{ listitem.total_price }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </td>
+            <td class="text-monospace text-right">{{ record.amount }}</td>
             <td class="text-right">
                 <a href="{% url 'inventory:DeliveryOrderDetail' record.id %}" 
                   class="btn btn-sm btn-info"
@@ -31,6 +72,18 @@
         </tr>
 
         {% endfor %}
+        <tr>
+            <th colspan="7" class="text-right">
+                Total:
+                {% if list_total != expense_obj.amount %}
+                <span class="badge badge-danger ml-2 mt-0"
+                >Not matching invoice amount
+                </span>
+                {% endif %}
+            </th>
+            <td class="text-monospace text-right"><strong>{{ list_total }}</strong></td>
+            <td colspan="2" class="text-center"></td>
+        </tr>
 
     </tbody>
 </table>

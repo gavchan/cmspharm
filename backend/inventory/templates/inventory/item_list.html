@@ -104,19 +104,19 @@
             </tr>
         </thead>
         <tbody>
-            {% for record in item_list %}
+            {% for item_obj in item_list %}
             
             <tr
-                {% if not record.is_active %}
+                {% if not item_obj.is_active %}
                 class="table-secondary text-muted"
                 {% endif %}
             >
-                <td>{{ record.reg_no }}</td>
-                <td>{{ record.cmsid }}</td>
-                <td>{{ record.name }}</td>
-                <td>{{ record.item_type.name }}
+                <td>{{ item_obj.reg_no }}</td>
+                <td>{{ item_obj.cmsid }}</td>
+                <td>{{ item_obj.name }}</td>
+                <td>{{ item_obj.item_type.name }}
                     <br>
-                    {% if not record.is_active %}
+                    {% if not item_obj.is_active %}
                     <span class="badge badge-secondary">Inactive</span>
                     {% endif %}
                 </td>
@@ -124,7 +124,7 @@
                     <button
                         type="button"
                         class="btn_item-update btn btn-sm btn-primary"
-                        data-id="{% url 'inventory:ItemUpdateModal' record.pk %}"
+                        data-id="{% url 'inventory:ItemUpdateModal' item_obj.pk %}"
                     ><i class="fad fa-file-alt"></i>
                     </button>
                 </td>

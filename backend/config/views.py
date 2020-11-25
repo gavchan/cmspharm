@@ -29,7 +29,10 @@ def HomeSelectVendorView(request, *args, **kwargs):
         query = request.GET.get('q')
     if query:
         last_query = query
-        object_list = Vendor.objects.filter(Q(name__icontains=query))[:MAX_QUERY_COUNT]
+        object_list = Vendor.objects.filter(
+            Q(name__icontains=query)|
+            Q(alias__icontains=query)
+            )[:MAX_QUERY_COUNT]
         last_query_count = object_list.count
     else:
         last_query = ''

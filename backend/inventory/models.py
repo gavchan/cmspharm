@@ -241,6 +241,9 @@ class DeliveryOrder(models.Model):
     updated_by = models.CharField(max_length=255, blank=True, null=True)
     version = models.PositiveIntegerField(default=1)
 
+    @property
+    def item_summary(self):
+        return ', '.join(item.name for item in self.items.all())
     class Meta:
         ordering = ['-invoice_date']
 
@@ -302,12 +305,15 @@ class DeliveryItem(models.Model):
         """Standard average cost of items (not including bonus items or discounts)"""
         try:
             std_cost = round(self.unit_price * self.purchase_quantity / (self.items_per_purchase * self.purchase_quantity), 2)
-        except Exception as e:
-            print('%s (%s)' % (e, type(e))) 
-            std_cost = 'NA'
+        except:
+            std_cost = 0.00
         return  std_cost
 
     @property
     def average_cost(self):
         """Average cost of items (including bonus items and discounts)"""
-        return round(self.total_price / self.items_quantity, 2)
+        try:
+            avg_cost = round(self.total_price / self.items_quantity, 2)
+        except:
+            avg_cost = 0.00
+        return avg_cost

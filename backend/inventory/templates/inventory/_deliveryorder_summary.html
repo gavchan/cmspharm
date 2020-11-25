@@ -17,6 +17,12 @@
           data-id="{% url 'ledger:DeliveryPaymentModal' delivery_obj.id %}"
         >Bill
         </button>
+        {% elif delivery_obj.amount == 0 %}
+        <button
+          class="btn_modal_trigger btn btn-sm btn-secondary disabled" disabled
+          data-id=""
+        >Free
+        </button> 
         {% else %}
         <button
           class="btn_modal_trigger btn btn-sm btn-secondary"
@@ -30,7 +36,9 @@
   <div class="card-body">
     <div class="form-row">
       <div class="col-md-2 mb-0">Supplier</div>
-      <div class="col-md-4 mb-0">{{ delivery_obj.vendor.name }}</div>
+      <div class="col-md-4 mb-0">
+        {{ delivery_obj.vendor.name }}
+      </div>
       <div class="col-md-2 mb-0">Received Date</div>
       <div class="col-md-4 mb-0">{{ delivery_obj.received_date}}</div>
     </div>
@@ -44,6 +52,8 @@
       <div class="col-md-2 mb-0">Amount&nbsp;
         {% if delivery_obj.is_paid %}
         <span class="badge badge-success">Paid</span>
+        {% elif delivery_obj.amount == 0 %}
+        <span class="badge badge-secondary">Bonus/Free</span>
         {% else %}
         <span class="badge badge-danger">Due</span>
         {% endif %}

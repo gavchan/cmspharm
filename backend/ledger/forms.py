@@ -107,7 +107,7 @@ class NewExpenseSelectVendorForm(ModelForm):
     def __init__(self, *args, **kwargs):
         self.vendor_obj = kwargs.pop('vendor_obj', None)
 
-        super(NewExpenseForm, self).__init__(*args, **kwargs)
+        super(NewExpenseSelectVendorForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.render_unmentioned_fields = False
         self.helper.form_id = 'id-ExpenseForm'
@@ -375,7 +375,7 @@ class NewExpenseModalForm(BSModalForm):
         self.helper.form_class = 'cmmForms'
         self.helper.form_method = 'post'
         self.helper.form_action = reverse(
-            'ledger:NewExpenseSelectVendor')
+            'ledger:NewExpenseModal')
         #self.initial['entry_date'] = date.today().strftime('%Y-%m-%d')
         today_date = date.today().strftime('%Y-%m-%d')
         self.initial['payment_method'] = PaymentMethod.objects.get(

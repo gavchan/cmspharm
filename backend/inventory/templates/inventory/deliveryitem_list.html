@@ -1,0 +1,137 @@
+{% extends 'base.html' %} 
+
+{% block title %} Delivered Items {% endblock %} 
+
+{% block content %} 
+
+{% include "_modal.html" %}
+
+<div class="card shadow">
+  <div class="card-header text-white bg-info">
+    <div class="d-flex justify-content-between align-items-center">
+      <span>
+        <i class="fad fa-table" aria-hidden="true"></i>
+        Delivered Items
+      </span>
+      <span>
+        <button id="btn-view_last_month" class="btn btn-sm btn-dark">
+          Last Month
+        </button>
+        <button id="btn-view_last_3_months" class="btn btn-sm btn-dark">
+          Last 3 Months
+        </button>
+      </span>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="row">
+      <div class="col-md-10">
+        <form action="{% url 'inventory:DeliveryItemList' %}" method="get">
+          <div class="row">
+            {% include "_datepicker_from_to.html" %}
+            <div class="col-sm-2 px-1">
+              <button id="btn_filter_results" class="btn btn-sm btn-secondary btn-block">Filter by Date</button>
+            </div>
+          </div>
+          <div class="row mb-2">
+            <div class="col-sm-4">
+              <input
+                class="form-control form-control-sm"
+                name="q"
+                type="text"
+                placeholder="Search vendor"
+              />
+            </div>
+            <div class="col-sm-6">
+              {% if is_paginated %}
+              <ul class="pagination pagination-sm">
+                <li class="page-item">
+                  <a
+                    href="{% url 'inventory:DeliveryItemList' %}?q={{ last_query }}&page=1"
+                    class="page-link"
+                  >
+                    First
+                  </a>
+                </li>
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                  <a
+                    href="{% url 'inventory:DeliveryItemList' %}?q={{ last_query }}&page={{ page_obj.previous_page_number }}"
+                    class="page-link"
+                  >
+                    {{ page_obj.previous_page_number }}
+                  </a>
+                </li>
+                {% endif %}
+                <li class="page-item active">
+                  <a
+                    href="{% url 'inventory:DeliveryItemList' %}?q={{ last_query }}&page={{ page_obj.number }}"
+                    class="page-link"
+                  >
+                    {{ page_obj.number }}
+                  </a>
+                </li>
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                  <a
+                    href="{% url 'inventory:DeliveryItemList' %}?q={{ last_query }}&page={{ page_obj.next_page_number }}"
+                    class="page-link"
+                  >
+                    {{ page_obj.next_page_number }}
+                  </a>
+                </li>
+                {% endif %}
+                <li class="page-item">
+                  <a
+                    href="{% url 'inventory:DeliveryItemList' %}?q={{ last_query }}&page=last"
+                    class="page-link"
+                  >
+                    Last ({{ page_obj.paginator.num_pages }})
+                  </a>
+                </li>
+              </ul>
+            {% endif %}
+            </div>
+            <div class="col-sm-2 px-1">
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="col-md-2">
+        <div class="row mb-2">
+          <div class="col-sm-12">
+            <button 
+              id="btn_modal_trigger" 
+              class="btn btn-sm btn-success btn-block"
+              data-id="{% url 'inventory:VendorSelectModal' %}?vtype=supp"
+          >New Delivery
+          </button>
+          </div>
+        </div>
+        <div class="row mb-2">
+          <div class="col-sm-12">
+            <button id="btn-export_excel" class="btn btn-sm btn-info btn-block" disabled>Export Excel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% include "_deliveryorder_items.html" %}
+  </div>
+</div>
+{% endblock %}
+
+{% block extrascripts %}
+
+<script type="text/javascript">
+  $(document).ready(function () {
+    $(".btn_modal_trigger").each(function() {
+       $(this).modalForm({
+           formURL: $(this).data('id')
+       });
+    });
+  });
+</script>
+
+{% endblock %}
+

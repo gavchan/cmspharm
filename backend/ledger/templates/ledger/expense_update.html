@@ -4,6 +4,7 @@
 {% block content %}
 
 {% include "_modal.html" %}
+{{form.media}}
 
 <div class="card shadow">
     <div class="card-header">
@@ -15,7 +16,7 @@
           </button>
           <button 
             id="btn_delete" 
-            class="bs-modal btn btn-sm btn-danger" 
+            class="btn_modal_trigger btn btn-sm btn-danger" 
             data-form-url="{% url 'ledger:ExpenseDeleteModal' expense_obj.pk %}"
           >
             Delete
@@ -32,7 +33,6 @@
     </div>
     <div class="card-body">
         {% crispy form %}
-        {{form.media}}
     </div>
 </div>
 
@@ -46,7 +46,7 @@
         $('#id-ExpenseForm').submit()
       });
 
-      $(".bs-modal").each(function() {
+      $(".btn_modal_trigger").each(function() {
         $(this).modalForm({
           formURL: $(this).data('form-url')
         });

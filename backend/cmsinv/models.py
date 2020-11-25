@@ -281,7 +281,7 @@ class InventoryMovementLog(models.Model):
     version = models.BigIntegerField(default=1)
     date_created = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
-    lot_no = models.CharField(max_length=255, blank=True, null=True)
+    lot_no = models.CharField(max_length=255, blank=True, null=True) # Not used in CMS - NULL
     move_item = models.CharField(max_length=255, blank=True, null=True)
     quantity = models.FloatField()
 

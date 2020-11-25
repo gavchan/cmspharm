@@ -4,7 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.decorators import login_required, permission_required
 from django.urls import reverse, reverse_lazy
-from django.db.models import Q
+from django.db.models import Q, Sum
 from django.views.decorators.csrf import csrf_exempt
 from django.template.loader import render_to_string
 from django.http import JsonResponse
@@ -471,10 +471,15 @@ def DeliveryOrderDetail(request, *args, **kwargs):
 
     # Get related DrugDelivery objects associated with delivery_id
     try:
-        delivery_items_list = delivery_obj.delivery_items.all()
+        deliveryitems_list = delivery_obj.delivery_items.all()
     except:
-        delivery_items_list = None
-    ctx['delivery_items_list'] = delivery_items_list
+        deliveryitems_list = None
+    if deliveryitems_list:
+        list_total = sum(round(lt.purchase_quantity * lt.unit_price * (1 - lt.discount/100), 2) for lt in deliveryitems_list)
+        ctx['list_total'] = list_total
+    else:
+        ctx['list_total'] = 0
+    ctx['deliveryitems_list'] = deliveryitems_list
 
     # Get query from request and search RegisteredDrug    
     query = request.GET.get('q')
@@ -486,11 +491,11 @@ def DeliveryOrderDetail(request, *args, **kwargs):
             Q(product_name__icontains=query) |
             Q(generic_name__icontains=query) |
             Q(ingredient__icontains=query)
-        )[:MAX_QUERY_COUNT]
+        ).order_by('discontinue')[:MAX_QUERY_COUNT]
         last_query_count = object_list.count
     else:
         last_query = ''
-        object_list = InventoryItem.objects.all()[:MAX_QUERY_COUNT]
+        object_list = InventoryItem.objects.all().order_by('discontinue')[:MAX_QUERY_COUNT]
         last_query_count = object_list.count
     if request.is_ajax():
         html = render_to_string(

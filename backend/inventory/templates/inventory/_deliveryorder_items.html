@@ -1,10 +1,10 @@
 <!--
-    Include Card for Expense Bill Delivery Items
+    Include Card for Delivery Items
     Requires:
-    - delivery_items_list
+    - deliveryitems_list
 -->
 
-{% if delivery_items_list %}
+{% if deliveryitems_list %}
 <div class="card">
     <div class="card-body">
         <table class="table table-sm table-striped">
@@ -12,25 +12,33 @@
                 <tr>
                     <th scope="col">Product name</th>
                     <th scope="col">Permit no.</th>
-                    <th scope="col">Quantity</th>
-                    <th scope="col">Bonus</th>
-                    <th scope="col" class="text-center">Std Cost</th>
-                    <th scope="col" class="text-center">Avg Cost</th>
-                    <th scope="col" class="text-center">Total</th>
+                    <th scope="col" class="text-center">Quantity</th>
+                    <th scope="col" class="text-center">Bonus</th>
+                    <th scope="col" class="text-right">Std Cost</th>
+                    <th scope="col" class="text-right">Avg Cost</th>
+                    <th scope="col" class="text-right">Total</th>
                     <th scope="col" class="text-center">Action</th>
                 </tr>
             </thead>
             <tbody>
-                {% for listitem in delivery_items_list %}
+                {% for listitem in deliveryitems_list %}
                 
                 <tr>
                     <td>{{ listitem.item.name }}</td>
                     <td>{{ listitem.item.reg_no }}</td>
-                    <td class="text-monospace text-right">{{ listitem.purchase_quantity }}</td>
-                    <td class="text-monospace text-right">{{ listitem.bonus_quantity }}</td>
-                    <td class="text-monospace text-right">@ ${{ listitem.standard_cost }}</td>
-                    <td class="text-monospace text-right">@ ${{ listitem.average_cost }}</td>
-                    <td class="text-monospace text-right">${{ listitem.total_price }}</td>
+                    <td class="text-monospace text-center">
+                        {% if listitem.is_sample %}
+                        <span class="badge badge-info ml-2 mt-0"
+                        >Sample
+                        </span>
+                        {% else %}
+                        {{ listitem.purchase_quantity }}
+                        {% endif %}
+                    </td>
+                    <td class="text-monospace text-center">{{ listitem.bonus_quantity }}</td>
+                    <td class="text-monospace text-right">$ {{ listitem.standard_cost }}</td>
+                    <td class="text-monospace text-right">$ {{ listitem.average_cost }}</td>
+                    <td class="text-monospace text-right">$ {{ listitem.total_price }}</td>
                     <td class="text-center">
                         <button type="button" class="btn_modal_trigger btn btn-sm btn-info"
                             data-id="{% url 'inventory:DeliveryItemUpdateModal' delivery_id=delivery_obj.id pk=listitem.id %}"
@@ -45,8 +53,19 @@
                         {% endif %}
                     </td>
                 </tr>
-    
                 {% endfor %}
+                <tr>
+                    <th colspan="6" class="text-right">
+                        Total:
+                        {% if list_total != delivery_obj.amount %}
+                        <span class="badge badge-danger ml-2 mt-0"
+                        >Not matching invoice amount
+                        </span>
+                        {% endif %}
+                    </th>
+                    <td class="text-monospace text-right">{{ list_total }}</td>
+                </tr>
+    
     
             </tbody>
         </table>
@@ -58,3 +77,13 @@
     No Drug Delivery Items Record 
 </div>
 {% endif %}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(".btn_modal_trigger").each(function() {
+            $(this).modalForm({
+                formURL: $(this).data('id')
+            });
+        });
+    });
+  </script>

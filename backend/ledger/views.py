@@ -5,7 +5,7 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.decorators import login_required, permission_required
 from django.urls import reverse, reverse_lazy
-from django.db.models import Q
+from django.db.models import Q, Sum
 
 from django.template.loader import render_to_string
 from django.http import JsonResponse
@@ -332,6 +332,7 @@ class ExpenseDetail(DetailView, LoginRequiredMixin, PermissionRequiredMixin):
     model = Expense
     deliveryorder_list = None
     unpaid_deliveries_list = None
+    list_total = 0
 
     def dispatch(self, request, *args, **kwargs):
         self.expense_obj = Expense.objects.get(id=kwargs['pk']) 
@@ -339,8 +340,10 @@ class ExpenseDetail(DetailView, LoginRequiredMixin, PermissionRequiredMixin):
             self.deliveryorder_list = DeliveryOrder.objects.filter(bill=self.expense_obj.id)
         except:
             print("No delivery orders")
+        if self.deliveryorder_list:
+            self.list_total = self.deliveryorder_list.aggregate(Sum('amount'))
         try:
-            self.unpaid_deliveries_list = DeliveryOrder.objects.filter(is_paid=False)
+            self.unpaid_deliveries_list = DeliveryOrder.objects.filter(vendor=self.expense_obj.vendor, is_paid=False)
         except:
             print("No unpaid delivery orders")
         
@@ -349,9 +352,34 @@ class ExpenseDetail(DetailView, LoginRequiredMixin, PermissionRequiredMixin):
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         data['today'] = date.today().strftime('%Y-%m-%d')
-        data['deliveryorder_list'] = self.deliveryorder_list
+        detail_list = [] 
+        for order in self.deliveryorder_list.all():
+            delivery_detail = {
+                'id': order.id,
+                'invoice_date': order.invoice_date,
+                'received_date': order.received_date,
+                'amount': order.amount,
+            }
+            delivery_detail['items'] = []
+            count = 0
+            for deliveryitem in order.delivery_items.all():
+                item_detail = {
+                    'id': deliveryitem.id,
+                    'name': deliveryitem.item.name,
+                    'purchase_quantity': deliveryitem.purchase_quantity,
+                    'bonus_quantity': deliveryitem.bonus_quantity,
+                    'standard_cost': deliveryitem.standard_cost,
+                    'average_cost': deliveryitem.average_cost,
+                    'total_price': deliveryitem.total_price,
+                }
+                count += 1
+                delivery_detail['items'].append(item_detail)
+                delivery_detail['items_count'] = count
+            detail_list.append(delivery_detail)
+        data['deliveryorder_list'] = detail_list
         data['unpaid_deliveries_list'] = self.unpaid_deliveries_list
         data['expense_obj'] = self.expense_obj
+        data['list_total'] = self.list_total['amount__sum']
         return data
 
 @login_required

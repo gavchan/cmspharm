@@ -10,16 +10,24 @@
         </tr>
     </thead>
     <tbody>
-        {% for record in deliveryorder_list %}
+        {% for delivery_obj in deliveryorder_list %}
         
         <tr>
-            <td>{{ record.invoice_date|date:"d-m-y" }}</td>
-            <td>{{ record.received_date|date:"d-m-y" }}</td>
-            <td>{{ record.vendor.name}}</td>
-            <td>{{ record.amount }}</td>
-            <td>{{ record.is_paid }}</td>
+            <td>{{ delivery_obj.invoice_date|date:"d-m-y" }}</td>
+            <td>{{ delivery_obj.received_date|date:"d-m-y" }}</td>
+            <td>{{ delivery_obj.vendor.name}}</td>
+            <td>{{ delivery_obj.amount }}</td>
+            <td>
+                {% if delivery_obj.is_paid %}
+                <span class="badge badge-success">Paid</span>
+                {% elif delivery_obj.amount == 0 %}
+                <span class="badge badge-secondary">Sample</span>
+                {% else %}
+                <span class="badge badge-danger">Due</span>
+                {% endif %}
+            </td>
             <td class="text-right">
-                <a href="{% url 'inventory:DeliveryOrderDetail' record.id %}" 
+                <a href="{% url 'inventory:DeliveryOrderDetail' delivery_obj.id %}" 
                   class="btn btn-sm btn-info"
                 ><i class="fad fa-file-alt"></i>
                 </a>

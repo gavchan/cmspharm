@@ -17,32 +17,33 @@
                     <th scope="col">Received date</th>
                     <th scope="col">Vendor</th>
                     <th scope="col">Amount</th>
-                    <th scope="col"></th>
+                    <th scope="col">Due Date</th>
                     <th scope="col" class="text-right">Action</th>
                 </tr>
             </thead>
             <tbody>
-                {% for record in unpaid_deliveries_list %}
+                {% for delivery_obj in unpaid_deliveries_list %}
+                {% if delivery_obj.amount != 0 %}
                 <tr>
-                    <td>{{ record.invoice_date }}</td>
-                    <td>{{ record.received_date }}</td>
-                    <td>{{ record.vendor.name}}</td>
-                    <td>{{ record.amount }}</td>
+                    <td>{{ delivery_obj.invoice_date }}</td>
+                    <td>{{ delivery_obj.received_date }}</td>
+                    <td>{{ delivery_obj.vendor.name}}</td>
+                    <td>{{ delivery_obj.amount }}</td>
                     <td>
-                        {{ record.due_date }}
+                        {{ delivery_obj.due_date }}
                     </td>
                     <td class="text-right">
-                        <a href="{% url 'inventory:DeliveryOrderDetail' record.id %}" 
+                        <a href="{% url 'inventory:DeliveryOrderDetail' delivery_obj.id %}" 
                         class="btn btn-sm btn-info"
                         ><i class="fad fa-file-alt"></i>
                         </a>
-                        <a href="{% url 'ledger:ExpenseAddDeliveryOrder' expense_obj.id record.id %}" 
+                        <a href="{% url 'ledger:ExpenseAddDeliveryOrder' expense_obj.id delivery_obj.id %}" 
                           class="btn btn-sm btn-primary"
                         ><i class="fal fa-layer-plus"></i>
                         </a>
                     </td>
                 </tr>
-        
+                {% endif %}
                 {% endfor %}
         
             </tbody>

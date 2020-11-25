@@ -60,7 +60,7 @@
         let quantity = (purchase + bonus) * itemspp
         let stdcost = 0
         let avgcost = 0
-        let totalcost = (purchase + bonus) * unitprice * (1 - discount)
+        let totalcost = purchase * unitprice * (1 - discount)
         if (quantity !== 0) {
           stdcost = purchase * unitprice / quantity;
           avgcost = totalcost / quantity; 
