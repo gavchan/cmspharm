@@ -265,6 +265,39 @@ class DeliveryItem(models.Model):
         (PACK, 'Pack'),
         (BOX, 'Box'),
     ]
+
+    AMPOULE = 'AMPOULE'
+    BOTTLE = 'BOTTLE'
+    BOX = 'BOX'
+    CAPSULE = 'CAP'
+    DOSE = 'DOSE'
+    GRAM = 'GRAM'
+    INJECTION = 'INJECTION'
+    MG = 'MG'
+    ML = 'ML'
+    PACK = 'PACK'
+    TAB = 'TAB'
+    TUBE = 'TUBE'
+    UNIT = 'UNIT'
+    VIAL = 'VIAL'
+
+    ITEMS_UNIT_CHOICES = [
+        (AMPOULE, 'Ampoule'),
+        (BOTTLE, 'Bottle'),
+        (BOX, 'Box'),
+        (CAPSULE, 'Cap'),
+        (DOSE, 'Dose'),
+        (GRAM, 'gram'),
+        (INJECTION, 'Injection'),
+        (MG, 'mg'),
+        (ML, 'mL'),
+        (PACK, 'Pack'),
+        (TAB, 'Tablet'),
+        (TUBE, 'Tube'),
+        (UNIT, 'Unit'),
+        (VIAL, 'Vial'),
+    ]
+
     item = models.ForeignKey(
         Item, related_name='delivery_items',
         on_delete=models.CASCADE,
@@ -281,7 +314,7 @@ class DeliveryItem(models.Model):
     # discount: percentage discount applied to unit_price in calculation of total; e.g. 25 = 25% off
     items_per_purchase = models.DecimalField(max_digits=10, decimal_places=0, default=1)
     # items_per_purchase: number of granular items per unit of purchase. E.g. 1 pack can contain 100 items
-    # items_unit: defined in respective model (ConsumableDelivery, DrugDelivery)
+    items_unit = models.CharField(max_length=10, choices=ITEMS_UNIT_CHOICES, blank=True, null=True)
     batch_num = models.CharField(max_length=100, blank=True, null=True)
     other_ref = models.CharField(max_length=100, blank=True, null=True)
     expiry_month = models.CharField(verbose_name='Expiry (YYYYMM)',max_length=8, default="", blank=True, null=True)
