@@ -348,9 +348,9 @@ class DeliveryOrderList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
         if query:
             self.last_query = query
             object_list = DeliveryOrder.objects.all()
-            # filter(
-            #     Q(vendor.name__icontains=query)
-            # )
+            filter(
+                Q(vendor_name__icontains=query)
+            )
             self.last_query_count = object_list.count
         else:
             self.last_query = ''
@@ -757,3 +757,41 @@ class ItemUpdateModal(BSModalUpdateView, LoginRequiredMixin, PermissionRequiredM
 
     def get_success_url(self):
         return reverse('inventory:ItemDetail', args=(self.object.pk,))
+
+class DeliveryItemList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
+    permission_required = ('inventory.view_deliveryitem',)
+    template_name = 'inventory/deliveryorder_item_list.html'
+    model = DeliveryItem
+    context_object_name = 'deliveryitem_list'
+    paginate_by = 20
+    last_query = ''
+    last_query_count = 0
+    disp_type = '1'
+
+    def get_queryset(self):
+        self.disp_type = self.request.GET.get('t')
+        query = self.request.GET.get('q')
+        if query:
+            self.last_query = query
+            object_list = DeliveryItem.objects.all()
+            filter(
+                Q(item_name__icontains=query)|
+                Q(item_reg_no__icontains=query)
+            ).order_by('-delivery_order__received_date')
+            self.last_query_count = object_list.count
+        else:
+            self.last_query = ''
+            object_list = DeliveryItem.objects.all().order_by('-delivery_order__received_date')
+            self.last_query_count = object_list.count
+        return object_list
+
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        data['today'] = date.today().strftime('%Y-%m-%d')
+        data['last_query'] = self.last_query
+        data['last_query_count'] = self.last_query_count
+        data['disp_type'] = self.disp_type
+        return data
+
+
+        

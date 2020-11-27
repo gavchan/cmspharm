@@ -9,6 +9,7 @@ urlpatterns = [
     path('category/', views.CategoryList.as_view(), name='CategoryList'),
     path('delivery/new/modal/', views.NewDeliveryOrderModal.as_view(), name='NewDeliveryOrderModal'),
     path('delivery/vendor/new/', views.NewDeliveryOrderSelectVendorView, name='NewDeliveryOrderSelectVendor'),
+    path('delivery/items/', views.DeliveryItemList.as_view(), name='DeliveryItemList'),
     path('delivery/<int:delivery_id>/items/<int:pk>/delete/modal/', views.DeliveryItemDeleteModal.as_view(), name='DeliveryItemDeleteModal'),
     path('delivery/<int:delivery_id>/items/<int:pk>/update/modal/', views.DeliveryItemUpdateModal.as_view(), name='DeliveryItemUpdateModal'),
     path('delivery/<int:delivery_id>/item/<int:cmsitem_id>/add/', views.DeliveryOrderAddDeliveryItem.as_view(), name='DeliveryOrderAddDeliveryItem'),

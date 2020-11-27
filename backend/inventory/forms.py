@@ -319,7 +319,7 @@ class DeliveryItemUpdateModalForm(BSModalForm):
             }
             )
         self.helper.layout = Layout(
-            Hidden('item', self.instance.id),
+            Hidden('item', self.instance.item.pk),
             Hidden('delivery_order', self.delivery_obj.id),
             Hidden('version', '1'),
             Row(
@@ -328,15 +328,16 @@ class DeliveryItemUpdateModalForm(BSModalForm):
                         Column('purchase_quantity',css_class='col-md-6 mb-0'),
                         Column('bonus_quantity', css_class='col-md-6 mb-0'),
                     ),
-                    css_class="form-group col-md-5",
+                    css_class="form-group col-md-4",
                 ),
                 Column(
                     Row(
                         Column('unit_price', css_class='col-md-6 mb-0'),
                         Column('discount', css_class='col-md-6 mb-0'),
                     ),
-                    css_class="form-group col-md-5"
+                    css_class="form-group col-md-4"
                 ),
+                Column('purchase_unit', css_class="form-group col-md-2"),
                 Column('is_sample', css_class="form-group col-md-2"),
                 css_class='form-row',
             ),
@@ -344,18 +345,18 @@ class DeliveryItemUpdateModalForm(BSModalForm):
                 Column(
                     Row(
                         Column('items_per_purchase', css_class='col-md-6 mb-0'),
-                        Column('batch_num', css_class='col-md-6 mb-0'),
+                        Column('items_unit', css_class='col-md-6 mb-0'),
                     ),
-                    css_class="form-group col-md-5"
+                    css_class="form-group col-md-4"
                 ),
                 Column(
                     Row(
+                        Column('batch_num', css_class='col-md-6 mb-0'),
                         Column('expiry_month', css_class='col-md-6 mb-0'),
-                        Column('other_ref', css_class='form-group col-md-6 mb-0'),
                     ),
-                    css_class="form-group col-md-5"
+                    css_class="form-group col-md-4"
                 ),
-                Column('purchase_unit', css_class="form-group col-md-2"),
+                Column('other_ref', css_class='form-group col-md-4 mb-0'),
                 css_class='form-row',
             ),
             Row(
@@ -490,15 +491,16 @@ class DeliveryOrderAddDeliveryItemForm(ModelForm):
                         Column('purchase_quantity',css_class='col-md-6 mb-0'),
                         Column('bonus_quantity', css_class='col-md-6 mb-0'),
                     ),
-                    css_class="form-group col-md-5",
+                    css_class="form-group col-md-4",
                 ),
                 Column(
                     Row(
                         Column('unit_price', css_class='col-md-6 mb-0'),
                         Column('discount', css_class='col-md-6 mb-0'),
                     ),
-                    css_class="form-group col-md-5"
+                    css_class="form-group col-md-4"
                 ),
+                Column('purchase_unit', css_class="form-group col-md-2"),
                 Column('is_sample', css_class="form-group col-md-2"),
                 css_class='form-row',
             ),
@@ -506,18 +508,18 @@ class DeliveryOrderAddDeliveryItemForm(ModelForm):
                 Column(
                     Row(
                         Column('items_per_purchase', css_class='col-md-6 mb-0'),
-                        Column('batch_num', css_class='col-md-6 mb-0'),
+                        Column('items_unit', css_class='col-md-6 mb-0'),
                     ),
-                    css_class="form-group col-md-5"
+                    css_class="form-group col-md-4"
                 ),
                 Column(
                     Row(
+                        Column('batch_num', css_class='col-md-6 mb-0'),
                         Column('expiry_month', css_class='col-md-6 mb-0'),
-                        Column('other_ref', css_class='form-group col-md-6 mb-0'),
                     ),
-                    css_class="form-group col-md-5"
+                    css_class="form-group col-md-4"
                 ),
-                Column('purchase_unit', css_class="form-group col-md-2"),
+                Column('other_ref', css_class='form-group col-md-4 mb-0'),
                 css_class='form-row',
             ),
             Row(
