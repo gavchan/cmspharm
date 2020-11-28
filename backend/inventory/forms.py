@@ -272,7 +272,7 @@ class DeliveryOrderUpdateModalForm(BSModalForm):
 
     class Meta:
         model = DeliveryOrder
-        exclude = ['id', 'items', 'is_paid', 'date_created', 'last_updated',]
+        exclude = ['id', 'items', 'is_paid', 'bill', 'date_created', 'last_updated',]
         widgets = {
                     'received_date': DatePickerInput(
                         options={
