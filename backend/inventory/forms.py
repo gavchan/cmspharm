@@ -240,8 +240,6 @@ class DeliveryOrderUpdateModalForm(BSModalForm):
         self.helper.form_method = 'post'
         self.helper.form_action = reverse(
             'inventory:DeliveryOrderUpdateModal', args=(self.instance.pk,))
-        #self.initial['entry_date'] = date.today().strftime('%Y-%m-%d')
-        today_date = date.today().strftime('%Y-%m-%d')
         self.helper.layout = Layout(
             Row(
                 Column(
@@ -274,7 +272,7 @@ class DeliveryOrderUpdateModalForm(BSModalForm):
 
     class Meta:
         model = DeliveryOrder
-        exclude = ['id', 'items', 'is_paid', 'bill, ''date_created', 'last_updated',]
+        exclude = ['id', 'items', 'is_paid', 'date_created', 'last_updated',]
         widgets = {
                     'received_date': DatePickerInput(
                         options={
