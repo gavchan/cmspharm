@@ -10,9 +10,12 @@
         <span class="badge badge-danger">Due</span>
         {% endif %}
     </span>
-    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-      <span aria-hidden="true">&times;</span>
-    </button>
+    <span>
+      <button type="button" class="btn btn-sm btn-warning" id="btn_set_received">Set Received=Invoice Date</button>
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </span>
   </div>
   
   <div class="modal-body">
@@ -21,7 +24,7 @@
   </div>
   
   <div class="modal-footer">
-    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+    <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">Cancel</button>
     <button type="button" 
       class="btn_modal_trigger btn btn-sm btn-danger"
       data-id="{% url 'inventory:DeliveryOrderDeleteModal' object.pk %}"
@@ -34,5 +37,8 @@ $(".btn_modal_trigger").each(function() {
   $(this).modalForm({
     formURL: $(this).data('id')
   });
+});
+$("#btn_set_received").click(function() {
+  $("#id_received_date").val($("#id_invoice_date").val());
 });
 </script>
