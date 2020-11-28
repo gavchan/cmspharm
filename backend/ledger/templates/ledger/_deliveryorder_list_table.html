@@ -36,7 +36,12 @@
                 <table width="100%">
                     {% for listitem in record.items %}
                     <tr>
-                        <td width="45%">{{ listitem.name }}</td>
+                        <td width="45%">{{ listitem.name }}
+                            <br>{{ listitem.items_per_purchase }}&nbsp;
+                            {% if listitem.items_unit %}
+                            {{ listitem.items_unit }} 
+                            {% endif %} / {{ listitem.purchase_unit }}
+                        </td>
                         <td width="10%" class="text-monospace text-right">
                             {% if listitem.is_sample %}
                             <span class="badge badge-info ml-2 mt-0"

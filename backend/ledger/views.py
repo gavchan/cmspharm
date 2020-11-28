@@ -366,6 +366,9 @@ class ExpenseDetail(DetailView, LoginRequiredMixin, PermissionRequiredMixin):
                 item_detail = {
                     'id': deliveryitem.id,
                     'name': deliveryitem.item.name,
+                    'items_per_purchase': deliveryitem.items_per_purchase,
+                    'items_unit': deliveryitem.items_unit,
+                    'purchase_unit': deliveryitem.purchase_unit,
                     'purchase_quantity': deliveryitem.purchase_quantity,
                     'bonus_quantity': deliveryitem.bonus_quantity,
                     'standard_cost': deliveryitem.standard_cost,
