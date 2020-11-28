@@ -347,9 +347,8 @@ class DeliveryOrderList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
         query = self.request.GET.get('q')
         if query:
             self.last_query = query
-            object_list = DeliveryOrder.objects.all()
-            filter(
-                Q(vendor_name__icontains=query)
+            object_list = DeliveryOrder.objects.filter(
+                Q(vendor__name__icontains=query)
             )
             self.last_query_count = object_list.count
         else:
