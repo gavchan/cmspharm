@@ -25,12 +25,12 @@
                 {% for delivery_obj in unpaid_deliveries_list %}
                 {% if delivery_obj.amount != 0 %}
                 <tr>
-                    <td>{{ delivery_obj.invoice_date }}</td>
-                    <td>{{ delivery_obj.received_date }}</td>
+                    <td>{{ delivery_obj.invoice_date|date:"d-m-Y" }}</td>
+                    <td>{{ delivery_obj.received_date|date:"d-m-Y" }}</td>
                     <td>{{ delivery_obj.vendor.name}}</td>
                     <td>{{ delivery_obj.amount }}</td>
                     <td>
-                        {{ delivery_obj.due_date }}
+                        {{ delivery_obj.due_date|date:"d-m-Y" }}
                     </td>
                     <td class="text-right">
                         <a href="{% url 'inventory:DeliveryOrderDetail' delivery_obj.id %}" 

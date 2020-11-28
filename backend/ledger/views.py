@@ -342,6 +342,8 @@ class ExpenseDetail(DetailView, LoginRequiredMixin, PermissionRequiredMixin):
             print("No delivery orders")
         if self.deliveryorder_list:
             self.list_total = self.deliveryorder_list.aggregate(Sum('amount'))
+        else:
+            self.list_total = 0
         try:
             self.unpaid_deliveries_list = DeliveryOrder.objects.filter(vendor=self.expense_obj.vendor, is_paid=False)
         except:
@@ -382,7 +384,8 @@ class ExpenseDetail(DetailView, LoginRequiredMixin, PermissionRequiredMixin):
         data['deliveryorder_list'] = detail_list
         data['unpaid_deliveries_list'] = self.unpaid_deliveries_list
         data['expense_obj'] = self.expense_obj
-        data['list_total'] = self.list_total['amount__sum']
+        if self.deliveryorder_list:
+            data['list_total'] = self.list_total['amount__sum']
         return data
 
 @login_required
