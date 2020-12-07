@@ -2,9 +2,12 @@
 {{form.media}}
 <div class="modal-header">
     <h3 class="modal-title">New Expense Entry</h3>
-    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-    </button>
+    <span>
+        <a href="{% url 'inventory:NewVendor' %}" class="btn btn-sm btn-info">New Vendor</a>
+        <button type="button" class="btn btn-sm close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </span>
 </div>
 
 <div class="modal-body">
@@ -14,14 +17,3 @@
 <div class="modal-footer">
     <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
 </div>
-
-<script type="text/javascript">
-    $(document).ready(function () {
-        $("#add_vendor_button").modalForm({
-            formURL: "{% url 'inventory:NewVendorModal' %}"
-        });
-        $("#id_vendor").change(function() {
-            $("#id_payee").val($("#id_vendor option:selected").text());
-        });
-    })
-</script>

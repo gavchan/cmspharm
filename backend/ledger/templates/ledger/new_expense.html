@@ -12,11 +12,15 @@
       <div class="d-flex justify-content-between align-items-center">
         Expense: Add new entry
         <span>
+          <a href="{% url 'inventory:NewVendor' %}" class="btn btn-sm btn-info">New Vendor</a>
+          <button type="button" class="btn btn-sm close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+          </button>
           <button id="btn_save_details" class="btn btn-sm btn-success">
             Save Details
           </button>
           <a
-            href="{% url 'ledger:ExpenseList' %}"
+            href="{% url 'home' %}"
             id="btn_cancel"
             class="btn btn-sm btn-secondary"
           >
@@ -35,23 +39,16 @@
 {% block extrascripts %}
 <script type="text/javascript">
     $(document).ready(function () {
-        $("#add_vendor_button").modalForm({
-            formURL: "{% url 'inventory:NewVendorModal' %}"
-        });
-
-        $("#id_vendor").change(function() {
-            $("#id_payee").val($("#id_vendor option:selected").text());
-        });
 
       $("#btn_save_details").click(function() {
         $('#form').submit()
       });
 
-      $(".btn_modal_trigger").each(function() {
-        $(this).modalForm({
-          formURL: $(this).data('form-url')
-        });
-      });
+      // $(".btn_modal_trigger").each(function() {
+      //   $(this).modalForm({
+      //     formURL: $(this).data('form-url')
+      //   });
+      // });
     
     });
 </script>

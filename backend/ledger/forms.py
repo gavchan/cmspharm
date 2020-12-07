@@ -303,12 +303,14 @@ class NewExpenseForm(ModelForm):
             self.initial['category'] = self.vendor_obj.default_exp_category if not None else ''
             self.initial['description'] = self.vendor_obj.default_description if not None else ''
         self.helper.layout = Layout(
+            Hidden('next', self.helper.form_action),
             Hidden('entry_date', today_date),
             Hidden('version', '1'),
             Row(
                 Column(
-                    FieldWithButtons('vendor', StrictButton(
-                        '<i class="far fa-user-plus"></i>', id='add_vendor_button', css_class='btn-secondary')),
+                    'vendor',
+                    # FieldWithButtons('vendor', StrictButton(
+                    #     '<i class="far fa-user-plus"></i>', id='add_vendor_button', css_class='btn-secondary')),
                     css_class='form-group col-md-8 mb-0'
                 ),
                 Column('payee', css_class='form-group col-md-4 mb-0'),
@@ -391,8 +393,9 @@ class NewExpenseModalForm(BSModalForm):
             Hidden('version', '1'),
             Row(
                 Column(
-                    FieldWithButtons('vendor', StrictButton(
-                        '<i class="far fa-user-plus"></i>', id='add_vendor_button', css_class='btn-secondary')),
+                    'vendor',
+                    # FieldWithButtons('vendor', StrictButton(
+                    #     '<i class="far fa-user-plus"></i>', id='add_vendor_button', css_class='btn-secondary')),
                     css_class='form-group col-md-8 mb-0'
                 ),
                 Column('payee', css_class='form-group col-md-4 mb-0'),
