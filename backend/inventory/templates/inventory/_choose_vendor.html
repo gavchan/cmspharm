@@ -45,12 +45,17 @@
     {% else %}
 
     <div class="alert alert-light" role="alert">
-      No matching vendors/suppliers <a href="#" class="btn_modal_trigger alert-link">Add new vendor</a>
+      No matching vendors/suppliers 
+      <a
+        href="#" 
+        class="btn_modal_trigger alert-link"
+        data-id="{% url 'inventory:NewVendorModal' %}"  
+      >Add new vendor</a>
     </div>
 
     {% endif %}
     <script type="text/javascript">
-        $(".btn_modal_trigger").each(function() {
+        $(".btn_add_new_vendor").each(function() {
             $(this).modalForm({
                 formURL: $(this).data('id')
             })
