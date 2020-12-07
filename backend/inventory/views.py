@@ -279,7 +279,9 @@ class NewVendor(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
     model = Vendor
     template_name = 'inventory/new_vendor.html'
     form_class = NewVendorForm
-    success_url = reverse_lazy('inventory:VendorList')
+
+    def get_success_url(self):
+        return f"{reverse('home')}?vendor={self.object.pk}"
 
 class NewVendorModal(BSModalCreateView, LoginRequiredMixin, PermissionRequiredMixin):
     """Add new vendor modal"""
@@ -290,7 +292,7 @@ class NewVendorModal(BSModalCreateView, LoginRequiredMixin, PermissionRequiredMi
     success_message = 'Success: Vendor was created.'
     
     def get_success_url(self):
-        return f"{reverse('ledger:NewExpenseSelectVendor')}?vendor={self.object.pk}"
+        return f"{reverse('home')}?vendor={self.object.pk}"
 
 @csrf_exempt
 def get_vendor_id(request):

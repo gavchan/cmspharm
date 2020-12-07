@@ -43,6 +43,7 @@ class NewVendorModalForm(BSModalForm):
         self.helper.form_action = reverse(
             'inventory:NewVendorModal')
         self.helper.layout = Layout(
+            Hidden('next', self.helper.form_action),
             Row(
                 Column('name', css_class='form-group col-md-4 mb-0'),
                 Column('alias', css_class='form-group col-md-4 mb-0'),
@@ -86,6 +87,55 @@ class NewVendorModalForm(BSModalForm):
         exclude = ['id', 'version', 'date_created', 'last_updated',]
 
 class NewVendorForm(ModelForm):
+    
+    def __init__(self, *args, **kwargs):
+        super(NewVendorForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.render_unmentioned_fields = False
+        self.helper.form_id = 'id-NewVendorForm'
+        self.helper.form_class = 'cmmForms'
+        self.helper.form_method = 'post'
+        self.helper.form_action = reverse(
+            'inventory:NewVendor')
+        self.helper.layout = Layout(
+            Row(
+                Column('name', css_class='form-group col-md-4 mb-0'),
+                Column('alias', css_class='form-group col-md-4 mb-0'),
+                Column('account_no', css_class='form-group col-md-4 mb-0'),
+                css_class='form-row',
+            ),
+            Row(
+                Column('default_exp_category', css_class="col-md-4 mb-0"),
+                Column('default_description', css_class="col-md-4 mb-0"),
+                Column('contact_person', css_class='form-group col-md-4 mb-0'),
+                css_class='form-row,'
+            ),
+            Row(
+                Column(Field('remarks', rows='3'), css_class='form-group col-md-4 mb-0'),
+                Column(Field('address', rows='3'), css_class='form-group col-md-4 mb-0'),
+                Column('email', css_class='form-group col-md-4 mb-0'),
+                css_class='form-row',
+            ),
+            Row(
+                Column('tel_main', css_class='form-group col-md-4 mb-0'),
+                Column('tel_mobile', css_class='form-group col-md-4 mb-0'),
+                Column('tel_office', css_class='form-group col-md-4 mb-0'),
+                css_class='form-row',
+            ),
+            Row(
+                Column('fax', css_class='form-group col-md-4 mb-0'),
+                Column('website', css_class='form-group col-md-4 mb-0'),
+                Column(Field('active'), Field('is_supplier'), css_class='form-group col-md-4 mb-0'),
+                css_class='form-row',
+            ),
+            FormActions(
+                Submit('submit', 'Submit'),
+                HTML("""
+                <a href="{% url 'home' %}" class="btn btn-secondary">Cancel</a>
+                """),
+            ),
+        )
+
     class Meta:
         model = Vendor
         exclude = ['id', 'version', 'date_created', 'last_updated',]
@@ -170,6 +220,7 @@ class NewDeliveryOrderModalForm(BSModalForm):
             self.initial['vendor'] = self.vendor_obj.id
             self.initial['payee'] = self.vendor_obj.name
         self.helper.layout = Layout(
+            Hidden('next', self.helper.form_action),
             Hidden('version', '1'),
             Hidden('is_paid', False),
             Row(
@@ -480,6 +531,7 @@ class DeliveryOrderAddDeliveryItemForm(ModelForm):
             'inventory:DeliveryOrderAddDeliveryItem', args=(self.delivery_obj.id, self.drug_obj.id,)
             )
         self.helper.layout = Layout(
+            Hidden('next', self.helper.form_action),
             Hidden('version', '1'),
             Hidden('item', self.item_obj.id),
             Hidden('delivery_order', self.delivery_obj.id),

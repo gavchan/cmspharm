@@ -1,14 +1,27 @@
 {% extends 'base.html' %}
+
 {% load crispy_forms_tags %}
 
-{% block main %}
+{% block content %}
 
-<h1>Add New Vendor</h1>
-<hr>
-{% include "inventory/_new_vendor.html" %}
+<div class="card shadow">
+    <div class="card-header">
+      <div class="d-flex justify-content-between align-items-center">
+        Add New Vendor
+        <span>
+          <a
+            href="{% url 'home' %}"
+            id="btn_cancel"
+            class="btn btn-sm btn-secondary"
+          >
+            Cancel
+          </a>
+        </span>
+      </div>
+    </div>
+    <div class="card-body">
+        {% crispy form %}
+    </div>
+</div>
 
-{% endblock %}
-
-{% block sidebar %}
-<p><a class="btn btn-sm btn-light btn-block" href="{% url 'inventory:VendorList' %}">Show Vendors</a></p>
 {% endblock %}
