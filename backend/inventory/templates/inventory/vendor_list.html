@@ -182,6 +182,14 @@ Vendors
             ><i class="fad fa-edit"></i>
             </button>
             {% endif %}
+            {% if perms.inventory.can_delete_vendor %}
+            <button
+              type="button"
+              class="btn_modal_trigger btn btn-sm btn-danger"
+              data-id="{% url 'inventory:VendorDeleteModal' vendor.pk %}"
+            ><i class="fad fa-trash"></i>
+            </button>
+            {% endif %}
           </td>
         </tr>
         {% endfor %}

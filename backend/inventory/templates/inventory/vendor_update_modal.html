@@ -12,6 +12,18 @@
 </div>
 
 <div class="modal-footer">
-    <a href="{% url 'inventory:VendorDelete' object.pk %}" class="btn btn-sm btn-danger"> Delete </a>
+    <button type="button" 
+      class="btn_modal_trigger btn btn-sm btn-danger"
+      data-id="{% url 'inventory:VendorDeleteModal' object.pk %}"
+    >Delete
+    </button>
     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 </div>
+
+<script type="text/javascript">
+    $(".btn_modal_trigger").each(function() {
+      $(this).modalForm({
+        formURL: $(this).data('id')
+      });
+    });
+</script>

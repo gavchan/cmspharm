@@ -32,7 +32,8 @@ urlpatterns = [
     path('vendor/new/modal/', views.NewVendorModal.as_view(), name='NewVendorModal'),
     path('vendor/<int:pk>/update/modal', views.VendorUpdateModal.as_view(), name='VendorUpdateModal'),
     path('vendor/<int:pk>/update/', views.VendorUpdate.as_view(), name='VendorUpdate'),
-    path('vendor/<int:pk>/delete/', views.VendorDelete.as_view(), name='VendorDelete'),
+    # path('vendor/<int:pk>/delete/', views.VendorDelete.as_view(), name='VendorDelete'),
+    path('vendor/<int:pk>/delete/modal/', views.VendorDeleteModal.as_view(), name='VendorDeleteModal'),
     path('vendor/<int:pk>', views.VendorDetail.as_view(), name='VendorDetail'),
     path('vendor/', views.VendorList.as_view(), name='VendorList'),
 ]

@@ -322,10 +322,12 @@ class VendorUpdateModal(BSModalUpdateView, LoginRequiredMixin, PermissionRequire
         return reverse('inventory:VendorList')
 
 
-class VendorDelete(DeleteView, LoginRequiredMixin, PermissionRequiredMixin):
-    """Delete Vendor"""
+class VendorDeleteModal(BSModalDeleteView, LoginRequiredMixin, PermissionRequiredMixin):
+    """Delete vendor"""
     permission_required = ('inventory.delete_vendor', )
     model = Vendor
+    template_name = 'inventory/vendor_confirm_delete_modal.html'
+    success_message = 'Success: Vendor deleted'
     success_url = reverse_lazy('inventory:VendorList')
 
 

@@ -1,0 +1,16 @@
+{% extends '_confirm_delete_modal.html' %}
+
+{% block title %}
+  Confirm delete: {{ object.name }}
+{% endblock %}
+
+{% block body %}
+
+<form id="form-modal-delete" method="post" action="{% url 'inventory:VendorDeleteModal' pk=object.pk %}">
+  {% csrf_token %}
+  <p>Are you sure you want to delete the vendor "{{ object.name }}" </p>
+  <button type="submit" class="btn btn-danger">Delete</button>
+  <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+</form>
+
+{% endblock %}
