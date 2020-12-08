@@ -49,13 +49,6 @@
                 class="btn-expense_update btn btn-sm btn-primary"
               ><i class="fad fa-edit"></i>
               </a>
-              {% if delivery_obj.bill.category.name == "Drugs" %}
-              <a
-                href="{% url 'drugdb:BillDrugDeliveryView' delivery_obj.bill.pk %}"
-                class="btn btn-sm btn-info"
-              > x <!-- To delete later-->
-              </a>
-              {% endif %}
             </td>
           </tr>
         </tbody>

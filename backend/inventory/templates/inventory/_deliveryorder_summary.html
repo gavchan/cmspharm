@@ -6,6 +6,23 @@
         Delivery on {{ delivery_obj.received_date }}
       </span>
       <span>
+        {% if perms.ledger.can_view_expense %}
+        <a
+          href="{% url 'ledger:ExpenseList' %}"
+          class="btn btn-sm btn-dark text-white"
+        ><i class="fal fa-step-backward"></i>&nbsp;Expenses
+        </a>
+        {% endif %}
+        <a
+          href="{% url 'inventory:DeliveryOrderList' %}"
+          class="btn btn-sm btn-dark text-white"
+        ><i class="fal fa-step-backward"></i>&nbsp;Orders
+        </a>
+        <a
+          href="{% url 'inventory:DeliveryItemList' %}"
+          class="btn btn-sm btn-dark text-white"
+        ><i class="fal fa-step-backward"></i>&nbsp;Drugs
+        </a>
         <button
           class="btn_modal_trigger btn btn-sm btn-light"
           data-id="{% url 'inventory:DeliveryOrderUpdateModal' delivery_obj.id %}"

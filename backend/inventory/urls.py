@@ -7,6 +7,7 @@ urlpatterns = [
     path('category/<int:pk>/update', views.CategoryUpdate.as_view(), name='CategoryUpdate'),
     path('category/<int:pk>/delete', views.CategoryDelete.as_view(), name='CategoryDelete'),
     path('category/', views.CategoryList.as_view(), name='CategoryList'),
+    path('delivery/new/', views.NewDeliveryOrder.as_view(), name='NewDeliveryOrder'),
     path('delivery/new/modal/', views.NewDeliveryOrderModal.as_view(), name='NewDeliveryOrderModal'),
     path('delivery/vendor/new/', views.NewDeliveryOrderSelectVendorView, name='NewDeliveryOrderSelectVendor'),
     path('delivery/items/', views.DeliveryItemList.as_view(), name='DeliveryItemList'),

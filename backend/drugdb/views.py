@@ -16,10 +16,10 @@ from .models import (
     Company,
     DrugDelivery,
 )
-from .forms import (
-    NewDrugDeliveryForm, DrugDeliveryUpdateForm,
-    BillDrugDeliveryAddDrugModalForm,
-)
+# from .forms import (
+#     NewDrugDeliveryForm, DrugDeliveryUpdateForm,
+#     BillDrugDeliveryAddDrugModalForm,
+# )
 
 class RegisteredDrugList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
     """List of registered drugs"""
@@ -114,57 +114,57 @@ class DrugDeliveryDetail(DetailView, LoginRequiredMixin, PermissionRequiredMixin
     template_name = 'drugdb/drug_delivery_detail.html'
     context_object_name = 'delivery_obj'
 
-class DrugDeliveryUpdate(UpdateView, LoginRequiredMixin, PermissionRequiredMixin):
-    """Update details of drug delivery"""
-    permission_required = ('drugdb.change_drugdelivery', )
-    model = DrugDelivery
-    form_class = DrugDeliveryUpdateForm
-    template_name = 'drugdb/drug_delivery_update_form.html'
+# class DrugDeliveryUpdate(UpdateView, LoginRequiredMixin, PermissionRequiredMixin):
+#     """Update details of drug delivery"""
+#     permission_required = ('drugdb.change_drugdelivery', )
+#     model = DrugDelivery
+#     form_class = DrugDeliveryUpdateForm
+#     template_name = 'drugdb/drug_delivery_update_form.html'
 
 
-    def get_success_url(self):
-        return reverse('drugdb:DrugDeliveryDetail', args=(self.object.pk,))
+#     def get_success_url(self):
+#         return reverse('drugdb:DrugDeliveryDetail', args=(self.object.pk,))
 
-class DrugDeliveryDelete(DeleteView, LoginRequiredMixin, PermissionRequiredMixin):
-    """Delete drug delivery record"""
-    permission_required = ('drugdb.view_drugdelivery', 'drugdb.delete_drugdelivery')
-    model = DrugDelivery
-    success_url = reverse_lazy('drugdb:DrugDeliveryList')
+# class DrugDeliveryDelete(DeleteView, LoginRequiredMixin, PermissionRequiredMixin):
+#     """Delete drug delivery record"""
+#     permission_required = ('drugdb.view_drugdelivery', 'drugdb.delete_drugdelivery')
+#     model = DrugDelivery
+#     success_url = reverse_lazy('drugdb:DrugDeliveryList')
 
-class NewDrugDelivery(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
-    """Add new drug delivery"""
-    permission_required = ('drugdb.view_drugdelivery', 'drugdb.add_drugdelivery')
-    model = DrugDelivery
-    template_name = 'drugdb/new_drug_delivery.html'
-    form_class = NewDrugDeliveryForm
-    context_object_name = 'new_drug_delivery'
-    drug_reg_no = ''
-    cmsinv_item_obj = None
+# class NewDrugDelivery(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
+#     """Add new drug delivery"""
+#     permission_required = ('drugdb.view_drugdelivery', 'drugdb.add_drugdelivery')
+#     model = DrugDelivery
+#     template_name = 'drugdb/new_drug_delivery.html'
+#     form_class = NewDrugDeliveryForm
+#     context_object_name = 'new_drug_delivery'
+#     drug_reg_no = ''
+#     cmsinv_item_obj = None
 
-    def dispatch(self, request, *args, **kwargs):
-        if 'reg_no' in kwargs:
-            self.drug_reg_no = kwargs['reg_no']
-        else:
-            self.drug_reg_no = ''
-        return super().dispatch(request, *args, **kwargs)
+#     def dispatch(self, request, *args, **kwargs):
+#         if 'reg_no' in kwargs:
+#             self.drug_reg_no = kwargs['reg_no']
+#         else:
+#             self.drug_reg_no = ''
+#         return super().dispatch(request, *args, **kwargs)
     
-    def get_context_data(self, **kwargs):
-        data = super().get_context_data(**kwargs)
-        if self.drug_reg_no:
-            data['reg_no'] = self.drug_reg_no
-            drug_obj = RegisteredDrug.objects.get(reg_no=self.drug_reg_no)
-            data['product_name'] = drug_obj.name
-            data['vendor'] = drug_obj.company
-            try:
-                self.cmsinv_item_obj = InventoryItem.objects.get(registration_no=self.drug_reg_no)
-            except:
-                print("Error: CMS inventory does not have item that matches reg. no. {self.drug_reg_no}")
+#     def get_context_data(self, **kwargs):
+#         data = super().get_context_data(**kwargs)
+#         if self.drug_reg_no:
+#             data['reg_no'] = self.drug_reg_no
+#             drug_obj = RegisteredDrug.objects.get(reg_no=self.drug_reg_no)
+#             data['product_name'] = drug_obj.name
+#             data['vendor'] = drug_obj.company
+#             try:
+#                 self.cmsinv_item_obj = InventoryItem.objects.get(registration_no=self.drug_reg_no)
+#             except:
+#                 print("Error: CMS inventory does not have item that matches reg. no. {self.drug_reg_no}")
 
-        else:
-            print("Error: missing reg_no")
-            data['product_name'] = ''
-        data['cmsinv_item_obj'] = self.cmsinv_item_obj
-        return data
+#         else:
+#             print("Error: missing reg_no")
+#             data['product_name'] = ''
+#         data['cmsinv_item_obj'] = self.cmsinv_item_obj
+#         return data
 
 # class BillDrugDeliveryList(ListView, LoginRequiredMixin):
 #     """Add new drug delivery to bill"""
@@ -187,53 +187,53 @@ class NewDrugDelivery(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
 #             data['bill_obj'] = self.bill_obj
 #         return data
 
-@login_required
-@permission_required('drugdb.view_drugdelivery', 'ledger.view_bill')
-def BillDrugDeliveryView(request, *args, **kwargs):
-    """View Bill with DrugDelivery items"""
-    MAX_QUERY_COUNT = 20
+# @login_required
+# @permission_required('drugdb.view_drugdelivery', 'ledger.view_bill')
+# def BillDrugDeliveryView(request, *args, **kwargs):
+#     """View Bill with DrugDelivery items"""
+#     MAX_QUERY_COUNT = 20
 
-    # Parse bill_id from request and get related Expense
-    bill_obj = None
-    if 'bill_id' in kwargs:
-        bill_obj = Expense.objects.get(id=kwargs['bill_id'])
-        print(bill_obj.id)
-    ctx = {
-        'bill_obj': bill_obj
-    }
+#     # Parse bill_id from request and get related Expense
+#     bill_obj = None
+#     if 'bill_id' in kwargs:
+#         bill_obj = Expense.objects.get(id=kwargs['bill_id'])
+#         print(bill_obj.id)
+#     ctx = {
+#         'bill_obj': bill_obj
+#     }
 
-    # Get related DrugDelivery objects associated with bill_id
-    bill_items_list = DrugDelivery.objects.filter(bill=bill_obj)
-    ctx['bill_items_list'] = bill_items_list
+#     # Get related DrugDelivery objects associated with bill_id
+#     bill_items_list = DrugDelivery.objects.filter(bill=bill_obj)
+#     ctx['bill_items_list'] = bill_items_list
 
-    # Get query from request and search RegisteredDrug    
-    query = request.GET.get('q')
-    print(query)
-    if query:
-        last_query = query
-        object_list = RegisteredDrug.objects.filter(
-            Q(name__icontains=query) |
-            Q(reg_no__icontains=query) |
-            Q(ingredients__name__icontains=query)
-        )[:MAX_QUERY_COUNT]
-        last_query_count = object_list.count
-    else:
-        last_query = ''
-        object_list = RegisteredDrug.objects.all()[:MAX_QUERY_COUNT]
-        last_query_count = object_list.count
+#     # Get query from request and search RegisteredDrug    
+#     query = request.GET.get('q')
+#     print(query)
+#     if query:
+#         last_query = query
+#         object_list = RegisteredDrug.objects.filter(
+#             Q(name__icontains=query) |
+#             Q(reg_no__icontains=query) |
+#             Q(ingredients__name__icontains=query)
+#         )[:MAX_QUERY_COUNT]
+#         last_query_count = object_list.count
+#     else:
+#         last_query = ''
+#         object_list = RegisteredDrug.objects.all()[:MAX_QUERY_COUNT]
+#         last_query_count = object_list.count
 
-    if request.is_ajax():
-        html = render_to_string(
-            template_name='drugdb/_drug_search_results_partial.html',
-            context={
-                'drug_list': object_list,
-                'bill_id': bill_obj.id
-                }
-        )
-        data_dict = {"html_from_view": html}
-        return JsonResponse(data=data_dict, safe=False)
+#     if request.is_ajax():
+#         html = render_to_string(
+#             template_name='drugdb/_drug_search_results_partial.html',
+#             context={
+#                 'drug_list': object_list,
+#                 'bill_id': bill_obj.id
+#                 }
+#         )
+#         data_dict = {"html_from_view": html}
+#         return JsonResponse(data=data_dict, safe=False)
 
-    return render(request, "drugdb/bill_drugdelivery_view.html", context=ctx)
+#     return render(request, "drugdb/bill_drugdelivery_view.html", context=ctx)
 
 # class BillDrugDeliveryChooseDrugModal(ListView, LoginRequiredMixin):
 #     """Modal to choose drug to add to bill"""
@@ -269,80 +269,80 @@ def BillDrugDeliveryView(request, *args, **kwargs):
 #         data['last_query_count'] = self.last_query_count
 #         return data
 
-class BillDrugDeliveryAddDrugModal(BSModalCreateView, LoginRequiredMixin, PermissionRequiredMixin):
-    """Add new drug delivery to bill"""
-    permission_required = ('drugdb.add_drugdelivery', 'ledger.add_bill')
-    template_name = 'drugdb/bill_drugdelivery_add_modal.html'
-    form_class = BillDrugDeliveryAddDrugModalForm
-    bill_obj = None
-    drug_obj = None
-    success_message = 'Success: Drug added'
+# class BillDrugDeliveryAddDrugModal(BSModalCreateView, LoginRequiredMixin, PermissionRequiredMixin):
+#     """Add new drug delivery to bill"""
+#     permission_required = ('drugdb.add_drugdelivery', 'ledger.add_bill')
+#     template_name = 'drugdb/bill_drugdelivery_add_modal.html'
+#     form_class = BillDrugDeliveryAddDrugModalForm
+#     bill_obj = None
+#     drug_obj = None
+#     success_message = 'Success: Drug added'
 
-    def dispatch(self, request, *args, **kwargs):
-        if 'bill_id' in kwargs:
-            self.bill_obj = Expense.objects.get(id=kwargs['bill_id'])
-        else:
-            print('Error: no bill_id')
-        if 'reg_no' in kwargs:
-            self.drug_obj = RegisteredDrug.objects.get(reg_no=kwargs['reg_no'])
-        else:
-            print('Error: no drug reg_no')
-        return super().dispatch(request, *args, **kwargs)
+#     def dispatch(self, request, *args, **kwargs):
+#         if 'bill_id' in kwargs:
+#             self.bill_obj = Expense.objects.get(id=kwargs['bill_id'])
+#         else:
+#             print('Error: no bill_id')
+#         if 'reg_no' in kwargs:
+#             self.drug_obj = RegisteredDrug.objects.get(reg_no=kwargs['reg_no'])
+#         else:
+#             print('Error: no drug reg_no')
+#         return super().dispatch(request, *args, **kwargs)
 
-    def get_context_data(self, **kwargs):
-        data = super().get_context_data(**kwargs)
-        if self.bill_obj:
-            data['bill_obj'] = self.bill_obj
-        return data
+#     def get_context_data(self, **kwargs):
+#         data = super().get_context_data(**kwargs)
+#         if self.bill_obj:
+#             data['bill_obj'] = self.bill_obj
+#         return data
 
-    def get_success_url(self):
-        return reverse('drugdb:BillDrugDeliveryView', args=(self.bill_obj.pk,))
+#     def get_success_url(self):
+#         return reverse('drugdb:BillDrugDeliveryView', args=(self.bill_obj.pk,))
 
-    def get_form_kwargs(self):
-        kwargs = super(BillDrugDeliveryAddDrugModal, self).get_form_kwargs()
-        kwargs.update({
-            'bill_obj': self.bill_obj,
-            'drug_obj': self.drug_obj,
-            'action': 'Submit',
-            })
-        return kwargs
+#     def get_form_kwargs(self):
+#         kwargs = super(BillDrugDeliveryAddDrugModal, self).get_form_kwargs()
+#         kwargs.update({
+#             'bill_obj': self.bill_obj,
+#             'drug_obj': self.drug_obj,
+#             'action': 'Submit',
+#             })
+#         return kwargs
 
-class BillDrugDeliveryUpdateDrugModal(BSModalUpdateView, LoginRequiredMixin, PermissionRequiredMixin):
-    """Add new drug delivery to bill"""
-    permission_required = ('drugdb.change_drugdelivery', 'ledger.change_bill')
-    template_name = 'drugdb/bill_drugdelivery_add_modal.html'
-    form_class = BillDrugDeliveryAddDrugModalForm
-    bill_obj = None
-    drug_obj = None
-    success_message = 'Success: Drug updated'
+# class BillDrugDeliveryUpdateDrugModal(BSModalUpdateView, LoginRequiredMixin, PermissionRequiredMixin):
+#     """Add new drug delivery to bill"""
+#     permission_required = ('drugdb.change_drugdelivery', 'ledger.change_bill')
+#     template_name = 'drugdb/bill_drugdelivery_add_modal.html'
+#     form_class = BillDrugDeliveryAddDrugModalForm
+#     bill_obj = None
+#     drug_obj = None
+#     success_message = 'Success: Drug updated'
 
-    def get_object(self, queryset=None):
-        return
-    def dispatch(self, request, *args, **kwargs):
-        if 'bill_id' in kwargs:
-            self.bill_obj = Expense.objects.get(id=kwargs['bill_id'])
-        else:
-            print('Error: no bill_id')
-        if 'reg_no' in kwargs:
-            self.drug_obj = RegisteredDrug.objects.get(reg_no=kwargs['reg_no'])
-        else:
-            print('Error: no drug reg_no')
-        return super().dispatch(request, *args, **kwargs)
+#     def get_object(self, queryset=None):
+#         return
+#     def dispatch(self, request, *args, **kwargs):
+#         if 'bill_id' in kwargs:
+#             self.bill_obj = Expense.objects.get(id=kwargs['bill_id'])
+#         else:
+#             print('Error: no bill_id')
+#         if 'reg_no' in kwargs:
+#             self.drug_obj = RegisteredDrug.objects.get(reg_no=kwargs['reg_no'])
+#         else:
+#             print('Error: no drug reg_no')
+#         return super().dispatch(request, *args, **kwargs)
 
-    def get_context_data(self, **kwargs):
-        data = super().get_context_data(**kwargs)
-        if self.bill_obj:
-            data['bill_obj'] = self.bill_obj
-        return data
+#     def get_context_data(self, **kwargs):
+#         data = super().get_context_data(**kwargs)
+#         if self.bill_obj:
+#             data['bill_obj'] = self.bill_obj
+#         return data
 
-    def get_success_url(self):
-        return reverse('drugdb:BillDrugDeliveryView', args=(self.bill_obj.pk,))
+#     def get_success_url(self):
+#         return reverse('drugdb:BillDrugDeliveryView', args=(self.bill_obj.pk,))
 
-    def get_form_kwargs(self):
-        kwargs = super(BillDrugDeliveryUpdateDrugModal, self).get_form_kwargs()
-        kwargs.update({
-            'bill_obj': self.bill_obj,
-            'drug_obj': self.drug_obj,
-            'action': 'Update',
-            })
-        return kwargs
+#     def get_form_kwargs(self):
+#         kwargs = super(BillDrugDeliveryUpdateDrugModal, self).get_form_kwargs()
+#         kwargs.update({
+#             'bill_obj': self.bill_obj,
+#             'drug_obj': self.drug_obj,
+#             'action': 'Update',
+#             })
+#         return kwargs

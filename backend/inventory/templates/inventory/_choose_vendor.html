@@ -18,24 +18,42 @@
           <td>{{ vendor.contact_person }}</td>
           <td>{{ vendor.tel_main }}</td>
           <td class="text-right">
-            <button
+            {% if vendor.is_supplier and perms.inventory.add_deliveryorder %}
+            <a
+              href="{% url 'inventory:NewDeliveryOrder' %}?vendor={{ vendor.id }}"
+              class="btn btn-sm btn-success"
+            ><i class="fad fa-box-alt"></i>
+            </a>
+            <!-- <button
               type="button"
               class="btn_modal_trigger btn btn-sm btn-success"
-              data-id="{% url 'inventory:NewDeliveryOrderModal' %}?vendor={{ vendor.id }}"
+              data-id="{% url 'inventory:NewDeliveryOrder' %}?vendor={{ vendor.id }}"
             ><i class="fad fa-box-alt"></i>
-            </button>
-            <button 
+            </button> -->
+            {% endif %}
+            
+            {% if perms.ledger.add_expense %}
+            <a
+              href="{% url 'ledger:NewExpense' %}?vendor={{ vendor.id }}"
+              class="btn btn-sm btn-primary"
+            ><i class="far fa-file-invoice-dollar"></i>
+            </a>
+            <!-- <button 
               type="button"
               class="btn_modal_trigger btn btn-sm btn-primary"
-              data-id="{% url 'ledger:NewExpenseModal' %}?vendor={{ vendor.id }}"  
-            ><i class="far fa-file-invoice-dollar"></i>
-            </button>
+              data-id="{% url 'ledger:NewExpense' %}?vendor={{ vendor.id }}"  
+            >
+            </button> -->
+            {% endif %}
+            
+            {% if perms.inventory.change_vendor %}
             <button
               type="button"
               class="btn_modal_trigger btn btn-sm btn-info"
               data-id="{% url 'inventory:VendorUpdateModal' vendor.pk %}"
             ><i class="fad fa-edit"></i>
             </button>
+            {% endif %}
           </td>
         </tr>
         {% endfor %}
@@ -47,17 +65,10 @@
     <div class="alert alert-light" role="alert">
       No matching vendors/suppliers 
       <a
-        href="#" 
-        class="btn_modal_trigger alert-link"
-        data-id="{% url 'inventory:NewVendorModal' %}"  
+        href="{% url 'inventory:NewVendor' %}"
+        class="alert-link"
       >Add new vendor</a>
     </div>
 
     {% endif %}
-    <script type="text/javascript">
-        $(".btn_add_new_vendor").each(function() {
-            $(this).modalForm({
-                formURL: $(this).data('id')
-            })
-        });
-    </script>
+   

@@ -23,6 +23,8 @@ Vendors
         <i class="fad fa-table" aria-hidden="true"></i>
         {% if vtype == 'supp' %}
         Suppliers List
+        {% elif vtype == 'misc' %}
+        Vendors List (Non-suppliers)
         {% else %}
         Vendors List
         {% endif%}
@@ -60,7 +62,7 @@ Vendors
         </div>
         <div class="col-sm-7"></div>
         <div class="col-sm-2">
-          <a href="" id="btn_new_vendor" class="btn btn-sm btn-success btn-block disabled"
+          <a href="{% url 'inventory:NewVendor' %}" id="btn_new_vendor" class="btn btn-sm btn-success btn-block"
             >New Vendor 
           </a>
         </div>
@@ -73,7 +75,7 @@ Vendors
               name="q"
               value="{{ last_query }}"
               type="text"
-              placeholder="Search by name"
+              placeholder="Search by name/alias"
             />
             <div class="input-group-append">
               <button class="btn btn-sm btn-secondary">Search</button>
@@ -131,7 +133,7 @@ Vendors
           {% endif %}
         </div>
         <div class="col-sm-2">
-          <button id="btn-export_excel" class="btn btn-sm btn-info btn-block">
+          <button id="btn-export_excel" class="btn btn-sm btn-dark btn-block">
            Disabled 
           </button>
         </div>
@@ -167,12 +169,17 @@ Vendors
             </button>
             {% endif %}
             {% if perms.ledger.can_add_expense %}
-            <button 
+            <a 
+              href="{% url 'ledger:NewExpense' %}?vendor={{ vendor.id }}" 
+              class="btn btn-sm btn-primary"
+            ><i class="far fa-file-invoice-dollar"></i>
+            </a>
+            <!-- <button 
               type="button"
               class="btn_modal_trigger btn btn-sm btn-primary"
               data-id="{% url 'ledger:NewExpenseModal' %}?vendor={{ vendor.id }}"  
             ><i class="far fa-file-invoice-dollar"></i>
-            </button>
+            </button> -->
             {% endif %}
             {% if perms.inventory.can_change_vendor %}
             <button
@@ -211,13 +218,16 @@ Vendors
 
 <script type="text/javascript">
   $(document).ready(function () {
-   $("#btn_add_vendor").modalForm({
-       formURL: "{% url 'inventory:NewVendorModal' %}"
-   });
-   $(".btn_modal_trigger").each(function () {
-        $(this).modalForm({
-            formURL: $(this).data('id')
-        });
+    
+    $(".btn_modal_trigger").each(function () {
+      $(this).modalForm({
+          formURL: $(this).data('id')
+      });
+    });
+
+    $("#inputGroupSelectType").change(function() {
+      let vtype=$("#inputGroupSelectType option:selected").val();
+      self.location = "{% url 'inventory:VendorList' %}?vtype=" + vtype;
     });
   });
 </script>

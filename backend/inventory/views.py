@@ -28,7 +28,7 @@ from .forms import (
     NewCategoryForm, CategoryUpdateForm,
     NewVendorForm, NewVendorModalForm, VendorUpdateForm, VendorUpdateModalForm,
     NewItemModalForm, NewItemFromVendorForm, ItemUpdateForm,
-    NewDeliveryOrderModalForm, DeliveryOrderUpdateModalForm,
+    NewDeliveryOrderForm, NewDeliveryOrderModalForm, DeliveryOrderUpdateModalForm,
     DeliveryOrderAddDeliveryItemForm, DeliveryItemUpdateModalForm,
 )
 from datetime import date
@@ -388,6 +388,38 @@ class DeliveryOrderDeleteModal(BSModalDeleteView, LoginRequiredMixin, Permission
     success_message = 'Success: Delivery Order deleted'
     success_url = reverse_lazy('inventory:DeliveryOrderList')
 
+
+class NewDeliveryOrder(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
+    """Add new item delivery"""
+    permission_required = ('inventory.add_deliveryorder', )
+    model = DeliveryOrder
+    template_name = 'inventory/new_deliveryorder.html'
+    form_class = NewDeliveryOrderForm
+    vendor_obj = None
+
+    def dispatch(self, request, *args, **kwargs):
+        vendor_id = request.GET.get('vendor')
+        if vendor_id:
+            self.vendor_obj = Vendor.objects.get(id=vendor_id)
+        else:
+            self.vendor_obj = None
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        data['today'] = date.today().strftime('%Y-%m-%d')
+        data['vendor_obj'] = self.vendor_obj
+        return data
+
+    def get_form_kwargs(self):
+        kwargs = super(NewDeliveryOrder, self).get_form_kwargs()
+        kwargs.update({
+            'vendor_obj': self.vendor_obj,
+            })
+        return kwargs
+
+    def get_success_url(self):
+        return reverse('inventory:DeliveryOrderDetail', args=(self.object.pk,))
 
 class NewDeliveryOrderModal(BSModalCreateView, LoginRequiredMixin, PermissionRequiredMixin):
     """Add new item delivery"""

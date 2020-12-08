@@ -126,12 +126,6 @@
             
             {% if expense.category.name == "Drugs" %}
             <a
-              href="{% url 'drugdb:BillDrugDeliveryView' expense.pk %}"
-              class="btn btn-sm btn-warning"
-            >
-              X  <!-- Plan to delete -->
-            </a>
-            <a
               href="{% url 'ledger:ExpenseDetail' expense.pk %}"
               class="btn btn-sm btn-info"
             ><i class="fad fa-files-medical"></i>

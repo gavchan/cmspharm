@@ -130,9 +130,11 @@ class NewVendorForm(ModelForm):
             ),
             FormActions(
                 Submit('submit', 'Submit'),
-                HTML("""
-                <a href="{% url 'home' %}" class="btn btn-secondary">Cancel</a>
-                """),
+                Button(
+                    'back', 'Cancel',
+                    css_class='btn-light',
+                    onclick="javascript:history.go(-1);"
+                ),
             ),
         )
 
@@ -199,6 +201,86 @@ class VendorUpdateModalForm(BSModalForm):
         model = Vendor
         exclude = ['id', 'version', 'date_created', 'last_updated',]
 
+class NewDeliveryOrderForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        self.vendor_obj= kwargs.pop('vendor_obj', None)
+        super(NewDeliveryOrderForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.render_unmentioned_fields = False 
+        self.helper.form_id = 'id-DeliveryOrderForm'
+        self.helper.form_class = 'cmmForms'
+        self.helper.form_method = 'post'
+        self.helper.form_action = reverse(
+            'inventory:NewDeliveryOrder')
+        #self.initial['entry_date'] = date.today().strftime('%Y-%m-%d')
+        today_date = date.today().strftime('%Y-%m-%d')
+        self.initial['received_date'] = today_date
+        self.initial['payment_method'] = PaymentMethod.objects.get(name='Cheque').pk
+        self.initial['version'] = 1
+        if self.vendor_obj:
+            self.initial['vendor'] = self.vendor_obj.id
+            self.initial['payee'] = self.vendor_obj.name
+        self.helper.layout = Layout(
+            Hidden('next', self.helper.form_action),
+            Hidden('version', '1'),
+            Hidden('is_paid', False),
+            Row(
+                Column(
+                    'vendor',
+                    # FieldWithButtons('vendor', StrictButton('<i class="far fa-user-plus"></i>', id='add_vendor_button', css_class='btn-secondary')),
+                    css_class='form-group col-md-8 mb-0'
+                    ),
+                Column('received_date', css_class='form-group col-md-4 mb-0'),
+                css_class='form-row',
+            ),
+            Row(
+                Column('invoice_no', css_class='form-group col-md-8 mb-0'),
+                Column('invoice_date', css_class='form-group col-md-4 mb-0'),
+                css_class='form-row',
+            ),
+            Row(
+                Column('other_ref', css_class='form-group col-md-4 mb-0'),
+                Column('amount', css_class='form-group col-md-4 mb-0'),
+                Column('due_date', css_class='form-group col-md-4 mb-0'),
+            ),
+            Row(
+                Column(Field('remarks', css_class='form-group col-md-12 mb-0', rows="2")),
+                css_class="form-row",            
+            ),
+            FormActions(
+                Submit('submit', 'Submit'),
+            ),
+        )
+
+    class Meta:
+        model = DeliveryOrder
+        exclude = ['id', 'version', 'date_created', 'last_updated',]
+        widgets = {
+                    'received_date': DatePickerInput(
+                        options={
+                            "format": "YYYY-MM-DD",
+                            "showClose": True,
+                            "showClear": True,
+                            "showTodayButton": True,
+                        }
+                    ),
+                    'invoice_date': DatePickerInput(
+                        options={
+                            "format": "YYYY-MM-DD",
+                            "showClose": True,
+                            "showClear": True,
+                            "showTodayButton": True,
+                        }
+                    ),
+                    'due_date': DatePickerInput(
+                        options={
+                            "format": "YYYY-MM-DD",
+                            "showClose": True,
+                            "showClear": True,
+                            "showTodayButton": True,
+                        }
+                    ),
+                }
 class NewDeliveryOrderModalForm(BSModalForm):
     
     def __init__(self, *args, **kwargs):
@@ -225,7 +307,8 @@ class NewDeliveryOrderModalForm(BSModalForm):
             Hidden('is_paid', False),
             Row(
                 Column(
-                    FieldWithButtons('vendor', StrictButton('<i class="far fa-user-plus"></i>', id='add_vendor_button', css_class='btn-secondary')),
+                    'vendor',
+                    # FieldWithButtons('vendor', StrictButton('<i class="far fa-user-plus"></i>', id='add_vendor_button', css_class='btn-secondary')),
                     css_class='form-group col-md-8 mb-0'
                     ),
                 Column('received_date', css_class='form-group col-md-4 mb-0'),
@@ -576,10 +659,11 @@ class DeliveryOrderAddDeliveryItemForm(ModelForm):
                 Column(
                     FormActions(
                         Submit('submit', 'Submit'),
-                        HTML("""
-                            <button id="btn_cancel" class="btn btn-outline"
-                            >Cancel</button>
-                            """)
+                        Button(
+                            'back', 'Cancel',
+                            css_class='btn-light',
+                            onclick="javascript:history.go(-1);"
+                        ),
                     ),
                     css_class="form-group col-md-2"
                 ),

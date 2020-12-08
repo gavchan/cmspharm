@@ -340,6 +340,11 @@ class NewExpenseForm(ModelForm):
             ),
             FormActions(
                 Submit('submit', 'Submit'),
+                Button(
+                    'back', 'Cancel',
+                    css_class='btn-light',
+                    onclick="javascript:history.go(-1);"
+                )
             ),
         )
 
