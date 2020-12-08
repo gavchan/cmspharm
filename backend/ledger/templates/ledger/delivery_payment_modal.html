@@ -64,9 +64,6 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
-        $("#add_vendor_button").modalForm({
-            formURL: "{% url 'inventory:NewVendorModal' %}"
-        });
         $("#id_vendor").change(function() {
             $("#id_payee").val($("#id_vendor option:selected").text());
         });
