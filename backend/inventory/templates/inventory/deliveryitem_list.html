@@ -100,12 +100,17 @@
       <div class="col-md-2">
         <div class="row mb-2">
           <div class="col-sm-12">
-            <button 
+            <a 
+              href="{% url 'inventory:NewDeliveryOrder' %}"
+              class="btn btn-sm btn-success btn-block"
+            >New Delivery
+            </a>
+            <!-- <button 
               id="btn_modal_trigger" 
               class="btn btn-sm btn-success btn-block"
-              data-id="{% url 'inventory:VendorSelectModal' %}?vtype=supp"
+              data-id="inventory:NewDeliveryOrder"
           >New Delivery
-          </button>
+          </button> -->
           </div>
         </div>
         <div class="row mb-2">
