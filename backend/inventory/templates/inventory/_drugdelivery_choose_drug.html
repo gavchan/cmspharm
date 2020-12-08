@@ -21,16 +21,26 @@
         </div>
     </div>
     <div class="card-body">
-        <div class="col-8">
-            <div class="input-group">
-                <input class="form-control" id="user-input" placeholder="Search by name, ingredient, registration no." size="50">
-                <div class="input-group-append">
-                    <div id="search-icon" class="input-group-text"><i class="fas fa-search"></i></div>
-                </div>
+      <div class="row">
+        <div class="col-4">
+          <div class="input-group">
+            <input class="form-control" id="regno-input" placeholder="Reg no.">
+            <div class="input-group-append">
+                <div id="search-icon" class="input-group-text"><i class="fas fa-search"></i></div>
             </div>
+          </div>
         </div>
-        <div id="search-results">
-             {% include 'inventory/_drug_search_results_partial.html' %}
+        <div class="col-8">
+          <div class="input-group">
+            <input class="form-control" id="user-input" placeholder="Search by name, alias, ingredient" size="30">
+            <div class="input-group-append">
+                <div id="search-icon" class="input-group-text"><i class="fas fa-search"></i></div>
+            </div>
+          </div>
         </div>
+      </div>
+      <div id="search-results">
+            {% include 'inventory/_drug_search_results_partial.html' %}
+      </div>
     </div>
 </div>

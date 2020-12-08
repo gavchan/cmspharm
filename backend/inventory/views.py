@@ -227,43 +227,43 @@ class VendorList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
         data['vtype'] = self.vtype
         return data
 
-class VendorSelectModal(ListView, LoginRequiredMixin, PermissionRequiredMixin):
-    """List Vendors"""
-    permission_required = ('inventory.view_vendor', )
-    model = Vendor
-    template_name = 'inventory/vendor_select_modal.html'
-    context_object_name = 'vendor_list'
-    paginate_by = 20
-    last_query = ''
-    last_query_count = 0
-    suppliers_only = False
+# class VendorSelectModal(ListView, LoginRequiredMixin, PermissionRequiredMixin):
+#     """List Vendors"""
+#     permission_required = ('inventory.view_vendor', )
+#     model = Vendor
+#     template_name = 'inventory/vendor_select_modal.html'
+#     context_object_name = 'vendor_list'
+#     paginate_by = 20
+#     last_query = ''
+#     last_query_count = 0
+#     suppliers_only = False
 
-    def get_queryset(self):
-        self.vtype = self.request.GET.get('vtype') or 'supp'
-        query = self.request.GET.get('q')
-        if query:
-            self.last_query = query
-            object_list = Vendor.objects.filter(
-                Q(name__icontains=query) |
-                Q(alias__icontains=query)
-            )
-        else:
-            self.last_query = ''
-            object_list = Vendor.objects.all()
-        if self.vtype == 'supp':
-            object_list = object_list.filter(is_supplier=True)
-        elif self.vtype == 'misc':
-            object_list = object_list.filter(is_supplier=False)
-        self.last_query_count = object_list.count
+#     def get_queryset(self):
+#         self.vtype = self.request.GET.get('vtype') or 'supp'
+#         query = self.request.GET.get('q')
+#         if query:
+#             self.last_query = query
+#             object_list = Vendor.objects.filter(
+#                 Q(name__icontains=query) |
+#                 Q(alias__icontains=query)
+#             )
+#         else:
+#             self.last_query = ''
+#             object_list = Vendor.objects.all()
+#         if self.vtype == 'supp':
+#             object_list = object_list.filter(is_supplier=True)
+#         elif self.vtype == 'misc':
+#             object_list = object_list.filter(is_supplier=False)
+#         self.last_query_count = object_list.count
 
-        return object_list
+#         return object_list
 
-    def get_context_data(self, **kwargs):
-        data = super().get_context_data(**kwargs)
-        data['last_query'] = self.last_query
-        data['last_query_count'] = self.last_query_count
-        data['vtype'] = self.vtype
-        return data 
+#     def get_context_data(self, **kwargs):
+#         data = super().get_context_data(**kwargs)
+#         data['last_query'] = self.last_query
+#         data['last_query_count'] = self.last_query_count
+#         data['vtype'] = self.vtype
+#         return data 
 
 class VendorDetail(DetailView, LoginRequiredMixin, PermissionRequiredMixin):
     """Display details for vendor"""
@@ -455,40 +455,40 @@ class NewDeliveryOrderModal(BSModalCreateView, LoginRequiredMixin, PermissionReq
     def get_success_url(self):
         return reverse('inventory:DeliveryOrderDetail', args=(self.object.pk,))
 
-@login_required
-@permission_required('inventory.add_deliveryorder',)
-def NewDeliveryOrderSelectVendorView(request, *args, **kwargs):
-    """Select Vendor for New DeliveryOrder"""
-    vendors = Vendor.objects.all()
-    vendor_obj = None
+# @login_required
+# @permission_required('inventory.add_deliveryorder',)
+# def NewDeliveryOrderSelectVendorView(request, *args, **kwargs):
+#     """Select Vendor for New DeliveryOrder"""
+#     vendors = Vendor.objects.all()
+#     vendor_obj = None
 
-    MAX_QUERY_COUNT = 20
-    # Get query from request and search Vendor
-    vendor = request.GET.get('vendor')
-    if vendor:
-        vendor_obj = Vendor.objects.get(id=vendor)
-        query = None
-    else:
-        query = request.GET.get('q')
-    if query:
-        last_query = query
-        object_list = Vendor.objects.filter(Q(name__icontains=query))[:MAX_QUERY_COUNT]
-        last_query_count = object_list.count
-    else:
-        last_query = ''
-        object_list = Vendor.objects.all()[:MAX_QUERY_COUNT]
-        last_query_count = object_list.count
-    if request.is_ajax():
-        html = render_to_string(
-            template_name='inventory/_new_deliveryorder_choose_vendor.html',
-            context={
-                'vendor_list': object_list,
-                }
-        )
-        data_dict = {"html_from_view": html}
-        return JsonResponse(data=data_dict, safe=False)
+#     MAX_QUERY_COUNT = 20
+#     # Get query from request and search Vendor
+#     vendor = request.GET.get('vendor')
+#     if vendor:
+#         vendor_obj = Vendor.objects.get(id=vendor)
+#         query = None
+#     else:
+#         query = request.GET.get('q')
+#     if query:
+#         last_query = query
+#         object_list = Vendor.objects.filter(Q(name__icontains=query))[:MAX_QUERY_COUNT]
+#         last_query_count = object_list.count
+#     else:
+#         last_query = ''
+#         object_list = Vendor.objects.all()[:MAX_QUERY_COUNT]
+#         last_query_count = object_list.count
+#     if request.is_ajax():
+#         html = render_to_string(
+#             template_name='inventory/_new_deliveryorder_choose_vendor.html',
+#             context={
+#                 'vendor_list': object_list,
+#                 }
+#         )
+#         data_dict = {"html_from_view": html}
+#         return JsonResponse(data=data_dict, safe=False)
 
-    return render(request, "inventory/new_deliveryorder_view.html", {'vendors': vendors, 'vendor_obj': vendor_obj})
+#     return render(request, "inventory/new_deliveryorder_view.html", {'vendors': vendors, 'vendor_obj': vendor_obj})
 
 @login_required
 @permission_required('inventory.view_deliveryorder')
@@ -518,15 +518,22 @@ def DeliveryOrderDetail(request, *args, **kwargs):
 
     # Get query from request and search RegisteredDrug    
     query = request.GET.get('q')
+    stype = request.GET.get('stype')
+    print(query, stype)
     if query:
         last_query = query
-        object_list = InventoryItem.objects.filter(
-            Q(alias__icontains=query) |
-            Q(registration_no__icontains=query) |
-            Q(product_name__icontains=query) |
-            Q(generic_name__icontains=query) |
-            Q(ingredient__icontains=query)
-        ).order_by('discontinue')[:MAX_QUERY_COUNT]
+        if stype == 'regno':
+            object_list = InventoryItem.objects.filter(
+                Q(registration_no__icontains=query)
+            ).order_by('discontinue')[:MAX_QUERY_COUNT]
+        else:
+            last_query = query
+            object_list = InventoryItem.objects.filter(
+                Q(alias__icontains=query) |
+                Q(product_name__icontains=query) |
+                # Q(generic_name__icontains=query) |
+                Q(ingredient__icontains=query)
+            ).order_by('discontinue')[:MAX_QUERY_COUNT]
         last_query_count = object_list.count
     else:
         last_query = ''
