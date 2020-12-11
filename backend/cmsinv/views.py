@@ -6,10 +6,10 @@ from django.db.models import Q
 from drugdb.models import (
     RegisteredDrug,
     Company,
-    DrugDelivery,
 )
 from inventory.models import (
     Vendor,
+    DeliveryItem,
 )
 from .models import (
     InventoryItem,
@@ -17,6 +17,7 @@ from .models import (
 )
 
 from .forms import (
+    NewInventoryItemForm,
     InventoryItemUpdateForm,
     InventoryItemMatchUpdateForm,
     InventoryItemQuickEditModalForm,
@@ -97,8 +98,8 @@ class InventoryItemDetail(DetailView, LoginRequiredMixin):
         except RegisteredDrug.DoesNotExist:
             print("No registration no. for {self.object.product_name}")
         try:
-            self.delivery_obj_list = DrugDelivery.objects.filter(reg_no=self.object.registration_no)[:5]
-        except DrugDelivery.DoesNotExist:
+            self.delivery_obj_list = DeliveryItem.objects.filter(item__reg_no=self.object.registration_no)[:5]
+        except DeliveryItem.DoesNotExist:
             self.delivery_obj_list = None
             print(f"No delivery record for {self.object.product_name}")
         data['drug_obj'] = self.drug_obj
@@ -110,25 +111,25 @@ class InventoryItemModalDetail(BSModalReadView, LoginRequiredMixin):
     model = InventoryItem
     template_name = 'cmsinv/inventory_item_modal_detail.html'
     item_obj = None
-    reg_drug_obj = None
+    drug_obj = None
     drug_delivery_obj = None
     match_drug_list = None
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         try:
-            self.reg_drug_obj = RegisteredDrug.objects.get(reg_no=self.object.registration_no)
+            self.drug_obj = RegisteredDrug.objects.get(reg_no=self.object.registration_no)
         except RegisteredDrug.DoesNotExist:
             print(f"No registration no. for {self.object.product_name}")
             # Try match name using first word of product name
             keyword = self.object.product_name.split()[0]
             self.match_drug_list = RegisteredDrug.objects.filter(Q(name__icontains=keyword))
         try:
-            self.delivery_obj_list = DrugDelivery.objects.filter(reg_no=self.object.registration_no)[:5]
-        except DrugDelivery.DoesNotExist:
+            self.delivery_obj_list = DeliveryItem.objects.filter(item__reg_no=self.object.registration_no)[:5]
+        except DeliveryItem.DoesNotExist:
             self.delivery_obj_list = None
             print(f"No delivery record for {self.object.product_name}")
-        data['reg_drug_obj'] = self.reg_drug_obj
+        data['drug_obj'] = self.drug_obj
         data['delivery_obj_list'] = self.delivery_obj_list
         data['item_obj'] = self.object
         data['match_drug_list'] = self.match_drug_list
@@ -199,6 +200,13 @@ class InventoryItemUpdate(UpdateView, LoginRequiredMixin):
     form_class = InventoryItemUpdateForm
     template_name = 'cmsinv/inventory_item_update.html'
 
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        self.drug_obj = RegisteredDrug.objects.get(reg_no=self.object.registration_no) or None
+        data['drug_obj'] = self.drug_obj
+        data['item_obj'] = self.object
+        return data
+
     def get_success_url(self):
         return reverse('cmsinv:InventoryItemDetail', args=(self.object.pk,))
 
@@ -207,69 +215,32 @@ class InventoryItemUpdate(UpdateView, LoginRequiredMixin):
 #     model = InventoryItem
 #     success_url = reverse_lazy('cmsinv:InventoryItemList')
 
-# class NewInventoryItem(CreateView, LoginRequiredMixin):
-#     """Add new drug delivery"""
-#     model = InventoryItem
-#     template_name = 'cmsinv/new_inventory_item.html'
-#     form_class = NewInventoryItemForm
-#     context_object_name = 'new_inventory_item'
-#     drug_reg_no = ''
-
-#     def dispatch(self, request, *args, **kwargs):
-#         if 'reg_no' in kwargs:
-#             self.drug_reg_no = kwargs['reg_no']
-#         else:
-#             self.drug_reg_no = ''
-#         return super().dispatch(request, *args, **kwargs)
-    
-#     def get_context_data(self, **kwargs):
-#         data = super().get_context_data(**kwargs)
-#         if self.drug_reg_no:
-#             data['reg_no'] = self.drug_reg_no
-#             drug_obj = InventoryItem.objects.get(reg_no=self.drug_reg_no)
-#             data['product_name'] = drug_obj.name
-#             data['vendor'] = drug_obj.company
-#         else:
-#             print("Error: missing reg_no")
-#             data['product_name'] = ''
-#         return data
-
-class MatchDeliveryInventoryItemList(ListView, LoginRequiredMixin):
-    """
-    CMS Inventory Item List Matching Non-CMS Delivery Record
-    """
+class NewInventoryItem(CreateView, LoginRequiredMixin):
+    """Add new drug delivery"""
     model = InventoryItem
-    template_name = "cmsinv/match_delivery_inventory_item_list.html"
-    context_object_name = 'match_item_list_obj'
-    drug_delivery_obj = None
-    reg_drug_obj = None
-    reg_match_obj = None
+    template_name = 'cmsinv/new_inventory_item.html'
+    form_class = NewInventoryItemForm
+    context_object_name = 'new_inventory_item'
+    drug_reg_no = ''
 
     def dispatch(self, request, *args, **kwargs):
-        if 'delivery_id' in kwargs:
-            self.drug_delivery_obj = DrugDelivery.objects.get(id=kwargs['delivery_id'])
-            self.reg_drug_obj = RegisteredDrug.objects.get(reg_no=self.drug_delivery_obj.reg_no)
-            self.reg_match_obj = InventoryItem.objects.get(registration_no=self.drug_delivery_obj.reg_no)
+        if 'reg_no' in kwargs:
+            self.drug_reg_no = kwargs['reg_no']
         else:
-            print("Error: missing delivery_id")
+            self.drug_reg_no = ''
         return super().dispatch(request, *args, **kwargs)
     
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
-        data['drug_delivery_obj'] =  self.drug_delivery_obj
-        data['reg_drug_obj'] = self.reg_drug_obj
-        data['reg_match_obj'] = self.reg_match_obj
+        if self.drug_reg_no:
+            data['reg_no'] = self.drug_reg_no
+            drug_obj = InventoryItem.objects.get(reg_no=self.drug_reg_no)
+            data['product_name'] = drug_obj.name
+            data['vendor'] = drug_obj.company
+        else:
+            print("Error: missing reg_no")
+            data['product_name'] = ''
         return data
-
-    def get_queryset(self):
-        keyword = self.reg_drug_obj.name.split(' ')[0]
-        object_list = InventoryItem.objects.filter(
-            Q(product_name__icontains=keyword) |
-            Q(generic_name__icontains=keyword) |
-            Q(alias__icontains=keyword) |
-            Q(ingredient__icontains=self.reg_drug_obj.ingredients)
-        ).exclude(registration_no=self.drug_delivery_obj.reg_no)[:100]
-        return object_list
 
 class MatchInventoryItemList(ListView, LoginRequiredMixin):
     """
@@ -281,7 +252,7 @@ class MatchInventoryItemList(ListView, LoginRequiredMixin):
     drug_reg_no = ''
     keyword = ''
     ingredients = ''
-    reg_drug_obj = None
+    drug_obj = None
     delivery_obj_list = None
     item_obj = None
 
@@ -293,12 +264,12 @@ class MatchInventoryItemList(ListView, LoginRequiredMixin):
             except InventoryItem.DoesNotExist:
                 self.item_obj = None
             try:
-                self.reg_drug_obj = RegisteredDrug.objects.get(reg_no=self.drug_reg_no)
+                self.drug_obj = RegisteredDrug.objects.get(reg_no=self.drug_reg_no)
             except RegisteredDrug.DoesNotExist:
-                self.reg_drug_obj = None 
+                self.drug_obj = None 
             try:
-                self.delivery_obj_list = DrugDelivery.objects.filter(reg_no=self.drug_reg_no)[:5]
-            except DrugDelivery.DoesNotExist:
+                self.delivery_obj_list = DeliveryItem.objects.filter(item__reg_no=self.drug_reg_no)[:5]
+            except DeliveryItem.DoesNotExist:
                 self.delivery_obj_list = None
 
         else:
@@ -307,17 +278,17 @@ class MatchInventoryItemList(ListView, LoginRequiredMixin):
     
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
-        data['reg_drug_obj'] =  self.reg_drug_obj
+        data['drug_obj'] =  self.drug_obj
         data['item_obj'] = self.item_obj
-        print(data['reg_drug_obj'])
+        print(data['drug_obj'])
         data['delivery_obj_list'] = self.delivery_obj_list
         return data
 
     def get_queryset(self):
-        if self.reg_drug_obj:
+        if self.drug_obj:
             print('Should be existing reg drug no.')
-            self.keyword = self.reg_drug_obj.name
-            self.ingredients = self.reg_drug_obj.ingredients
+            self.keyword = self.drug_obj.name
+            self.ingredients = self.drug_obj.ingredients_list
         else:
             print('Error no existing reg no.')
         if self.keyword == None:
@@ -357,8 +328,8 @@ class InventoryItemMatchUpdate(UpdateView, LoginRequiredMixin):
             print(f"No registration no. for {self.object.product_name}")
             
         try:
-            self.delivery_obj_list = DrugDelivery.objects.filter(reg_no=self.object.registration_no).order_by('-received_date')[:5]
-        except DrugDelivery.DoesNotExist:
+            self.delivery_obj_list = DeliveryItem.objects.filter(item__reg_no=self.object.registration_no).order_by('-received_date')[:5]
+        except DeliveryItem.DoesNotExist:
             self.delivery_obj_list = None
             print(f"No delivery record for {self.object.product_name}")
         if self.delivery_obj_list:

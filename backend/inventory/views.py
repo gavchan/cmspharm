@@ -27,7 +27,7 @@ from cmsinv.models import InventoryItem, InventoryItemType
 from .forms import (
     NewCategoryForm, CategoryUpdateForm,
     NewVendorForm, NewVendorModalForm, VendorUpdateForm, VendorUpdateModalForm,
-    NewItemModalForm, NewItemFromVendorForm, ItemUpdateForm,
+    NewItemModalForm, NewItemFromVendorForm, ItemUpdateForm, NewItemForm,
     NewDeliveryOrderForm, NewDeliveryOrderModalForm, DeliveryOrderUpdateModalForm,
     DeliveryOrderAddDeliveryItemForm, DeliveryItemUpdateModalForm,
 )
@@ -789,7 +789,40 @@ class NewItemModal(BSModalCreateView, LoginRequiredMixin, PermissionRequiredMixi
         print(kwargs)
         return kwargs
 
+class NewItem(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
+    """Add new drug to items"""
+    permission_required = ('inventory.add_item')
+    template_name = 'inventory/new_item.html'
+    form_class = NewItemForm
+    drug_obj = None
+    success_message = 'Success: Drug added'
 
+    def dispatch(self, request, *args, **kwargs):
+        if 'drug_id' in kwargs:
+            try:
+                self.drug_obj = RegisteredDrug.objects.get(id=kwargs['drug_id'])
+            except:
+                self.drug_obj = None
+            if self.drug_obj:
+                print(f"Retrieved {self.drug_obj}")
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        if self.drug_obj:
+            data['drug_obj'] = self.drug_obj
+        return data
+
+    def get_success_url(self):
+        return reverse('inventory:ItemList')
+
+    def get_form_kwargs(self):
+        kwargs = super(NewItem, self).get_form_kwargs()
+        kwargs.update({
+            'drug_obj': self.drug_obj,
+            })
+        print(kwargs)
+        return kwargs
 class ItemUpdateModal(BSModalUpdateView, LoginRequiredMixin, PermissionRequiredMixin):
     """Update details for item"""
     permission_required = ('inventory.change_item', )

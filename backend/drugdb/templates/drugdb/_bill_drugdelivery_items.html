@@ -34,7 +34,7 @@
                     <td class="text-monospace text-right">${{ drug.total_price }}</td>
                     <td class="text-monospace text-right">${{ drug.average_cost }}/{{ drug.items_unit }}</td>
                     <td class="text-center">
-                        <a href="{% url 'drugdb:BillDrugDeliveryUpdateDrugModal' bill_obj.id drug.reg_no %}" class="btn btn-sm btn-info"> # </a>
+                        <a href="{% url '#' bill_obj.id drug.reg_no %}" class="btn btn-sm btn-info"> # </a>
                         {% if drug.cmsinv_item %}
                         <button type="button" class="show-item-details btn btn-sm btn-primary"
                             data-id="{% url 'cmsinv:InventoryItemModalDetail' drug.cmsinv_item.pk %}">

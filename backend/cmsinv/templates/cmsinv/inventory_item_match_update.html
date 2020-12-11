@@ -396,7 +396,7 @@ CMS Inventory Item: {{ item_obj.registration_no }}
                         <td>{{ item.expiry_date }}</td>
                         <td> ${{ item.average_cost }}</td>
                         <td>
-                            <a href="{% url 'drugdb:DrugDeliveryDetail' item.pk %}" 
+                            <a href="{% url 'inventory:DeliveryItemDetail' item.pk %}" 
                                 class="btn btn-sm btn-primary">
                                 <i class="fad fa-file-alt"></i>
                             </a>
@@ -419,7 +419,7 @@ CMS Inventory Item: {{ item_obj.registration_no }}
             </div>
             {% if reg_drug_obj %}
             <div class="col-md-4">
-                <a href="{% url 'drugdb:NewDrugDelivery' reg_drug_obj.reg_no %}" class="btn btn-sm btn-secondary">Add
+                <a href="#" class="btn btn-sm btn-secondary">Add
                     new
                     delivery</a>
             </div>

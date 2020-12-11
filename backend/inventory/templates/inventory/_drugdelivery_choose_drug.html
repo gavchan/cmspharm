@@ -24,19 +24,26 @@
       <div class="row">
         <div class="col-4">
           <div class="input-group">
-            <input class="form-control" id="regno-input" placeholder="Reg no.">
+            <input class="form-control form-control-sm" id="regno-input" placeholder="Reg no.">
             <div class="input-group-append">
                 <div id="search-icon" class="input-group-text"><i class="fas fa-search"></i></div>
             </div>
           </div>
         </div>
-        <div class="col-8">
+        <div class="col-6">
           <div class="input-group">
-            <input class="form-control" id="user-input" placeholder="Search by name, alias, ingredient" size="30">
+            <input class="form-control form-control-sm" id="user-input" placeholder="Search by name, alias, ingredient" size="30">
             <div class="input-group-append">
                 <div id="search-icon" class="input-group-text"><i class="fas fa-search"></i></div>
             </div>
           </div>
+        </div>
+        <div class="col-2">
+          <a
+            href="{% url 'inventory:NewItem' %}"
+            class="btn btn-sm btn-block btn-primary"
+          >Add Drug/Item
+          </a>
         </div>
       </div>
       <div id="search-results">

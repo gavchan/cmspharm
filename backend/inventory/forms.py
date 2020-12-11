@@ -249,6 +249,11 @@ class NewDeliveryOrderForm(ModelForm):
             ),
             FormActions(
                 Submit('submit', 'Submit'),
+                Button(
+                    'back', 'Cancel',
+                    css_class='btn-light',
+                    onclick="javascript:history.go(-1);"
+                ),
             ),
         )
 
@@ -590,6 +595,68 @@ class NewItemModalForm(BSModalForm):
     class Meta:
         model = Item
         exclude = ['id', 'date_created', 'last_updated', 'updated_by', ]
+
+
+class NewItemForm(ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        self.drug_obj = kwargs.pop('drug_obj', None)
+        print(f"args={args}; kwargs={kwargs}")
+        super(NewItemForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = True
+        self.helper.render_unmentioned_fields = True 
+        self.helper.form_id = 'id-NewItemForm'
+        self.helper.form_class = 'cmmForms'
+        self.helper.form_method = 'post'
+        self.helper.form_action = reverse(
+            'inventory:NewItem'
+            )
+        if self.drug_obj:
+            self.initial['name'] = self.drug_obj.name
+            self.initial['label'] = self.drug_obj.name
+            self.initial['reg_no'] = self.drug_obj.reg_no
+            self.initial['item_type'] = 'DRUG'
+        self.initial['active'] = True
+        self.helper.layout = Layout(
+            Hidden('version', '1'),
+            Hidden('item_type', 'DRUG'),
+            Row(
+                Column('name', css_class='form-group col-md-5 mb-0'),
+                Column('alias', css_class='form-group col-md-5 mb-0'),
+                Column('item_unit', css_class='form-group col-md-2 mb-0'),
+                css_class='form-row',
+            ),
+            Row(
+                Column('label', css_class='form-group col-md-5 mb-0'),
+                Column('generic_name', css_class='form-group col-md-5 mb-0'),
+                Column(UneditableField('clinic_no'), css_class='form-group col-md-1 mb-0'),
+                Column(UneditableField('reg_no'), css_class='form-group col-md-1 mb-0'),
+                css_class='form-row',
+            ),
+            Row(
+                Column('description', css_class='form-group col-md-5 mb-0'),
+                Column(Field('remarks', css_class='form-control col-md-5 mb-0', rows="1")),
+                Column(
+                        Row('active'),
+                        Row('dangerous_drug'),
+                        css_class='form-group col-md-2 mb-0'),
+                css_class="form-row",
+            ),
+            FormActions(
+                Submit('submit', 'Submit'),
+                Button(
+                    'back', 'Cancel',
+                    css_class='btn-light',
+                    onclick="javascript:history.go(-1);"
+                ),
+            ),
+        )
+
+    class Meta:
+        model = Item
+        exclude = ['id', 'date_created', 'last_updated', 'updated_by', ]
+
 
 class ItemUpdateForm(ModelForm):
     class Meta:

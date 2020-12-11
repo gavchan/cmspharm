@@ -1,70 +1,65 @@
 {% extends 'base.html' %}
+
 {% load crispy_forms_tags %}
+{{form.media}}
 
-{% block title %}
-  New Item
-{% endblock %}
+{% block content %}
 
 
-{% block main %}
-
-  <h1>Add New Item</h1>
-  <hr>
-  <form method="post">
-    {% csrf_token %}
-    <div class="form-row">
-        <div class="form-group col-md-8 mb-0">
-            {{ form.name|as_crispy_field }}
+<div class="card shadow">
+    <div class="card-header">
+      <div class="d-flex justify-content-between align-items-center">
+        Add New Item
+        <span>
+          <a href="{% url 'inventory:NewVendor' %}" class="btn btn-sm btn-info">New Vendor</a>
+          <button id="btn_save_details" class="btn btn-sm btn-primary">
+            Save
+          </button>
+          <a
+            href="{% url 'home' %}"
+            id="btn_cancel"
+            class="btn btn-sm btn-secondary"
+          >
+            Cancel
+          </a>
+        </span>
+      </div>
+    </div>
+    <div class="card-body">
+      {% if drug_obj %}
+      <div class="row">
+        <div class="col-md-3">
+            <b>{{ drug_obj.reg_no }}:</b>
         </div>
-        <div class="form-group col-md-4 mb-0">
-            {{ form.alias|as_crispy_field }}
+        <div class="col-md-9">
+            {{ drug_obj.name }}
         </div>
+      </div>
+      <div class="row">
+        <div class="col-md-3">
+            Ingredients:
+        </div>
+        <div class="col-md-9">
+            {{ drug_obj.ingredients_list }}
+        </div>
+      </div>
+      <hr>
+      {% endif %}
+      {% crispy form %}
+      {{form.media}}
     </div>
-    <div class="form-row">
-      <div class="form-group col-md-8 mb-0">
-          {{ form.description|as_crispy_field }}
-      </div>
-      <div class="form-group col-md-4 mb-0">
-          {{ form.category|as_crispy_field }}
-      </div>
-    </div>
-    <div class="form-row">
-      <div class="form-group col-md-8 mb-0">
-        {% if vendor_id %}
-          <p>Vendor:<br><b>{{ vendor_name }}</b></p>
-          <input type="hidden" id="vendor" name="vendor" value = "{{ vendor_name }}" />
-        {% else %}
-          {{ form.vendor|as_crispy_field }}
-        {% endif %}
-      </div>
-      <div class="form-group col-md-4 mb-0">
-        {{ form.inventory_type|as_crispy_field }}
-      </div>
-    </div>
-    <div class="form-row">
-      <div class="form-group col-md-8 mb-0">
-        {{ form.remarks|as_crispy_field }}
-      </div>
-      <div class="form-group col-md-4 mb-0">
-        {{ form.updated_by|as_crispy_field }}
-      </div>
-    </div>
-    <div class="form-row">
-      <div class="form-group col-md-4 mb-0">
-        Active? {{ form.active|as_crispy_field }}
-      </div>
-    </div>
-    <hr>
-    <button class="btn btn-sm btn-primary" type="submit">Submit</button>
-    <a class="btn btn-sm btn-secondary" href="{% url 'inventory:ItemList' %}">Cancel</a>
-
-  </form>
+</div>
 
 {% endblock %}
 
-{% block sidebar %}
-<p><a class="btn btn-sm btn-light btn-block" href="{% url 'inventory:NewVendor' %}">Add Vendor
-<p><a class="btn btn-sm btn-light btn-block" href="{% url 'inventory:NewCategory' %}">Add Category</a></p>
-<hr>
-<p><a class="btn btn-sm btn-light btn-block" href="{% url 'inventory:VendorList' %}">Show Vendors</a></p>
+{% block extrascripts %}
+<script type="text/javascript">
+    $(document).ready(function () {
+
+      $("#btn_save_details").click(function() {
+        $('#form').submit()
+      });
+
+    });
+</script>
 {% endblock %}

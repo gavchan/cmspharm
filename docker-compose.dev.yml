@@ -12,7 +12,7 @@ services:
     volumes:
       - ./backend:/app/backend
     ports:
-      - 51010:8000
+      - 52222:8000
       - 51111:8888
     stdin_open: true
     tty: true

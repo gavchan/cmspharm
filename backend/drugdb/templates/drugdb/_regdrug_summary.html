@@ -1,0 +1,108 @@
+{% if drug_obj %}
+
+<div class="card shadow mb-2">
+  <div class="card-header text-white bg-info">
+    <div class="d-flex justify-content-between align-items-center">
+      <span>
+        <i class="fad fa-pills" aria-hidden="true"></i>&nbsp;
+        Registered Drug No.: {{ drug_obj.reg_no }}
+      </span>
+      <span>
+        <a
+          href="{% url 'inventory:DeliveryItemList' %}?regno={{ drug_obj.reg_no }}"
+          class="btn btn-sm btn-secondary text-white"
+        >Delivered Drugs
+        </a>
+      </span>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="row mb-0">
+      <div class="col-md-2">Permit No.</div>
+      <div class="col-md-6">
+        {{ drug_obj.reg_no }}&nbsp;
+        {% if not drug_obj.is_active %}
+        <span class="badge badge-danger">Inactive</span>
+        {% endif %}
+      </div>
+      <div class="col-md-2">Last Updated</div>
+      <div class="col-md-2">{{ drug_obj.last_updated|date:"d-m-Y" }}</div>
+    </div>
+    <div class="row mb-0">
+      <div class="col-md-2">Product Name</div>
+      <div class="col-md-10">{{ drug_obj.name}}</div>
+    </div>
+    <div class="row mb-0">
+      <div class="col-md-2">Cert. Holder</div>
+      <div class="col-md-10">{{ drug_obj.company.name }}</div>
+    </div>
+    <div class="row mb-0">
+      <div class="col-md-2">Ingredients</div>
+      <div class="col-md-10">{{ drug_obj.ingredients_list }}</div>
+    </div>
+  </div>
+</div>
+
+{% elif match_drug_list %}
+<div class="card mb-2">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        No match registration number match. Possible matching registered drugs:
+        <a href="#" class="btn btn-sm btn-secondary"> Push to CMS </a>
+    </div>
+    <div class="card-body">
+      <table class="table table-sm table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Reg No.</th>
+                <th scope="col">Product Name</th>
+                <th scope="col">Ingredients</th>
+                <th scope="col">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+          {% for drug in match_drug_list %}
+            <tr>
+                <td>{{ drug.reg_no }}</td>
+                <td>{{ drug.name }}</td>
+                <td>{{ drug.ingredients_list }}</td>
+                <td class="match-drug-action-cell">
+                    <button
+                      class="btn_quickedit_reg btn btn-link"
+                      data-id="{% url 'cmsinv:InventoryItemQuickEditModal' item_obj.id %}?reg_no={{drug.reg_no}}"  
+                    ><i class="fad fa-edit"></i>
+                    </button>
+                </td>
+            </tr>
+            {% endfor %}
+    
+        </tbody>
+      </table>
+    </div>
+</div>
+{% else %}
+<div class="alert alert-danger d-flex justify-content-between align-items-center" role="alert">
+    <span>No matching registered drug no.</span>
+    <div class="btn-group mr-2" role="group" aria-label="Search by group">
+      <button type="button" class="btn btn-sm btn-light" disabled>Search by</button>
+      {% if item_obj.registration_no %}
+      <a href="{% url 'cmsinv:MatchInventoryItemList' item_obj.registration_no %}"
+          class="btn btn-sm btn-secondary">
+          {{ item_obj.registration_no }}
+      </a>
+      {% endif %}
+      {% if item_obj.ingredient %}
+      <a href="{% url 'cmsinv:InventoryItemList' %}?q={{ item_obj.ingredient }}"
+          class="btn btn-sm btn-secondary">
+          Ingredients
+      </a>
+      {% else %}
+      <a href="{% url 'cmsinv:InventoryItemList' %}?q={{ item_obj.product_name }}"
+          class="btn btn-sm btn-secondary">
+          Product name
+      </a> 
+      {% endif %}
+        
+    </div>
+  <!-- </div> -->
+</div>
+{% endif %}
