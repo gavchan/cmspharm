@@ -24,11 +24,11 @@
         <div class="d-flex justify-content-between align-items-center">
           Edit Details
           <span>
-            Last updated: {{ item_obj.last_updated }} (v{{ item_obj.version }})
+            Last updated: {{ item_obj.last_updated|date:'d-m-Y' }} (v{{ item_obj.version }})
           </span>
         </div>
       </div>
-      <div class="card-body">
+      <div class="card-body bg-light">
         {% crispy form %}
       </div>
     </div>

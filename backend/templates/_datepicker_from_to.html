@@ -1,42 +1,54 @@
 <div class="col-sm-4">
-    <div class="form-group">
-      <div class="input-group input-group-sm date" id="datepicker_from" data-target-input="nearest">
-        <div class="input-group-prepend">
-          <span class="input-group-text">From:</span>
-        </div>
-        <input type="text" 
-               class="form-control form-control-sm datetimepicker-input"
-               data-target="#datepicker_from"
-               placeholder="YYYY-MM-DD"
-               value="{{ begin }}"
-               name="begin"
-        >
-        <div class="input-group-append" data-target="#datepicker_from" data-toggle="datetimepicker">
-          <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-        </div>
+  <div class="form-group">
+    <div class="input-group input-group-sm date" id="datepicker_from" data-target-input="nearest">
+      <div class="input-group-prepend">
+        <span class="input-group-text">From:</span>
+      </div>
+      <input type="text" 
+              class="form-control form-control-sm datetimepicker-input"
+              data-target="#datepicker_from"
+              placeholder="YYYY-MM-DD"
+              value="{{ begin }}"
+              name="begin"
+      >
+      <div class="input-group-append" data-target="#datepicker_from" data-toggle="datetimepicker">
+        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
       </div>
     </div>
   </div>
-  <div class="col-sm-4">
-    <div class="form-group">
-      <div class="input-group input-group-sm date" id="datepicker_to" data-target-input="nearest">
-        <div class="input-group-prepend">
-          <span class="input-group-text">To:</span>
-        </div>
-        <input type="text" 
-               class="form-control form-control-sm datetimepicker-input"
-               data-target="#datepicker_to"
-               placeholder="YYYY-MM-DD"
-               value="{{ end }}"
-               name="end"
+</div>
+<div class="col-sm-4">
+  <div class="form-group">
+    <div class="input-group input-group-sm date" id="datepicker_to" data-target-input="nearest">
+      <div class="input-group-prepend">
+        <span class="input-group-text">To:</span>
+      </div>
+      <input type="text" 
+              class="form-control form-control-sm datetimepicker-input"
+              data-target="#datepicker_to"
+              placeholder="YYYY-MM-DD"
+              value="{{ end }}"
+              name="end"
 
-        >
-        <div class="input-group-append" data-target="#datepicker_to" data-toggle="datetimepicker">
-          <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-        </div>
+      >
+      <div class="input-group-append" data-target="#datepicker_to" data-toggle="datetimepicker">
+        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
       </div>
     </div>
   </div>
+</div>
+<div class="col-sm-4">
+  <div class="btn-group btn-group-sm" role="group" aria-label="Quick Date Filter">
+    <button id="btn-view_last_month" class="btn btn-light btn-outline-secondary" type="button">
+      Last Month
+    </button>
+    <button id="btn-view_last_3_months" class="btn btn-light btn-outline-secondary" type="button">
+      Last 3 Months
+    </button>
+  </div>
+</div>
+
+      
   <script type="text/javascript">
     $(function () {
       $('#datepicker_from').datetimepicker({
@@ -52,6 +64,23 @@
       $("#datepicker_from").on("change.datetimepicker", function (e) {
           $('#datepickerto').datetimepicker('maxDate', e.date);
       });
-    })
+
+      $("#btn-view_last_month").click(function() {
+        console.log('click');
+        var today = moment().format("YYYY-MM-DD");
+        var oneMonthAgo = moment().subtract(1, 'months').format("YYYY-MM-DD");
+        var loadurl = "{% url 'inventory:DeliveryOrderList' %}?begin=" 
+          + oneMonthAgo + "&end=" + today;
+        window.location = loadurl;
+      })
+      $("#btn-view_last_3_months").click(function() {
+        console.log('click');
+        var today = moment().format("YYYY-MM-DD");
+        var threeMonthsAgo = moment().subtract(3, 'months').format("YYYY-MM-DD");
+        var loadurl = "{% url 'inventory:DeliveryOrderList' %}?begin=" 
+          + threeMonthsAgo + "&end=" + today;
+        window.location = loadurl;
+      })
+    });
 
   </script>

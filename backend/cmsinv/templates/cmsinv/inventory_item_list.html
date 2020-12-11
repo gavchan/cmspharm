@@ -27,18 +27,18 @@
               </label>
             </div>
             <select 
-              name="inv_type" 
+              name="invtype" 
               id="inputGroupSelectType" 
               class="custom-select"
               >
               <option value="1"
-                {% if inv_type == '1' %} selected {% endif %}
+                {% if invtype == '1' %} selected {% endif %}
               >Drug</option>
               <option value="2"
-                {% if inv_type == '2' %} selected {% endif %}
+                {% if invtype == '2' %} selected {% endif %}
               >Supplement</option>
               <option value="0"
-                {% if inv_type == '0' %} selected {% endif %}
+                {% if invtype == '0' %} selected {% endif %}
               >Any</option>
             </select>
           </div>
@@ -48,14 +48,14 @@
             <div class="input-group-prepend">
               <label
                 class="input-group-text input-group-sm"
-                for="inputGroupSelectActive"
+                for="inputGroupSelectStatus"
                 >Status</label
               >
             </div>
             <select
               name="status"
               class="custom-select input-group-sm"
-              id="inputGroupSelectActive"
+              id="inputGroupSelectStatus"
             >
               <option value="1"
                 {% if status == '1' %} selected {% endif %}
@@ -81,7 +81,7 @@
             <select
               name="dd"
               class="custom-select input-group-sm"
-              id="inputGroupSelectActive"
+              id="inputGroupSelectDD"
             >
               <option value="any" 
                 {% if dd == 'any' %} selected {% endif %}
@@ -129,7 +129,7 @@
           <ul class="pagination pagination-sm">
             <li class="page-item">
               <a
-                href="{% url 'cmsinv:InventoryItemList' %}?q={{ last_query }}&inv_type={{ type }}&status={{ status }}&dd={{ dd }}&page=1"
+                href="{% url 'cmsinv:InventoryItemList' %}?q={{ last_query }}&invtype={{ type }}&status={{ status }}&dd={{ dd }}&page=1"
                 class="page-link"
               >
                 First
@@ -138,7 +138,7 @@
             {% if page_obj.has_previous %}
             <li class="page-item">
               <a
-                href="{% url 'cmsinv:InventoryItemList' %}?q={{ last_query }}&inv_type={{ type }}&status={{ status }}&dd={{ dd }}&page={{ page_obj.previous_page_number }}"
+                href="{% url 'cmsinv:InventoryItemList' %}?q={{ last_query }}&invtype={{ type }}&status={{ status }}&dd={{ dd }}&page={{ page_obj.previous_page_number }}"
                 class="page-link"
               >
                 {{ page_obj.previous_page_number }}
@@ -147,7 +147,7 @@
             {% endif %}
             <li class="page-item active">
               <a
-                href="{% url 'cmsinv:InventoryItemList' %}?q={{ last_query }}&inv_type={{ type }}&status={{ status }}&dd={{ dd }}&page={{ page_obj.number }}"
+                href="{% url 'cmsinv:InventoryItemList' %}?q={{ last_query }}&invtype={{ type }}&status={{ status }}&dd={{ dd }}&page={{ page_obj.number }}"
                 class="page-link"
               >
                 {{ page_obj.number }}
@@ -156,7 +156,7 @@
             {% if page_obj.has_next %}
             <li class="page-item">
               <a
-                href="{% url 'cmsinv:InventoryItemList' %}?q={{ last_query }}&inv_type={{ type }}&status={{ status }}&dd={{ dd }}&page={{ page_obj.next_page_number }}"
+                href="{% url 'cmsinv:InventoryItemList' %}?q={{ last_query }}&invtype={{ type }}&status={{ status }}&dd={{ dd }}&page={{ page_obj.next_page_number }}"
                 class="page-link"
               >
                 {{ page_obj.next_page_number }}
@@ -165,7 +165,7 @@
             {% endif %}
             <li class="page-item">
               <a
-                href="{% url 'cmsinv:InventoryItemList' %}?q={{ last_query }}&inv_type={{ type }}&status={{ status }}&dd={{ dd }}&page=last"
+                href="{% url 'cmsinv:InventoryItemList' %}?q={{ last_query }}&invtype={{ type }}&status={{ status }}&dd={{ dd }}&page=last"
                 class="page-link"
               >
                 Last ({{ page_obj.paginator.num_pages }})
@@ -198,7 +198,7 @@
 
 <script type="text/javascript">
   $(document).ready(function () {
-    $(".expense-item-update").each(function () {
+    $(".btn_modal_trigger").each(function () {
       $(this).modalForm({
         formURL: $(this).data("id"),
       });
@@ -210,38 +210,39 @@
     $("#datepicker_from").datetimepicker({
       format: "L",
     });
+    
     $("#datepicker_to").datetimepicker({
       format: "L",
       useCurrent: false,
     });
+    
     $("#datepicker_from").on("change.datetimepicker", function (e) {
       $("#datepicker_to").datetimepicker("minDate", e.date);
     });
+    
     $("#datepicker_from").on("change.datetimepicker", function (e) {
       $("#datepickerto").datetimepicker("maxDate", e.date);
     });
+    
+    const optionUpdatePage = function() {
+      let invtype = $("#inputGroupSelectType option:selected").val();
+      let status =  $("#inputGroupSelectStatus option:selected").val();
+      let dd = $("#inputGroupSelectDD option:selected").val();
+      self.location = "{% url 'cmsinv:InventoryItemList' %}?q={{ last_query }}&invtype="
+        + invtype + "&status=" + status + "&dd=" + dd;
+    }
+    $("#inputGroupSelectType").change(function() {
+      optionUpdatePage();
+    });
 
-    $(".show-item-details").each(function () {
-      $(this).modalForm({
-        formURL: $(this).data("id"),
-      });
+    $("#inputGroupSelectStatus").change(function() {
+      optionUpdatePage();
     });
-    $(".btn_quickedit").each(function () {
-      $(this).modalForm({
-          formURL: $(this).data('id')
-      });
+
+    $("#inputGroupSelectDD").change(function() {
+      optionUpdatePage();
     });
-    // $(".item-action-cell").append(
-    //   `<div class="btn-group dropleft ml-1">
-    //         <a class="btn btn-md btn-link dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></a>
-    //         <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-    //             <a class="dropdown-item" href="#">Add new delivery</a>
-    //             <a class="dropdown-item" href="#">Toggle active status</a>
-    //             <a class="dropdown-item" href="#">Edit</a>
-    //         </div>
-    //     </div>
-    //     `
-    // );
+
   });
 </script>
 {% endblock %}

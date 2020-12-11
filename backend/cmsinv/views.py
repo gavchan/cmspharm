@@ -43,7 +43,7 @@ class InventoryItemList(ListView, LoginRequiredMixin):
     def get_queryset(self):
         query = self.request.GET.get('q')
         print(f"query={query}")
-        self.inv_type = self.request.GET.get('inv_type') or '1'
+        self.invtype = self.request.GET.get('invtype') or '1'
         self.status = self.request.GET.get('status') or '1'
         self.dd = self.request.GET.get('dd') or 'any'
         if query:
@@ -55,7 +55,7 @@ class InventoryItemList(ListView, LoginRequiredMixin):
                 Q(alias__icontains=query) |
                 Q(clinic_drug_no__icontains=query) |
                 Q(ingredient__icontains=query)
-            )
+            ).order_by('discontinue')
         else:
             self.last_query = ''
             object_list = InventoryItem.objects.all()
@@ -63,9 +63,9 @@ class InventoryItemList(ListView, LoginRequiredMixin):
             object_list = object_list.filter(discontinue=False)
         elif self.status == '0':
             object_list = object_list.filter(discontinue=True)
-        if self.inv_type =='1':
+        if self.invtype =='1':
             object_list = object_list.filter(inventory_type='Drug')
-        elif self.inv_type == '2':
+        elif self.invtype == '2':
             object_list = object_list.filter(inventory_type='Supplement')
         if self.dd == '1':
             object_list = object_list.filter(dangerous_sign=True)
@@ -79,7 +79,7 @@ class InventoryItemList(ListView, LoginRequiredMixin):
         data['last_query'] = self.last_query
         data['last_query_count'] = self.last_query_count
         data['next_clinic_drug_no'] = InventoryItem.generateNextClinicDrugNo()
-        data['inv_type'] = self.inv_type
+        data['invtype'] = self.invtype
         data['status'] = self.status
         data['dd'] = self.dd
         return data
@@ -328,7 +328,7 @@ class InventoryItemMatchUpdate(UpdateView, LoginRequiredMixin):
             print(f"No registration no. for {self.object.product_name}")
             
         try:
-            self.delivery_obj_list = DeliveryItem.objects.filter(item__reg_no=self.object.registration_no).order_by('-received_date')[:5]
+            self.delivery_obj_list = DeliveryItem.objects.filter(item__reg_no=self.object.registration_no).order_by('-delivery_order__received_date')[:5]
         except DeliveryItem.DoesNotExist:
             self.delivery_obj_list = None
             print(f"No delivery record for {self.object.product_name}")

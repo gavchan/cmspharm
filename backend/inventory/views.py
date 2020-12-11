@@ -63,7 +63,6 @@ class CategoryList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
         data['last_query_count'] = self.last_query_count
         return data
 
-
 class NewCategory(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
     """Add category"""
     permission_required = ('inventory.add_category', )
@@ -84,7 +83,6 @@ class NewCategory(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
 
 #     # def get_context_data(self, **kwargs):
 #     #     context = super().get_context_data(**kwargs)
-
 
 class CategoryUpdate(UpdateView, LoginRequiredMixin, PermissionRequiredMixin):
     """Update details for category"""
@@ -348,6 +346,8 @@ class DeliveryOrderList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
 
     def get_queryset(self):
         self.disp_type = self.request.GET.get('t')
+        self.begin = self.request.GET.get('begin')
+        self.end = self.request.GET.get('end')
         query = self.request.GET.get('q')
         if query:
             self.last_query = query
@@ -359,6 +359,10 @@ class DeliveryOrderList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
             self.last_query = ''
             object_list = DeliveryOrder.objects.all()
             self.last_query_count = object_list.count
+        if self.begin:
+            object_list = object_list.filter(received_date__gte=self.begin)
+        if self. end:
+            object_list = object_list.filter(received_date__lte=self.end)
         return object_list
 
     def get_context_data(self, **kwargs):
@@ -366,6 +370,8 @@ class DeliveryOrderList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
         data['last_query'] = self.last_query
         data['last_query_count'] = self.last_query_count
         data['disp_type'] = self.disp_type
+        data['begin'] = self.begin
+        data['end'] = self.end
         return data
 
 class DeliveryOrderUpdateModal(BSModalUpdateView, LoginRequiredMixin, PermissionRequiredMixin):

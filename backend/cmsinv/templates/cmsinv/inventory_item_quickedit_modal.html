@@ -8,45 +8,8 @@
 </div>
 
 <div class="modal-body">
-  {% if drug_obj %}
-  <div class="card">
-    <div class="card-body">
-      <div class="row">
-        <div class="col-md-8">
-            {% if set_match_drug %}
-            <h5>Set Registration No. to Matching Drug: [ {{drug_obj.reg_no}} ]</h5>
-            {% else %}
-            <h5>[ {{drug_obj.reg_no}} ] Matching Registered Drug</h5>
-            {% endif %}
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-md-3">
-            Product Name
-        </div>
-        <div class="col-md-9">
-            {{ drug_obj.name }}
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-md-3">
-            Ingredients
-        </div>
-        <div class="col-md-9">
-            {{ drug_obj.ingredients_list }}
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-md-3">
-            Cert. Holder
-        </div>
-        <div class="col-md-9">
-            {{ drug_obj.company.name }}
-        </div>
-      </div>
-    </div>
-  </div>
-  {% elif match_drug_list %}
+  {% include 'drugdb/_regdrug_summary.html' %}
+  {% if match_drug_list %}
   <div class="card">
       <div class="card-header d-flex justify-content-between align-items-center">
           No match registration number match. Possible matching registered drugs:
@@ -82,58 +45,43 @@
         </table>
       </div>
   </div>
-  {% else %}  
-  <div class="alert alert-danger d-flex justify-content-between align-items-center" role="alert">
-    No matching registered drug no.
-    <div class="btn-group" role="group" aria-label="Search by group">
-        <button type="button" class="btn btn-sm btn-light" disabled>Search by</button>
-        {% if item_obj.registration_no %}
-        <a href="{% url 'cmsinv:MatchInventoryItemList' item_obj.registration_no %}"
-            class="btn btn-sm btn-secondary">
-            Reg. no.
-        </a>
-        {% endif %}
-        {% if item_obj.ingredient %}
-        <a href="{% url 'cmsinv:InventoryItemList' %}?q={{ item_obj.ingredient }}"
-            class="btn btn-sm btn-secondary">
-            Ingredients
-        </a>
-            {% else %}
-        <a href="{% url 'cmsinv:InventoryItemList' %}?q={{ item_obj.product_name }}"
-            class="btn btn-sm btn-secondary">
-            Product name
-        </a> 
-        {% endif %}
-    </div>
-  </div>
   {% endif %}
-  <div class="card">
-    <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
-      <div>
-        Edit Item&nbsp;<button class="btn btn_update_all btn-sm btn-secondary">Match RegDrug <i class="fad fa-arrow-circle-down"></i></button>
-        {% if item_obj.discontinue %}
-        <span class="badge badge-danger">Inactive/Discontinued</span>
-        {% endif %}
+  <div class="card shadow mb-2">
+    <div class="card-header bg-light align-items-center">
+      <div class="row">
+        <div class="col-2 d-flex align-items-center">
+          <strong>Edit Item</strong>
+        </div>
+        <div class="col-10 d-flex justify-content-between">
+          <div>
+            <button class="btn btn_update_all btn-sm btn-secondary">Match RegDrug <i class="fad fa-arrow-circle-down"></i></button>
+            {% if item_obj.discontinue %}
+            <span class="badge badge-danger">Inactive/Discontinued</span>
+            {% endif %}
+          </div>
+          <span>
+            <div class="btn-group" role="group" aria-label="Reference">
+              {% if item_obj.registration_no %}
+              <button type="button" class="btn btn-sm btn-light" disabled>
+                Reg # {{ item_obj.registration_no }}
+              {% elif set_match_drug %}
+              <button type="button" class="btn btn-sm btn-warning" disabled>
+                Reg # None <i class="fad fa-arrow-to-right"></i> {{ drug_obj.reg_no }}
+              </button>
+              {% endif %}
+              {% if item_obj.clinic_drug_no %}
+              <button type="button" class="btn btn-sm btn-light" disabled># {{ item_obj.clinic_drug_no }}</button>
+              {% endif %}
+            </div>
+            <div class="btn-group" role="group" aria-label="Detail Edit Actions">
+              <a href="{% url 'cmsinv:InventoryItemUpdate' item_obj.pk %}" class="btn btn-sm btn-light"><i class="fad fa-edit"></i></a>
+              <a href="{% url 'cmsinv:InventoryItemMatchUpdate' item_obj.pk %}" class="btn btn-sm btn-light"><i class="fad fa-copy"></i></a>
+            </div>
+          </span>
+        </div>
+        
       </div>
-      <span>
-        <div class="btn-group" role="group" aria-label="Reference">
-          {% if item_obj.registration_no %}
-          <button type="button" class="btn btn-sm btn-light" disabled>
-            Reg # {{ item_obj.registration_no }}
-          {% elif set_match_drug %}
-          <button type="button" class="btn btn-sm btn-warning" disabled>
-            Reg # None <i class="fad fa-arrow-to-right"></i> {{ drug_obj.reg_no }}
-          </button>
-          {% endif %}
-          {% if item_obj.clinic_drug_no %}
-          <button type="button" class="btn btn-sm btn-light" disabled># {{ item_obj.clinic_drug_no }}</button>
-          {% endif %}
-        </div>
-        <div class="btn-group" role="group" aria-label="Detail Edit Actions">
-          <a href="{% url 'cmsinv:InventoryItemUpdate' item_obj.pk %}" class="btn btn-sm btn-light"><i class="fad fa-edit"></i></a>
-          <a href="{% url 'cmsinv:InventoryItemMatchUpdate' item_obj.pk %}" class="btn btn-sm btn-light"><i class="fad fa-copy"></i></a>
-        </div>
-      </span>
+      
     </div>
     <div class="card-body">
       {% crispy form %}

@@ -15,10 +15,6 @@ from .models import (
     RegisteredDrug,
     Company,
 )
-# from .forms import (
-#     NewDrugDeliveryForm, DrugDeliveryUpdateForm,
-#     BillDrugDeliveryAddDrugModalForm,
-# )
 
 class RegisteredDrugList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
     """List of registered drugs"""

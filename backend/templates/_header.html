@@ -16,11 +16,6 @@
                     <a href="{% url 'ledger:NewExpense' %}" class="nav-link"><i class="fal fa-plus"></i> Expense</a>
                 </li>
                 {% endif %}
-                {% if perms.drugdb.can_add_drugdelivery %}
-                <li class="nav-item">
-                    <a href="{% url 'inventory:NewDeliveryOrder' %}" class="nav-link"><i class="fal fa-plus"></i> Delivery</a>
-                </li>
-                {% endif %}
 
                 {% if perms.ledger.can_view_expense %}
                 <li class="nav-item dropdown">
@@ -50,7 +45,7 @@
                         <a href="{% url 'inventory:VendorList' %}?vtype=supp" class="dropdown-item">View Suppliers</a>
                         <a href="{% url 'inventory:DeliveryOrderList' %}" class="dropdown-item">View Delivery Orders</a>
                         <a href="{% url 'inventory:DeliveryItemList' %}" class="dropdown-item">View Delivered Drugs/Items</a>
-                        <a href="{% url 'inventory:NewVendor' %}" class="dropdown-item">Add Vendor</a>
+                        <a href="{% url 'inventory:NewVendor' %}" class="dropdown-item">Add Supplier</a>
                     </div>
                 </li>
                 {% endif %}

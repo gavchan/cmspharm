@@ -141,7 +141,7 @@ Requires the following parameters:
                     <td>{{ item.expiry_date }}</td>
                     <td> ${{ item.average_cost }}</td>
                     <td>
-                        <a href="{% url 'inventory:DeliveryItemDetail' item.pk %}" 
+                        <a href="{% url 'inventory:DeliveryOrderUpdateModal' item.pk %}" 
                             class="btn btn-sm btn-primary">
                             <i class="fad fa-file-alt"></i>
                         </a>

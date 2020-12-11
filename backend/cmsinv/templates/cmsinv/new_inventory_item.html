@@ -54,7 +54,8 @@
     </div>
     {% else %}
     <div class="alert alert-danger d-flex justify-content-between align-items-center" role="alert">
-      No matching registered drug no.
+      No matching registered drug no. 
+      <a href="{% url 'drugdb:DrugList' %}" class="alert-link">Choose from list</a>
     </div>
     {% endif %}
   

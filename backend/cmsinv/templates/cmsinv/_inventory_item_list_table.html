@@ -50,14 +50,14 @@
                 <button 
                     type="button" 
                     {% if item.registration_no %}
-                        class="show-item-details btn btn-link"
+                        class="btn_modal_trigger show-item-details btn btn-link"
                     {% else %}
-                        <button type="button" class="show-item-details btn btn-sm btn-danger"
+                        class="show-item-details btn btn-sm btn-danger"
                     {% endif %}
                     data-id="{% url 'cmsinv:InventoryItemModalDetail' item.pk %}"
                     ><i class="fad fa-file"></i></button>
                 <button
-                  class="btn_quickedit btn btn-link"
+                  class="btn_modal_trigger btn btn-link"
                   data-id="{% url 'cmsinv:InventoryItemQuickEditModal' item.pk %}"  
                 ><i class="fad fa-edit"></i>
                 </button>
