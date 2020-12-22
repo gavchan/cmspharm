@@ -42,7 +42,7 @@
                             {{ listitem.items_unit }} 
                             {% endif %} / {{ listitem.purchase_unit }}
                         </td>
-                        <td width="10%" class="text-monospace text-right">
+                        <td width="10%" class="text-right">
                             {% if listitem.is_sample %}
                             <span class="badge badge-info ml-2 mt-0"
                             >Sample
@@ -51,19 +51,19 @@
                             {{ listitem.purchase_quantity }}
                             {% endif %}
                         </td>
-                        <td width="10%" class="text-monospace text-right">
+                        <td width="10%" class="text-right">
                             {% if listitem.bonus_quantity %}
                             + {{ listitem.bonus_quantity }}
                             {% endif %}
                         </td>
-                        <td width="10%" class="text-monospace text-right">{{ listitem.standard_cost }}</td>
-                        <td width="10%" class="text-monospace text-right">{{ listitem.average_cost }}</td>
-                        <td width="15%" class="text-monospace text-right">{{ listitem.total_price }}</td>
+                        <td width="10%" class="text-right">{{ listitem.standard_cost }}</td>
+                        <td width="10%" class="text-right">{{ listitem.average_cost }}</td>
+                        <td width="15%" class="text-right">{{ listitem.total_price }}</td>
                     </tr>
                     {% endfor %}
                 </table>
             </td>
-            <td class="text-monospace text-right">{{ record.amount }}</td>
+            <td class="text-right">{{ record.amount }}</td>
             <td class="text-right">
                 <a href="{% url 'inventory:DeliveryOrderDetail' record.id %}" 
                   class="btn btn-sm btn-info"
@@ -86,7 +86,7 @@
                 </span>
                 {% endif %}
             </th>
-            <td class="text-monospace text-right"><strong>{{ list_total }}</strong></td>
+            <td class="text-right"><strong>{{ list_total }}</strong></td>
             <td colspan="2" class="text-center"></td>
         </tr>
 

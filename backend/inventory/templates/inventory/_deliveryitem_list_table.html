@@ -35,13 +35,18 @@
             <td colspan="5">
                 <table width="100%">
                     <tr>
-                        <td width="45%">{{ listitem.item.name }}
+                        <td width="45%">
+                            <button
+                                class="btn_modal_trigger btn btn-sm btn-link ml-0 pl-0"
+                                data-id="{% url 'cmsinv:InventoryItemQuickEditModal' listitem.item.cmsid %}"  
+                            >{{ listitem.item.name }}&nbsp;<i class="fad fa-edit"></i>
+                            </button>
                             <br>{{ listitem.items_per_purchase }}&nbsp;
                             {% if listitem.items_unit %}
                             {{ listitem.items_unit }} 
                             {% endif %} / {{ listitem.purchase_unit }}
                         </td>
-                        <td width="10%" class="text-monospace text-right">
+                        <td width="10%" class="text-right">
                             {% if listitem.is_sample %}
                             <span class="badge badge-info ml-2 mt-0"
                             >Sample
@@ -53,12 +58,12 @@
                                 {% endif %}
                             {% endif %}
                         </td>
-                        <td width="10%" class="text-monospace text-right">
+                        <td width="10%" class="text-right">
                             {{ listitem.items_quantity|intcomma }}
                         </td>
-                        <td width="10%" class="text-monospace text-right">{{ listitem.standard_cost }}</td>
-                        <td width="10%" class="text-monospace text-right">{{ listitem.average_cost }}</td>
-                        <td width="15%" class="text-monospace text-right">{{ listitem.total_price }}</td>
+                        <td width="10%" class="text-right">{{ listitem.standard_cost }}</td>
+                        <td width="10%" class="text-right">{{ listitem.average_cost }}</td>
+                        <td width="15%" class="text-right">{{ listitem.total_price }}</td>
                     </tr>
                 </table>
             </td>

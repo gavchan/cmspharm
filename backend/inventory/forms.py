@@ -518,10 +518,10 @@ class DeliveryItemUpdateModalForm(BSModalForm):
                         </thead>
                         <tbody>
                             <tr>
-                                <td id="ds_quantity" class="text-monospace text-center">&nbsp;</td>
-                                <td id="ds_stdcost" class="text-monospace text-right">&nbsp;</td>
-                                <td id="ds_avgcost" class="text-monospace text-right">&nbsp;</td>
-                                <td id="ds_total" class="text-monospace text-right">&nbsp;</td>
+                                <td id="ds_quantity" class="text-center">&nbsp;</td>
+                                <td id="ds_stdcost" class="text-right">&nbsp;</td>
+                                <td id="ds_avgcost" class="text-right">&nbsp;</td>
+                                <td id="ds_total" class="text-right">&nbsp;</td>
                             </td>
                         </tbody>
                     </table>

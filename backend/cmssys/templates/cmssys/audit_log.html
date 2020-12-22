@@ -1,4 +1,4 @@
-{% extends 'base.html' %} {% block title %} Expenses {% endblock %} {% load
+{% extends 'base.html' %} {% block title %} CMS Audit Log {% endblock %} {% load
 crispy_forms_tags %} {% block content %}
 
 <div class="card shadow">
@@ -6,14 +6,14 @@ crispy_forms_tags %} {% block content %}
     <div class="d-flex justify-content-between align-items-center">
       <span>
         <i class="fad fa-table" aria-hidden="true"></i>
-        Expenses
+        CMS Audit Log
       </span>
     </div>
   </div>
   <div class="card-body">
     <div class="row">
       <div class="col-md-10">
-        <form action="{% url 'ledger:ExpenseList' %}" method="get">
+        <form action="{% url 'cmssys:AuditLog' %}" method="get">
           <div class="row">
             <div class="col-sm-10">
               <div class="row">
@@ -24,7 +24,7 @@ crispy_forms_tags %} {% block content %}
               <button id="btn_filter_results" class="btn btn-sm btn-secondary btn-block">Filter by Date</button>
             </div>
           </div>
-          <div class="row mb-2">
+          <div class="row mb-1">
             <div class="col-sm-10">
               <div class="row">
                 <div class="col-sm-8">
@@ -46,7 +46,7 @@ crispy_forms_tags %} {% block content %}
                     <ul class="pagination pagination-sm">
                       <li class="page-item">
                         <a
-                          href="{% url 'ledger:ExpenseList' %}?q={{ last_query }}&page=1"
+                          href="{% url 'cmssys:AuditLog' %}?q={{ last_query }}&page=1"
                           class="page-link"
                         >
                           First
@@ -55,7 +55,7 @@ crispy_forms_tags %} {% block content %}
                       {% if page_obj.has_previous %}
                       <li class="page-item">
                         <a
-                          href="{% url 'ledger:ExpenseList' %}?q={{ last_query }}&page={{ page_obj.previous_page_number }}"
+                          href="{% url 'cmssys:AuditLog' %}?q={{ last_query }}&page={{ page_obj.previous_page_number }}"
                           class="page-link"
                         >
                           {{ page_obj.previous_page_number }}
@@ -64,7 +64,7 @@ crispy_forms_tags %} {% block content %}
                       {% endif %}
                       <li class="page-item active">
                         <a
-                          href="{% url 'ledger:ExpenseList' %}?q={{ last_query }}&page={{ page_obj.number }}"
+                          href="{% url 'cmssys:AuditLog' %}?q={{ last_query }}&t={{ disp_type }}&page={{ page_obj.number }}"
                           class="page-link"
                         >
                           {{ page_obj.number }}
@@ -73,7 +73,7 @@ crispy_forms_tags %} {% block content %}
                       {% if page_obj.has_next %}
                       <li class="page-item">
                         <a
-                          href="{% url 'ledger:ExpenseList' %}?q={{ last_query }}&page={{ page_obj.next_page_number }}"
+                          href="{% url 'cmssys:AuditLog' %}?q={{ last_query }}&t={{ disp_type }}&page={{ page_obj.next_page_number }}"
                           class="page-link"
                         >
                           {{ page_obj.next_page_number }}
@@ -82,7 +82,7 @@ crispy_forms_tags %} {% block content %}
                       {% endif %}
                       <li class="page-item">
                         <a
-                          href="{% url 'ledger:ExpenseList' %}?q={{ last_query }}&page=last"
+                          href="{% url 'cmssys:AuditLog' %}?q={{ last_query }}&{{ disp_type }}&page=last"
                           class="page-link"
                         >
                           Last ({{ page_obj.paginator.num_pages }})
@@ -95,7 +95,41 @@ crispy_forms_tags %} {% block content %}
               
             </div>
             
-            <div class="col-sm-4 px-1">
+            <div class="col-sm-2 px-1">
+              <div class="input-group input-group-sm">
+                <!-- <div class="input-group-prepend">
+                  <label 
+                    for="inputGroupSelectType" 
+                    class="input-group-text"
+                    >Type
+                  </label>
+                </div> -->
+                <select 
+                  name="t" 
+                  id="inputGroupSelectType" 
+                  class="custom-select"
+                  >
+                  <option value=""
+                    default
+                  >All</option>
+                  <option value="1"
+                    {% if disp_type == '1' %} selected {% endif %}
+                  >Delivery
+                  </option>
+                  <option value="2"
+                    {% if disp_type == '2' %} selected {% endif %}
+                  >Dispensary
+                  </option>
+                  <option value="3"
+                    {% if disp_type == '3' %} selected {% endif %}
+                  >Reconciliation
+                  </option>
+                  <option value="4"
+                    {% if disp_type == '4' %} selected {% endif %}
+                  >Stock init
+                  </option>
+                </select>
+              </div>
             </div>
           </div>
         </form>
@@ -104,9 +138,9 @@ crispy_forms_tags %} {% block content %}
         <div class="row mb-2">
           <div class="col-sm-12">
             <a 
-              href="{% url 'ledger:NewExpense' %}"
-              class="btn btn-sm btn-success btn-block"
-            >New Expense
+              href="#"
+              class="btn btn-sm btn-success btn-block" disabled
+            >Disabled
             </a>
           </div>
         </div>
@@ -118,42 +152,31 @@ crispy_forms_tags %} {% block content %}
       </div>
     </div>
     
-    {% if expense_list_obj %}
+    {% if audit_log %}
     <table class="table table-hover table-sm table-striped">
       <thead>
         <tr>
-          <th scope="col">Invoice</th>
-          <th scope="col">Paid Date</th>
-          <th scope="col">Payee</th>
-          <th scope="col">Category</th>
-          <th scope="col" class="text-right">Amount</th>
-          <th scope="col" class="text-right">Action</th>
+          <th scope="col">Log Date</th>
+          <th scope="col">Class Name</th>
+          <th scope="col">Actor</th>
+          <th scope="col">Event Name</th>
+          <th scope="col">Property Name</th>
+          <th scope="col">Old Value</th>
+          <th scope="col">New Value</th>
+          <th scope="col" class="text-center">Obj ID</th>
         </tr>
       </thead>
       <tbody>
-        {% for expense in expense_list_obj %}
+        {% for entry in audit_log %}
 
         <tr>
-          <td>{{ expense.invoice_date|date:"d-m-y" }}</td>
-          <td>{{ expense.expected_date|date:"d-m-y" }}</td>
-          <td>{{ expense.payee }}</td>
-          <td>{{ expense.category.name }}</td>
-          <td class="text-right">{{ expense.amount }}</td>
-          <td class="text-right">
-            {% if expense.category.name == "Drugs" %}
-            <a
-              href="{% url 'ledger:ExpenseDetail' expense.pk %}"
-              class="btn btn-sm btn-info"
-              ><i class="fad fa-files-medical"></i>
-            </a>
-            {% endif %}
-            <a
-              href="{% url 'ledger:ExpenseUpdate' expense.pk %}"
-              class="btn-expense_update btn btn-sm btn-primary"
-            >
-              <i class="fad fa-edit"></i>
-            </a>
-          </td>
+          <td>{{ entry.last_updated|date:"d-m-y H:i:s" }}</td>
+          <td>{{ entry.class_name }}</td>
+          <td>{{ entry.actor }}</td>
+          <td>{{ entry.event_name }}</td>
+          <td>{{ entry.old_value }}</td>
+          <td>{{ entry.new_value }}</td>
+          <td class="text-right">{{ entry.persisted_obj_id }}</td>
         </tr>
 
         {% endfor %}
@@ -162,7 +185,7 @@ crispy_forms_tags %} {% block content %}
 
     {% else %}
 
-    <p>No expenses in database</p>
+    <p>No data</p>
 
     {% endif %}
   </div>
@@ -172,15 +195,13 @@ crispy_forms_tags %} {% block content %}
 
 <script type="text/javascript">
   $(document).ready(function () {
-    $(".expense-item-update").each(function () {
-      $(this).modalForm({
-        formURL: $(this).data("id"),
-      });
+    $("#inputGroupSelectType").change(function() {
+      let disptype = $("#inputGroupSelectType option:selected").val();
+      self.location = "{% url 'cmssys:AuditLog' %}?q={{ last_query }}&t="
+        + disptype;
     });
 
-    $("#btn-add_expense").modalForm({
-      formURL: "{% url 'ledger:NewExpenseModal' %}",
-    });
+    // _datepicker_from_to.html scripts
     $("#datepicker_from").datetimepicker({
       format: "L",
     });

@@ -31,7 +31,7 @@
             <td>{{ delivery_obj.bill.invoice_date|date:"d-m-y" }}</td>
             <td>{{ delivery_obj.bill.expected_date|date:"d-m-y" }}</td>
             <td>{{ delivery_obj.bill.payee }}</td>
-            <td class="text-monospace text-right">{{ delivery_obj.bill.amount }}</td>
+            <td class="text-right">{{ delivery_obj.bill.amount }}</td>
             <td>
               {{ delivery_obj.bill.payment_method }}
               {% if delivery_obj.bill.payment_ref %}

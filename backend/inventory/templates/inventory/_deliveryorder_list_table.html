@@ -4,8 +4,8 @@
             <th scope="col">Invoice date</th>
             <th scope="col">Received date</th>
             <th scope="col">Vendor</th>
-            <th scope="col">Amount</th>
-            <th scope="col">Paid?</th>
+            <th scope="col" class="text-right">Amount</th>
+            <th scope="col" class="text-center">Paid?</th>
             <th scope="col" class="text-right">Action</th>
         </tr>
     </thead>
@@ -16,8 +16,8 @@
             <td>{{ delivery_obj.invoice_date|date:"d-m-y" }}</td>
             <td>{{ delivery_obj.received_date|date:"d-m-y" }}</td>
             <td>{{ delivery_obj.vendor.name}}</td>
-            <td>{{ delivery_obj.amount }}</td>
-            <td>
+            <td class="text-right">{{ delivery_obj.amount }}</td>
+            <td class="text-center">
                 {% if delivery_obj.is_paid %}
                 <span class="badge badge-success">Paid</span>
                 {% elif delivery_obj.amount == 0 %}

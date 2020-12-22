@@ -24,6 +24,7 @@ urlpatterns = [
     path('cms-admin/', admin.site.urls),
     path('cms-auth/', include('django.contrib.auth.urls')),
     path('cmsinv/', include('cmsinv.urls')),
+    path('cmssys/', include('cmssys.urls')),
     path('drugdb/', include('drugdb.urls')),
     path('inventory/', include('inventory.urls')),
     path('ledger/', include('ledger.urls')),

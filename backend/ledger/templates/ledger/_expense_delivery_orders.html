@@ -30,11 +30,11 @@
                 <tr>
                     <td>{{ listitem.item.name }}</td>
                     <td>{{ listitem.item.reg_no }}</td>
-                    <td class="text-monospace text-right">{{ listitem.purchase_quantity }}</td>
-                    <td class="text-monospace text-right">{{ listitem.bonus_quantity }}</td>
-                    <td class="text-monospace text-right">@ ${{ listitem.standard_cost }}</td>
-                    <td class="text-monospace text-right">@ ${{ listitem.average_cost }}</td>
-                    <td class="text-monospace text-right">${{ listitem.total_price }}</td>
+                    <td class="text-right">{{ listitem.purchase_quantity }}</td>
+                    <td class="text-right">{{ listitem.bonus_quantity }}</td>
+                    <td class="text-right">@ ${{ listitem.standard_cost }}</td>
+                    <td class="text-right">@ ${{ listitem.average_cost }}</td>
+                    <td class="text-right">${{ listitem.total_price }}</td>
                     <td class="text-center">
                         <button type="button" class="btn_modal_trigger btn btn-sm btn-info"
                             data-id="{% url 'inventory:DeliveryItemUpdateModal' delivery_id=delivery_obj.id pk=listitem.id %}"
