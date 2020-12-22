@@ -492,7 +492,7 @@ class DepletionItem(models.Model):
 
 class Depletion(models.Model):
     """Maps to CMS table: depletion"""
-    """Stores inventory depetion info"""
+    """Stores inventory depletion info"""
 
     STOCKMOVE = 'Stock Move' # Stock move transaction
     STOCKTAKE = 'Stock Take' # Reconciliation transaction
@@ -506,7 +506,7 @@ class Depletion(models.Model):
     last_updated = models.DateTimeField(auto_now=True, blank=True, null=True)
     # move_to - seems not used in CMS app
     move_to = models.TextField(blank=True, null=True)
-    # remarks - Reconciliation modal Remarks Text Box
+    # remarks - Reconciliation model Remarks Text Box
     remarks = models.TextField(blank=True, null=True)
     depletion_type = models.CharField(choices=DEPLETION_TYPE_CHOICES, db_column='type', max_length=255)
     updated_by = models.CharField(max_length=255, blank=True, null=True)
@@ -526,7 +526,7 @@ class DepletionDepletionItem(models.Model):
     CMS table depletion_depletion_items is a legacy table using a composite key as the primary key
     Django does not support composite keys and a many-to-many field could not be used for this table
     Workaround:
-    - The legacy databased was modified to add an autoincrement `id` primary key
+    - The legacy database was modified to add an autoincrement `id` primary key
     - see backend/scripts/alter-cmsdb-generate-id-from-composite-key.py
     """
     depletion = models.ForeignKey(
