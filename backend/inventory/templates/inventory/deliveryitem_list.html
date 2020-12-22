@@ -33,12 +33,18 @@
             <div class="col-sm-10">
               <div class="row">
                 <div class="col-sm-8">
-                  <input
-                    class="form-control form-control-sm"
-                    name="q"
-                    type="text"
-                    placeholder="Search vendor"
-                  />
+                  <div class="input-group input-group-sm">
+                    <input
+                      class="form-control"
+                      name="q"
+                      value="{{ last_query }}"
+                      type="text"
+                      placeholder="Search by drug name/reg no."
+                    />
+                    <div class="input-group-append">
+                      <button class="btn btn-sm btn-secondary">Search</button>
+                    </div>
+                  </div>
                 </div>
                 <div class="col-sm-4">
                     {% if is_paginated %}
@@ -130,6 +136,36 @@
        $(this).modalForm({
            formURL: $(this).data('id')
        });
+    });
+
+    // _datepicker_from_to.html script
+    $('#datepicker_from').datetimepicker({
+      format: 'YYYY-MM-DD'
+    });
+    $('#datepicker_to').datetimepicker({
+      format: 'YYYY-MM-DD',
+      useCurrent: false
+    });
+    $("#datepicker_from").on("change.datetimepicker", function (e) {
+        $('#datepicker_to').datetimepicker('minDate', e.date);
+    });
+    $("#datepicker_from").on("change.datetimepicker", function (e) {
+        $('#datepickerto').datetimepicker('maxDate', e.date);
+    });
+
+    $("#btn-view_last_month").click(function() {
+      var today = moment().format("YYYY-MM-DD");
+      var oneMonthAgo = moment().subtract(1, 'months').format("YYYY-MM-DD");
+      var loadurl = "{% url 'inventory:DeliveryItemList' %}?begin=" 
+        + oneMonthAgo + "&end=" + today;
+      window.location = loadurl;
+    })
+    $("#btn-view_last_3_months").click(function() {
+      var today = moment().format("YYYY-MM-DD");
+      var threeMonthsAgo = moment().subtract(3, 'months').format("YYYY-MM-DD");
+      var loadurl = "{% url 'inventory:DeliveryItemList' %}?begin=" 
+        + threeMonthsAgo + "&end=" + today;
+      window.location = loadurl;
     });
   });
 </script>

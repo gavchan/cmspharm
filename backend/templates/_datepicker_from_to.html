@@ -49,36 +49,4 @@
 </div>
 
       
-  <script type="text/javascript">
-    $(function () {
-      $('#datepicker_from').datetimepicker({
-        format: 'YYYY-MM-DD'
-      });
-      $('#datepicker_to').datetimepicker({
-        format: 'YYYY-MM-DD',
-        useCurrent: false
-      });
-      $("#datepicker_from").on("change.datetimepicker", function (e) {
-          $('#datepicker_to').datetimepicker('minDate', e.date);
-      });
-      $("#datepicker_from").on("change.datetimepicker", function (e) {
-          $('#datepickerto').datetimepicker('maxDate', e.date);
-      });
-
-      $("#btn-view_last_month").click(function() {
-        var today = moment().format("YYYY-MM-DD");
-        var oneMonthAgo = moment().subtract(1, 'months').format("YYYY-MM-DD");
-        var loadurl = "{% url 'inventory:DeliveryOrderList' %}?begin=" 
-          + oneMonthAgo + "&end=" + today;
-        window.location = loadurl;
-      })
-      $("#btn-view_last_3_months").click(function() {
-        var today = moment().format("YYYY-MM-DD");
-        var threeMonthsAgo = moment().subtract(3, 'months').format("YYYY-MM-DD");
-        var loadurl = "{% url 'inventory:DeliveryOrderList' %}?begin=" 
-          + threeMonthsAgo + "&end=" + today;
-        window.location = loadurl;
-      })
-    });
-
-  </script>
+  

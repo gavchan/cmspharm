@@ -353,15 +353,15 @@ class DeliveryOrderList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
             self.last_query = query
             object_list = DeliveryOrder.objects.filter(
                 Q(vendor__name__icontains=query)
-            )
+            ).order_by('-received_date')
             self.last_query_count = object_list.count
         else:
             self.last_query = ''
-            object_list = DeliveryOrder.objects.all()
+            object_list = DeliveryOrder.objects.all().order_by('-received_date')
             self.last_query_count = object_list.count
         if self.begin:
             object_list = object_list.filter(received_date__gte=self.begin)
-        if self. end:
+        if self.end:
             object_list = object_list.filter(received_date__lte=self.end)
         return object_list
 
@@ -425,6 +425,7 @@ class NewDeliveryOrder(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
         return kwargs
 
     def get_success_url(self):
+        
         return reverse('inventory:DeliveryOrderDetail', args=(self.object.pk,))
 
 class NewDeliveryOrderModal(BSModalCreateView, LoginRequiredMixin, PermissionRequiredMixin):
@@ -851,19 +852,24 @@ class DeliveryItemList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
 
     def get_queryset(self):
         self.disp_type = self.request.GET.get('t')
+        self.begin = self.request.GET.get('begin')
+        self.end = self.request.GET.get('end')
         query = self.request.GET.get('q')
         if query:
             self.last_query = query
-            object_list = DeliveryItem.objects.all()
-            filter(
-                Q(item_name__icontains=query)|
-                Q(item_reg_no__icontains=query)
+            object_list = DeliveryItem.objects.filter(
+                Q(item__name__icontains=query)|
+                Q(item__reg_no__icontains=query)
             ).order_by('-delivery_order__received_date')
             self.last_query_count = object_list.count
         else:
             self.last_query = ''
             object_list = DeliveryItem.objects.all().order_by('-delivery_order__received_date')
             self.last_query_count = object_list.count
+        if self.begin:
+            object_list = object_list.filter(received_date__gte=self.begin)
+        if self.end:
+            object_list = object_list.filter(received_date__lte=self.end)
         return object_list
 
     def get_context_data(self, **kwargs):
@@ -872,7 +878,6 @@ class DeliveryItemList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
         data['last_query'] = self.last_query
         data['last_query_count'] = self.last_query_count
         data['disp_type'] = self.disp_type
+        data['begin'] = self.begin
+        data['end'] = self.end
         return data
-
-
-        
