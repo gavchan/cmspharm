@@ -19,8 +19,9 @@
 <script type="text/javascript">
     $(document).ready(function () {
         $(".btn_modal_trigger").each(function() {
+            console.log("{{ request.path }}")
             $(this).modalForm({
-                formURL: $(this).data('id')
+                formURL: $(this).data('id') + "?next={{ request.path }}"
             });
         });
         const user_input = $("#user-input")
@@ -75,7 +76,9 @@
                 clearTimeout(scheduled_function)
             }
             scheduled_function = setTimeout(ajax_call, delay_by_in_ms, endpoint, request_parameters)
-        })
+        });
+        $("#user-input").focus();
+
     })
 </script>
 {% endblock %}

@@ -2,9 +2,22 @@
 {{form.media}}
 <div class="modal-header">
     <h5 class="modal-title">New Delivery</h5>
-    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-    </button>
+    <span>
+        <a href="{% url 'inventory:NewVendor' %}" class="btn btn-sm btn-info">New Vendor</a>
+        <button type="button" class="btn btn-sm btn-warning" id="btn_set_received">
+          Received=Invoice
+        </button>
+        <button class="btn btn-sm btn-warning" type="button" id="btn_due1m">
+          Due=+1m
+        </button>
+        <button id="btn_save_details" class="btn btn-sm btn-primary">
+          Save
+        </button>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+      </span>
+    
 </div>
 
 <div class="modal-body">
@@ -17,11 +30,8 @@
 
 
 <script type="text/javascript">
-    $("#add_vendor_button").modalForm({
-        formURL: "{% url 'inventory:NewVendorModal' %}"
-    });
     $("#id_vendor").change(function() {
         $("#id_payee").val($("#id_vendor option:selected").text());
     });
-        $("#id_invoice_no.text-input").focus()
+        $("#id_invoice_no.textinput").focus()
 </script>

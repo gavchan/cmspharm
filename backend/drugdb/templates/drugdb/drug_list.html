@@ -88,8 +88,12 @@
                 <td>{{ drug.company }}</td>
                 <td>
                     <a href="{% url 'cmsinv:MatchInventoryItemList' drug.reg_no %}"
-                        class="btn btn-sm btn-primary">
-                        <i class="fad fa-file-search"></i>
+                      class="btn btn-sm btn-primary"
+                      ><i class="fad fa-file-search"></i>
+                    </a>
+                    <a href="{% url 'cmsinv:NewInventoryItem' %}?reg_no={{ drug.reg_no }}"
+                      class="btn btn-sm btn-success"
+                    ><i class="far fa-layer-plus"></i>
                     </a>
                 </td>
             </tr>

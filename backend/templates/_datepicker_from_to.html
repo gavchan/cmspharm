@@ -66,7 +66,6 @@
       });
 
       $("#btn-view_last_month").click(function() {
-        console.log('click');
         var today = moment().format("YYYY-MM-DD");
         var oneMonthAgo = moment().subtract(1, 'months').format("YYYY-MM-DD");
         var loadurl = "{% url 'inventory:DeliveryOrderList' %}?begin=" 
@@ -74,7 +73,6 @@
         window.location = loadurl;
       })
       $("#btn-view_last_3_months").click(function() {
-        console.log('click');
         var today = moment().format("YYYY-MM-DD");
         var threeMonthsAgo = moment().subtract(3, 'months').format("YYYY-MM-DD");
         var loadurl = "{% url 'inventory:DeliveryOrderList' %}?begin=" 

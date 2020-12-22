@@ -221,7 +221,6 @@ class NewDeliveryOrderForm(ModelForm):
             self.initial['vendor'] = self.vendor_obj.id
             self.initial['payee'] = self.vendor_obj.name
         self.helper.layout = Layout(
-            Hidden('next', self.helper.form_action),
             Hidden('version', '1'),
             Hidden('is_paid', False),
             Row(

@@ -41,11 +41,11 @@
     <div class="card-body">
       <div class="form-row">
         <div class="col-md-7 mb-0"><strong>{{ expense_obj.payee }}</strong>
-          <span type="button"
-            class="btn_modal_trigger badge badge-secondary ml-2 mt-0"
-            data-id="{% url 'inventory:NewDeliveryOrderModal' %}?vendor={{ expense_obj.vendor.id }}"
+          <a
+            class="badge badge-secondary ml-2 mt-0"
+            href="{% url 'inventory:NewDeliveryOrder' %}?vendor={{ expense_obj.vendor.id }}"
           >Add new delivery
-          </span>
+          </a>
           <hr>
         </div>
         <div class="col-md-2 mb-0">Amount</div>

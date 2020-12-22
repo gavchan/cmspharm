@@ -1,6 +1,7 @@
 from django import forms
 from django.forms import ModelForm
 from django.urls import reverse
+from datetime import date
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import (
     Layout, Row, Column, Div, HTML, Submit, Button, Hidden,
@@ -21,8 +22,9 @@ class InventoryItemUpdateForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(InventoryItemUpdateForm, self).__init__(*args, **kwargs)
+        # today_date = date.today().strftime('%Y-%m-%d')
         self.helper = FormHelper()
-        self.helper.render_unmentioned_fields = False 
+        self.helper.render_unmentioned_fields = False
         self.helper.form_id = 'id-InventoryItemForm'
         self.helper.form_class = 'cmmForms'
         self.helper.form_method = 'post'
@@ -67,7 +69,7 @@ class InventoryItemUpdateForm(ModelForm):
                 css_class='form-row',
             ),
             Row(
-                Column('stock_qty', css_class='form-group col-md-4 mb-0'),
+                Column(UneditableField('stock_qty'), css_class='form-group col-md-4 mb-0'),
                 Column('expected_qty', css_class='form-group col-md-4 mb-0'),
                 Column('reorder_level', css_class='form-group col-md-4 mb-0'),
                 css_class='form-row',
@@ -75,6 +77,7 @@ class InventoryItemUpdateForm(ModelForm):
             Row(
                 Column('location', css_class='form-group col-md-4 mb-0'),
                 Column('priority', css_class='form-group col-md-4 mb-0'),
+                Column('inventory_type', css_class='form-group col-sm-2'),
                 css_class='form-row',
             ),
             Row(
@@ -109,6 +112,9 @@ class InventoryItemUpdateForm(ModelForm):
                 Column('advisory', css_class='form-group col-md-12 mb-0'),
                 css_class='form-row',
             ),
+            Hidden('last_updated', date.today()),
+            Hidden('version', self.instance.version + 1),
+            Hidden('stock_qty', self.instance.stock_qty),
             FormActions(
                 Submit('submit', 'Submit'),
                 Button('cancel', 'Cancel'),
@@ -117,18 +123,20 @@ class InventoryItemUpdateForm(ModelForm):
 
     class Meta:
         model = InventoryItem
-        exclude = ['id', 'inventory_item_type', 'version', 'last_updated', 'date_created']
+        exclude = ['id', 'date_created', 'inventory_item_type']
 
 class NewInventoryItemForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(NewInventoryItemForm, self).__init__(*args, **kwargs)
+        # today_date = date.today().strftime('%Y-%m-%d')
         self.helper = FormHelper()
         self.helper.render_unmentioned_fields = False 
         self.helper.form_id = 'id-InventoryItemForm'
         self.helper.form_class = 'cmmForms'
         self.helper.form_method = 'post'
         self.helper.form_action = reverse('cmsinv:NewInventoryItem')
+        self.initial['version'] = 0
         self.helper.layout = Layout(
             Row(
                 Column('registration_no', css_class='form-group col-md-4 mb-0'),
@@ -162,7 +170,7 @@ class NewInventoryItemForm(ModelForm):
                 css_class='form-row',
             ),
             Row(
-                Column('stock_qty', css_class='form-group col-md-4 mb-0'),
+                Column(UneditableField('stock_qty'), css_class='form-group col-md-4 mb-0'),
                 Column('expected_qty', css_class='form-group col-md-4 mb-0'),
                 Column('reorder_level', css_class='form-group col-md-4 mb-0'),
                 css_class='form-row',
@@ -173,6 +181,7 @@ class NewInventoryItemForm(ModelForm):
             Row(
                 Column('location', css_class='form-group col-md-4 mb-0'),
                 Column('priority', css_class='form-group col-md-4 mb-0'),
+                Column('inventory_type', css_class='form-group col-sm-2'),
                 css_class='form-row',
             ),
             Row(
@@ -221,6 +230,8 @@ class NewInventoryItemForm(ModelForm):
                 Column('inventory_item_type', css_class='form-group col-md-12 mb-0'),
                 css_class='form-row',
             ),
+            Hidden('date_created', date.today()),
+            Hidden('last_updated', date.today()),
             FormActions(
                 Submit('submit', 'Submit'),
                 Button('cancel', 'Cancel'),
@@ -259,7 +270,7 @@ class InventoryItemQuickEditModalForm(BSModalForm):
         super(InventoryItemQuickEditModalForm, self).__init__(*args, **kwargs)
         
         self.helper = FormHelper()
-        self.helper.render_unmentioned_fields = False
+        self.helper.render_unmentioned_fields = True
         self.helper.form_id = 'id-InventoryItemQuickEditModalForm'
         self.helper.form_class = 'cmmForms'
         self.helper.form_method = 'post'
@@ -273,10 +284,16 @@ class InventoryItemQuickEditModalForm(BSModalForm):
 
         self.helper.layout = Layout(
             Row(
-                Column('discontinue', css_class='form-group col-sm-2 mb-0'),
-                Column('alias', css_class='form-group col-sm-6 mb-0'),
-                Column('inventory_type', css_class='form-group col-sm-2 mb-0'),
-                Column('registration_no', css_class='form-group col-sm-2 mb-0'),
+                Column('discontinue', css_class='form-group col-sm-4'),
+                Column('is_master_drug_list', css_class='form-group col-sm-4'),
+                Column('is_clinic_drug_list', css_class='form-group col-sm-4'),
+                css_class='form-row mb-0',
+            ),
+            Row(
+                Column('inventory_type', css_class='form-group col-sm-2'),
+                Column('alias', css_class='form-group col-sm-6'),
+                Column('registration_no', css_class='form-group col-sm-2'),
+                Column('clinic_drug_no', css_class='form-group col-sm-2'),
                 css_class='form-row mb-0',
             ),
             Row(
@@ -285,7 +302,7 @@ class InventoryItemQuickEditModalForm(BSModalForm):
                     css_class="form-group col-sm-2 mb-0"
                     ),
                 Column('product_name', css_class='form-group col-sm-10 mb-0'),
-                css_class='form-row',
+                css_class='form-row mb-0',
             ),
             Row(
                 Column(
@@ -313,6 +330,8 @@ class InventoryItemQuickEditModalForm(BSModalForm):
                 ),
                 css_class='form-row'
             ),
+            Hidden('last_updated', date.today()),
+            Hidden('version', self.instance.version + 1),
             FormActions(
                 Submit('submit', 'Submit' ),
                 HTML("""
@@ -325,7 +344,9 @@ class InventoryItemQuickEditModalForm(BSModalForm):
         model = InventoryItem
         fields = [
             'discontinue', 'alias', 'registration_no', 'inventory_type',
+            'clinic_drug_no', 'is_master_drug_list', 'is_clinic_drug_list',
             'product_name', 'label_name', 'generic_name', 'ingredient',
+            'last_updated', 'version',
         ]
 
 class SupplierQuickEditModalForm(BSModalForm):

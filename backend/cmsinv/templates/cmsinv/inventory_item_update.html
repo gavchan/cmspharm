@@ -34,5 +34,31 @@
     </div>
   </div>
 </div>
-  
+
+{{ next_clinic_no|json_script:"next_clinic_no" }}
 {% endblock %}
+
+{% block extrascripts %}
+<script type="text/javascript">
+  $(document).ready(function () {
+    next_clinic_no = JSON.parse(document.getElementById("next_clinic_no").textContent);
+    $('#id_discontinue').on('change', function() {
+      // If item set as active (discontinue set from checked -> not checked)
+      if ($('#id_discontinue').is(':checked')) {
+        // Set clinic drug as not checked
+        $('#id_is_clinic_drug_list').prop('checked', false);
+        $('#id_is_master_drug_list').prop('checked', true);
+      }
+      else {
+        if ($('#id_clinic_drug_no').val() == '') {
+          $('#id_clinic_drug_no').val(next_clinic_no)
+        }
+        // Set clinic drug as checked
+        $('#id_is_clinic_drug_list').prop('checked', true);
+      }
+    });
+  });
+</script>
+
+{% endblock %}
+

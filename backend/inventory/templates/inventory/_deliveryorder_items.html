@@ -24,7 +24,13 @@
                 {% for listitem in deliveryitems_list %}
                 
                 <tr>
-                    <td>{{ listitem.item.name }}</td>
+                    <td>
+                        <button
+                            class="btn_modal_trigger btn btn-sm btn-link"
+                            data-id="{% url 'cmsinv:InventoryItemQuickEditModal' listitem.item.cmsid %}"  
+                        >{{ listitem.item.name }}&nbsp;<i class="fad fa-edit"></i>
+                        </button>
+                    </td>
                     <td>{{ listitem.item.reg_no }}</td>
                     <td class="text-monospace text-center">
                         {% if listitem.is_sample %}
@@ -77,13 +83,3 @@
     No Drug Delivery Items Record 
 </div>
 {% endif %}
-
-<script type="text/javascript">
-    $(document).ready(function () {
-        $(".btn_modal_trigger").each(function() {
-            $(this).modalForm({
-                formURL: $(this).data('id')
-            });
-        });
-    });
-  </script>

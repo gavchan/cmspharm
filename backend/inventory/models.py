@@ -350,3 +350,15 @@ class DeliveryItem(models.Model):
         except:
             avg_cost = 0.00
         return avg_cost
+
+    @property
+    def expiry_date(self):
+        if self.expiry_month:
+            if len(self.expiry_month) == 6:
+                return(self.expiry_month[:4] + '-' + self.expiry_month[4:])
+            elif len(self.expiry_month) == 8:
+                return(self.expiry_month[:4] + '-' + self.expiry_month[4:6] + '-' + self.expiry_month[6:])
+            else:
+                return(self.expiry_month)
+        else:
+            return None

@@ -58,7 +58,7 @@
                     ><i class="fad fa-file"></i></button>
                 <button
                   class="btn_modal_trigger btn btn-link"
-                  data-id="{% url 'cmsinv:InventoryItemQuickEditModal' item.pk %}"  
+                  data-id="{% url 'cmsinv:InventoryItemQuickEditModal' item.pk %}?next={{ request.path }}"  
                 ><i class="fad fa-edit"></i>
                 </button>
             </td>
@@ -68,7 +68,3 @@
 
     </tbody>
 </table>
-
-{% block extrascripts %}
-
-{% endblock %}

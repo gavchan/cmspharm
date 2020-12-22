@@ -10,11 +10,17 @@
         Add New Delivery/Order 
         <span>
           <a href="{% url 'inventory:NewVendor' %}" class="btn btn-sm btn-info">New Vendor</a>
+          <button type="button" class="btn btn-sm btn-warning" id="btn_set_received">
+            Received=Invoice
+          </button>
+          <button class="btn btn-sm btn-warning" type="button" id="btn_due1m">
+            Due=+1m
+          </button>
           <button id="btn_save_details" class="btn btn-sm btn-primary">
             Save
           </button>
           <a
-            href="{% url 'home' %}"
+            href="javascript: history.go(-1)"
             id="btn_cancel"
             class="btn btn-sm btn-secondary"
           >
@@ -27,5 +33,22 @@
         {% crispy form %}
     </div>
 </div>
+
+{% endblock %}
+
+{% block extrascripts %}
+<script type="text/javascript">
+  $(document).ready(function () {
+    $("#btn_set_received").click(function() {
+      $("#id_received_date").val($("#id_invoice_date").val());
+    });
+    $("#btn_due1m").click(function() {
+      var invDate = $("#id_invoice_date").val();
+      var due1m = moment(invDate).add(1, 'months').format("YYYY-MM-DD");
+      $("#id_due_date").val(due1m)
+    });
+    $("#id_invoice_no.textinput").focus();
+  });
+</script>
 
 {% endblock %}

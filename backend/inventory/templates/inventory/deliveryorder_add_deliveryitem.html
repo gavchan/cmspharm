@@ -46,11 +46,15 @@
       });
       $('#id_is_sample').on('change', function () {
         if ($('#id_is_sample').is(':checked')) {
+          let pquantity = parseInt($('#id_purchase_quantity').val());
+          let bquantity = parseInt($('#id_bonus_quantity').val());
+          if (pquantity !== 0 && bquantity == 0) {
+            $('#id_bonus_quantity').val(pquantity);
+          }
           $('#id_purchase_quantity').val('0');
-          $('#id_unit_price').val('0');
           $('#id_discount').val('1');
         }
-      })
+      });
       $("#btn_calc").click(function() {
         let purchase = parseFloat($("#id_purchase_quantity").val());
         let bonus = parseFloat($("#id_bonus_quantity").val());

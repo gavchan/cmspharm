@@ -1,7 +1,10 @@
 from datetime import date
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse, reverse_lazy, resolve, Resolver404
+from django.shortcuts import redirect
+from django.http import HttpResponse, HttpResponseRedirect
+
 from django.db.models import Q
 from drugdb.models import (
     RegisteredDrug,
@@ -58,7 +61,7 @@ class InventoryItemList(ListView, LoginRequiredMixin):
             ).order_by('discontinue')
         else:
             self.last_query = ''
-            object_list = InventoryItem.objects.all()
+            object_list = InventoryItem.objects.all().order_by('discontinue')
         if self.status == '1':
             object_list = object_list.filter(discontinue=False)
         elif self.status == '0':
@@ -78,7 +81,6 @@ class InventoryItemList(ListView, LoginRequiredMixin):
         data = super().get_context_data(**kwargs)
         data['last_query'] = self.last_query
         data['last_query_count'] = self.last_query_count
-        data['next_clinic_drug_no'] = InventoryItem.generateNextClinicDrugNo()
         data['invtype'] = self.invtype
         data['status'] = self.status
         data['dd'] = self.dd
@@ -89,7 +91,7 @@ class InventoryItemDetail(DetailView, LoginRequiredMixin):
     model = InventoryItem
     template_name = 'cmsinv/inventory_item_detail.html'
     drug_obj = None
-    delivery_obj_list = None
+    deliveryitem_obj_list = None
     
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
@@ -98,12 +100,12 @@ class InventoryItemDetail(DetailView, LoginRequiredMixin):
         except RegisteredDrug.DoesNotExist:
             print("No registration no. for {self.object.product_name}")
         try:
-            self.delivery_obj_list = DeliveryItem.objects.filter(item__reg_no=self.object.registration_no)[:5]
+            self.deliveryitem_obj_list = DeliveryItem.objects.filter(item__reg_no=self.object.registration_no)[:5]
         except DeliveryItem.DoesNotExist:
-            self.delivery_obj_list = None
+            self.deliveryitem_obj_list = None
             print(f"No delivery record for {self.object.product_name}")
         data['drug_obj'] = self.drug_obj
-        data['delivery_obj_list'] = self.delivery_obj_list
+        data['deliveryitem_obj_list'] = self.deliveryitem_obj_list
         data['item_obj'] = self.object
         return data
 
@@ -143,6 +145,7 @@ class InventoryItemQuickEditModal(BSModalUpdateView, LoginRequiredMixin):
     drug_obj = None
     match_drug_list = None
     set_match_drug = False
+    next_url = None
 
     def dispatch(self, request, *args, **kwargs):
         if 'pk' in kwargs:
@@ -150,6 +153,7 @@ class InventoryItemQuickEditModal(BSModalUpdateView, LoginRequiredMixin):
         else:
             print("Error: missing pk")
         self.item_obj = self.object
+        self.next_url = request.GET.get('next') or None
         new_reg = self.request.GET.get('reg_no')
         if new_reg:
             self.set_match_drug = True
@@ -179,7 +183,7 @@ class InventoryItemQuickEditModal(BSModalUpdateView, LoginRequiredMixin):
         data['set_match_drug'] = self.set_match_drug
         if self.drug_obj:
             data['generic_name'] = self.drug_obj.gen_generic
-
+        data['next_clinic_no'] = InventoryItem.generateNextClinicDrugNo()
         return data
 
     def get_form_kwargs(self):
@@ -192,7 +196,12 @@ class InventoryItemQuickEditModal(BSModalUpdateView, LoginRequiredMixin):
         return kwargs
 
     def get_success_url(self):
-        return reverse('cmsinv:InventoryItemList')
+        # return reverse('cmsinv:InventoryItemList')
+        try:
+            resolve(self.next_url)
+            return self.next_url
+        except Resolver404: 
+            return reverse('cmsinv:InventoryItemList')
 
 class InventoryItemUpdate(UpdateView, LoginRequiredMixin):
     """Update details of drug delivery"""
@@ -205,6 +214,7 @@ class InventoryItemUpdate(UpdateView, LoginRequiredMixin):
         self.drug_obj = RegisteredDrug.objects.get(reg_no=self.object.registration_no) or None
         data['drug_obj'] = self.drug_obj
         data['item_obj'] = self.object
+        data['next_clinic_no'] = InventoryItem.generateNextClinicDrugNo()
         return data
 
     def get_success_url(self):
@@ -286,7 +296,6 @@ class MatchInventoryItemList(ListView, LoginRequiredMixin):
 
     def get_queryset(self):
         if self.drug_obj:
-            print('Should be existing reg drug no.')
             self.keyword = self.drug_obj.name
             self.ingredients = self.drug_obj.ingredients_list
         else:
@@ -295,7 +304,6 @@ class MatchInventoryItemList(ListView, LoginRequiredMixin):
             self.keyword = ''
         if self.ingredients == None:
             self.ingredients = ''
-        print(f"Filter for: { self.keyword }; {self.ingredients }")    
         object_list = InventoryItem.objects.filter(
             Q(product_name__icontains=self.keyword) |
             Q(generic_name__icontains=self.keyword) |

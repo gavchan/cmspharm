@@ -95,31 +95,48 @@
 {{ drug_obj.name|json_script:"product_name" }}
 {{ drug_obj.ingredients_list|json_script:"ingredients"}}
 {{ generic_name|json_script:"generic_name"}}
+{{ next_clinic_no|json_script:"next_clinic_no" }}
 <script type="text/javascript">
-product_name = JSON.parse(document.getElementById("product_name").textContent)
-ingredients = JSON.parse(document.getElementById("ingredients").textContent)
-generic_name = JSON.parse(document.getElementById("generic_name").textContent)
-$(".btn_update_all").click(function() {
-    $("#id_product_name").val(product_name)
-    $("#id_label_name").val(product_name)
-    $("#id_ingredient").val(ingredients)
-    $("#id_generic_name").val(generic_name)
-})
-$(".btn_update_product").click(function() {
-    $("#id_product_name").val(product_name)
-});
-$(".btn_update_label").click(function() {
-    $("#id_label_name").val(product_name)
-});
-$(".btn_update_ingredient").click(function() {
-    $("#id_ingredient").val(ingredients)
-});
-$(".btn_update_generic").click(function() {
-    $("#id_generic_name").val(generic_name)
-});
-$(".btn_quickedit_reg").each(function () {
+  product_name = JSON.parse(document.getElementById("product_name").textContent)
+  ingredients = JSON.parse(document.getElementById("ingredients").textContent)
+  generic_name = JSON.parse(document.getElementById("generic_name").textContent)
+  $(".btn_update_all").click(function() {
+      $("#id_product_name").val(product_name)
+      $("#id_label_name").val(product_name)
+      $("#id_ingredient").val(ingredients)
+      $("#id_generic_name").val(generic_name)
+  })
+  $(".btn_update_product").click(function() {
+      $("#id_product_name").val(product_name)
+  });
+  $(".btn_update_label").click(function() {
+      $("#id_label_name").val(product_name)
+  });
+  $(".btn_update_ingredient").click(function() {
+      $("#id_ingredient").val(ingredients)
+  });
+  $(".btn_update_generic").click(function() {
+      $("#id_generic_name").val(generic_name)
+  });
+  $(".btn_quickedit_reg").each(function () {
     $(this).modalForm({
         formURL: $(this).data('id')
     });
   });    
+  next_clinic_no = JSON.parse(document.getElementById("next_clinic_no").textContent);
+  $('#id_discontinue').on('change', function() {
+    // If item set as active (discontinue set from checked -> not checked)
+    if ($('#id_discontinue').is(':checked')) {
+      // Set clinic drug as not checked
+      $('#id_is_clinic_drug_list').prop('checked', false);
+      $('#id_is_master_drug_list').prop('checked', true);
+    }
+    else {
+      if ($('#id_clinic_drug_no').val() == '') {
+        $('#id_clinic_drug_no').val(next_clinic_no)
+      }
+      // Set clinic drug as checked
+      $('#id_is_clinic_drug_list').prop('checked', true);
+    }
+  });
 </script>

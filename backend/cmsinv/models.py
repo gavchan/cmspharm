@@ -131,7 +131,7 @@ class InventoryItem(models.Model):
         'Advisory', on_delete=models.PROTECT, 
         db_column='advisory_id', blank=True, null=True)
     
-    alias = models.CharField(max_length=255, blank=True, null=True)
+    alias = models.CharField(max_length=255, blank=True, null=True, unique=True)
     avg_cost = models.FloatField(default=0)
     category = models.CharField(max_length=255, blank=True, null=True)
 
@@ -141,7 +141,7 @@ class InventoryItem(models.Model):
         'Supplier', on_delete=models.PROTECT, 
         db_column='certificate_holder_id'
         )
-    clinic_drug_no = models.CharField(max_length=255, blank=True, null=True)
+    clinic_drug_no = models.CharField(max_length=255, blank=True, null=True, unique=True)
     dangerous_sign = TextBooleanField()  # MySQL text field, behaves like Boolean
     date_created = models.DateTimeField(auto_now_add=True)
     discontinue = TextBooleanField()  # MySQL text field, behaves like Boolean
@@ -180,7 +180,7 @@ class InventoryItem(models.Model):
     location = models.CharField(max_length=255, blank=True, null=True)
     mini_dispensary_unit = models.FloatField(default=0)
     mini_dosage_unit = models.FloatField(default=0)
-    product_name = models.CharField(max_length=255, blank=True, null=True)
+    product_name = models.CharField(max_length=255, blank=True, null=True, unique=True)
     product_name_chinese = models.CharField(max_length=255, blank=True, null=True)
     registration_no = models.CharField(unique=True, max_length=255, blank=True, null=True)
     remarks = models.TextField(blank=True, null=True)

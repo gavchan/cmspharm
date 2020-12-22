@@ -20,7 +20,7 @@
           <td class="text-right">
             {% if vendor.is_supplier and perms.inventory.add_deliveryorder %}
             <a
-              href="{% url 'inventory:NewDeliveryOrder' %}?vendor={{ vendor.id }}"
+              href="{% url 'inventory:NewDeliveryOrder' %}?vendor={{ vendor.id }}&next={{ request.path }}"
               class="btn btn-sm btn-success"
             ><i class="fad fa-box-alt"></i>
             </a>
@@ -34,7 +34,7 @@
             
             {% if perms.ledger.add_expense %}
             <a
-              href="{% url 'ledger:NewExpense' %}?vendor={{ vendor.id }}"
+              href="{% url 'ledger:NewExpense' %}?vendor={{ vendor.id }}&next={{ request.path }}"
               class="btn btn-sm btn-primary"
             ><i class="far fa-file-invoice-dollar"></i>
             </a>
@@ -50,7 +50,7 @@
             <button
               type="button"
               class="btn_modal_trigger btn btn-sm btn-info"
-              data-id="{% url 'inventory:VendorUpdateModal' vendor.pk %}"
+              data-id="{% url 'inventory:VendorUpdateModal' vendor.pk %}&next={{ request.path }}"
             ><i class="fad fa-edit"></i>
             </button>
             {% endif %}
@@ -65,7 +65,7 @@
     <div class="alert alert-light" role="alert">
       No matching vendors/suppliers 
       <a
-        href="{% url 'inventory:NewVendor' %}"
+        href="{% url 'inventory:NewVendor' %}&next={{ request.path }}"
         class="alert-link"
       >Add new vendor</a>
     </div>

@@ -552,7 +552,7 @@ class DeliveryPaymentModalForm(BSModalForm):
         else:
             print(f"Error: no delivery_obj")
         self.helper = FormHelper()
-        self.helper.render_unmentioned_fields = True
+        self.helper.render_unmentioned_fields = False
         self.helper.form_id = 'id-DeliveryPaymentForm'
         self.helper.form_class = 'cmmForms'
         self.helper.form_method = 'post'

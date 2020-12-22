@@ -40,7 +40,7 @@
               {{ drug_obj.standard_cost }} ({{ drug_obj.avg_cost}})
           </td>
           <td class="item-action-cell text-right">
-              <button 
+                <button 
                   type="button" 
                   {% if drug_obj.registration_no %}
                       class="show-item-details btn_modal_trigger btn btn-link"
@@ -48,12 +48,8 @@
                       class="show-item-details btn_modal_trigger btn btn-sm btn-danger"
                   {% endif %}
                   data-id="{% url 'cmsinv:InventoryItemModalDetail' drug_obj.pk %}"
-                  ><i class="fad fa-file"></i></button>
-              <button
-                class="btn_quickedit btn_modal_trigger btn btn-link"
-                data-id="{% url 'cmsinv:InventoryItemQuickEditModal' drug_obj.pk %}"  
-              ><i class="fad fa-edit"></i>
-              </button>
+                  ><i class="fad fa-file"></i>
+                </button>
           </td>
       </tr>
   </tbody>

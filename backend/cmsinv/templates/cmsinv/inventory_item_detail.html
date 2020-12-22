@@ -4,8 +4,8 @@
   Item: {{ item_obj.product_name }}
 {% endblock %}
 
-
 {% block content %}
+{% include '_modal.html' %}
 <div class="card shadow">
   <div class="card-header text-white bg-info">
     <div class="d-flex justify-content-between align-items-center">
@@ -20,4 +20,18 @@
   </div>
 </div>
 
+{% endblock %}
+
+{% block extrascripts %}
+<!-- <script type="text/javascript">
+    $(document).ready(function () {
+      $(".btn_modal_trigger").each(function () {
+        console.log("{{ request.path }}")
+        $(this).modalForm({
+            formURL: $(this).data('id')+"?next={{ request.path }}"
+        });
+      });  
+    });
+</script> -->
+  
 {% endblock %}

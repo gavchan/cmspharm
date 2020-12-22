@@ -55,11 +55,11 @@
       <div class="col-md-2 mb-0">Supplier</div>
       <div class="col-md-4 mb-0">
         {{ delivery_obj.vendor.name }}
-        <span type="button"
-          class="btn_modal_trigger badge badge-secondary ml-2 mt-0"
-          data-id="{% url 'inventory:NewDeliveryOrderModal' %}?vendor={{ delivery_obj.vendor.id }}"
+        <a
+          class="badge badge-secondary ml-2 mt-0"
+          href="{% url 'inventory:NewDeliveryOrder' %}?vendor={{ delivery_obj.vendor.id }}"
         >Add new delivery
-        </span>
+        </a>
       </div>
       <div class="col-md-2 mb-0">Received Date</div>
       <div class="col-md-4 mb-0">{{ delivery_obj.received_date}}</div>
