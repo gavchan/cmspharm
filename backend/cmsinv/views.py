@@ -1,6 +1,6 @@
 from datetime import date
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.urls import reverse, reverse_lazy, resolve, Resolver404
 from django.shortcuts import redirect
 from django.http import HttpResponse, HttpResponseRedirect
@@ -17,6 +17,7 @@ from inventory.models import (
 from .models import (
     InventoryItem,
     Supplier,
+    InventoryMovementLog,
 )
 
 from .forms import (
@@ -426,3 +427,62 @@ class SupplierQuickEditModal(BSModalUpdateView, LoginRequiredMixin):
 
     def get_success_url(self):
         return reverse('cmsinv:SupplierList')
+
+class InventoryMovementLogList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
+    """
+    Displays InventoryMovementLog
+    """
+    DELIVERY = '1'
+    DISPENSARY = '2'
+    RECONCILIATION = '3'
+    STOCK_INIT = '4'
+    MOVEMENT_TYPE_CHOICES = [
+        (DELIVERY, 'Delivery'),
+        (DISPENSARY, 'Dispensary'),
+        (RECONCILIATION, 'Reconciliation'),
+        (STOCK_INIT, 'Stock Initialization'),
+    ]
+    permission_required = ('cmsinv.view_inventorymovementlog',)
+    template_name = 'cmsinv/inventory_movement_log.html'
+    model = InventoryMovementLog
+    context_object_name = 'cmsinv_move_log'
+    paginate_by = 20
+    last_query = ''
+    last_query_count = 0
+    disp_type = '0'
+
+    def get_queryset(self):
+        self.begin = self.request.GET.get('begin')
+        self.end = self.request.GET.get('end')
+        self.disp_type = self.request.GET.get('t')
+        if self.disp_type:
+            move_type = dict(self.MOVEMENT_TYPE_CHOICES).get(self.disp_type)
+            print(move_type)
+            object_list = InventoryMovementLog.objects.filter(movement_type=move_type).order_by('-last_updated')
+        else:
+            object_list = InventoryMovementLog.objects.all().order_by('-last_updated')
+        query = self.request.GET.get('q')
+        if query:
+            self.last_query = query
+            object_list = object_list.filter(
+                Q(move_item__icontains=query)
+            )
+            self.last_query_count = object_list.count
+        else:
+            self.last_query = ''
+            object_list = object_list.order_by('-last_updated')
+            self.last_query_count = object_list.count
+        if self.begin:
+            object_list = object_list.filter(received_date__gte=self.begin)
+        if self.end:
+            object_list = object_list.filter(received_date__lte=self.end)
+        return object_list
+
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        data['last_query'] = self.last_query
+        data['last_query_count'] = self.last_query_count
+        data['disp_type'] = self.disp_type
+        data['begin'] = self.begin
+        data['end'] = self.end
+        return data

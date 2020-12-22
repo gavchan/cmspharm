@@ -15,4 +15,5 @@ urlpatterns = [
     path('item/<int:pk>/modal/', views.InventoryItemModalDetail.as_view(), name='InventoryItemModalDetail'),
     path('item/new/', views.NewInventoryItem.as_view(), name='NewInventoryItem'),
     path('items/', views.InventoryItemList.as_view(), name='InventoryItemList'),
+    path('movelog/', views.InventoryMovementLogList.as_view(), name='InventoryMovementLog'),
     ]
