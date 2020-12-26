@@ -34,7 +34,7 @@ crispy_forms_tags %} {% block content %}
                       name="q"
                       value="{{ last_query }}"
                       type="text"
-                      placeholder="Search by payee/vendor"
+                      placeholder="Search by event/class/property name"
                     />
                     <div class="input-group-append">
                       <button class="btn btn-sm btn-secondary">Search</button>
@@ -46,7 +46,7 @@ crispy_forms_tags %} {% block content %}
                     <ul class="pagination pagination-sm">
                       <li class="page-item">
                         <a
-                          href="{% url 'cmssys:AuditLog' %}?q={{ last_query }}&page=1"
+                          href="{% url 'cmssys:AuditLog' %}?q={{ last_query }}&t={{ disp_type }}&page=1"
                           class="page-link"
                         >
                           First
@@ -55,7 +55,7 @@ crispy_forms_tags %} {% block content %}
                       {% if page_obj.has_previous %}
                       <li class="page-item">
                         <a
-                          href="{% url 'cmssys:AuditLog' %}?q={{ last_query }}&page={{ page_obj.previous_page_number }}"
+                          href="{% url 'cmssys:AuditLog' %}?q={{ last_query }}&t={{ disp_type }}&page={{ page_obj.previous_page_number }}"
                           class="page-link"
                         >
                           {{ page_obj.previous_page_number }}
@@ -114,19 +114,19 @@ crispy_forms_tags %} {% block content %}
                   >All</option>
                   <option value="1"
                     {% if disp_type == '1' %} selected {% endif %}
-                  >Delivery
+                  >InventoryItem
                   </option>
                   <option value="2"
                     {% if disp_type == '2' %} selected {% endif %}
-                  >Dispensary
+                  >InventoryMovementLog
                   </option>
                   <option value="3"
                     {% if disp_type == '3' %} selected {% endif %}
-                  >Reconciliation
+                  >Depletion
                   </option>
                   <option value="4"
                     {% if disp_type == '4' %} selected {% endif %}
-                  >Stock init
+                  >DepletionItem
                   </option>
                 </select>
               </div>
@@ -174,9 +174,10 @@ crispy_forms_tags %} {% block content %}
           <td>{{ entry.class_name }}</td>
           <td>{{ entry.actor }}</td>
           <td>{{ entry.event_name }}</td>
+          <td>{{ entry.property_name }}</td>
           <td>{{ entry.old_value }}</td>
           <td>{{ entry.new_value }}</td>
-          <td class="text-right">{{ entry.persisted_obj_id }}</td>
+          <td class="text-right">{{ entry.persisted_object_id }}</td>
         </tr>
 
         {% endfor %}

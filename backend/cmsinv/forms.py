@@ -395,3 +395,50 @@ class SupplierQuickEditModalForm(BSModalForm):
             'name', 'address', 'supp_type', 'contact_person', 'tel_mobile',
             'tel_home', 'tel_office', 'tel_office', 'fax', 'email',
         ]
+
+class NewDeliveryFromDeliveryOrderModalForm(BSModalForm):
+    def __init__(self, *args, **kwargs):
+        self.delivery_obj = kwargs.pop('delivery_obj', None)
+        super(NewDeliveryFromDeliveryOrderForm, self).__init__(*args, **kwargs)
+        
+        self.helper = FormHelper()
+        self.helper.render_unmentioned_fields = False
+        self.helper.form_id = 'id_NewDeliveryForm'
+        self.helper.form_class = 'cmmForms'
+        self.helper.form_method = 'post'
+        self.helper.form_action = reverse(
+            'cmsinv:NewDeliveryFromDeliveryOrderModal', args=(self.delivery_obj.pk, )
+            )
+        self.helper.layout = Layout(
+            Row(
+                Column('', css_class="form-group col-sm-4 mb-0"),
+                Column(Field('address', rows=3),css_class='form-group col-sm-4 mb-0'),
+                Column('supp_type', css_class='form-group col-sm-4 mb-0'),
+                css_class='form-row',
+            ),
+            Row(
+                Column('contact_person', css_class="form-group col-sm-4 mb-0"),
+                Column('tel_mobile', css_class='form-group col-sm-4 mb-0'),
+                Column('tel_home', css_class='form-group col-sm-4 mb-0'),
+                css_class='form-row',
+            ),
+            Row(
+                Column('tel_office', css_class="form-group col-sm-4 mb-0"),
+                Column('fax', css_class='form-group col-sm-4 mb-0'),
+                Column('email', css_class='form-group col-sm-4 mb-0'),
+                css_class='form-row',
+            ),
+            FormActions(
+                Submit('submit', 'Submit' ),
+                HTML("""
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                """)
+            ),
+        )
+
+    class Meta:
+        model = Supplier 
+        fields = [
+            'name', 'address', 'supp_type', 'contact_person', 'tel_mobile',
+            'tel_home', 'tel_office', 'tel_office', 'fax', 'email',
+        ]

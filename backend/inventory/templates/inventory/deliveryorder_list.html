@@ -51,7 +51,7 @@
                     <ul class="pagination pagination-sm">
                       <li class="page-item">
                         <a
-                          href="{% url 'inventory:DeliveryOrderList' %}?q={{ last_query }}&page=1"
+                          href="{% url 'inventory:DeliveryOrderList' %}?q={{ last_query }}&t={{ disp_type }}&page=1"
                           class="page-link"
                         >
                           First
@@ -60,7 +60,7 @@
                       {% if page_obj.has_previous %}
                       <li class="page-item">
                         <a
-                          href="{% url 'inventory:DeliveryOrderList' %}?q={{ last_query }}&page={{ page_obj.previous_page_number }}"
+                          href="{% url 'inventory:DeliveryOrderList' %}?q={{ last_query }}&t={{ disp_type }}&page={{ page_obj.previous_page_number }}"
                           class="page-link"
                         >
                           {{ page_obj.previous_page_number }}
@@ -69,7 +69,7 @@
                       {% endif %}
                       <li class="page-item active">
                         <a
-                          href="{% url 'inventory:DeliveryOrderList' %}?q={{ last_query }}&page={{ page_obj.number }}"
+                          href="{% url 'inventory:DeliveryOrderList' %}?q={{ last_query }}&t={{ disp_type }}&page={{ page_obj.number }}"
                           class="page-link"
                         >
                           {{ page_obj.number }}
@@ -78,7 +78,7 @@
                       {% if page_obj.has_next %}
                       <li class="page-item">
                         <a
-                          href="{% url 'inventory:DeliveryOrderList' %}?q={{ last_query }}&page={{ page_obj.next_page_number }}"
+                          href="{% url 'inventory:DeliveryOrderList' %}?q={{ last_query }}&t={{ disp_type }}&page={{ page_obj.next_page_number }}"
                           class="page-link"
                         >
                           {{ page_obj.next_page_number }}
@@ -87,7 +87,7 @@
                       {% endif %}
                       <li class="page-item">
                         <a
-                          href="{% url 'inventory:DeliveryOrderList' %}?q={{ last_query }}&page=last"
+                          href="{% url 'inventory:DeliveryOrderList' %}?q={{ last_query }}&t={{ disp_type }}&page=last"
                           class="page-link"
                         >
                           Last ({{ page_obj.paginator.num_pages }})
@@ -100,7 +100,34 @@
               
             </div>
             
-            <div class="col-sm-4 px-1">
+            <div class="col-sm-2 px-1">
+              <div class="input-group input-group-sm">
+                <select 
+                  name="t" 
+                  id="inputGroupSelectType" 
+                  class="custom-select input-control-sm"
+                  >
+                  <option value=""
+                    default
+                  >All</option>
+                  <option value="1"
+                    {% if disp_type == '1' %} selected {% endif %}
+                  >Unsynced
+                  </option>
+                  <option value="2"
+                    {% if disp_type == '2' %} selected {% endif %}
+                  >Synced
+                  </option>
+                  <option value="3"
+                    {% if disp_type == '3' %} selected {% endif %}
+                  >Due
+                  </option>
+                  <option value="4"
+                    {% if disp_type == '4' %} selected {% endif %}
+                  >Paid
+                  </option>
+                </select>
+              </div>
             </div>
           </div>
         </form>
@@ -140,7 +167,11 @@
     $("#btn_new_delivery").modalForm({
       formURL: $(this).data('id')
     });
-
+    $("#inputGroupSelectType").change(function() {
+      let disptype = $("#inputGroupSelectType option:selected").val();
+      self.location = "{% url 'inventory:DeliveryOrderList' %}?q={{ last_query }}&t="
+        + disptype;
+    });
     // _datepicker_from_to.html scripts
     $('#datepicker_from').datetimepicker({
       format: 'YYYY-MM-DD'

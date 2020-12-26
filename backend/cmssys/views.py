@@ -35,7 +35,6 @@ class AuditLogList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
         self.disp_type = self.request.GET.get('t') or ''
         if self.disp_type:
             class_type = dict(self.CLASS_TYPE_CHOICES).get(self.disp_type)
-            print(class_type)
             object_list = AuditLog.objects.filter(class_name=class_type).order_by('-last_updated')
         else:
             object_list = AuditLog.objects.all().order_by('-last_updated')

@@ -1,5 +1,8 @@
+from datetime import datetime
+import pytz
 from django.db import models
 from django.urls import reverse
+from django.conf import settings
 # from drugdb.models import RegisteredDrug
 # from ledger.models import ExpenseCategory
 from cmsinv.models import InventoryItem
@@ -239,11 +242,20 @@ class DeliveryOrder(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
     updated_by = models.CharField(max_length=255, blank=True, null=True)
+    cms_delivery_id = models.BigIntegerField(blank=True, null=True, default=None)
     version = models.PositiveIntegerField(default=1)
 
     @property
     def item_summary(self):
         return ', '.join(item.name for item in self.items.all())
+
+    @property
+    def items_total(self):
+        total = 0
+        for listitem in self.delivery_items.all():
+            total += listitem.total_price
+        return total
+
     class Meta:
         ordering = ['-invoice_date']
 
@@ -352,7 +364,7 @@ class DeliveryItem(models.Model):
         return avg_cost
 
     @property
-    def expiry_date(self):
+    def expiry_str(self):
         if self.expiry_month:
             if len(self.expiry_month) == 6:
                 return(self.expiry_month[:4] + '-' + self.expiry_month[4:])
@@ -362,3 +374,44 @@ class DeliveryItem(models.Model):
                 return(self.expiry_month)
         else:
             return None
+    
+    @property
+    def expiry_date(self):
+        if self.expiry_month:
+            if len(self.expiry_month) == 6:
+                btime = datetime.strptime(self.expiry_month, "%Y%m")
+                return btime.replace(tzinfo=pytz.timezone(settings.TIME_ZONE))
+            elif len(self.expiry_month) == 8:
+                btime = datetime.strptime(self.expiry_month, "%Y%m%d")
+                return btime.replace(tzinfo=pytz.timezone(settings.TIME_ZONE))
+            else:
+                return None
+        else:
+            return None
+
+    @property
+    def terms(self):
+        purchase_str = str(self.purchase_quantity)
+        purchase_str = purchase_str.rstrip('0').rstrip('.') if '.' in purchase_str else purchase_str
+        bonus_str = str(self.bonus_quantity)
+        bonus_str = bonus_str.rstrip('0').rstrip('.') if '.' in bonus_str else bonus_str
+        if self.purchase_quantity == 0:
+            if self.bonus_quantity != 0:
+                # Sample
+                terms = "Sample; "
+            else:
+                # No purchase/bonus quantity
+                terms = "Zero; "
+        else:
+            if self.bonus_quantity == 0:
+                # No special terms
+                terms = purchase_str + self.purchase_unit
+            else:
+                # Bonus terms
+                terms = purchase_str + "+" + bonus_str + " " + self.purchase_unit
+        if self.items_unit:
+            items_unit = self.items_unit
+        else:
+            items_unit = "units"
+        terms = f"{terms} x{self.items_per_purchase}{items_unit}"
+        return terms

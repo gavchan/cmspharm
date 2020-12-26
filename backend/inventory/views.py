@@ -359,6 +359,16 @@ class DeliveryOrderList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
             self.last_query = ''
             object_list = DeliveryOrder.objects.all().order_by('-received_date')
             self.last_query_count = object_list.count
+        if self.disp_type == '1':  # Display unsynced records
+            object_list = object_list.filter(
+                cms_delivery_id__isnull=True
+            )
+        elif self.disp_type == '2':  # Display synced records
+            object_list = object_list.exclude(cms_delivery_id__isnull=True)
+        elif self.disp_type == '3':  # Display unpaid records
+            object_list = object_list.filter(is_paid=False)
+        elif self.disp_type == '4':  # Display paid records
+            object_list = object_list.filter(is_paid=True)
         if self.begin:
             object_list = object_list.filter(received_date__gte=self.begin)
         if self.end:
@@ -526,7 +536,6 @@ def DeliveryOrderDetail(request, *args, **kwargs):
     # Get query from request and search RegisteredDrug    
     query = request.GET.get('q')
     stype = request.GET.get('stype')
-    print(query, stype)
     if query:
         last_query = query
         if stype == 'regno':

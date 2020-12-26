@@ -23,11 +23,14 @@
           class="btn btn-sm btn-dark text-white"
         ><i class="fal fa-step-backward"></i>&nbsp;Drugs
         </a>
+        {% if not delivery_obj.cms_delivery_id and perms.inventory.change_deliveryorder %}
         <button
           class="btn_modal_trigger btn btn-sm btn-light"
           data-id="{% url 'inventory:DeliveryOrderUpdateModal' delivery_obj.id %}"
         >Edit
         </button>
+        {% endif %}
+       
         {% if delivery_obj.bill %}
         <button
           class="btn_modal_trigger btn btn-sm btn-secondary"
@@ -62,7 +65,21 @@
         </a>
       </div>
       <div class="col-md-2 mb-0">Received Date</div>
-      <div class="col-md-4 mb-0">{{ delivery_obj.received_date}}</div>
+      <div class="col-md-2 mb-0">{{ delivery_obj.received_date}}</div>
+      <div class="col-md-2">
+        {% if delivery_obj.cms_delivery_id %}
+        <span
+          class="badge badge-success ml-2 mt-0"
+        >Synced with CMS
+        </span>
+        {% else %}
+        <button
+          class="btn_modal_trigger badge badge-warning ml-2 mt-0"
+          data-id="{% url 'cmsinv:NewDeliveryFromDeliveryOrderModal' delivery_obj.id %}"
+        >Push to CMS
+        </button>
+        {% endif %}
+      </div>
     </div>
     <div class="form-row">
       <div class="col-md-2 mb-0">Invoice No.</div>

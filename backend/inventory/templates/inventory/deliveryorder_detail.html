@@ -8,22 +8,40 @@
   {% include '_modal.html' %}
   
   {% include 'inventory/_deliveryorder_summary.html' %}
-  {% include 'inventory/_deliveryorder_items.html' %} 
+  {% include 'inventory/_deliveryorder_items.html' %}
+  {% if not delivery_obj.cms_delivery_id and perms.inventory.change_deliveryorder %}
   {% include 'inventory/_drugdelivery_choose_drug.html' %}
+  {% endif %}
 
 {% endblock %}
 
 {% block extrascripts %}
 
-{{ delivery_obj.id|json_script:"delivery_id" }}
+{% if delivery_obj.cms_delivery_id %}
 <script type="text/javascript">
     $(document).ready(function () {
+        // Modal trigger
         $(".btn_modal_trigger").each(function() {
-            console.log("{{ request.path }}")
             $(this).modalForm({
                 formURL: $(this).data('id') + "?next={{ request.path }}"
             });
         });
+    });
+</script>
+
+{% else %}
+
+{{ delivery_obj.id|json_script:"delivery_id" }}
+<script type="text/javascript">
+    $(document).ready(function () {
+        // Modal trigger
+        $(".btn_modal_trigger").each(function() {
+            $(this).modalForm({
+                formURL: $(this).data('id') + "?next={{ request.path }}"
+            });
+        });
+
+        // Search drug ajax script
         const user_input = $("#user-input")
         const regno_input = $("#regno-input")
         const search_icon = $('#search-icon')
@@ -81,4 +99,6 @@
 
     })
 </script>
+
+{% endif %}
 {% endblock %}

@@ -390,7 +390,7 @@ class Delivery(models.Model):
 
     # cash_amount - amount to be deducted from CMS cash_book
     cash_amount = models.FloatField()
-    create_date = models.DateField(auto_now_add=True, blank=True, null=True)
+    create_date = models.DateField(blank=True, null=True)
     date_created = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
     received_by = models.ForeignKey(
@@ -400,14 +400,15 @@ class Delivery(models.Model):
     remarks = models.TextField(blank=True, null=True)
 
     # settle_date - not used in CMS app
-    settle_date = models.DateTimeField(auto_now_add=True, blank=True, null=True)
-    status = models.CharField(max_length=255, blank=True, null=True)
+    settle_date = models.DateTimeField(blank=True, null=True)
+    status = models.CharField(max_length=255, blank=True, null=True) # Not used?
     supplier = models.ForeignKey(
         'Supplier', on_delete=models.PROTECT, 
         db_column='supplier_id'
         )
+    # supplierdn - not used in CMS app, to use here for supplier invoice no.
     supplierdn = models.CharField(max_length=255, blank=True, null=True)
-    total_cost = models.FloatField()
+    total_cost = models.FloatField() # Not used?
     updated_by = models.CharField(max_length=255, blank=True, null=True)
     delivery_note_no = models.CharField(max_length=255, blank=True, null=True)
 
@@ -428,9 +429,9 @@ class ReceivedItem(models.Model):
     """
     id = models.BigAutoField(primary_key=True)
     version = models.BigIntegerField(default=0)
-    arrive_date = models.DateField(auto_now_add=True, blank=True, null=True)
+    arrive_date = models.DateField(blank=True, null=True)
     cost = models.FloatField()
-    dangerous_sign = models.BooleanField(default=False)
+    dangerous_sign = TextBooleanField()
     delivery = models.ForeignKey(
         'Delivery', on_delete=models.PROTECT, 
         db_column='delivery_id'
@@ -449,7 +450,7 @@ class ReceivedItem(models.Model):
     supplier_id = models.BigIntegerField(blank=True, null=True)
 
     unit = models.CharField(max_length=255, blank=True, null=True)
-    use_up = models.BooleanField(default=False)
+    use_up = TextBooleanField(default=False)
 
     # received_items_idx - Index of item(s) in the delivery episode
     received_items_idx = models.IntegerField(blank=True, null=True)

@@ -3,6 +3,7 @@ from . import views
 
 app_name = 'cmsinv'
 urlpatterns = [
+    path('delivery/new/fromorder/<int:delivery_id>/modal/', views.NewDeliveryFromDeliveryOrderModalView, name='NewDeliveryFromDeliveryOrderModal'),
     path('suppliers/', views.SupplierList.as_view(), name='SupplierList'),
     path('supplier/<int:pk>/quickedit/modal/', views.SupplierQuickEditModal.as_view(), name='SupplierQuickEditModal'),
     # path('item/match/delivery/<int:delivery_id>/', views.MatchDeliveryInventoryItemList.as_view(), name='MatchDeliveryInventoryItemList'), # Non-CMS Delivery
