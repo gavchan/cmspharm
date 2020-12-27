@@ -90,7 +90,13 @@
       {% endif %}
     </div>
   </div>
+  {% if unpaid_deliveries_list %}
   {% include 'ledger/_unpaid_delivery_orders.html' %}
+  {% else %}
+  <div class="alert alert-secondary" role="alert">
+      No outstanding unpaid delivery orders 
+  </div>
+  {% endif %}
 {% endblock %}
 
 {% block extrascripts %}

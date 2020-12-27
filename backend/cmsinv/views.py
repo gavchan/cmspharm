@@ -519,8 +519,23 @@ def NewDeliveryFromDeliveryOrderModalView(request, *args, **kwargs):
     session_id = request.session.session_key
     # Get cmsuser id
     cmsuser_obj = CmsUser.objects.get(username='admin')
+    itemupdate_list = []
+    for listitem in delivery_obj.delivery_items.all():
+        cmsitem_obj = InventoryItem.objects.get(id=listitem.item.cmsid)
+        summary = {
+            'name': listitem.item.name,
+            'existing_qty': cmsitem_obj.stock_qty,
+            'old_standard_cost': cmsitem_obj.standard_cost,
+            'old_avg_cost': cmsitem_obj.avg_cost,
+            'items_quantity': listitem.items_quantity,
+            'new_standard_cost': listitem.standard_cost,
+            'new_avg_cost': listitem.average_cost,
+        }
+        itemupdate_list.append(summary)
+
     context = {
         'delivery_obj': delivery_obj,
+        'itemupdate_list': itemupdate_list,
     }
     # If POST request confirm sync, add data to CMS
     if request.method == "POST":

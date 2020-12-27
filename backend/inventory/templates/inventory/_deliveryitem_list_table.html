@@ -42,6 +42,9 @@
             </td>
             <td class="text-right">
                 {{ listitem.items_quantity|floatformat }}
+                {% if listitem.items_unit %}
+                {{ listitem.items_unit|title}}
+                {% endif %}
             </td>
             <td class="text-right">{{ listitem.standard_cost }}</td>
             <td class="text-right">{{ listitem.average_cost }}</td>

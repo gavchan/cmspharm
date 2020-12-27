@@ -3,7 +3,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.decorators import login_required, permission_required
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse, reverse_lazy, resolve, Resolver404
 from django.db.models import Q, Sum
 from django.views.decorators.csrf import csrf_exempt
 from django.template.loader import render_to_string
@@ -153,12 +153,96 @@ class ItemUpdate(UpdateView, LoginRequiredMixin, PermissionRequiredMixin):
     def get_success_url(self):
         return reverse('inventory:ItemDetail', args=(self.object.pk,))
 
+class ItemUpdateModal(BSModalUpdateView, LoginRequiredMixin, PermissionRequiredMixin):
+    """Update details for item"""
+    permission_required = ('inventory.change_item', )
+    model = Item
+    form_class = NewItemModalForm
+    template_name = 'inventory/item_update_form.html'
+
+    def get_success_url(self):
+        return reverse('inventory:ItemDetail', args=(self.object.pk,))
+
 
 class ItemDelete(DeleteView, LoginRequiredMixin, PermissionRequiredMixin):
     """Delete item"""
     permission_required = ('inventory.delete_item', )
     model = Item
     success_url = reverse_lazy('inventory:ItemList')
+
+
+class NewItem(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
+    """Add new item"""
+    permission_required = ('inventory.add_item')
+    template_name = 'inventory/new_item.html'
+    form_class = NewItemForm
+    success_message = 'Success: Item added'
+    drug_obj = None
+    vendor_obj = None
+    next_url = None
+
+    def dispatch(self, request, *args, **kwargs):
+        if self.request.GET.get('vendor'):
+            self.vendor_obj = Vendor.objects.get(id=self.request.GET.get('vendor')) or None
+        if self.request.GET.get('regno'):
+            self.drug_obj = RegisteredDrug.objects.get(id=self.request.GET.get('regno')) or None
+        self.next_url = self.request.GET.get('next') or None
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        if self.drug_obj:
+            data['drug_obj'] = self.drug_obj
+        if self.vendor_obj:
+            data['vendor_obj'] = self.vendor_obj
+        return data
+
+    def get_success_url(self):
+        try:
+            resolve(self.next_url)
+            return self.next_url
+        except Resolver404: 
+            return reverse('inventory:ItemList')
+        return reverse('inventory:ItemList')
+
+    def get_form_kwargs(self):
+        kwargs = super(NewItem, self).get_form_kwargs()
+        kwargs.update({
+            'vendor_obj': self.vendor_obj,
+            'drug_obj': self.drug_obj,
+            })
+        return kwargs
+
+class NewItemModal(BSModalCreateView, LoginRequiredMixin, PermissionRequiredMixin):
+    """Add new drug to items"""
+    permission_required = ('inventory.add_item')
+    template_name = 'inventory/new_item_modal.html'
+    form_class = NewItemModalForm
+    drug_obj = None
+    success_message = 'Success: Drug added'
+
+    def dispatch(self, request, *args, **kwargs):
+       if 'drug_id' in kwargs:
+            self.drug_obj = RegisteredDrug.objects.get(id=kwargs['drug_id'])
+            print(f"Retrieved {self.drug_obj}")
+       return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        if self.drug_obj:
+            data['drug_obj'] = self.drug_obj
+        return data
+
+    def get_success_url(self):
+        return reverse('inventory:ItemList')
+
+    def get_form_kwargs(self):
+        kwargs = super(NewItemModal, self).get_form_kwargs()
+        kwargs.update({
+            'drug_obj': self.drug_obj,
+            })
+        print(kwargs)
+        return kwargs
 
 
 class NewItemFromVendor(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
@@ -317,10 +401,23 @@ class VendorUpdateModal(BSModalUpdateView, LoginRequiredMixin, PermissionRequire
     template_name = 'inventory/vendor_update_modal.html'
     form_class = VendorUpdateModalForm
     success_message = 'Success: Vendor was updated.'
+    next_url = None
+
+    def dispatch(self, request, *args, **kwargs):
+        if 'pk' in kwargs:
+            self.object = Vendor.objects.get(id=kwargs['pk'])
+        else:
+            print("Error: missing pk")
+        self.next_url = request.GET.get('next') or '/'
+        print(self.next_url)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_success_url(self):
-        return reverse('inventory:VendorList')
-
+        try:
+            resolve(self.next_url)
+            return self.next_url
+        except Resolver404: 
+            return reverse('inventory:VendorList')
 
 class VendorDeleteModal(BSModalDeleteView, LoginRequiredMixin, PermissionRequiredMixin):
     """Delete vendor"""
@@ -773,81 +870,6 @@ def ItemSelectDrugView(request, *args, **kwargs):
 
     return render(request, "inventory/item_select_drug_view.html")
 
-
-class NewItemModal(BSModalCreateView, LoginRequiredMixin, PermissionRequiredMixin):
-    """Add new drug to items"""
-    permission_required = ('inventory.add_item')
-    template_name = 'inventory/new_item_modal.html'
-    form_class = NewItemModalForm
-    drug_obj = None
-    success_message = 'Success: Drug added'
-
-    def dispatch(self, request, *args, **kwargs):
-       if 'drug_id' in kwargs:
-            self.drug_obj = RegisteredDrug.objects.get(id=kwargs['drug_id'])
-            print(f"Retrieved {self.drug_obj}")
-       return super().dispatch(request, *args, **kwargs)
-
-    def get_context_data(self, **kwargs):
-        data = super().get_context_data(**kwargs)
-        if self.drug_obj:
-            data['drug_obj'] = self.drug_obj
-        return data
-
-    def get_success_url(self):
-        return reverse('inventory:ItemList')
-
-    def get_form_kwargs(self):
-        kwargs = super(NewItemModal, self).get_form_kwargs()
-        kwargs.update({
-            'drug_obj': self.drug_obj,
-            })
-        print(kwargs)
-        return kwargs
-
-class NewItem(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
-    """Add new drug to items"""
-    permission_required = ('inventory.add_item')
-    template_name = 'inventory/new_item.html'
-    form_class = NewItemForm
-    drug_obj = None
-    success_message = 'Success: Drug added'
-
-    def dispatch(self, request, *args, **kwargs):
-        if 'drug_id' in kwargs:
-            try:
-                self.drug_obj = RegisteredDrug.objects.get(id=kwargs['drug_id'])
-            except:
-                self.drug_obj = None
-            if self.drug_obj:
-                print(f"Retrieved {self.drug_obj}")
-        return super().dispatch(request, *args, **kwargs)
-
-    def get_context_data(self, **kwargs):
-        data = super().get_context_data(**kwargs)
-        if self.drug_obj:
-            data['drug_obj'] = self.drug_obj
-        return data
-
-    def get_success_url(self):
-        return reverse('inventory:ItemList')
-
-    def get_form_kwargs(self):
-        kwargs = super(NewItem, self).get_form_kwargs()
-        kwargs.update({
-            'drug_obj': self.drug_obj,
-            })
-        print(kwargs)
-        return kwargs
-class ItemUpdateModal(BSModalUpdateView, LoginRequiredMixin, PermissionRequiredMixin):
-    """Update details for item"""
-    permission_required = ('inventory.change_item', )
-    model = Item
-    form_class = NewItemModalForm
-    template_name = 'inventory/item_update_form.html'
-
-    def get_success_url(self):
-        return reverse('inventory:ItemDetail', args=(self.object.pk,))
 
 class DeliveryItemList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
     permission_required = ('inventory.view_deliveryitem',)

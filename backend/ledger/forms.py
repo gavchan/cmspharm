@@ -566,7 +566,7 @@ class DeliveryPaymentModalForm(BSModalForm):
             name='Cheque').pk
         self.initial['vendor'] = self.delivery_obj.vendor.id
         self.initial['payee'] = self.delivery_obj.vendor.name
-        self.initial['invoice_no'] = 'Drug Delivery'
+        self.initial['invoice_no'] = self.delivery_obj.invoice_no
         self.initial['invoice_date'] = self.delivery_obj.invoice_date
         self.initial['other_ref'] = self.delivery_obj.other_ref
         self.initial['amount'] = self.delivery_obj.amount

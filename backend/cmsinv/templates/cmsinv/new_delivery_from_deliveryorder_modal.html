@@ -12,11 +12,32 @@
         <form method="POST"> 
         {% csrf_token %} 
         <h5>Do you wish to sync delivery data to CMS?</h5>
+        <hr>
         <p>{{ delivery_obj }}</p>
-        <p><em>Warning: This process is irreversible</em></p>
-        <br>  
-        <input type="submit" class="btn btn-sm btn-warning" value="Yes" /> 
-        <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">Close</button>
+        <table width="100%">
+          <thead>
+            <th scope="col">Product</th>
+            <th scope="col">Quantity</th>
+            <th scope="col">Std Cost</th>
+            <th scope="col">Avg Cost</th>
+          </thead>
+          <tbody>
+            {% for listitem in itemupdate_list %}
+            <tr>
+              <td>{{ listitem.name }}</td>
+              <td>{{ listitem.existing_qty|floatformat }} <strong>+ {{ listitem.items_quantity|floatformat }}</strong></td>
+              <td>{{ listitem.old_standard_cost }} => <strong>{{ listitem.new_standard_cost }}</strong></td>
+              <td>{{ listitem.old_avg_cost }} => <strong>{{ listitem.new_avg_cost }}</strong></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        <hr>
+        <p><em>Warning: This operation is irreversible</em></p>
+        <p>
+          <input type="submit" class="btn btn-sm btn-warning" value="Yes - Confirm CMS Sync" /> 
+          <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">Close</button>
+        </p>
     </form> 
     </div>
   </div>

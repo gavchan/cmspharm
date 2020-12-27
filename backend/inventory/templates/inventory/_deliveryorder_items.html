@@ -39,11 +39,21 @@
                         >Sample
                         </span>
                         {% else %}
-                        {{ listitem.purchase_quantity }}
+                        {{ listitem.purchase_quantity|floatformat }}
                         {% endif %}
                     </td>
-                    <td class="text-center">{{ listitem.bonus_quantity }}</td>
-                    <td class="text-right">{{ listitem.items_per_purchase }}</td>
+                    <td class="text-center">
+                        {% if listitem.bonus_quantity %}
+                        {{ listitem.bonus_quantity|floatformat }}
+                        {% else %}-
+                        {% endif %}
+                    </td>
+                    <td class="text-right">
+                        {{ listitem.items_per_purchase|floatformat }}
+                        {% if listitem.items_unit %}
+                        {{ listitem.items_unit|title}}
+                        {% endif %}
+                    </td>
                     <td class="text-right">$ {{ listitem.standard_cost }}</td>
                     <td class="text-right">$ {{ listitem.average_cost }}</td>
                     <td class="text-right">$ {{ listitem.total_price }}</td>
@@ -65,7 +75,7 @@
                 </tr>
                 {% endfor %}
                 <tr>
-                    <th colspan="6" class="text-right">
+                    <th colspan="7" class="text-right">
                         Total:
                         {% if list_total != delivery_obj.amount %}
                         <span class="badge badge-danger ml-2 mt-0"

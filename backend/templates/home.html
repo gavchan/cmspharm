@@ -112,6 +112,7 @@
         if (query) {
             const request_parameters = {
                 q: query,
+                next: location.pathname,
             }
             ajax_call(endpoint, request_parameters)
         }
@@ -120,6 +121,7 @@
             const request_parameters = {
                 q: $(this).val(), // value of user_input: the HTML element with ID user-input
                 vendor: '',
+                next: location.pathname,
             }
 
             // if scheduled_function is NOT false, cancel the execution of the function

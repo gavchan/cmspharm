@@ -164,13 +164,13 @@ Vendors
             <button
               type="button"
               class="btn_modal_trigger btn btn-sm btn-success"
-              data-id="{% url 'inventory:NewDeliveryOrder' %}?vendor={{ vendor.id }}"
+              data-id="{% url 'inventory:NewDeliveryOrder' %}?vendor={{ vendor.id }}&next={{ request.path }}"
             ><i class="fad fa-box-alt"></i>
             </button>
             {% endif %}
-            {% if perms.ledger.can_add_expense %}
+            {% if perms.ledger.add_expense %}
             <a 
-              href="{% url 'ledger:NewExpense' %}?vendor={{ vendor.id }}" 
+              href="{% url 'ledger:NewExpense' %}?vendor={{ vendor.id }}&next={{ request.path }}" 
               class="btn btn-sm btn-primary"
             ><i class="far fa-file-invoice-dollar"></i>
             </a>
@@ -181,19 +181,19 @@ Vendors
             ><i class="far fa-file-invoice-dollar"></i>
             </button> -->
             {% endif %}
-            {% if perms.inventory.can_change_vendor %}
+            {% if perms.inventory.change_vendor %}
             <button
               type="button"
               class="btn_modal_trigger btn btn-sm btn-info"
-              data-id="{% url 'inventory:VendorUpdateModal' vendor.pk %}"
+              data-id="{% url 'inventory:VendorUpdateModal' vendor.pk %}?next={{ request.path }}"
             ><i class="fad fa-edit"></i>
             </button>
             {% endif %}
-            {% if perms.inventory.can_delete_vendor %}
+            {% if perms.inventory.delete_vendor %}
             <button
               type="button"
               class="btn_modal_trigger btn btn-sm btn-danger"
-              data-id="{% url 'inventory:VendorDeleteModal' vendor.pk %}"
+              data-id="{% url 'inventory:VendorDeleteModal' vendor.pk %}?next={{ request.path }}"
             ><i class="fad fa-trash"></i>
             </button>
             {% endif %}
@@ -227,7 +227,7 @@ Vendors
 
     $("#inputGroupSelectType").change(function() {
       let vtype=$("#inputGroupSelectType option:selected").val();
-      self.location = "{% url 'inventory:VendorList' %}?vtype=" + vtype;
+      self.location = "{% url 'inventory:VendorList' %}?vtype=" + vtype + "&next={{ request.next }}";
     });
   });
 </script>

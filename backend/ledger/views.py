@@ -344,10 +344,7 @@ class ExpenseDetail(DetailView, LoginRequiredMixin, PermissionRequiredMixin):
             self.list_total = self.deliveryorder_list.aggregate(Sum('amount'))
         else:
             self.list_total = 0
-        try:
-            self.unpaid_deliveries_list = DeliveryOrder.objects.filter(vendor=self.expense_obj.vendor, is_paid=False)
-        except:
-            print("No unpaid delivery orders")
+        self.unpaid_deliveries_list = DeliveryOrder.objects.filter(vendor=self.expense_obj.vendor, is_paid=False) or None
         
         return super().dispatch(request, *args, **kwargs)
 
@@ -394,9 +391,17 @@ def ExpenseAddDeliveryOrder(request, *args, **kwargs):
     expense_obj = Expense.objects.get(pk=kwargs['expense_id']) or None
     delivery_obj = DeliveryOrder.objects.get(pk=kwargs['delivery_id']) or None
     if expense_obj and delivery_obj:
+        # Update delivery_obj
         delivery_obj.bill = expense_obj
         delivery_obj.is_paid = True
         delivery_obj.save()
+        # Update expense_obj invoice_no
+        if expense_obj.invoice_no:
+            new_invoice_no = ','.join([expense_obj.invoice_no, delivery_obj.invoice_no])
+            expense_obj.invoice_no = new_invoice_no
+        else:
+            expense_obj.invoice_no = delivery_obj.invoice_no    
+        expense_obj.save()
         print(f"Delivery #{delivery_obj.id} added to expense #{expense_obj.id}")
     return HttpResponseRedirect(reverse('ledger:ExpenseDetail', args=(expense_obj.id,)))
 
@@ -409,7 +414,15 @@ def ExpenseRemoveDeliveryOrder(request, *args, **kwargs):
         delivery_obj.bill = None
         delivery_obj.is_paid = False
         delivery_obj.save()
-        print(f"Delivery #{delivery_obj.id} removed from expense #{expense_obj.id}")
+        # Update expense_obj invoice_no
+        invoice_nums = expense_obj.invoice_no.split(',')
+        removed_invoice_no = invoice_nums.pop()
+        if len(invoice_nums) > 1:
+            expense_obj.invoice_no = ','.join(invoice_nums)
+        else:
+            expense_obj.invoice_no = invoice_nums[0]
+        expense_obj.save()
+        print(f"Delivery #{delivery_obj.id} #{removed_invoice_no} removed from expense #{expense_obj.id}")
     return HttpResponseRedirect(reverse('ledger:ExpenseDetail', args=(expense_obj.id,)))
 
 @login_required
