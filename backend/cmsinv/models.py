@@ -138,7 +138,7 @@ class InventoryItem(models.Model):
     # certificate_holder - CMS database accepts 'Supplier' or 'Certificate Holder' but not 'Manufacturer' 
     # in this field, need to add validation to enforce this
     certificate_holder = models.ForeignKey(
-        'Supplier', on_delete=models.PROTECT, 
+        'Supplier', on_delete=models.CASCADE, 
         db_column='certificate_holder_id'
         )
     clinic_drug_no = models.CharField(max_length=255, blank=True, null=True, unique=True)
@@ -245,11 +245,11 @@ class InventoryItemSupplier(models.Model):
     """
  
     inventory_item = models.ForeignKey(
-        'InventoryItem', on_delete=models.PROTECT,
+        'InventoryItem', on_delete=models.CASCADE,
         db_column='inventory_item_suppliers_id'
         )
     supplier = models.ForeignKey(
-        'Supplier', on_delete=models.PROTECT,
+        'Supplier', on_delete=models.CASCADE,
         db_column='supplier_manufacturer_id'
         )
     suppliers_idx = models.IntegerField(default=0, blank=True, null=True)
@@ -287,7 +287,7 @@ class InventoryMovementLog(models.Model):
 
     # reference_no - maps to table based on movement_type:
     #   Delivery => delivery
-    #   Dispensary => prescription
+    #   Dispensary => consultation_notes_id (<= encounter)
     #   Reconciliation => depletion
     #   Stock Initialization => null - N.B.What transaction registers this?
     reference_no = models.CharField(max_length=255, blank=True, null=True)
@@ -433,7 +433,7 @@ class ReceivedItem(models.Model):
     cost = models.FloatField()
     dangerous_sign = TextBooleanField()
     delivery = models.ForeignKey(
-        'Delivery', on_delete=models.PROTECT, 
+        'Delivery', on_delete=models.CASCADE, 
         db_column='delivery_id'
         )
     drug_item = models.ForeignKey(

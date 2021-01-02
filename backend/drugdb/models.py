@@ -112,55 +112,55 @@ class Ingredient(models.Model):
     def __str__(self):
         return self.name
 
-class DrugDelivery(Delivery):
-    """
-    Records drug purchase transactions
-    """
-    AMPOULE = 'AMPOULE'
-    BOTTLE = 'BOTTLE'
-    BOX = 'BOX'
-    CAPSULE = 'CAP'
-    DOSE = 'DOSE'
-    GRAM = 'GRAM'
-    INJECTION = 'INJECTION'
-    MG = 'MG'
-    ML = 'ML'
-    PACK = 'PACK'
-    TAB = 'TAB'
-    TUBE = 'TUBE'
-    UNIT = 'UNIT'
-    VIAL = 'VIAL'
+# class DrugDelivery(Delivery):
+#     """
+#     Records drug purchase transactions
+#     """
+#     AMPOULE = 'AMPOULE'
+#     BOTTLE = 'BOTTLE'
+#     BOX = 'BOX'
+#     CAPSULE = 'CAP'
+#     DOSE = 'DOSE'
+#     GRAM = 'GRAM'
+#     INJECTION = 'INJECTION'
+#     MG = 'MG'
+#     ML = 'ML'
+#     PACK = 'PACK'
+#     TAB = 'TAB'
+#     TUBE = 'TUBE'
+#     UNIT = 'UNIT'
+#     VIAL = 'VIAL'
 
-    ITEMS_UNIT_CHOICES = [
-        (AMPOULE, 'Ampoule'),
-        (BOTTLE, 'Bottle'),
-        (BOX, 'Box'),
-        (CAPSULE, 'Cap'),
-        (DOSE, 'Dose'),
-        (GRAM, 'gram'),
-        (INJECTION, 'Injection'),
-        (MG, 'mg'),
-        (ML, 'mL'),
-        (PACK, 'Pack'),
-        (TAB, 'Tablet'),
-        (TUBE, 'Tube'),
-        (UNIT, 'Unit'),
-        (VIAL, 'Vial'),
-    ]
-    reg_no = models.CharField(max_length=255, blank=True, null=True)
-    cmsinv_item = models.ForeignKey(
-        InventoryItem, on_delete=models.PROTECT,
-        blank=True, null=True,
-        )
-    bill = models.ForeignKey(
-        Expense, on_delete=models.PROTECT,
-        blank=True, null=True,
-    )
-    items_unit = models.CharField(max_length=100, choices=ITEMS_UNIT_CHOICES, default=TAB)
+#     ITEMS_UNIT_CHOICES = [
+#         (AMPOULE, 'Ampoule'),
+#         (BOTTLE, 'Bottle'),
+#         (BOX, 'Box'),
+#         (CAPSULE, 'Cap'),
+#         (DOSE, 'Dose'),
+#         (GRAM, 'gram'),
+#         (INJECTION, 'Injection'),
+#         (MG, 'mg'),
+#         (ML, 'mL'),
+#         (PACK, 'Pack'),
+#         (TAB, 'Tablet'),
+#         (TUBE, 'Tube'),
+#         (UNIT, 'Unit'),
+#         (VIAL, 'Vial'),
+#     ]
+#     reg_no = models.CharField(max_length=255, blank=True, null=True)
+#     cmsinv_item = models.ForeignKey(
+#         InventoryItem, on_delete=models.CASCADE,
+#         blank=True, null=True,
+#         )
+#     bill = models.ForeignKey(
+#         Expense, on_delete=models.CASCADE,
+#         blank=True, null=True,
+#     )
+#     items_unit = models.CharField(max_length=100, choices=ITEMS_UNIT_CHOICES, default=TAB)
 
-    class Meta:
-        verbose_name = 'Drug delivery'
-        verbose_name_plural = 'Drug deliveries'
+#     class Meta:
+#         verbose_name = 'Drug delivery'
+#         verbose_name_plural = 'Drug deliveries'
 
-    def get_absolute_url(self):
-        return reverse('drugdb:DrugDeliveryDetail', kwargs={'pk': self.pk})
+#     def get_absolute_url(self):
+#         return reverse('drugdb:DrugDeliveryDetail', kwargs={'pk': self.pk})
