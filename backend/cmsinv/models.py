@@ -180,7 +180,7 @@ class InventoryItem(models.Model):
     location = models.CharField(max_length=255, blank=True, null=True)
     mini_dispensary_unit = models.FloatField(default=0)
     mini_dosage_unit = models.FloatField(default=0)
-    product_name = models.CharField(max_length=255, blank=True, null=True, unique=True)
+    product_name = models.CharField(max_length=255, blank=True, null=True) # CMS product_name is not unique
     product_name_chinese = models.CharField(max_length=255, blank=True, null=True)
     registration_no = models.CharField(unique=True, max_length=255, blank=True, null=True)
     remarks = models.TextField(blank=True, null=True)
@@ -551,3 +551,59 @@ class DepletionDepletionItem(models.Model):
         )
 
 
+# CMS PRESCRIPTION Models
+#
+# Prescription.id referenced in InventoryMovementLog (Dispensary)
+# Prescription.id referenced in PrescriptionDetail, which could be used to locate InventoryItem.id
+# 
+class Prescription(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    version = models.BigIntegerField(default=0)
+    date_created = models.DateTimeField(auto_now_add=True)
+    encounter_id = models.BigIntegerField(blank=True, null=True)
+    language_id = models.BigIntegerField(blank=True, null=True) # Default=NULL; not used in CMS
+    last_updated = models.DateTimeField(auto_now=True)
+    updated_by = models.CharField(max_length=255, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'prescription'
+ 
+
+class PrescriptionDetail(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    version = models.BigIntegerField(default=0)
+    advisory = models.ForeignKey(
+        Advisory, on_delete=models.PROTECT,
+        db_column='advisory_id', blank=True, null=True
+    )
+    
+    dangerous_sign = TextBooleanField()  # MySQL text field, behaves like Boolean
+    dosage = models.CharField(max_length=255)
+    drug = models.ForeignKey(
+        InventoryItem, on_delete=models.PROTECT,
+        db_column='drug_id'
+    )
+    duration = models.CharField(max_length=255)
+    filled_in_clinic = TextBooleanField()  # This field type is a guess.
+    frequency = models.CharField(max_length=255)
+    instruction = models.ForeignKey(
+        Instruction, on_delete=models.PROTECT,
+        db_column='instruction_id', blank=True, null=True
+    )
+    prescription = models.ForeignKey(
+        Prescription, on_delete=models.PROTECT,
+        db_column='prescription_id'
+    )
+    quantity = models.FloatField()
+    remark = models.TextField(blank=True, null=True)
+    status_print = models.IntegerField()
+    total_cost = models.FloatField()
+    unit = models.CharField(max_length=255, blank=True, null=True)
+    unit_price = models.FloatField()
+    details_idx = models.IntegerField(blank=True, null=True)
+    unit_drug_avg_cost = models.DecimalField(max_digits=19, decimal_places=2, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'prescription_detail'
