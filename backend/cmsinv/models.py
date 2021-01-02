@@ -287,7 +287,7 @@ class InventoryMovementLog(models.Model):
 
     # reference_no - maps to table based on movement_type:
     #   Delivery => delivery
-    #   Dispensary => encounter
+    #   Dispensary => prescription
     #   Reconciliation => depletion
     #   Stock Initialization => null - N.B.What transaction registers this?
     reference_no = models.CharField(max_length=255, blank=True, null=True)
@@ -568,6 +568,7 @@ class Prescription(models.Model):
     class Meta:
         managed = False
         db_table = 'prescription'
+        app_label = 'cmsinv'
  
 
 class PrescriptionDetail(models.Model):
@@ -607,3 +608,4 @@ class PrescriptionDetail(models.Model):
     class Meta:
         managed = False
         db_table = 'prescription_detail'
+        app_label = 'cmsinv'
