@@ -9,6 +9,12 @@
 <div class="modal-body">
   <div class="card">
     <div class="card-body">
+        {% if itemupdate_count == 0 %}
+        <h5>No CMS items to update</h5>
+        <p>
+          <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">Return to DeliveryOrder</button>
+        </p>
+        {% else %}
         <form method="POST"> 
         {% csrf_token %} 
         <h5>Do you wish to sync delivery data to CMS?</h5>
@@ -16,19 +22,26 @@
         <p>{{ delivery_obj }}</p>
         <table width="100%">
           <thead>
-            <th scope="col">Product</th>
-            <th scope="col">Quantity</th>
-            <th scope="col">Std Cost</th>
-            <th scope="col">Avg Cost</th>
+            <th scope="col" width="55%">Product</th>
+            <th scope="col" width="15%">Quantity</th>
+            <th scope="col" width="15%">Std Cost</th>
+            <th scope="col" width="15%">Avg Cost</th>
           </thead>
           <tbody>
             {% for listitem in itemupdate_list %}
+            {% if listitem.cmsid %}
             <tr>
-              <td>{{ listitem.name }}</td>
+              <td>
+                {{ listitem.name }}
+                {% if listitem.discontinue %}
+                <span class="badge badge-secondary">Inactive  &#x21D2; Active</span>
+                {% endif %}
+              </td>
               <td>{{ listitem.existing_qty|floatformat }} <strong>+ {{ listitem.items_quantity|floatformat }}</strong></td>
-              <td>{{ listitem.old_standard_cost }} => <strong>{{ listitem.new_standard_cost }}</strong></td>
-              <td>{{ listitem.old_avg_cost }} => <strong>{{ listitem.new_avg_cost }}</strong></td>
+              <td>{{ listitem.old_standard_cost }} &#x21D2; <strong>{{ listitem.new_standard_cost }}</strong></td>
+              <td>{{ listitem.old_avg_cost }}  &#x21D2; <strong>{{ listitem.new_avg_cost }}</strong></td>
             </tr>
+            {% endif %}
             {% endfor %}
           </tbody>
         </table>
@@ -38,7 +51,8 @@
           <input type="submit" class="btn btn-sm btn-warning" value="Yes - Confirm CMS Sync" /> 
           <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">Close</button>
         </p>
-    </form> 
+    </form>
+    {% endif %}
     </div>
   </div>
 </div>

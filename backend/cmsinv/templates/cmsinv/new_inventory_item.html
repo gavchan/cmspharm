@@ -2,7 +2,7 @@
 {% load crispy_forms_tags %}
 
 {% block title %}
-  Item: {{ object.product_name }}
+  Add CMS Inventory Item: {{ drug_obj.product_name }}
 {% endblock %}
 
 
@@ -18,7 +18,7 @@
   <div class="card-body">
 
     {% if drug_obj %}
-    <div class="card">
+    <div class="card mb-2">
       <div class="card-body">
         <div class="row">
           <div class="col-md-8">
@@ -27,26 +27,26 @@
           
         </div>
         <div class="row">
-          <div class="col-md-3">
-              Product Name
+          <div class="col-sm-3">
+              <strong>Product Name</strong>
           </div>
-          <div class="col-md-9">
+          <div class="col-sm-9">
               {{ drug_obj.name }}
           </div>
         </div>
         <div class="row">
-          <div class="col-md-3">
-              Ingredients
+          <div class="col-sm-3">
+              <strong>Ingredients</strong>
           </div>
-          <div class="col-md-9">
+          <div class="col-sm-9">
               {{ drug_obj.ingredients_list }}
           </div>
         </div>
         <div class="row">
-          <div class="col-md-3">
-              Cert. Holder
+          <div class="col-sm-3">
+              <strong>Cert. Holder</strong>
           </div>
-          <div class="col-md-9">
+          <div class="col-sm-9">
               {{ drug_obj.company.name }}
           </div>
         </div>

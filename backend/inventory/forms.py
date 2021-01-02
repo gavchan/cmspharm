@@ -2,7 +2,7 @@ from django import forms
 from django.forms import ModelForm
 from django.urls import reverse
 from django.contrib.auth.models import User
-from .models import Category, Vendor, Item, DeliveryOrder, DeliveryItem
+from .models import Category, Vendor, Item, DeliveryOrder, DeliveryItem, ItemType
 from cmsinv.models import InventoryItem
 from ledger.models import PaymentMethod
 from crispy_forms.helper import FormHelper
@@ -541,53 +541,50 @@ class NewItemFromVendorForm(ModelForm):
         model = InventoryItem
         exclude = ['id', 'version', 'date_created',]
 
-class NewItemModalForm(BSModalForm):
+class ItemUpdateModalForm(BSModalForm):
 
     def __init__(self, *args, **kwargs):
-        self.drug_obj = kwargs.pop('drug_obj', None)
         print(f"args={args}; kwargs={kwargs}")
-        super(NewItemModalForm, self).__init__(*args, **kwargs)
+        super(ItemUpdateModalForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_tag = True
-        self.helper.render_unmentioned_fields = True 
-        self.helper.form_id = 'id-NewItemForm'
+        self.helper.render_unmentioned_fields = False
+        self.helper.form_id = 'id-ItemUpdateForm'
         self.helper.form_class = 'cmmForms'
         self.helper.form_method = 'post'
         self.helper.form_action = reverse(
-            'inventory:NewItemModal', kwargs={'drug_id': self.drug_obj.id,}
+            'inventory:ItemUpdateModal', args=(self.instance.pk,)
             )
-        if self.drug_obj:
-            self.initial['name'] = self.drug_obj.name
-            self.initial['label'] = self.drug_obj.name
-            self.initial['item_type'] = 'DRUG'
         self.initial['active'] = True
         self.helper.layout = Layout(
-            Hidden('version', '1'),
-            Hidden('item_type', 'DRUG'),
-            Hidden('reg_no', self.drug_obj.reg_no),
             Row(
-                Column('name', css_class='form-group col-md-5 mb-0'),
-                Column('alias', css_class='form-group col-md-5 mb-0'),
-                Column('item_unit', css_class='form-group col-md-2 mb-0'),
+                Column('name', css_class='form-group col-md-8'),
+                Column(UneditableField('cmsid'), css_class='form-group col-md-4'),
                 css_class='form-row',
             ),
             Row(
-                Column('label', css_class='form-group col-md-5 mb-0'),
-                Column('generic_name', css_class='form-group col-md-5 mb-0'),
-                Column(UneditableField('clinic_no'), css_class='form-group col-md-2 mb-0'),
+                Column('note', css_class='form-group col-md-8 mb-0'),
+                Column(UneditableField('reg_no'), css_class='form-group col-md-4'),
                 css_class='form-row',
             ),
             Row(
-                Column('description', css_class='form-group col-md-5 mb-0'),
-                Column(Field('remarks', css_class='form-control col-md-5 mb-0', rows="1")),
-                Column(
-                        Row('active'),
-                        Row('dangerous_drug'),
-                        css_class='form-group col-md-2 mb-0'),
+                Column('vendor', css_class='form-group col-md-4'),
+                Column('category', css_class='form-group col-md-4'),
+                Column('item_type', css_class='form-group col-md-4'),
                 css_class="form-row",
             ),
+            Row(
+                Column('is_active'),
+                css_class="form-row"
+            ),
+            Hidden('version', self.instance.version + 1),
             FormActions(
                 Submit('submit', 'Submit'),
+                Button(
+                    'back', 'Cancel',
+                    css_class='btn-light',
+                    onclick="javascript:history.go(-1);"
+                ),
             ),
         )
 
@@ -600,48 +597,46 @@ class NewItemForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         self.drug_obj = kwargs.pop('drug_obj', None)
+        self.vendor_obj = kwargs.pop('vendor_obj', None)
         print(f"args={args}; kwargs={kwargs}")
         super(NewItemForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_tag = True
-        self.helper.render_unmentioned_fields = True 
+        self.helper.render_unmentioned_fields = False
         self.helper.form_id = 'id-NewItemForm'
         self.helper.form_class = 'cmmForms'
         self.helper.form_method = 'post'
         self.helper.form_action = reverse(
             'inventory:NewItem'
             )
-        if self.drug_obj:
-            self.initial['name'] = self.drug_obj.name
-            self.initial['label'] = self.drug_obj.name
-            self.initial['reg_no'] = self.drug_obj.reg_no
-            self.initial['item_type'] = 'DRUG'
         self.initial['active'] = True
+        self.initial['item_type'] = ItemType.objects.get(name='Consumable').id
+        self.initial['category'] = Category.objects.get(name='Consumable').id
+        try:
+            self.initial['vendor'] = self.vendor_obj.id
+        except:
+            print('No vendor id')
+        print(self.initial['item_type'])
         self.helper.layout = Layout(
             Hidden('version', '1'),
-            Hidden('item_type', 'DRUG'),
             Row(
-                Column('name', css_class='form-group col-md-5 mb-0'),
-                Column('alias', css_class='form-group col-md-5 mb-0'),
-                Column('item_unit', css_class='form-group col-md-2 mb-0'),
+                Column('name', css_class='form-group col-md-8'),
+                Column(UneditableField('cmsid'), css_class='form-group col-md-4'),
                 css_class='form-row',
             ),
             Row(
-                Column('label', css_class='form-group col-md-5 mb-0'),
-                Column('generic_name', css_class='form-group col-md-5 mb-0'),
-                Column(UneditableField('clinic_no'), css_class='form-group col-md-1 mb-0'),
-                Column(UneditableField('reg_no'), css_class='form-group col-md-1 mb-0'),
+                Column('note', css_class='form-group col-md-8 mb-0'),
+                Column(UneditableField('reg_no'), css_class='form-group col-md-4'),
                 css_class='form-row',
             ),
             Row(
-                Column('description', css_class='form-group col-md-5 mb-0'),
-                Column(Field('remarks', css_class='form-control col-md-5 mb-0', rows="1")),
-                Column(
-                        Row('active'),
-                        Row('dangerous_drug'),
-                        css_class='form-group col-md-2 mb-0'),
+                Column('vendor', css_class='form-group col-md-4 mb-0'),
+                Column('category', css_class='form-group col-md-4 mb-0'),
+                Column(UneditableField('item_type'), css_class='form-group col-md-4 mb-0'),
                 css_class="form-row",
             ),
+            Row(Column('is_active'), css_class='form-row'),
+            Hidden('item_type',  ItemType.objects.get(name='Consumable').id),
             FormActions(
                 Submit('submit', 'Submit'),
                 Button(
@@ -668,6 +663,7 @@ class DeliveryOrderAddDeliveryItemForm(ModelForm):
         self.delivery_obj = kwargs.pop('delivery_obj', None)
         self.drug_obj = kwargs.pop('drug_obj', None)
         self.item_obj = kwargs.pop('item_obj', None)
+        self.next_url = kwargs.pop('next_url', None)
         
         super(DeliveryOrderAddDeliveryItemForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper(self)
@@ -676,9 +672,17 @@ class DeliveryOrderAddDeliveryItemForm(ModelForm):
         self.helper.form_id = 'id-AddDeliveryItemForm'
         self.helper.form_class = 'cmmForms'
         self.helper.form_method = 'post'
-        self.helper.form_action = reverse(
-            'inventory:DeliveryOrderAddDeliveryItem', args=(self.delivery_obj.id, self.drug_obj.id,)
+        if self.drug_obj:
+            url_with_query = "%s?delivery=%s&cmsid=%s" % (
+                reverse('inventory:DeliveryOrderAddDeliveryItem', None),
+                self.delivery_obj.id, self.drug_obj.id 
             )
+        else:
+            url_with_query = "%s?delivery=%s&item=%s" % (
+                reverse('inventory:DeliveryOrderAddDeliveryItem', None),
+                self.delivery_obj.id, self.item_obj.id 
+            )
+        self.helper.form_action = url_with_query
         self.helper.layout = Layout(
             Hidden('next', self.helper.form_action),
             Hidden('version', '1'),

@@ -12,10 +12,12 @@
   {% include 'inventory/_deliveryorder_summary.html' %}
   
   <div class="card">
-        <h5 class="card-header d-flex justify-content-between align-items-center bg-success">Add delivery item: {{ drug_obj.product_name }}</h5>
+        <h5 class="card-header d-flex justify-content-between align-items-center bg-success">Add delivery item: {{ item_obj.name }}</h5>
     <div class="card-body">
+      {% if drug_obj %}
       {% include 'inventory/_item_summary_table.html' %} 
       <hr>
+      {% endif %}
       <div class="row">
         <div class="col-sm-11">
           {% crispy form %}

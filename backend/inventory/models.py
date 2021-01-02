@@ -99,10 +99,14 @@ class Item(models.Model):
     Model to link CMS inventory item from external database, registered drug
     """
     
-    name = models.CharField(max_length=255, blank=True, null=True)
+    name = models.CharField(max_length=255, unique=True)
     note = models.CharField(max_length=255, blank=True, null=True)
-    cmsid = models.PositiveIntegerField(blank=True, null=True)
-    reg_no = models.CharField(max_length=255, blank=True, null=True)
+    vendor = models.ForeignKey(
+        Vendor, on_delete=models.PROTECT,
+        blank=True, null=True,
+    )
+    cmsid = models.PositiveIntegerField(blank=True, null=True, unique=True)
+    reg_no = models.CharField(max_length=255, blank=True, null=True, unique=True)
     item_type = models.ForeignKey(
         ItemType, on_delete=models.PROTECT,
         blank=True, null=True,
@@ -242,6 +246,7 @@ class DeliveryOrder(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
     updated_by = models.CharField(max_length=255, blank=True, null=True)
+    cms_synced = models.BooleanField(default=False)
     cms_delivery_id = models.BigIntegerField(blank=True, null=True, default=None)
     version = models.PositiveIntegerField(default=1)
 

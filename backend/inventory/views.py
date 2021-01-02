@@ -17,7 +17,7 @@ from bootstrap_modal_forms.generic import (
 )
 from .models import (
     Category,
-    Item,
+    Item, ItemType,
     Vendor,
     DeliveryOrder,
     DeliveryItem,
@@ -27,7 +27,7 @@ from cmsinv.models import InventoryItem, InventoryItemType
 from .forms import (
     NewCategoryForm, CategoryUpdateForm,
     NewVendorForm, NewVendorModalForm, VendorUpdateForm, VendorUpdateModalForm,
-    NewItemModalForm, NewItemFromVendorForm, ItemUpdateForm, NewItemForm,
+    ItemUpdateModalForm, NewItemForm,
     NewDeliveryOrderForm, NewDeliveryOrderModalForm, DeliveryOrderUpdateModalForm,
     DeliveryOrderAddDeliveryItemForm, DeliveryItemUpdateModalForm,
 )
@@ -110,18 +110,37 @@ class ItemList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
     paginate_by = 20
     last_query = ''
     last_query_count = 0
+    item_type = ''
+    category = ''
+    status = ''
 
     def get_queryset(self):
         query = self.request.GET.get('q')
+        self.item_type = self.request.GET.get('t') or ''
+        self.category = self.request.GET.get('c') or ''
+        self.status = self.request.GET.get('s') or ''
+        if self.item_type:
+            object_list = Item.objects.filter(
+                item_type=ItemType.objects.get(value=self.item_type)
+            ).order_by('name')
+        else:
+            object_list = Item.objects.all().order_by('name')
+        if self.category:
+            object_list = object_list.filter(
+                category=Category.objects.get(value=self.category)
+            )
+        if self.status == '1':
+            object_list = object_list.filter(is_active=True)
+        elif self.status == '2':
+            object_list = object_list.filter(is_active=False)
         if query:
             self.last_query = query
-            object_list = Item.objects.filter(
+            object_list = object_list.filter(
                 Q(name__icontains=query) 
-            ).order_by('-is_active','name')
+            ).order_by('is_active')
             self.last_query_count = object_list.count
         else:
             self.last_query = ''
-            object_list = Item.objects.all()
             self.last_query_count = object_list.count
         return object_list
 
@@ -129,6 +148,9 @@ class ItemList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
         data = super().get_context_data(**kwargs)
         data['last_query'] = self.last_query
         data['last_query_count'] = self.last_query_count
+        data['item_type'] = self.item_type
+        data['category'] = self.category
+        data['status'] = self.status
         return data
 
 
@@ -143,22 +165,22 @@ class ItemDetail(DetailView, LoginRequiredMixin, PermissionRequiredMixin):
     #     context = super().get_context_data(**kwargs)
 
 
-class ItemUpdate(UpdateView, LoginRequiredMixin, PermissionRequiredMixin):
-    """Update details for item"""
-    permission_required = ('inventory.change_item', )
-    model = Item
-    form_class = ItemUpdateForm
-    template_name = 'inventory/item_update_form.html'
+# class ItemUpdate(UpdateView, LoginRequiredMixin, PermissionRequiredMixin):
+#     """Update details for item"""
+#     permission_required = ('inventory.change_item', )
+#     model = Item
+#     form_class = ItemUpdateForm
+#     template_name = 'inventory/item_update_form.html'
 
-    def get_success_url(self):
-        return reverse('inventory:ItemDetail', args=(self.object.pk,))
+#     def get_success_url(self):
+#         return reverse('inventory:ItemDetail', args=(self.object.pk,))
 
 class ItemUpdateModal(BSModalUpdateView, LoginRequiredMixin, PermissionRequiredMixin):
     """Update details for item"""
     permission_required = ('inventory.change_item', )
     model = Item
-    form_class = NewItemModalForm
-    template_name = 'inventory/item_update_form.html'
+    form_class = ItemUpdateModalForm
+    template_name = 'inventory/item_update_modal.html'
 
     def get_success_url(self):
         return reverse('inventory:ItemDetail', args=(self.object.pk,))
@@ -213,62 +235,62 @@ class NewItem(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
             })
         return kwargs
 
-class NewItemModal(BSModalCreateView, LoginRequiredMixin, PermissionRequiredMixin):
-    """Add new drug to items"""
-    permission_required = ('inventory.add_item')
-    template_name = 'inventory/new_item_modal.html'
-    form_class = NewItemModalForm
-    drug_obj = None
-    success_message = 'Success: Drug added'
+# class NewItemModal(BSModalCreateView, LoginRequiredMixin, PermissionRequiredMixin):
+#     """Add new drug to items"""
+#     permission_required = ('inventory.add_item')
+#     template_name = 'inventory/new_item_modal.html'
+#     form_class = NewItemModalForm
+#     drug_obj = None
+#     success_message = 'Success: Drug added'
 
-    def dispatch(self, request, *args, **kwargs):
-       if 'drug_id' in kwargs:
-            self.drug_obj = RegisteredDrug.objects.get(id=kwargs['drug_id'])
-            print(f"Retrieved {self.drug_obj}")
-       return super().dispatch(request, *args, **kwargs)
+#     def dispatch(self, request, *args, **kwargs):
+#        if 'drug_id' in kwargs:
+#             self.drug_obj = RegisteredDrug.objects.get(id=kwargs['drug_id'])
+#             print(f"Retrieved {self.drug_obj}")
+#        return super().dispatch(request, *args, **kwargs)
 
-    def get_context_data(self, **kwargs):
-        data = super().get_context_data(**kwargs)
-        if self.drug_obj:
-            data['drug_obj'] = self.drug_obj
-        return data
+#     def get_context_data(self, **kwargs):
+#         data = super().get_context_data(**kwargs)
+#         if self.drug_obj:
+#             data['drug_obj'] = self.drug_obj
+#         return data
 
-    def get_success_url(self):
-        return reverse('inventory:ItemList')
+#     def get_success_url(self):
+#         return reverse('inventory:ItemList')
 
-    def get_form_kwargs(self):
-        kwargs = super(NewItemModal, self).get_form_kwargs()
-        kwargs.update({
-            'drug_obj': self.drug_obj,
-            })
-        print(kwargs)
-        return kwargs
+#     def get_form_kwargs(self):
+#         kwargs = super(NewItemModal, self).get_form_kwargs()
+#         kwargs.update({
+#             'drug_obj': self.drug_obj,
+#             })
+#         print(kwargs)
+#         return kwargs
 
 
-class NewItemFromVendor(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
-    """Add new item"""
-    permission_required = ('inventory.add_item', )
-    model = Item
-    form_class = NewItemFromVendorForm
-    template_name = 'inventory/new_item.html'
-    vendor_id = ''
+# class NewItemFromVendor(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
+#     """Add new item"""
+#     permission_required = ('inventory.add_item', )
+#     model = Item
+#     form_class = NewItemFromVendorForm
+#     template_name = 'inventory/new_item.html'
+#     vendor_id = ''
 
-    def dispatch(self, request, *args, **kwargs):
-        if 'vendor_id' in kwargs:
-            self.vendor_id = kwargs['vendor_id']
-        else:
-            self.vendor_id = ''
-        return super().dispatch(request, *args, **kwargs)
+#     def dispatch(self, request, *args, **kwargs):
+#         if 'vendor_id' in kwargs:
+#             self.vendor_id = kwargs['vendor_id']
+#         else:
+#             self.vendor_id = ''
+#         return super().dispatch(request, *args, **kwargs)
 
-    def get_context_data(self, **kwargs):
-        data = super().get_context_data(**kwargs)
-        if self.vendor_id:
-            data['vendor_id'] = self.vendor_id
-            vendor_obj = Vendor.objects.get(id=self.vendor_id)
-            data['vendor_name'] = vendor_obj.name
-        else:
-            data['vendor_name'] = ''
-        return data
+#     def get_context_data(self, **kwargs):
+#         data = super().get_context_data(**kwargs)
+#         if self.vendor_id:
+#             data['vendor_id'] = self.vendor_id
+#             vendor_obj = Vendor.objects.get(id=self.vendor_id)
+#             data['vendor_name'] = vendor_obj.name
+#         else:
+#             data['vendor_name'] = ''
+#         return data
 
 
 class VendorList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
@@ -632,8 +654,27 @@ def DeliveryOrderDetail(request, *args, **kwargs):
 
     # Get query from request and search RegisteredDrug    
     query = request.GET.get('q')
+    item_query = request.GET.get('iq')
     stype = request.GET.get('stype')
-    if query:
+    print(f"Item search: {item_query}")
+    if item_query:
+        last_query = item_query
+        object_list = Item.objects.filter(
+            item_type=ItemType.objects.get(name='Consumable').id).filter(
+            Q(name__icontains=item_query) 
+        ).order_by('is_active')[:MAX_QUERY_COUNT]
+        last_query_count = object_list.count
+        if request.is_ajax():
+            html = render_to_string(
+                template_name='inventory/_item_search_results_partial.html',
+                context={
+                    'item_list': object_list,
+                    'delivery_id': delivery_obj.id,
+                }
+            )
+            data_dict = {"html_from_view": html}
+            return JsonResponse(data=data_dict, safe=False)
+    elif query:
         last_query = query
         if stype == 'regno':
             object_list = InventoryItem.objects.filter(
@@ -658,7 +699,7 @@ def DeliveryOrderDetail(request, *args, **kwargs):
             context={
                 'drug_list': object_list,
                 'delivery_id': delivery_obj.id,
-                }
+            }
         )
         data_dict = {"html_from_view": html}
         return JsonResponse(data=data_dict, safe=False)
@@ -796,12 +837,13 @@ class DeliveryOrderAddDeliveryItem(LoginRequiredMixin, PermissionRequiredMixin, 
     success_message = 'Success: Drug added'
 
     def dispatch(self, request, *args, **kwargs):
-        if 'delivery_id' in kwargs:
-            self.delivery_obj = DeliveryOrder.objects.get(id=kwargs['delivery_id'])
+        if request.GET.get('delivery'):
+            self.delivery_obj = DeliveryOrder.objects.get(id=request.GET.get('delivery'))
+            print(f"Got delivery { self.delivery_obj.id }")
         else:
             print('Error: no delivery_id')
-        if kwargs['cmsitem_id']:
-            self.drug_obj = InventoryItem.objects.get(pk=kwargs['cmsitem_id'])
+        if request.GET.get('cmsid'):
+            self.drug_obj = InventoryItem.objects.get(pk=request.GET.get('cmsid'))
             item_details = {
                 'name': self.drug_obj.product_name,
                 'cmsid': self.drug_obj.id,
@@ -814,8 +856,12 @@ class DeliveryOrderAddDeliveryItem(LoginRequiredMixin, PermissionRequiredMixin, 
             )
             if created:
                 print(f"Item {self.drug_obj.registration_no} | {self.drug_obj.product_name} not in database => created")
-        else:
-            print('Error: no cmsitem_id')
+            else:
+                print(f"Got item {self.drug_obj.id}")
+        elif request.GET.get('item'):
+            print(f"Request - item={request.GET.get('item')}")
+            self.item_obj = Item.objects.get(id=request.GET.get('item'))
+            
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):

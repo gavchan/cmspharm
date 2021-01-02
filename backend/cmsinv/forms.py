@@ -128,6 +128,7 @@ class InventoryItemUpdateForm(ModelForm):
 class NewInventoryItemForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
+        self.drug_obj = kwargs.pop('drug_obj', None)
         super(NewInventoryItemForm, self).__init__(*args, **kwargs)
         # today_date = date.today().strftime('%Y-%m-%d')
         self.helper = FormHelper()
@@ -135,103 +136,106 @@ class NewInventoryItemForm(ModelForm):
         self.helper.form_id = 'id-InventoryItemForm'
         self.helper.form_class = 'cmmForms'
         self.helper.form_method = 'post'
-        self.helper.form_action = reverse('cmsinv:NewInventoryItem')
+        if self.drug_obj:
+            url_with_query = "%s?reg_no=%s" % (
+                reverse('cmsinv:NewInventoryItem', None),
+                self.drug_obj.reg_no 
+            )
+        else:
+            url_with_query = reverse('cmsinv:NewInventoryItem')
+        self.helper.form_action = url_with_query
         self.initial['version'] = 0
+        self.initial['inventory_item_type'] = 1
+        self.initial['inventory_type'] = 'Drug'
+        self.initial['is_clinic_drug_list'] = True
+        self.initial['is_master_drug_list'] = True
+        if self.drug_obj:
+            self.initial['product_name'] = self.drug_obj.name
+            self.initial['label_name'] = self.drug_obj.name
+            self.drug_reg_no = self.drug_obj.reg_no
+            self.initial['registration_no'] = self.drug_reg_no
+            self.initial['clinic_drug_no'] = InventoryItem.generateNextClinicDrugNo()
+            self.initial['generic_name'] = self.drug_obj.gen_generic
+            self.initial['ingredient'] = self.drug_obj.ingredients_list
+        else:
+            self.drug_reg_no = ''
+        print(self.drug_reg_no)
         self.helper.layout = Layout(
             Row(
-                Column('registration_no', css_class='form-group col-md-4 mb-0'),
-                Column('clinic_drug_no', css_class='form-group col-md-4 mb-0'),
-                css_class='form-row',
+                Column('alias', css_class='form-group col-sm-4'),
+                Column('registration_no', readonly=True, css_class='form-group col-sm-4'),
+                Column('clinic_drug_no', css_class='form-group col-sm-4'),
+                css_class='form-row mb-0',
             ),
             Row(
-                Column('product_name', css_class='form-group col-md-4 mb-0'),
-                Column('product_name_chinese', css_class='form-group col-md-4 mb-0'),
-                css_class='form-row',
+                Column('product_name', css_class='form-group col-md-4 col-sm-6'),
+                Column('product_name_chinese', css_class='form-group col-md-4 col-sm-3'),
+                Column(UneditableField('inventory_item_type'), css_class='form-group col-md-4 col-sm-3'),
+                # Column('certificate_holder', css_class='form-group col-md-4 col-sm-4'),
+                css_class='form-row mb-0',
             ),
             Row(
-                Column('label_name', css_class='form-group col-md-4 mb-0'),
-                Column('label_name_chinese', css_class='form-group col-md-4 mb-0'),
-                css_class='form-row',
+                Column('label_name', css_class='form-group col-md-4 col-sm-6'),
+                Column('label_name_chinese', css_class='form-group col-md-4 col-sm-3'),
+                Column('inventory_type', css_class='form-group col-md-4 col-sm-3'),
+                css_class='form-row mb-0',
             ),
             Row(
-                Column('generic_name', css_class='form-group col-md-4 mb-0'),
-                Column('generic_name_chinese', css_class='form-group col-md-4 mb-0'),
-                css_class='form-row',
+                Column('generic_name', css_class='form-group col-md-4 col-sm-6'),
+                Column('generic_name_chinese', css_class='form-group col-sm-4'),
+                Column(
+                    Row('discontinue'),
+                    Row('is_clinic_drug_list'),
+                    css_class='form-group col-sm-4'
+                ),
+                css_class='form-row mb-0',
             ),
             Row(
-                Column('alias', css_class='form-group col-md-4 mb-0'),
-                Column('certificate_holder', css_class='form-group col-md-4 mb-0'),
-                css_class='form-row',
+                Column(Field('ingredient', css_class='form-group col-sm-8', rows="1")),
+                Column(
+                    Row('is_master_drug_list'),
+                    Row('dangerous_sign'),
+                    css_class='form-group col-sm-4'
+                ),
+                css_class='form-row mb-0',
             ),
             Row(
-                Column('standard_cost', css_class='form-group col-md-4 mb-0'),
-                Column('avg_cost', css_class='form-group, col-md-4 mb-0'),
-                Column('unit_price', css_class='form-group col-md-4 mb-0'),
-                css_class='form-row',
+                Column('standard_cost', css_class='form-group col-sm-3'),
+                Column('avg_cost', css_class='form-group, col-sm-3'),
+                Column('unit_price', css_class='form-group col-sm-3'),
+                Column('location', css_class='form-group col-sm-3'),
+                css_class='form-row mb-0',
             ),
             Row(
-                Column(UneditableField('stock_qty'), css_class='form-group col-md-4 mb-0'),
-                Column('expected_qty', css_class='form-group col-md-4 mb-0'),
-                Column('reorder_level', css_class='form-group col-md-4 mb-0'),
-                css_class='form-row',
+                Column('stock_qty', css_class='form-group col-sm-3'),
+                Column('expected_qty', css_class='form-group col-sm-3'),
+                Column('reorder_level', css_class='form-group col-sm-3'),
+                Column('priority', css_class='form-group col-sm-3'),
+                css_class='form-row mb-0',
             ),
             Row(
-                css_class='form-row',
+                Column('dosage', css_class='form-group col-sm-3'),
+                Column('unit', css_class='form-group col-sm-3'),
+                Column('frequency', css_class='form-group col-sm-3'),
+                Column('duration', css_class='form-group col-sm-3'),
+                css_class='form-row mb-0',
             ),
             Row(
-                Column('location', css_class='form-group col-md-4 mb-0'),
-                Column('priority', css_class='form-group col-md-4 mb-0'),
-                Column('inventory_type', css_class='form-group col-sm-2'),
-                css_class='form-row',
+                Column('instruction', css_class='form-group col-sm-6 mb-0'),
+                Column('advisory', css_class='form-group col-sm-6 mb-0'),
+                css_class='form-row mb-0',
             ),
             Row(
-                Column('is_master_drug_list', css_class='form-group col-md-4 mb-0'),
-                Column('discontinue', css_class='form-group col-md-4 mb-0'),
-                css_class='form-row',
-            ),
-            Row(
-                Column('is_clinic_drug_list', css_class='form-group col-md-4 mb-0'),
-                Column('dangerous_sign', css_class='form-group col-md-4 mb-0'),
-                css_class='form-row',
-            ),
-            Row(
-                Column(Field('ingredient', css_class='form-group col-md-12 mb-0', rows="1")),
-                css_class='form-row',
-            ),
-            Row(
-                Column(Field('remarks', css_class='form-group col-md-12 mb-0', rows="1")),
-                css_class='form-row',
-            ),
-            Row(
-                Column('dosage', css_class='form-group col-md-4 mb-0'),
-                Column('mini_dosage_unit', css_class='form-group col-md-4 mb-0'),
-                css_class='form-row',
-            ),
-            Row(
-                Column('frequency', css_class='form-group col-md-4 mb-0'),
-                Column('duration', css_class='form-group col-md-4 mb-0'),
-                css_class='form-row',
-            ),
-            Row(
-                Column('unit', css_class='form-group col-md-4 mb-0'),
-                Column('mini_dispensary_unit', css_class='form-group col-md-4 mb-0'),
-                css_class='form-row',
-            ),
-            Row(
-                Column('instruction', css_class='form-group col-md-12 mb-0'),
-                css_class='form-row',
-            ),
-            Row(
-                Column('advisory', css_class='form-group col-md-12 mb-0'),
-                css_class='form-row',
-            ),
-            Row(
-                Column('version', css_class='form-group col-md-12 mb-0'), 
-                Column('inventory_item_type', css_class='form-group col-md-12 mb-0'),
-                css_class='form-row',
+                Column(Field('remarks', css_class='form-horizontal col-md-6', rows="1")),
+                Column('mini_dosage_unit', css_class='form-group col-sm-3'),
+                Column('mini_dispensary_unit', css_class='form-group col-sm-3'),
+                css_class='form-row mb-0',
             ),
             Hidden('date_created', date.today()),
             Hidden('last_updated', date.today()),
+            Hidden('version', 0),
+            Hidden('inventory_item_type', 1),
+            # Hidden('registration_no', self.drug_reg_no),
             FormActions(
                 Submit('submit', 'Submit'),
                 Button('cancel', 'Cancel'),
@@ -240,7 +244,9 @@ class NewInventoryItemForm(ModelForm):
 
     class Meta:
         model = InventoryItem
-        exclude = ['id',]
+        exclude = ['id', 'certificate_holder']
+        readonly = ['registration_no']
+        # certificate_holder is a required field but should auto-add upon save based on RegDrug info
 
 class InventoryItemMatchUpdateForm(ModelForm):
 
@@ -270,7 +276,7 @@ class InventoryItemQuickEditModalForm(BSModalForm):
         super(InventoryItemQuickEditModalForm, self).__init__(*args, **kwargs)
         
         self.helper = FormHelper()
-        self.helper.render_unmentioned_fields = True
+        self.helper.render_unmentioned_fields = False
         self.helper.form_id = 'id-InventoryItemQuickEditModalForm'
         self.helper.form_class = 'cmmForms'
         self.helper.form_method = 'post'

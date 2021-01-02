@@ -1,0 +1,55 @@
+{% if item_list %}
+<table class="table table-sm table-striped mt-2">
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Note</th>
+            <th scope="col">Reg no.</th>
+            <th scope="col">CMS id</th>
+            <th scope="col">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item_obj in item_list %}
+        <tr 
+            {% if item_obj.discontinue %}
+            class="table-secondary text-muted"
+            {% endif %}
+        >
+            <td>
+                <b>{{ item_obj.name }}</b>
+            </td>
+            <td>
+                <b>{{ item_obj.note }}</b>
+                {% if not item_obj.is_active %}
+                <br><span class="badge badge-secondary">Inactive</span>
+                {% endif %}
+            </td>
+            <td>
+                {{ item_obj.reg_no }}
+            </td>
+            <td>
+                {{ item_obj.cmsid }}
+            </td>
+            <td>
+                <a type="button"
+                    href="{% url 'inventory:DeliveryOrderAddDeliveryItem' %}?delivery={{ delivery_id }}&item={{ item_obj.id }}&next={{ request.path }}" 
+                    class="btn_modal_trigger btn btn-sm btn-info"
+                ><i class="fad fa-layer-plus"></i>
+                </a>
+            </td>
+        </tr>
+
+        {% endfor %}
+
+    </tbody>
+</table>
+
+<script type="text/javascript">
+    $(".btn_modal_trigger").each(function () {
+        $(this).modalForm({
+            formURL: $(this).data('id')
+        });
+    });
+</script>
+{% endif %}

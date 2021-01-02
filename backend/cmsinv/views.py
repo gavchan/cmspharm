@@ -56,7 +56,6 @@ class InventoryItemList(ListView, LoginRequiredMixin):
 
     def get_queryset(self):
         query = self.request.GET.get('q')
-        print(f"query={query}")
         self.invtype = self.request.GET.get('invtype') or '1'
         self.status = self.request.GET.get('status') or '1'
         self.dd = self.request.GET.get('dd') or 'any'
@@ -242,26 +241,51 @@ class NewInventoryItem(CreateView, LoginRequiredMixin):
     template_name = 'cmsinv/new_inventory_item.html'
     form_class = NewInventoryItemForm
     context_object_name = 'new_inventory_item'
+    drug_obj = None
     drug_reg_no = ''
 
     def dispatch(self, request, *args, **kwargs):
-        if 'reg_no' in kwargs:
-            self.drug_reg_no = kwargs['reg_no']
+        if request.GET.get('reg_no'):
+            self.drug_reg_no = request.GET.get('reg_no')
+            print(self.drug_reg_no)
+            self.drug_obj = RegisteredDrug.objects.get(reg_no=self.drug_reg_no) or None
         else:
             self.drug_reg_no = ''
+
         return super().dispatch(request, *args, **kwargs)
     
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
-        if self.drug_reg_no:
-            data['reg_no'] = self.drug_reg_no
-            drug_obj = InventoryItem.objects.get(reg_no=self.drug_reg_no)
-            data['product_name'] = drug_obj.name
-            data['vendor'] = drug_obj.company
+        if self.drug_obj:
+            data['drug_obj'] = self.drug_obj
         else:
-            print("Error: missing reg_no")
+            print("Error: no reg_no")
             data['product_name'] = ''
         return data
+
+    def get_form_kwargs(self):
+        kwargs = super(NewInventoryItem, self).get_form_kwargs()
+        kwargs.update({
+            'drug_obj': self.drug_obj,
+            })
+        return kwargs
+
+    def form_valid(self, form):
+        form.instance.create_by = self.request.user
+        if self.drug_obj:
+            cert_holder_data = {
+                'name': self.drug_obj.company.name,
+                'address': self.drug_obj.company.address,
+                'supp_type': 'Certificate Holder',
+                'updated_by': self.request.user,
+            }
+            cert_holder_obj, created = Supplier.objects.get_or_create(
+                name=self.drug_obj.company.name,
+                defaults=cert_holder_data,
+                )
+            if created:
+                print(f"Cert Holder created: {cert_holder_obj}")
+        return super().form_valid(form)
 
 class MatchInventoryItemList(ListView, LoginRequiredMixin):
     """
@@ -521,267 +545,349 @@ def NewDeliveryFromDeliveryOrderModalView(request, *args, **kwargs):
     cmsuser_obj = CmsUser.objects.get(username='admin')
     itemupdate_list = []
     for listitem in delivery_obj.delivery_items.all():
-        cmsitem_obj = InventoryItem.objects.get(id=listitem.item.cmsid)
-        summary = {
-            'name': listitem.item.name,
-            'existing_qty': cmsitem_obj.stock_qty,
-            'old_standard_cost': cmsitem_obj.standard_cost,
-            'old_avg_cost': cmsitem_obj.avg_cost,
-            'items_quantity': listitem.items_quantity,
-            'new_standard_cost': listitem.standard_cost,
-            'new_avg_cost': listitem.average_cost,
-        }
-        itemupdate_list.append(summary)
+        if listitem.item.cmsid:
+            cmsitem_obj = InventoryItem.objects.get(id=listitem.item.cmsid)
+            summary = {
+                'name': listitem.item.name,
+                'cmsid': listitem.item.cmsid,
+                'discontinue': cmsitem_obj.discontinue,
+                'existing_qty': cmsitem_obj.stock_qty,
+                'old_standard_cost': cmsitem_obj.standard_cost,
+                'old_avg_cost': cmsitem_obj.avg_cost,
+                'items_quantity': listitem.items_quantity,
+                'new_standard_cost': listitem.standard_cost,
+                'new_avg_cost': listitem.average_cost,
+            }
+            print(summary)
+            itemupdate_list.append(summary)
 
     context = {
         'delivery_obj': delivery_obj,
         'itemupdate_list': itemupdate_list,
+        'itemupdate_count': len(itemupdate_list),
     }
     # If POST request confirm sync, add data to CMS
     if request.method == "POST":
-        # Get or create CMS supplier based on vendor name
-        new_supplier_data = {
-            'address': delivery_obj.vendor.address,
-            'name': delivery_obj.vendor.name,
-            'supp_type': 'Supplier',
-            'updated_by': cmsuser_obj.username,
-        }
-        supplier_obj, supplier_created = Supplier.objects.get_or_create(
-            name__iexact=delivery_obj.vendor.name, 
-            defaults=new_supplier_data
-        )
-        if supplier_created:  # Update AuditLog
-            print(f"New supplier added: ({supplier_obj.name})")
-
-            audit_str_dict = {**new_supplier_data,
-                'dateCreated': datetime.strftime(supplier_obj.date_created, "%a %b %d %H:%M:%S %Z %Y"),
-                'lastUpdated': datetime.strftime(supplier_obj.last_updated, "%a %b %d %H:%M:%S %Z %Y"),
-                'type': 'Supplier',
-            }
-            sorted_dict = dict(sorted(audit_str_dict.items()))
-            audit_str = "||".join([
-                ":=".join((underscore_to_camel(key), str(value))) for (key, value) in sorted_dict.items()
-            ])
-            
-            newAuditLogEntry = AuditLog(
-                actor = cmsuser_obj.username,
-                class_name = 'SupplierManufacturer',
-                event_name = 'INSERT',
-                old_value = None,
-                new_value = audit_str,
-                persisted_object_version = 'null',
-                persisted_object_id = supplier_obj.id,
-                session_id = session_id,
-                uri = uri,
-            )
-            newAuditLogEntry.save()
-            if newAuditLogEntry.id:
-                print(f"New audit log entry added: {audit_str}")
-            else:
-                print("Error writing audit log entry")
-        
-        # Get or create CMS delivery record
-        new_cmsdelivery_data = {
-            'cash_amount': 0,  # payment tracking not via CMS
-            'total_cost': delivery_obj.items_total,
-            'create_date': delivery_obj.invoice_date,
-            'received_by': cmsuser_obj,
-            'supplierdn': delivery_obj.invoice_no,
-            'delivery_note_no': delivery_obj.id,
-            'updated_by': cmsuser_obj.username,
-            'supplier': supplier_obj, 
-        }
-        cmsdelivery_obj, cmsdelivery_created = Delivery.objects.get_or_create(
-            delivery_note_no=delivery_obj.id, 
-            defaults=new_cmsdelivery_data
-        )
-        if cmsdelivery_created:  # Update DeliveryOrder record and AuditLog
-            print(f"New delivery added: id #{cmsdelivery_obj.id}")
-            delivery_obj.cms_delivery_id = cmsdelivery_obj.id
+        if len(itemupdate_list) == 0:
+            # Set delivery order status to cms_synced
+            delivery_obj.cms_synced = True
             delivery_obj.save()
-
-            audit_str_dict = {**new_cmsdelivery_data,
-                'dateCreated': datetime.strftime(cmsdelivery_obj.date_created, "%a %b %d %H:%M:%S %Z %Y"),
-                'lastUpdated': datetime.strftime(cmsdelivery_obj.last_updated, "%a %b %d %H:%M:%S %Z %Y"),
-                'type': 'Delivery',
-            }
-            sorted_dict = dict(sorted(audit_str_dict.items()))
-            audit_str = "||".join([
-                ":=".join((underscore_to_camel(key), str(value))) for (key, value) in sorted_dict.items()
-            ])
-            
-            newAuditLogEntry = AuditLog(
-                actor = cmsuser_obj.username,
-                class_name = 'Delivery',
-                event_name = 'INSERT',
-                old_value = None,
-                new_value = audit_str,
-                persisted_object_version = 'null',
-                persisted_object_id = cmsdelivery_obj.id,
-                session_id = session_id,
-                uri = uri,
-            )
-            newAuditLogEntry.save()
-            if newAuditLogEntry.id:
-                print(f"New audit log entry added: {audit_str}")
-            else:
-                print("Error writing audit log entry")
         else:
-            print(f"Delivery order already synced to CMS")
-
-        # Loop through DeliveryOrder item list and add to CMS received_item
-        item_idx = 0
-        for listitem in delivery_obj.delivery_items.all():
-            # Get CMS Inventory Item object
-            cmsitem_obj = InventoryItem.objects.get(id=listitem.item.cmsid)
-            new_cmsreceived_item = {
-                'arrive_date': delivery_obj.invoice_date,
-                'cost': listitem.total_price,
-                'dangerous_sign': cmsitem_obj.dangerous_sign,
-                'delivery': cmsdelivery_obj,
-                'drug_item': cmsitem_obj,
-                'expire_date': listitem.expiry_date,
-                'lot_no': listitem.batch_num,
-                'quantity': listitem.items_quantity,
-                'unit': listitem.items_unit,
-                'received_items_idx': item_idx,
-                'remarks': listitem.terms,
+            # Get or create CMS supplier based on vendor name
+            new_supplier_data = {
+                'address': delivery_obj.vendor.address,
+                'name': delivery_obj.vendor.name,
+                'supp_type': 'Supplier',
+                'updated_by': cmsuser_obj.username,
             }
-            cmsreceived_obj, cmsreceived_created = ReceivedItem.objects.update_or_create(
-                drug_item=cmsitem_obj,
-                quantity=listitem.items_quantity,
-                cost=listitem.total_price,
-                lot_no=listitem.batch_num,
-                defaults=new_cmsreceived_item
+            supplier_obj, supplier_created = Supplier.objects.get_or_create(
+                name__iexact=delivery_obj.vendor.name, 
+                defaults=new_supplier_data
             )
-            if cmsreceived_created:  # Update InventoryItem, InventoryMovementLog, AuditLog
-                print(f"New received item added: {cmsreceived_obj}")
+            if supplier_created:  # Update AuditLog
+                print(f"New supplier added: ({supplier_obj.name})")
+
+                audit_str_dict = {**new_supplier_data,
+                    'dateCreated': datetime.strftime(supplier_obj.date_created, "%a %b %d %H:%M:%S %Z %Y"),
+                    'lastUpdated': datetime.strftime(supplier_obj.last_updated, "%a %b %d %H:%M:%S %Z %Y"),
+                    'type': 'Supplier',
+                }
+                sorted_dict = dict(sorted(audit_str_dict.items()))
+                audit_str = "||".join([
+                    ":=".join((underscore_to_camel(key), str(value))) for (key, value) in sorted_dict.items()
+                ])
                 
-                # Update InventoryItem quantity/costs
-                last_updated = timezone.now()
-                old_stock_qty = cmsitem_obj.stock_qty
-                old_standard_cost = cmsitem_obj.standard_cost
-                old_avg_cost = cmsitem_obj.avg_cost
-                cmsitem_obj.stock_qty += float(listitem.items_quantity)
-                cmsitem_obj.standard_cost = listitem.standard_cost
-                cmsitem_obj.avg_cost = listitem.average_cost
-                cmsitem_obj.updated_by = cmsuser_obj.username
-                cmsitem_obj.last_updated = last_updated
-                cmsitem_obj.save()
-                if cmsitem_obj.last_updated == last_updated:
-                    # Successful save
-                    print(f"Updated inventory item: {cmsitem_obj.product_name}")
-                
-                    # Update AuditLog:InventoryItem - stock_qty
-                    newAuditLogEntry = AuditLog(
-                        actor = cmsuser_obj.username,
-                        class_name = 'InventoryItem',
-                        event_name = 'UPDATE',
-                        old_value = old_stock_qty,
-                        new_value = cmsitem_obj.stock_qty,
-                        persisted_object_version = 'null',
-                        persisted_object_id = cmsitem_obj.id,
-                        property_name = "stockQty",
-                        session_id = session_id,
-                        uri = uri,
-                    )
-                    newAuditLogEntry.save()
-                    if newAuditLogEntry.id:
-                        print(f"New audit log entry added UPDATE:{newAuditLogEntry.property_name} {newAuditLogEntry.old_value}=>{newAuditLogEntry.new_value}")
-                    else:
-                        print("Error writing audit log entry")
-
-                    # Update AuditLog:InventoryItem - standard_cost
-                    newAuditLogEntry = AuditLog(
-                        actor = cmsuser_obj.username,
-                        class_name = 'InventoryItem',
-                        event_name = 'UPDATE',
-                        old_value = old_standard_cost,
-                        new_value = cmsitem_obj.standard_cost,
-                        persisted_object_version = 'null',
-                        persisted_object_id = cmsitem_obj.id,
-                        property_name = "standardCost",
-                        session_id = session_id,
-                        uri = uri,
-                    )
-                    newAuditLogEntry.save()
-                    if newAuditLogEntry.id:
-                        print(f"New audit log entry added UPDATE:{newAuditLogEntry.property_name} {newAuditLogEntry.old_value}=>{newAuditLogEntry.new_value}")
-                    else:
-                        print("Error writing audit log entry")
-
-                    # Update AuditLog:InventoryItem - avg_cost
-                    newAuditLogEntry = AuditLog(
-                        actor = cmsuser_obj.username,
-                        class_name = 'InventoryItem',
-                        event_name = 'UPDATE',
-                        old_value = old_avg_cost,
-                        new_value = cmsitem_obj.avg_cost,
-                        persisted_object_version = 'null',
-                        persisted_object_id = cmsitem_obj.id,
-                        property_name = "avgCost",
-                        session_id = session_id,
-                        uri = uri,
-                    )
-                    newAuditLogEntry.save()
-                    if newAuditLogEntry.id:
-                        print(f"New audit log entry added UPDATE:{newAuditLogEntry.property_name} {newAuditLogEntry.old_value}=>{newAuditLogEntry.new_value}")
-                    else:
-                        print("Error writing audit log entry")
-            
-                    # Add new InventoryMovementLog record
-                    new_invmovelog_data = {
-                        'lot_no': listitem.batch_num,
-                        'move_item': listitem.item.name,
-                        'quantity': listitem.items_quantity,
-                        'movement_type': 'Delivery',
-                        'updated_by': cmsuser_obj.username,
-                        'reference_no': cmsdelivery_obj.id,
-                    }
-                    newInventoryMovementLogEntry = InventoryMovementLog(
-                        **new_invmovelog_data,
-                    )
-                    newInventoryMovementLogEntry.save()
-                    if newInventoryMovementLogEntry.id:
-                        # Successful save
-                        print(f"New InventoryMovementLog added: {newInventoryMovementLogEntry}")
-
-                        # Update AuditLog for InventoryMovementLog
-                        ## Rename movement_type to type
-                        new_invmovelog_data['type'] = new_invmovelog_data.pop('movement_type')
-                        audit_str_dict = {**new_invmovelog_data,
-                            'dateCreated': datetime.strftime(newInventoryMovementLogEntry.date_created, "%a %b %d %H:%M:%S %Z %Y"),
-                            'lastUpdated': datetime.strftime(newInventoryMovementLogEntry.last_updated, "%a %b %d %H:%M:%S %Z %Y"),
-                        }
-                        sorted_dict = dict(sorted(audit_str_dict.items()))
-                        audit_str = "||".join([
-                            ":=".join((underscore_to_camel(key), str(value))) for (key, value) in sorted_dict.items()
-                        ])
-                        
-                        newAuditLogEntry = AuditLog(
-                            actor = cmsuser_obj.username,
-                            class_name = 'InventoryMovementLog',
-                            event_name = 'INSERT',
-                            old_value = None,
-                            new_value = audit_str,
-                            persisted_object_version = 'null',
-                            persisted_object_id = cmsdelivery_obj.id,
-                            session_id = session_id,
-                            uri = uri,
-                        )
-                        newAuditLogEntry.save()
-                        if newAuditLogEntry.id:
-                            print(f"New audit log entry added: {audit_str}")
-                        else:
-                            print("Error writing audit log entry")
-                    else:
-                        print("Error updating inventory log")
+                newAuditLogEntry = AuditLog(
+                    actor = cmsuser_obj.username,
+                    class_name = 'SupplierManufacturer',
+                    event_name = 'INSERT',
+                    old_value = None,
+                    new_value = audit_str,
+                    persisted_object_version = 'null',
+                    persisted_object_id = supplier_obj.id,
+                    session_id = session_id,
+                    uri = uri,
+                )
+                newAuditLogEntry.save()
+                if newAuditLogEntry.id:
+                    print(f"New audit log entry added: {audit_str}")
                 else:
-                    print("CMS InventoryItem not updated")
+                    print("Error writing audit log entry")
+            
+            # Get or create CMS delivery record
+            new_cmsdelivery_data = {
+                'cash_amount': 0,  # payment tracking not via CMS
+                'total_cost': delivery_obj.items_total,
+                'create_date': delivery_obj.invoice_date,
+                'received_by': cmsuser_obj,
+                'supplierdn': delivery_obj.invoice_no,
+                'delivery_note_no': delivery_obj.id,
+                'updated_by': cmsuser_obj.username,
+                'supplier': supplier_obj, 
+            }
+            cmsdelivery_obj, cmsdelivery_created = Delivery.objects.get_or_create(
+                delivery_note_no=delivery_obj.id, 
+                defaults=new_cmsdelivery_data
+            )
+            if cmsdelivery_created:  # Update DeliveryOrder record and AuditLog
+                print(f"New delivery added: id #{cmsdelivery_obj.id}")
+                delivery_obj.cms_delivery_id = cmsdelivery_obj.id
+                delivery_obj.cms_synced = True
+                delivery_obj.save()
+
+                audit_str_dict = {**new_cmsdelivery_data,
+                    'dateCreated': datetime.strftime(cmsdelivery_obj.date_created, "%a %b %d %H:%M:%S %Z %Y"),
+                    'lastUpdated': datetime.strftime(cmsdelivery_obj.last_updated, "%a %b %d %H:%M:%S %Z %Y"),
+                    'type': 'Delivery',
+                }
+                sorted_dict = dict(sorted(audit_str_dict.items()))
+                audit_str = "||".join([
+                    ":=".join((underscore_to_camel(key), str(value))) for (key, value) in sorted_dict.items()
+                ])
+                
+                newAuditLogEntry = AuditLog(
+                    actor = cmsuser_obj.username,
+                    class_name = 'Delivery',
+                    event_name = 'INSERT',
+                    old_value = None,
+                    new_value = audit_str,
+                    persisted_object_version = 'null',
+                    persisted_object_id = cmsdelivery_obj.id,
+                    session_id = session_id,
+                    uri = uri,
+                )
+                newAuditLogEntry.save()
+                if newAuditLogEntry.id:
+                    print(f"New audit log entry added: {audit_str}")
+                else:
+                    print("Error writing audit log entry")
             else:
-                print(f"Already existing: {cmsreceived_obj}")
-            item_idx += 1
-            return redirect(uri)
+                print(f"Delivery order already synced to CMS")
+
+            # Loop through DeliveryOrder item list and add to CMS received_item
+            item_idx = 0
+            for listitem in delivery_obj.delivery_items.all():
+                # Get CMS Inventory Item object
+                if listitem.item.cmsid:
+                    cmsitem_obj = InventoryItem.objects.get(id=listitem.item.cmsid)
+                    if listitem.batch_num:
+                        lot_no = listitem.batch_num
+                    else:
+                        lot_no = ""
+                    new_cmsreceived_item = {
+                        'arrive_date': delivery_obj.invoice_date,
+                        'cost': listitem.total_price,
+                        'dangerous_sign': cmsitem_obj.dangerous_sign,
+                        'delivery': cmsdelivery_obj,
+                        'drug_item': cmsitem_obj,
+                        'expire_date': listitem.expiry_date,
+                        'lot_no': lot_no,
+                        'quantity': listitem.items_quantity,
+                        'unit': listitem.items_unit,
+                        'received_items_idx': item_idx,
+                        'remarks': listitem.terms,
+                    }
+                    cmsreceived_obj, cmsreceived_created = ReceivedItem.objects.update_or_create(
+                        drug_item=cmsitem_obj,
+                        quantity=listitem.items_quantity,
+                        cost=listitem.total_price,
+                        lot_no=lot_no,
+                        defaults=new_cmsreceived_item
+                    )
+                    if cmsreceived_created:  # Update InventoryItem, InventoryMovementLog, AuditLog
+                        print(f"New received item added: {cmsreceived_obj}")
+                        
+                        # Update InventoryItem quantity/costs
+                        last_updated = timezone.now()
+                        old_stock_qty = cmsitem_obj.stock_qty
+                        old_standard_cost = cmsitem_obj.standard_cost
+                        old_avg_cost = cmsitem_obj.avg_cost
+                        old_discontinue = 'true' if cmsitem_obj.discontinue else 'false'
+                        old_is_clinic_drug_list = 'false' if cmsitem_obj.is_clinic_drug_list else 'true'
+                        old_clinic_drug_no = cmsitem_obj.clinic_drug_no
+                        cmsitem_obj.stock_qty += float(listitem.items_quantity)
+                        cmsitem_obj.standard_cost = listitem.standard_cost
+                        cmsitem_obj.avg_cost = listitem.average_cost
+                        cmsitem_obj.discontinue = False
+                        cmsitem_obj.is_clinic_drug_list = True
+                        cmsitem_obj.clinic_drug_no = InventoryItem.generateNextClinicDrugNo()
+                        cmsitem_obj.updated_by = cmsuser_obj.username
+                        cmsitem_obj.last_updated = last_updated
+                        cmsitem_obj.save()
+                        if cmsitem_obj.last_updated == last_updated:
+                            # Successful save
+                            print(f"Updated inventory item: {cmsitem_obj.product_name}")
+                        
+                            # Update AuditLog:InventoryItem - stock_qty
+                            newAuditLogEntry = AuditLog(
+                                actor = cmsuser_obj.username,
+                                class_name = 'InventoryItem',
+                                event_name = 'UPDATE',
+                                old_value = str(old_stock_qty),
+                                new_value = str(cmsitem_obj.stock_qty),
+                                persisted_object_version = 'null',
+                                persisted_object_id = cmsitem_obj.id,
+                                property_name = "stockQty",
+                                session_id = session_id,
+                                uri = uri,
+                            )
+                            newAuditLogEntry.save()
+                            if newAuditLogEntry.id:
+                                print(f"New audit log entry added UPDATE:{newAuditLogEntry.property_name} {newAuditLogEntry.old_value}=>{newAuditLogEntry.new_value}")
+                            else:
+                                print("Error writing audit log entry")
+
+                            # Update AuditLog:InventoryItem - standard_cost
+                            newAuditLogEntry = AuditLog(
+                                actor = cmsuser_obj.username,
+                                class_name = 'InventoryItem',
+                                event_name = 'UPDATE',
+                                old_value = str(old_standard_cost),
+                                new_value = str(cmsitem_obj.standard_cost),
+                                persisted_object_version = 'null',
+                                persisted_object_id = cmsitem_obj.id,
+                                property_name = "standardCost",
+                                session_id = session_id,
+                                uri = uri,
+                            )
+                            newAuditLogEntry.save()
+                            if newAuditLogEntry.id:
+                                print(f"New audit log entry added UPDATE:{newAuditLogEntry.property_name} {newAuditLogEntry.old_value}=>{newAuditLogEntry.new_value}")
+                            else:
+                                print("Error writing audit log entry")
+
+                            # Update AuditLog:InventoryItem - avg_cost
+                            newAuditLogEntry = AuditLog(
+                                actor = cmsuser_obj.username,
+                                class_name = 'InventoryItem',
+                                event_name = 'UPDATE',
+                                old_value = str(old_avg_cost),
+                                new_value = str(cmsitem_obj.avg_cost),
+                                persisted_object_version = 'null',
+                                persisted_object_id = cmsitem_obj.id,
+                                property_name = "avgCost",
+                                session_id = session_id,
+                                uri = uri,
+                            )
+                            newAuditLogEntry.save()
+                            if newAuditLogEntry.id:
+                                print(f"New audit log entry added UPDATE:{newAuditLogEntry.property_name} {newAuditLogEntry.old_value}=>{newAuditLogEntry.new_value}")
+                            else:
+                                print("Error writing audit log entry")
+
+                            # Update AuditLog:InventoryItem - discontinue - if changed.
+                            if old_discontinue:
+                                newAuditLogEntry = AuditLog(
+                                    actor = cmsuser_obj.username,
+                                    class_name = 'InventoryItem',
+                                    event_name = 'UPDATE',
+                                    old_value = 'true',
+                                    new_value = 'false',
+                                    persisted_object_version = 'null',
+                                    persisted_object_id = cmsitem_obj.id,
+                                    property_name = "discontinue",
+                                    session_id = session_id,
+                                    uri = uri,
+                                )
+                                newAuditLogEntry.save()
+                                if newAuditLogEntry.id:
+                                    print(f"New audit log entry added UPDATE:{newAuditLogEntry.property_name} {newAuditLogEntry.old_value}=>{newAuditLogEntry.new_value}")
+                                else:
+                                    print("Error writing audit log entry")
+                            # Update AuditLog:InventoryItem - is_clinic_drug_list
+                            if not old_is_clinic_drug_list:
+                                newAuditLogEntry = AuditLog(
+                                    actor = cmsuser_obj.username,
+                                    class_name = 'InventoryItem',
+                                    event_name = 'UPDATE',
+                                    old_value = 'false',
+                                    new_value = 'true',
+                                    persisted_object_version = 'null',
+                                    persisted_object_id = cmsitem_obj.id,
+                                    property_name = "is_clinic_drug_list",
+                                    session_id = session_id,
+                                    uri = uri,
+                                )
+                                newAuditLogEntry.save()
+                                if newAuditLogEntry.id:
+                                    print(f"New audit log entry added UPDATE:{newAuditLogEntry.property_name} {newAuditLogEntry.old_value}=>{newAuditLogEntry.new_value}")
+                                else:
+                                    print("Error writing audit log entry")
+                            # Update AuditLog:InventoryItem - clinic_drug_no - if changed
+                            if old_clinic_drug_no != cmsitem_obj.clinic_drug_no:
+                                newAuditLogEntry = AuditLog(
+                                    actor = cmsuser_obj.username,
+                                    class_name = 'InventoryItem',
+                                    event_name = 'UPDATE',
+                                    old_value = old_clinic_drug_no,
+                                    new_value = cmsitem_obj.clinic_drug_no,
+                                    persisted_object_version = 'null',
+                                    persisted_object_id = cmsitem_obj.id,
+                                    property_name = "clinic_drug_no",
+                                    session_id = session_id,
+                                    uri = uri,
+                                )
+                                newAuditLogEntry.save()
+                                if newAuditLogEntry.id:
+                                    print(f"New audit log entry added UPDATE:{newAuditLogEntry.property_name} {newAuditLogEntry.old_value}=>{newAuditLogEntry.new_value}")
+                                else:
+                                    print("Error writing audit log entry")
+
+                            # Add new InventoryMovementLog record
+                            new_invmovelog_data = {
+                                'lot_no': listitem.batch_num,
+                                'move_item': listitem.item.name,
+                                'quantity': listitem.items_quantity,
+                                'movement_type': 'Delivery',
+                                'updated_by': cmsuser_obj.username,
+                                'reference_no': cmsdelivery_obj.id,
+                            }
+                            newInventoryMovementLogEntry = InventoryMovementLog(
+                                **new_invmovelog_data,
+                            )
+                            newInventoryMovementLogEntry.save()
+                            if newInventoryMovementLogEntry.id:
+                                # Successful save
+                                print(f"New InventoryMovementLog added: {newInventoryMovementLogEntry}")
+
+                                # Update AuditLog for InventoryMovementLog
+                                ## Rename movement_type to type
+                                new_invmovelog_data['type'] = new_invmovelog_data.pop('movement_type')
+                                audit_str_dict = {**new_invmovelog_data,
+                                    'dateCreated': datetime.strftime(newInventoryMovementLogEntry.date_created, "%a %b %d %H:%M:%S %Z %Y"),
+                                    'lastUpdated': datetime.strftime(newInventoryMovementLogEntry.last_updated, "%a %b %d %H:%M:%S %Z %Y"),
+                                }
+                                sorted_dict = dict(sorted(audit_str_dict.items()))
+                                audit_str = "||".join([
+                                    ":=".join((underscore_to_camel(key), str(value))) for (key, value) in sorted_dict.items()
+                                ])
+                                
+                                newAuditLogEntry = AuditLog(
+                                    actor = cmsuser_obj.username,
+                                    class_name = 'InventoryMovementLog',
+                                    event_name = 'INSERT',
+                                    old_value = None,
+                                    new_value = audit_str,
+                                    persisted_object_version = 'null',
+                                    persisted_object_id = cmsdelivery_obj.id,
+                                    session_id = session_id,
+                                    uri = uri,
+                                )
+                                newAuditLogEntry.save()
+                                if newAuditLogEntry.id:
+                                    print(f"New audit log entry added: {audit_str}")
+                                else:
+                                    print("Error writing audit log entry")
+                            else:
+                                print("Error updating inventory log")
+                        else:
+                            print("CMS InventoryItem not updated")
+                    else:
+                        print(f"Already existing: {cmsreceived_obj}")
+                    item_idx += 1
+                else:
+                    print(f"Skipping item {listitem.item.name} - not a CMS item")
+        return redirect(uri)
     
     return render(request, "cmsinv/new_delivery_from_deliveryorder_modal.html", context)
 

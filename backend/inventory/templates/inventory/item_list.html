@@ -9,97 +9,184 @@
 {% include "_modal.html" %}
 
 <div class="card shadow">
-    <div class="card-header">
-      <div class="d-flex justify-content-between align-items-center">
-      <ul class="nav nav-tabs card-header-tabs">
-        {% if disp_type == '2' %}
-        <li class="nav-item">
-          <a class="nav-link" href="{% url 'inventory:ItemList' %}?t=1">Drug Items</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link active" href="#"><i class="fa fa-table" aria-hidden="true"></i>&nbsp;Consumable Items</a>
-        </li>
-        {% else %}
-        <li class="nav-item">
-          <a class="nav-link active" href="#"><i class="fa fa-table" aria-hidden="true"></i>&nbsp;Drug Items</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="{% url 'inventory:ItemList' %}?t=2">Consumable Items</a>
-        </li>
-        {% endif %}
-        <li class="nav-item">
-          <a class="nav-link disabled" href="#">All</a>
-        </li>
-      </ul>
-      {% if perms.inventory.can_add_item %}
-      <a href="{% url 'inventory:ItemSelectDrugView' %}" id="btn_add-item" class="btn btn-sm btn-primary">Add New Drug Item</a>
-      {% endif %}
-    </div>
+    <div class="card-header text-white bg-info">
+        <div class="d-flex justify-content-between align-items-center">
+          <span>
+            <i class="fad fa-table" aria-hidden="true"></i>
+             Inventory Item List
+          </span>
+        </div>
     </div>
     <div class="card-body">
-  
-    <nav class="row">
-        <div class="col-4">
-            <form action="{% url 'inventory:ItemList' %}" method="get">
-                <input class="form-control" name="q" type="text" placeholder="Search by Name" />
-            </form>
+      <form action="{% url 'inventory:ItemList' %}" method="get">
+        <div class="row mb-2">
+          <div class="col-sm-3">
+            <div class="input-group input-group-sm">
+              <div class="input-group-prepend">
+                <label 
+                  for="inputGroupSelectType" 
+                  class="input-group-text"
+                  >Type
+                </label>
+              </div>
+              <select 
+                name="t" 
+                id="inputGroupSelectType" 
+                class="custom-select"
+                >
+                <option value="" default 
+                  {% if item_type == '' %} selected {% endif %}
+                >Any</option>
+                <option value="1"
+                  {% if item_type == '1' %} selected {% endif %}
+                >Drugs</option>
+                <option value="2"
+                  {% if item_type == '2' %} selected {% endif %}
+                >Consumables</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-sm-3">
+            <div class="input-group input-group-sm">
+              <div class="input-group-prepend">
+                <label
+                  class="input-group-text input-group-sm"
+                  for="inputGroupSelectStatus"
+                  >Status</label
+                >
+              </div>
+              <select
+                name="s"
+                class="custom-select input-group-sm"
+                id="inputGroupSelectStatus"
+              >
+                <option value="" default
+                  {% if status == '' %} selected {% endif %}
+                >Any</option>
+                <option value="1"
+                  {% if status == '1' %} selected {% endif %}
+                >Active</option>
+                <option value="2"
+                  {% if status == '2' %} selected {% endif %}
+                >Inactive</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-sm-2">
+            <div class="input-group input-group-sm">
+              <div class="input-group-prepend">
+                <label
+                  class="input-group-text input-group-sm"
+                  for="inputGroupSelectCategory"
+                  >Category</label
+                >
+              </div>
+              <select
+                name="c"
+                class="custom-select input-group-sm"
+                id="inputGroupSelectCategory"
+              >
+                <option value="" default 
+                {% if category == '' %} selected {% endif %}
+                >Any</option>
+                <option value="1"
+                  {% if category == '1' %} selected {% endif %}
+                >1|Drug</option>
+                <option value="2"
+                  {% if category == '2' %} selected {% endif %}
+                >2|Supplement</option>
+                <option value="3"
+                  {% if category == '3' %} selected {% endif %}
+                >3|Consumable</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-sm-2">
+            <a
+              href=""
+              id="btn_new_delivery"
+              class="btn btn-sm btn-secondary btn-block"
+              >New Delivery</a
+            >
+          </div>
+          <div class="col-sm-2">
+            <a href="{% url 'inventory:NewItem' %}?next={{ request.path }}" id="btn_new_item" class="btn btn-sm btn-success btn-block"
+              >New Item
+            </a>
+          </div>
         </div>
-        <div class="col-4">
-            {% if last_query %}
-            Results for "{{ last_query }}" ({{ last_query_count }})
-            {% endif %}
-        </div>
-        <div class="col-4">
+        <div class="row mb-2">
+          <div class="col-sm-4">
+            <div class="input-group input-group-sm">
+              <input
+                class="form-control"
+                name="q"
+                value="{{ last_query }}"
+                type="text"
+                placeholder="Search by name, ingredients, reg_no"
+              />
+              <div class="input-group-append">
+                <button class="btn btn-sm btn-secondary">Search</button>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6">
             {% if is_paginated %}
-        
             <ul class="pagination">
-                <li class="page-item">
-                    <a href="{% url 'inventory:ItemList' %}?q={{ last_query }}&page=1"
-                    class="page-link">
-                        First
-                    </a>
-                </li>
-                {% if page_obj.has_previous %}
-                <li class="page-item">
-                    <a href="{% url 'inventory:ItemList' %}?q={{ last_query }}&page={{ page_obj.previous_page_number }}" 
-                    class="page-link">
-                        {{ page_obj.previous_page_number }}
-                    </a>
-                </li>
-                {% endif %}
-                <li class="page-item active">
-                    <a href="{% url 'inventory:ItemList' %}?q={{ last_query }}&page={{ page_obj.number }}" 
-                    class="page-link">
-                        {{ page_obj.number }}
-                    </a>
-                </li>
-                {% if page_obj.has_next %}
-                <li class="page-item">
-                    <a href="{% url 'inventory:ItemList' %}?q={{ last_query }}&page={{ page_obj.next_page_number }}" 
-                    class="page-link">
-                        {{ page_obj.next_page_number }}
-                    </a>
-                </li>
-                {% endif %}
-                <li class="page-item">
-                    <a href="{% url 'inventory:ItemList' %}?q={{ last_query }}&page=last"
-                    class="page-link">
-                        Last ({{ page_obj.paginator.num_pages }}) 
-                    </a>
-                </li>
-            </ul>
-        {% endif %}    
+              <li class="page-item">
+                  <a href="{% url 'inventory:ItemList' %}?t={{ item_type }}&s={{ status }}&c={{ category }}&q={{ last_query }}&page=1"
+                  class="page-link">
+                      First
+                  </a>
+              </li>
+              {% if page_obj.has_previous %}
+              <li class="page-item">
+                  <a href="{% url 'inventory:ItemList' %}?t={{ item_type }}&s={{ status }}&c={{ category }}&q={{ last_query }}&page={{ page_obj.previous_page_number }}" 
+                  class="page-link">
+                      {{ page_obj.previous_page_number }}
+                  </a>
+              </li>
+              {% endif %}
+              <li class="page-item active">
+                  <a href="{% url 'inventory:ItemList' %}?t={{ item_type }}&s={{ status }}&c={{ category }}&q={{ last_query }}&page={{ page_obj.number }}" 
+                  class="page-link">
+                      {{ page_obj.number }}
+                  </a>
+              </li>
+              {% if page_obj.has_next %}
+              <li class="page-item">
+                  <a href="{% url 'inventory:ItemList' %}?t={{ item_type }}&s={{ status }}&c={{ category }}&q={{ last_query }}&page={{ page_obj.next_page_number }}" 
+                  class="page-link">
+                      {{ page_obj.next_page_number }}
+                  </a>
+              </li>
+              {% endif %}
+              <li class="page-item">
+                  <a href="{% url 'inventory:ItemList' %}?q={{ last_query }}&page=last"
+                  class="page-link">
+                      Last ({{ page_obj.paginator.num_pages }}) 
+                  </a>
+              </li>
+          </ul>
+            {% endif %}
+          </div>
+          <div class="col-sm-2">
+            <button id="btn-export_excel" class="btn btn-sm btn-info btn-block">
+             Disabled 
+            </button>
+          </div>
         </div>
-    </nav>
-
+      </form>
+  
     {% if item_list %}
     <table class="table table-sm table-striped">
         <thead>
             <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Note</th>
+                <th scope="col">Type</th>
                 <th scope="col">Reg No.</th>
                 <th scope="col">CMS ID</th>
-                <th scope="col">Name</th>
-                <th scope="col">Type</th>
                 <th scope="col">Action</th>
             </tr>
         </thead>
@@ -111,19 +198,19 @@
                 class="table-secondary text-muted"
                 {% endif %}
             >
-                <td>{{ item_obj.reg_no }}</td>
-                <td>{{ item_obj.cmsid }}</td>
                 <td>{{ item_obj.name }}</td>
-                <td>{{ item_obj.item_type.name }}
-                    <br>
+                <td>{{ item_obj.note }}</td>
+                <td>{{ item_obj.item_type.name}}
                     {% if not item_obj.is_active %}
                     <span class="badge badge-secondary">Inactive</span>
                     {% endif %}
                 </td>
+                <td>{{ item_obj.reg_no }}</td>
+                <td>{{ item_obj.cmsid }}</td>
                 <td>
                     <button
                         type="button"
-                        class="btn_item-update btn btn-sm btn-primary"
+                        class="btn_modal_trigger btn btn-sm btn-primary"
                         data-id="{% url 'inventory:ItemUpdateModal' item_obj.pk %}"
                     ><i class="fad fa-file-alt"></i>
                     </button>
@@ -150,10 +237,28 @@
 
 <script type="text/javascript">
   $(document).ready(function () {
-    $(".btn_item_update").each(function() {
+    $(".btn_modal_trigger").each(function() {
        $(this).modalForm({
            formURL: $(this).data('id')
        });
+    });
+    const optionUpdatePage = function() {
+      let invtype = $("#inputGroupSelectType option:selected").val();
+      let status =  $("#inputGroupSelectStatus option:selected").val();
+      let dd = $("#inputGroupSelectCategory option:selected").val();
+      self.location = "{% url 'inventory:ItemList' %}?q={{ last_query }}&t="
+        + invtype + "&s=" + status + "&c=" + dd;
+    }
+    $("#inputGroupSelectType").change(function() {
+      optionUpdatePage();
+    });
+
+    $("#inputGroupSelectStatus").change(function() {
+      optionUpdatePage();
+    });
+
+    $("#inputGroupSelectCategory").change(function() {
+      optionUpdatePage();
     });
   });
 </script>

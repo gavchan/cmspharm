@@ -66,8 +66,8 @@
       </div>
       <div class="col-md-2 mb-0">Received Date</div>
       <div class="col-md-2 mb-0">{{ delivery_obj.received_date}}</div>
-      <div class="col-md-2">
-        {% if delivery_obj.cms_delivery_id %}
+      <div class="col-md-2 text-right">
+        {% if delivery_obj.cms_synced %}
         <span
           class="badge badge-success ml-2 mt-0"
         >Synced with CMS
@@ -85,10 +85,8 @@
       <div class="col-md-2 mb-0">Invoice No.</div>
       <div class="col-md-4 mb-0">{{ delivery_obj.invoice_no }}</div>
       <div class="col-md-2 mb-0">Invoice Date</div>
-      <div class="col-md-4 mb-0">{{ delivery_obj.invoice_date }}</div>
-    </div>
-    <div class="form-row">
-      <div class="col-md-2 mb-0">Amount&nbsp;
+      <div class="col-md-2 mb-0">{{ delivery_obj.invoice_date }}</div>
+      <div class="col-md-2 text-right">
         {% if delivery_obj.is_paid %}
         <span class="badge badge-success">Paid</span>
         {% elif delivery_obj.amount == 0 %}
@@ -96,6 +94,11 @@
         {% else %}
         <span class="badge badge-danger">Due</span>
         {% endif %}
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="col-md-2 mb-0">Amount&nbsp;
+        
       </div>
       <div class="col-md-4 mb-0">$ {{ delivery_obj.amount }}</div>
       <div class="col-md-2 mb-0">Due Date</div>
