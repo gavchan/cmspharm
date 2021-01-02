@@ -25,12 +25,23 @@ class RegisteredDrugList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
     paginate_by = 20
     last_query = ''
     last_query_count = 0
+    disp_type = ''
 
     def get_queryset(self):
         query = self.request.GET.get('q')
+        if self.request.GET.get('t'):
+            self.disp_type = self.request.GET.get('t')
+        if self.disp_type == '1':   # Display unlinked
+            object_list = RegisteredDrug.objects.filter(itemid=None)
+        elif self.disp_type == '2':  # Display linked
+            object_list = RegisteredDrug.objects.exclude(itemid=None)
+        elif self.disp_type == '3':  # Display inactive
+            object_list = RegisteredDrug.objects.filter(is_active=True)
+        else:
+            object_list = RegisteredDrug.objects.all()
         if query:
             self.last_query = query
-            object_list = RegisteredDrug.objects.filter(
+            object_list = object_list.filter(
                 Q(name__icontains=query) |
                 Q(reg_no__icontains=query) |
                 Q(ingredients__name__icontains=query)
@@ -38,7 +49,6 @@ class RegisteredDrugList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
             self.last_query_count = object_list.count
         else:
             self.last_query = ''
-            object_list = RegisteredDrug.objects.all()
             self.last_query_count = object_list.count
         return object_list
 
@@ -46,6 +56,7 @@ class RegisteredDrugList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
         data = super().get_context_data(**kwargs)
         data['last_query'] = self.last_query
         data['last_query_count'] = self.last_query_count
+        data['disp_type'] = self.disp_type
         return data
 
 class RegisteredDrugDetail(DetailView, LoginRequiredMixin, PermissionRequiredMixin):

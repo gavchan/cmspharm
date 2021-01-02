@@ -132,7 +132,7 @@ class NewInventoryItemForm(ModelForm):
         super(NewInventoryItemForm, self).__init__(*args, **kwargs)
         # today_date = date.today().strftime('%Y-%m-%d')
         self.helper = FormHelper()
-        self.helper.render_unmentioned_fields = False 
+        self.helper.render_unmentioned_fields = True
         self.helper.form_id = 'id-InventoryItemForm'
         self.helper.form_class = 'cmmForms'
         self.helper.form_method = 'post'
@@ -163,7 +163,17 @@ class NewInventoryItemForm(ModelForm):
         self.helper.layout = Layout(
             Row(
                 Column('alias', css_class='form-group col-sm-4'),
-                Column('registration_no', readonly=True, css_class='form-group col-sm-4'),
+                HTML("""
+                    <div class="form-group col-sm-4 pb-1 mb-0">
+                        <div class="pb-1 mb-1">Registration no</div>
+                        <div id="id_registration_no" 
+                             class="alert alert-secondary pt-2 pb-2" 
+                            data-value="{{ drug_obj.name }}">
+                            <b>{{ drug_obj.reg_no }}</b>
+                        </div>
+                    </div>
+                """),
+                # Column('registration_no', css_class='form-group col-sm-4'),
                 Column('clinic_drug_no', css_class='form-group col-sm-4'),
                 css_class='form-row mb-0',
             ),
@@ -244,8 +254,7 @@ class NewInventoryItemForm(ModelForm):
 
     class Meta:
         model = InventoryItem
-        exclude = ['id', 'certificate_holder']
-        readonly = ['registration_no']
+        exclude = ['id', 'registration_no', 'certificate_holder']
         # certificate_holder is a required field but should auto-add upon save based on RegDrug info
 
 class InventoryItemMatchUpdateForm(ModelForm):

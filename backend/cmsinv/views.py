@@ -57,7 +57,7 @@ class InventoryItemList(ListView, LoginRequiredMixin):
     def get_queryset(self):
         query = self.request.GET.get('q')
         self.invtype = self.request.GET.get('invtype') or '1'
-        self.status = self.request.GET.get('status') or '1'
+        self.status = self.request.GET.get('status') or ''
         self.dd = self.request.GET.get('dd') or 'any'
         if query:
             self.last_query = query
