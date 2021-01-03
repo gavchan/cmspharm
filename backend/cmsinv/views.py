@@ -16,6 +16,7 @@ from inventory.models import (
     Vendor,
     DeliveryOrder,
     DeliveryItem,
+    Item, ItemType,
 )
 from cmssys.models import (
     CmsUser,
@@ -271,7 +272,9 @@ class NewInventoryItem(CreateView, LoginRequiredMixin):
         return kwargs
 
     def form_valid(self, form):
-        form.instance.create_by = self.request.user
+        form.instance.updated_by = self.request.user
+        form.instance.date_created = timezone.now()
+        form.instance.last_updated = timezone.now()
         if self.drug_obj:
             cert_holder_data = {
                 'name': self.drug_obj.company.name,
@@ -285,7 +288,24 @@ class NewInventoryItem(CreateView, LoginRequiredMixin):
                 )
             if created:
                 print(f"Cert Holder created: {cert_holder_obj}")
-        return super().form_valid(form)
+            form.instance.certificate_holder = cert_holder_obj
+            form.instance.registration_no = self.drug_obj.reg_no
+        
+        response = super().form_valid(form)
+
+        # Create new corresponding inventory.Item
+        newItem = Item(
+            name = self.object.product_name,
+            cmsid = self.object.id,
+            reg_no = self.object.registration_no,
+            item_type = ItemType(value=1),
+            is_active = True,
+        )
+        newItem.save()
+        return response
+
+    def get_success_url(self):
+        return reverse('cmsinv:InventoryItemDetail', args=(self.object.pk,))
 
 class MatchInventoryItemList(ListView, LoginRequiredMixin):
     """

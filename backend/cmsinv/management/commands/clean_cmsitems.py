@@ -54,6 +54,7 @@ class Command(BaseCommand):
                 depleted_set.add(depleted_item.drug_id)
             print(f"Depleted count: {len(depleted_set)}")
 
+            # Check 
             # Combine sets as utilized items
             utilized_set = prescribed_set.union(received_set).union(depleted_set)
             print(f"Total utilized count: {len(utilized_set)}")
@@ -82,7 +83,9 @@ class Command(BaseCommand):
                 else:
                     print(f'-- Item #{item} excluded from final deletion')
 
-            if do_delete:  # Delete
+            if len(final_set) == 0:
+                print("No files to delete")
+            elif do_delete:  # Delete
                 confirm_delete = input("Are you sure you want to delete the items? Type 'YES' to confirm: ")
                 if confirm_delete == 'YES':
                     count = 0
@@ -117,4 +120,4 @@ class Command(BaseCommand):
                     print(f"#{item.id:<6}|{item.discontinue}|{item.product_name}")
                     item.delete()
                     count += 1
-                self.stdout.write(f"Marked {count} items for deletion. Use -r flag to delete marked files")
+                self.stdout.write(f"Deleted {count} items")

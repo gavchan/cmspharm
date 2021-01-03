@@ -136,7 +136,8 @@ class ItemList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
         if query:
             self.last_query = query
             object_list = object_list.filter(
-                Q(name__icontains=query) 
+                Q(name__icontains=query)|
+                Q(reg_no__icontains=query) 
             ).order_by('is_active')
             self.last_query_count = object_list.count
         else:

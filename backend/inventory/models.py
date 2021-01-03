@@ -99,7 +99,8 @@ class Item(models.Model):
     Model to link CMS inventory item from external database, registered drug
     """
     
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255)  
+    # name: Not enforce unique as Govt Drug Database and CMS product_name can have duplicate names
     note = models.CharField(max_length=255, blank=True, null=True)
     vendor = models.ForeignKey(
         Vendor, on_delete=models.PROTECT,
