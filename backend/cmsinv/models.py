@@ -125,6 +125,37 @@ class InventoryItem(models.Model):
     Maps to CMS table: inventory_item
     Stores details in inventory items, including current stock quantity
     """
+    AMPOULE = 'AMPOULE'
+    BOTTLE = 'BOTTLE'
+    BOX = 'BOX'
+    CAPSULE = 'CAP'
+    DOSE = 'DOSE'
+    GRAM = 'GRAM'
+    INJECTION = 'INJECTION'
+    MG = 'MG'
+    ML = 'ML'
+    PACK = 'PACK'
+    TAB = 'TAB'
+    TUBE = 'TUBE'
+    UNIT = 'UNIT'
+    VIAL = 'VIAL'
+
+    ITEMS_UNIT_CHOICES = [
+        (AMPOULE, 'Ampoule'),
+        (BOTTLE, 'Bottle'),
+        (BOX, 'Box'),
+        (CAPSULE, 'Cap'),
+        (DOSE, 'Dose'),
+        (GRAM, 'gram'),
+        (INJECTION, 'Injection'),
+        (MG, 'mg'),
+        (ML, 'mL'),
+        (PACK, 'Pack'),
+        (TAB, 'Tablet'),
+        (TUBE, 'Tube'),
+        (UNIT, 'Unit'),
+        (VIAL, 'Vial'),
+    ]
     id = models.BigAutoField(primary_key=True)
     version = models.BigIntegerField(default=0)
     advisory = models.ForeignKey(
@@ -188,7 +219,7 @@ class InventoryItem(models.Model):
     reorder_status = models.CharField(max_length=255, blank=True, null=True)
     standard_cost = models.FloatField(default=0)
     stock_qty = models.FloatField(default=0)
-    unit = models.CharField(max_length=255, blank=True, null=True)
+    unit = models.CharField(max_length=255, choices=ITEMS_UNIT_CHOICES, blank=True, null=True)
     unit_price = models.FloatField(default=0)
     updated_by = models.CharField(max_length=255, blank=True, null=True)
     priority = models.FloatField(default=0, blank=True, null=True)

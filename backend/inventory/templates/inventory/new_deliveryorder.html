@@ -47,6 +47,9 @@
       var due1m = moment(invDate).add(1, 'months').format("YYYY-MM-DD");
       $("#id_due_date").val(due1m)
     });
+    $("#btn_save_details").click(function() {
+        $('#id-DeliveryOrderForm').submit()
+      });
     $("#id_invoice_no.textinput").focus();
   });
 </script>

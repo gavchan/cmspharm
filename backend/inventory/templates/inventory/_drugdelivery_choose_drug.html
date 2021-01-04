@@ -38,9 +38,9 @@
             <input class="form-control form-control-sm" id="user-input" placeholder="Search drug by name, ingredient" size="30">
             <div class="input-group-append">
               <a
-                href="{% url 'inventory:NewItem' %}?vendor={{ delivery_obj.vendor.id }}&next={{ request.path }}"
+                href="{% url 'cmsinv:NewInventoryItem' %}?vendor={{ delivery_obj.vendor.id }}&next={{ request.path }}"
                 class="btn btn-sm btn-block btn-primary"
-              >Add Drug
+              >Add Drug/CMS Item
               </a> 
             </div>
           </div>

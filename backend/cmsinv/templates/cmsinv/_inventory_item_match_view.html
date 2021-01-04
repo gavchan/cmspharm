@@ -33,7 +33,6 @@ Requires the following parameters:
         {% endif %}
       </span>
       <span>
-        <a href="{% url 'cmsinv:InventoryItemMatchUpdate' item_obj.pk %}" class="btn btn-sm btn-success"> Match Update</a>
         <a href="{% url 'cmsinv:InventoryItemUpdate' item_obj.pk %}" class="btn btn-sm btn-secondary text-white"> Edit </a>
       </span>
     </div>
@@ -117,7 +116,7 @@ Requires the following parameters:
 {% endif %}
 
 {% if deliveryitem_obj_list %}
-<div class="card">
+<div class="card mb-2">
     <div class="card-header d-flex justify-content-between align-items-center">
         Recent Delivery Records
     </div>
@@ -150,7 +149,7 @@ Requires the following parameters:
                         {% endif %}
                     </td>
                     <td>{{ item.unit_price }} / {{ item.purchase_unit }} of {{ item.items_per_purchase }} {{ item.items_unit }}</td>
-                    <td>{{ item.expiry_date }}</td>
+                    <td>{{ item.expiry_date|date:'d-m-Y'}}</td>
                     <td> ${{ item.average_cost }}</td>
                     <td>
                         <button 

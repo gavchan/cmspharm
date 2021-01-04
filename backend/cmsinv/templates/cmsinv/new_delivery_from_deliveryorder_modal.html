@@ -9,37 +9,49 @@
 <div class="modal-body">
   <div class="card">
     <div class="card-body">
+      <form method="POST"> 
+      {% csrf_token %} 
+      
         {% if itemupdate_count == 0 %}
         <h5>No CMS items to update</h5>
-        <p>
-          <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">Return to DeliveryOrder</button>
-        </p>
+        <p>Do you wish to mark delivery order as synced?</p>
+        
         {% else %}
-        <form method="POST"> 
-        {% csrf_token %} 
         <h5>Do you wish to sync delivery data to CMS?</h5>
         <hr>
         <p>{{ delivery_obj }}</p>
         <table width="100%">
           <thead>
             <th scope="col" width="55%">Product</th>
-            <th scope="col" width="15%">Quantity</th>
-            <th scope="col" width="15%">Std Cost</th>
-            <th scope="col" width="15%">Avg Cost</th>
+            <th scope="col" width="15%" class="text-center">Quantity</th>
+            <th scope="col" width="15%" class="text-center">Std Cost</th>
+            <th scope="col" width="15%" class="text-center">Avg Cost</th>
           </thead>
           <tbody>
             {% for listitem in itemupdate_list %}
             {% if listitem.cmsid %}
             <tr>
-              <td>
+              <td class="text-left">
                 {{ listitem.name }}
                 {% if listitem.discontinue %}
                 <span class="badge badge-secondary">Inactive  &#x21D2; Active</span>
                 {% endif %}
               </td>
-              <td>{{ listitem.existing_qty|floatformat }} <strong>+ {{ listitem.items_quantity|floatformat }}</strong></td>
-              <td>{{ listitem.old_standard_cost }} &#x21D2; <strong>{{ listitem.new_standard_cost }}</strong></td>
-              <td>{{ listitem.old_avg_cost }}  &#x21D2; <strong>{{ listitem.new_avg_cost }}</strong></td>
+              <td class="text-center">
+                {{ listitem.existing_qty|floatformat }} <strong>+ {{ listitem.items_quantity|floatformat }}</strong>
+              </td>
+              <td class="text-center">
+                {{ listitem.old_standard_cost }}
+                {% if listitem.new_standard_cost != 0 %} 
+                  &#x21D2; <strong>{{ listitem.new_standard_cost }}</strong>
+                {% endif %}
+              </td>
+              <td class="text-center">
+                {{ listitem.old_avg_cost }}
+                {% if listitem.new_avg_cost != 0 %}
+                  &#x21D2; <strong>{{ listitem.new_avg_cost }}</strong>
+                {% endif %}
+              </td>
             </tr>
             {% endif %}
             {% endfor %}
@@ -47,12 +59,12 @@
         </table>
         <hr>
         <p><em>Warning: This operation is irreversible</em></p>
+        {% endif %}
         <p>
-          <input type="submit" class="btn btn-sm btn-warning" value="Yes - Confirm CMS Sync" /> 
+          <input type="submit" class="btn btn-sm btn-warning" value="Yes - Confirm Sync" /> 
           <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">Close</button>
         </p>
-    </form>
-    {% endif %}
+      </form>
     </div>
   </div>
 </div>

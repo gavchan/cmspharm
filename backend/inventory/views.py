@@ -182,10 +182,19 @@ class ItemUpdateModal(BSModalUpdateView, LoginRequiredMixin, PermissionRequiredM
     model = Item
     form_class = ItemUpdateModalForm
     template_name = 'inventory/item_update_modal.html'
+    next_url = ''
+
+    def dispatch(self, request, *args, **kwargs):
+        if self.request.GET.get('next'):
+            self.next_url = self.request.GET.get('next')
+        return super().dispatch(request, *args, **kwargs)
 
     def get_success_url(self):
-        return reverse('inventory:ItemDetail', args=(self.object.pk,))
-
+        try:
+            resolve(self.next_url)
+        except Resolver404:
+            return reverse('inventory:ItemList')
+        return self.next_url
 
 class ItemDelete(DeleteView, LoginRequiredMixin, PermissionRequiredMixin):
     """Delete item"""

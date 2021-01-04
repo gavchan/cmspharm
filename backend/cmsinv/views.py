@@ -111,7 +111,7 @@ class InventoryItemDetail(DetailView, LoginRequiredMixin):
         except RegisteredDrug.DoesNotExist:
             print("No registration no. for {self.object.product_name}")
         try:
-            self.deliveryitem_obj_list = DeliveryItem.objects.filter(item__reg_no=self.object.registration_no)[:5]
+            self.deliveryitem_obj_list = DeliveryItem.objects.filter(item__cmsid=self.object.id)[:10]
         except DeliveryItem.DoesNotExist:
             self.deliveryitem_obj_list = None
             print(f"No delivery record for {self.object.product_name}")
@@ -219,14 +219,40 @@ class InventoryItemUpdate(UpdateView, LoginRequiredMixin):
     model = InventoryItem
     form_class = InventoryItemUpdateForm
     template_name = 'cmsinv/inventory_item_update.html'
+    drug_obj = None
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
-        self.drug_obj = RegisteredDrug.objects.get(reg_no=self.object.registration_no) or None
+        try:
+            self.drug_obj = RegisteredDrug.objects.get(reg_no=self.object.registration_no)
+        except:
+            self.drug_obj = None
         data['drug_obj'] = self.drug_obj
         data['item_obj'] = self.object
         data['next_clinic_no'] = InventoryItem.generateNextClinicDrugNo()
         return data
+
+    def form_valid(self, form):
+        form.instance.updated_by = self.request.user.username
+        form.instance.date_created = timezone.now()
+        form.instance.last_updated = timezone.now()
+        form.instance.version = self.object.version + 1
+        response = super().form_valid(form)
+
+        # Update corresponding inventory.Item
+        item_data = {
+            'name': form.instance.product_name,
+            'cmsid': self.object.id,
+            'reg_no': form.instance.registration_no,
+            'item_type': ItemType.objects.get(value=1),
+            'is_active': not form.instance.discontinue,
+        }
+        item, created = Item.objects.update_or_create(cmsid=self.object.id, defaults=item_data)
+        if created:
+            print(f'Item #{item.id} created: {item.name}')
+        else:
+            print(f"Item #{item.id} updated: {item.name}")
+        return response
 
     def get_success_url(self):
         return reverse('cmsinv:InventoryItemDetail', args=(self.object.pk,))
@@ -244,15 +270,22 @@ class NewInventoryItem(CreateView, LoginRequiredMixin):
     context_object_name = 'new_inventory_item'
     drug_obj = None
     drug_reg_no = ''
+    vendor_obj = None
 
     def dispatch(self, request, *args, **kwargs):
         if request.GET.get('reg_no'):
             self.drug_reg_no = request.GET.get('reg_no')
-            print(self.drug_reg_no)
-            self.drug_obj = RegisteredDrug.objects.get(reg_no=self.drug_reg_no) or None
+            try:
+                self.drug_obj = RegisteredDrug.objects.get(reg_no=self.drug_reg_no)
+            except:
+                self.drug_obj = None
         else:
             self.drug_reg_no = ''
-
+        if request.GET.get('vendor'):
+            try:
+                self.vendor_obj = Vendor.objects.get(pk=request.GET.get('vendor'))
+            except:
+                self.vendor_obj = None
         return super().dispatch(request, *args, **kwargs)
     
     def get_context_data(self, **kwargs):
@@ -260,7 +293,6 @@ class NewInventoryItem(CreateView, LoginRequiredMixin):
         if self.drug_obj:
             data['drug_obj'] = self.drug_obj
         else:
-            print("Error: no reg_no")
             data['product_name'] = ''
         return data
 
@@ -268,28 +300,45 @@ class NewInventoryItem(CreateView, LoginRequiredMixin):
         kwargs = super(NewInventoryItem, self).get_form_kwargs()
         kwargs.update({
             'drug_obj': self.drug_obj,
+            'vendor_obj': self.vendor_obj,
             })
         return kwargs
 
     def form_valid(self, form):
+        print(f'Form valid, {self.drug_obj} / {self.vendor_obj}')
         form.instance.updated_by = self.request.user
         form.instance.date_created = timezone.now()
         form.instance.last_updated = timezone.now()
-        if self.drug_obj:
+
+        if self.drug_obj:  # Assign cert_holder if RegisteredDrug
             cert_holder_data = {
                 'name': self.drug_obj.company.name,
                 'address': self.drug_obj.company.address,
                 'supp_type': 'Certificate Holder',
-                'updated_by': self.request.user,
+                'updated_by': self.request.user.username,
             }
             cert_holder_obj, created = Supplier.objects.get_or_create(
-                name=self.drug_obj.company.name,
+                name=self.drug_obj.company.name.upper(),
                 defaults=cert_holder_data,
                 )
             if created:
                 print(f"Cert Holder created: {cert_holder_obj}")
             form.instance.certificate_holder = cert_holder_obj
             form.instance.registration_no = self.drug_obj.reg_no
+        elif self.vendor_obj:  # Assign vendor if given
+            vendor_data = {
+                'name': self.vendor_obj.name,
+                'address': self.vendor_obj.address,
+                'supp_type': 'Supplier',
+                'updated_by': self.request.user.username
+            }
+            supp_obj, created = Supplier.objects.get_or_create(
+                name=self.vendor_obj.name.upper(),
+                defaults=vendor_data,
+            )
+            if created:
+                print(f"Supplier created: {supp_obj}")
+            form.instance.certificate_holder = supp_obj
         
         response = super().form_valid(form)
 
@@ -298,7 +347,7 @@ class NewInventoryItem(CreateView, LoginRequiredMixin):
             name = self.object.product_name,
             cmsid = self.object.id,
             reg_no = self.object.registration_no,
-            item_type = ItemType(value=1),
+            item_type = ItemType.objects.get(value=1),
             is_active = True,
         )
         newItem.save()
@@ -367,41 +416,41 @@ class MatchInventoryItemList(ListView, LoginRequiredMixin):
         ).order_by('discontinue').exclude(registration_no=self.drug_reg_no)[:100]
         return object_list
 
-class InventoryItemMatchUpdate(UpdateView, LoginRequiredMixin):
-    """
-    CMS Inventory Item List Matching Non-CMS Delivery Record
-    """
-    model = InventoryItem
-    template_name = 'cmsinv/inventory_item_match_update.html'
-    form_class = InventoryItemMatchUpdateForm
-    item_obj = None
-    drug_obj = None
-    possible_drug_list = None
-    delivery_obj = None
-    delivery_obj_list = None
+# class InventoryItemMatchUpdate(UpdateView, LoginRequiredMixin):
+#     """
+#     CMS Inventory Item List Matching Non-CMS Delivery Record
+#     """
+#     model = InventoryItem
+#     template_name = 'cmsinv/inventory_item_match_update.html'
+#     form_class = InventoryItemMatchUpdateForm
+#     item_obj = None
+#     drug_obj = None
+#     possible_drug_list = None
+#     delivery_obj = None
+#     delivery_obj_list = None
     
-    def get_success_url(self):
-        return reverse('cmsinv:InventoryItemDetail', args=(self.object.pk,))
+#     def get_success_url(self):
+#         return reverse('cmsinv:InventoryItemDetail', args=(self.object.pk,))
         
-    def get_context_data(self, **kwargs):
-        data = super().get_context_data(**kwargs)
-        try:
-            self.drug_obj = RegisteredDrug.objects.get(reg_no=self.object.registration_no)
-        except RegisteredDrug.DoesNotExist:
-            print(f"No registration no. for {self.object.product_name}")
+#     def get_context_data(self, **kwargs):
+#         data = super().get_context_data(**kwargs)
+#         try:
+#             self.drug_obj = RegisteredDrug.objects.get(reg_no=self.object.registration_no)
+#         except RegisteredDrug.DoesNotExist:
+#             print(f"No registration no. for {self.object.product_name}")
             
-        try:
-            self.delivery_obj_list = DeliveryItem.objects.filter(item__reg_no=self.object.registration_no).order_by('-delivery_order__received_date')[:5]
-        except DeliveryItem.DoesNotExist:
-            self.delivery_obj_list = None
-            print(f"No delivery record for {self.object.product_name}")
-        if self.delivery_obj_list:
-            self.delivery_obj = self.delivery_obj_list[0]
-        data['drug_obj'] = self.drug_obj
-        data['delivery_obj'] = self.delivery_obj
-        data['delivery_obj_list'] = self.delivery_obj_list
-        data['item_obj'] = self.object
-        return data
+#         try:
+#             self.delivery_obj_list = DeliveryItem.objects.filter(item__reg_no=self.object.registration_no).order_by('-delivery_order__received_date')[:5]
+#         except DeliveryItem.DoesNotExist:
+#             self.delivery_obj_list = None
+#             print(f"No delivery record for {self.object.product_name}")
+#         if self.delivery_obj_list:
+#             self.delivery_obj = self.delivery_obj_list[0]
+#         data['drug_obj'] = self.drug_obj
+#         data['delivery_obj'] = self.delivery_obj
+#         data['delivery_obj_list'] = self.delivery_obj_list
+#         data['item_obj'] = self.object
+#         return data
 
 class SupplierList(ListView, LoginRequiredMixin):
     """
@@ -578,7 +627,6 @@ def NewDeliveryFromDeliveryOrderModalView(request, *args, **kwargs):
                 'new_standard_cost': listitem.standard_cost,
                 'new_avg_cost': listitem.average_cost,
             }
-            print(summary)
             itemupdate_list.append(summary)
 
     context = {
@@ -726,8 +774,10 @@ def NewDeliveryFromDeliveryOrderModalView(request, *args, **kwargs):
                         old_is_clinic_drug_list = 'false' if cmsitem_obj.is_clinic_drug_list else 'true'
                         old_clinic_drug_no = cmsitem_obj.clinic_drug_no
                         cmsitem_obj.stock_qty += float(listitem.items_quantity)
-                        cmsitem_obj.standard_cost = listitem.standard_cost
-                        cmsitem_obj.avg_cost = listitem.average_cost
+                        if listitem.standard_cost != 0:
+                            cmsitem_obj.standard_cost = listitem.standard_cost
+                        if listitem.average_cost != 0:
+                            cmsitem_obj.avg_cost = listitem.average_cost
                         cmsitem_obj.discontinue = False
                         cmsitem_obj.is_clinic_drug_list = True
                         cmsitem_obj.clinic_drug_no = InventoryItem.generateNextClinicDrugNo()
@@ -757,43 +807,45 @@ def NewDeliveryFromDeliveryOrderModalView(request, *args, **kwargs):
                             else:
                                 print("Error writing audit log entry")
 
-                            # Update AuditLog:InventoryItem - standard_cost
-                            newAuditLogEntry = AuditLog(
-                                actor = cmsuser_obj.username,
-                                class_name = 'InventoryItem',
-                                event_name = 'UPDATE',
-                                old_value = str(old_standard_cost),
-                                new_value = str(cmsitem_obj.standard_cost),
-                                persisted_object_version = 'null',
-                                persisted_object_id = cmsitem_obj.id,
-                                property_name = "standardCost",
-                                session_id = session_id,
-                                uri = uri,
-                            )
-                            newAuditLogEntry.save()
-                            if newAuditLogEntry.id:
-                                print(f"New audit log entry added UPDATE:{newAuditLogEntry.property_name} {newAuditLogEntry.old_value}=>{newAuditLogEntry.new_value}")
-                            else:
-                                print("Error writing audit log entry")
+                            # Update AuditLog:InventoryItem - standard_cost if not 0
+                            if listitem.standard_cost !=0:
+                                newAuditLogEntry = AuditLog(
+                                    actor = cmsuser_obj.username,
+                                    class_name = 'InventoryItem',
+                                    event_name = 'UPDATE',
+                                    old_value = str(old_standard_cost),
+                                    new_value = str(cmsitem_obj.standard_cost),
+                                    persisted_object_version = 'null',
+                                    persisted_object_id = cmsitem_obj.id,
+                                    property_name = "standardCost",
+                                    session_id = session_id,
+                                    uri = uri,
+                                )
+                                newAuditLogEntry.save()
+                                if newAuditLogEntry.id:
+                                    print(f"New audit log entry added UPDATE:{newAuditLogEntry.property_name} {newAuditLogEntry.old_value}=>{newAuditLogEntry.new_value}")
+                                else:
+                                    print("Error writing audit log entry")
 
                             # Update AuditLog:InventoryItem - avg_cost
-                            newAuditLogEntry = AuditLog(
-                                actor = cmsuser_obj.username,
-                                class_name = 'InventoryItem',
-                                event_name = 'UPDATE',
-                                old_value = str(old_avg_cost),
-                                new_value = str(cmsitem_obj.avg_cost),
-                                persisted_object_version = 'null',
-                                persisted_object_id = cmsitem_obj.id,
-                                property_name = "avgCost",
-                                session_id = session_id,
-                                uri = uri,
-                            )
-                            newAuditLogEntry.save()
-                            if newAuditLogEntry.id:
-                                print(f"New audit log entry added UPDATE:{newAuditLogEntry.property_name} {newAuditLogEntry.old_value}=>{newAuditLogEntry.new_value}")
-                            else:
-                                print("Error writing audit log entry")
+                            if listitem.average_cost != 0:
+                                newAuditLogEntry = AuditLog(
+                                    actor = cmsuser_obj.username,
+                                    class_name = 'InventoryItem',
+                                    event_name = 'UPDATE',
+                                    old_value = str(old_avg_cost),
+                                    new_value = str(cmsitem_obj.avg_cost),
+                                    persisted_object_version = 'null',
+                                    persisted_object_id = cmsitem_obj.id,
+                                    property_name = "avgCost",
+                                    session_id = session_id,
+                                    uri = uri,
+                                )
+                                newAuditLogEntry.save()
+                                if newAuditLogEntry.id:
+                                    print(f"New audit log entry added UPDATE:{newAuditLogEntry.property_name} {newAuditLogEntry.old_value}=>{newAuditLogEntry.new_value}")
+                                else:
+                                    print("Error writing audit log entry")
 
                             # Update AuditLog:InventoryItem - discontinue - if changed.
                             if old_discontinue:

@@ -9,7 +9,7 @@
   
   {% include 'inventory/_deliveryorder_summary.html' %}
   {% include 'inventory/_deliveryorder_items.html' %}
-  {% if not delivery_obj.cms_delivery_id and perms.inventory.change_deliveryorder %}
+  {% if not delivery_obj.cms_synced and perms.inventory.change_deliveryorder %}
   {% include 'inventory/_drugdelivery_choose_drug.html' %}
   {% endif %}
 

@@ -390,19 +390,24 @@ class ExpenseDetail(DetailView, LoginRequiredMixin, PermissionRequiredMixin):
 def ExpenseAddDeliveryOrder(request, *args, **kwargs):
     expense_obj = Expense.objects.get(pk=kwargs['expense_id']) or None
     delivery_obj = DeliveryOrder.objects.get(pk=kwargs['delivery_id']) or None
+    # Check if existing invoice_no
+    
     if expense_obj and delivery_obj:
-        # Update delivery_obj
-        delivery_obj.bill = expense_obj
-        delivery_obj.is_paid = True
-        delivery_obj.save()
-        # Update expense_obj invoice_no
-        if expense_obj.invoice_no:
-            new_invoice_no = ','.join([expense_obj.invoice_no, delivery_obj.invoice_no])
-            expense_obj.invoice_no = new_invoice_no
+        if delivery_obj.invoice_no in expense_obj.invoice_no:
+            print(f"Error: Invoice {delivery_obj.invoice_no} already exists in expense record.")
         else:
-            expense_obj.invoice_no = delivery_obj.invoice_no    
-        expense_obj.save()
-        print(f"Delivery #{delivery_obj.id} added to expense #{expense_obj.id}")
+            # Update delivery_obj
+            delivery_obj.bill = expense_obj
+            delivery_obj.is_paid = True
+            delivery_obj.save()
+            # Update expense_obj invoice_no
+            if expense_obj.invoice_no:
+                new_invoice_no = ','.join([expense_obj.invoice_no, delivery_obj.invoice_no])
+                expense_obj.invoice_no = new_invoice_no
+            else:
+                expense_obj.invoice_no = delivery_obj.invoice_no    
+            expense_obj.save()
+            print(f"Delivery #{delivery_obj.id} added to expense #{expense_obj.id}")
     return HttpResponseRedirect(reverse('ledger:ExpenseDetail', args=(expense_obj.id,)))
 
 @login_required

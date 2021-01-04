@@ -82,27 +82,5 @@
 {% else %}
 <div class="alert alert-danger d-flex justify-content-between align-items-center" role="alert">
     <span>No matching registered drug no.</span>
-    <div class="btn-group mr-2" role="group" aria-label="Search by group">
-      <button type="button" class="btn btn-sm btn-light" disabled>Search by</button>
-      {% if item_obj.registration_no %}
-      <a href="{% url 'cmsinv:MatchInventoryItemList' item_obj.registration_no %}"
-          class="btn btn-sm btn-secondary">
-          {{ item_obj.registration_no }}
-      </a>
-      {% endif %}
-      {% if item_obj.ingredient %}
-      <a href="{% url 'cmsinv:InventoryItemList' %}?q={{ item_obj.ingredient }}"
-          class="btn btn-sm btn-secondary">
-          Ingredients
-      </a>
-      {% else %}
-      <a href="{% url 'cmsinv:InventoryItemList' %}?q={{ item_obj.product_name }}"
-          class="btn btn-sm btn-secondary">
-          Product name
-      </a> 
-      {% endif %}
-        
-    </div>
-  <!-- </div> -->
 </div>
 {% endif %}

@@ -1,7 +1,7 @@
 from django import forms
 from django.forms import ModelForm
 from django.urls import reverse
-from datetime import date
+from django.utils import timezone
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import (
     Layout, Row, Column, Div, HTML, Submit, Button, Hidden,
@@ -22,7 +22,7 @@ class InventoryItemUpdateForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(InventoryItemUpdateForm, self).__init__(*args, **kwargs)
-        # today_date = date.today().strftime('%Y-%m-%d')
+        # today_date = timezone.now().strftime('%Y-%m-%d')
         self.helper = FormHelper()
         self.helper.render_unmentioned_fields = False
         self.helper.form_id = 'id-InventoryItemForm'
@@ -31,106 +31,111 @@ class InventoryItemUpdateForm(ModelForm):
         self.helper.form_action = reverse('cmsinv:InventoryItemUpdate', args=(self.instance.pk,))
         self.helper.layout = Layout(
             Row(
-                Column('registration_no', css_class='form-group col-md-4 mb-0'),
-                Column('clinic_drug_no', css_class='form-group col-md-4 mb-0'),
-                Column('discontinue', css_class='form-group col-md-4 mb-0'),
-                css_class='form-row',
+                Column('alias', css_class='form-group col-sm-4'),
+                Column('registration_no', css_class='form-group col-sm-4'),
+                Column('clinic_drug_no', css_class='form-group col-sm-4'),
+                css_class='mb-0',
             ),
             Row(
-                Column('is_master_drug_list', css_class='form-group col-md-4 mb-0'),
-                Column('is_clinic_drug_list', css_class='form-group col-md-4 mb-0'),
-                Column('dangerous_sign', css_class='form-group col-md-4 mb-0'),
-                css_class='form-row',
+                Column('product_name', css_class='form-group col-md-4 col-sm-6'),
+                Column('product_name_chinese', css_class='form-group col-md-4 col-sm-3'),
+                # Column(UneditableField('inventory_item_type'), css_class='form-group col-md-4 col-sm-3'),
+                Column('certificate_holder', css_class='form-group col-md-4 col-sm-4'),
+                css_class='mb-0',
             ),
             Row(
-                Column('product_name', css_class='form-group col-md-8 mb-0'),
-                Column('product_name_chinese', css_class='form-group col-md-4 mb-0'),
-                css_class='form-row',
+                Column('label_name', css_class='form-group col-md-4 col-sm-6'),
+                Column('label_name_chinese', css_class='form-group col-md-4 col-sm-3'),
+                Column('inventory_type', css_class='form-group col-md-4 col-sm-3'),
+                css_class='mb-0',
             ),
             Row(
-                Column('label_name', css_class='form-group col-md-8 mb-0'),
-                Column('label_name_chinese', css_class='form-group col-md-4 mb-0'),
-                css_class='form-row',
+                Column('generic_name', css_class='form-group col-md-4 col-sm-6'),
+                Column('generic_name_chinese', css_class='form-group col-sm-4'),
+                Column(
+                    Row('discontinue'),
+                    Row('is_clinic_drug_list'),
+                    css_class='form-group col-sm-4'
+                ),
+                css_class='form-row mb-0',
             ),
             Row(
-                Column('generic_name', css_class='form-group col-md-8 mb-0'),
-                Column('generic_name_chinese', css_class='form-group col-md-4 mb-0'),
-                css_class='form-row',
+                Column(Field('ingredient', css_class='form-group col-sm-8', rows="1")),
+                Column(
+                    Row('is_master_drug_list'),
+                    Row('dangerous_sign'),
+                    css_class='form-group col-sm-4'
+                ),
+                css_class='mb-0',
             ),
             Row(
-                Column('alias', css_class='form-group col-md-4 mb-0'),
-                Column('certificate_holder', css_class='form-group col-md-8 mb-0'),
-                css_class='form-row',
+                Column('standard_cost', css_class='form-group col-sm-3'),
+                Column('avg_cost', css_class='form-group, col-sm-3'),
+                Column('unit_price', css_class='form-group col-sm-3'),
+                Column('location', css_class='form-group col-sm-3'),
+                css_class='mb-0',
             ),
             Row(
-                Column('standard_cost', css_class='form-group col-md-4 mb-0'),
-                Column('avg_cost', css_class='form-group, col-md-4 mb-0'),
-                Column('unit_price', css_class='form-group col-md-4 mb-0'),
-                css_class='form-row',
+                HTML("""
+                    <div class="form-group col-sm-3 pb-1 mb-0">
+                        <div class="pb-1 mb-1">Stock Qty</div>
+                        <div id="id_stock_qty" 
+                             class="alert alert-secondary pt-2 pb-2"
+                             data-value="{{ item_obj.stock_qty }}">
+                             {{ item_obj.stock_qty }}
+                        </div>
+                    </div>
+                """),
+                Column('expected_qty', css_class='form-group col-sm-3'),
+                Column('reorder_level', css_class='form-group col-sm-3'),
+                Column('priority', css_class='form-group col-sm-3'),
+                css_class='form-row mb-0',
             ),
             Row(
-                Column(UneditableField('stock_qty'), css_class='form-group col-md-4 mb-0'),
-                Column('expected_qty', css_class='form-group col-md-4 mb-0'),
-                Column('reorder_level', css_class='form-group col-md-4 mb-0'),
-                css_class='form-row',
+                Column('dosage', css_class='form-group col-sm-3'),
+                Column('unit', css_class='form-group col-sm-3'),
+                Column('frequency', css_class='form-group col-sm-3'),
+                Column('duration', css_class='form-group col-sm-3'),
+                css_class='mb-0',
             ),
             Row(
-                Column('location', css_class='form-group col-md-4 mb-0'),
-                Column('priority', css_class='form-group col-md-4 mb-0'),
-                Column('inventory_type', css_class='form-group col-sm-2'),
-                css_class='form-row',
+                Column('instruction', css_class='form-group col-sm-6 mb-0'),
+                Column('advisory', css_class='form-group col-sm-6 mb-0'),
+                css_class='mb-0',
             ),
             Row(
-                css_class='form-row',
+                Column(Field('remarks', css_class='form-horizontal col-md-6', rows="1")),
+                Column('mini_dosage_unit', css_class='form-group col-sm-3'),
+                Column('mini_dispensary_unit', css_class='form-group col-sm-3'),
+                css_class='mb-0',
             ),
-            
-            Row(
-                Column(Field('ingredient', css_class='form-group col-md-12 mb-0', rows="1")),
-                css_class='form-row',
-            ),
-            Row(
-                Column(Field('remarks', css_class='form-group col-md-12 mb-0', rows="1")),
-                css_class='form-row',
-            ),
-            Row(
-                Column('dosage', css_class='form-group col-md-4 mb-0'),
-                Column('unit', css_class='form-group col-md-4 mb-0'),
-                Column('frequency', css_class='form-group col-md-4 mb-0'),
-                css_class='form-row',
-            ),
-            Row(
-                Column('duration', css_class='form-group col-md-4 mb-0'),
-                Column('mini_dosage_unit', css_class='form-group col-md-4 mb-0'),
-                Column('mini_dispensary_unit', css_class='form-group col-md-4 mb-0'),
-                css_class='form-row',
-            ),
-            Row(
-                Column('instruction', css_class='form-group col-md-12 mb-0'),
-                css_class='form-row',
-            ),
-            Row(
-                Column('advisory', css_class='form-group col-md-12 mb-0'),
-                css_class='form-row',
-            ),
-            Hidden('last_updated', date.today()),
-            Hidden('version', self.instance.version + 1),
-            Hidden('stock_qty', self.instance.stock_qty),
             FormActions(
                 Submit('submit', 'Submit'),
-                Button('cancel', 'Cancel'),
+                Button(
+                    'back', 'Cancel',
+                    css_class='btn-light',
+                    onclick="javascript:history.go(-1);"
+                )
             ),
         )
 
     class Meta:
         model = InventoryItem
-        exclude = ['id', 'date_created', 'inventory_item_type']
+        exclude = ['id', 'date_created', 'last_updated', 'stock_qty', 'inventory_item_type']
+        labels = {
+            'dosage': 'Dosage (Q/T)',
+            'frequency': 'Frequency (T/D)',
+            'mini_dosage_unit': 'Minimal dosage (Q/T) unit',
+            'mini_dispensary_unit': 'Minimal dispensary unit',
+        }
 
 class NewInventoryItemForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         self.drug_obj = kwargs.pop('drug_obj', None)
+        self.vendor_obj = kwargs.pop('vendor_obj', None)
         super(NewInventoryItemForm, self).__init__(*args, **kwargs)
-        # today_date = date.today().strftime('%Y-%m-%d')
+        # today_date = timezone.now().strftime('%Y-%m-%d')
         self.helper = FormHelper()
         self.helper.render_unmentioned_fields = True
         self.helper.form_id = 'id-InventoryItemForm'
@@ -141,25 +146,30 @@ class NewInventoryItemForm(ModelForm):
                 reverse('cmsinv:NewInventoryItem', None),
                 self.drug_obj.reg_no 
             )
+        elif self.vendor_obj:
+            url_with_query = "%s?vendor=%s" % (
+                reverse('cmsinv:NewInventoryItem', None),
+                self.vendor_obj.id
+            )
         else:
             url_with_query = reverse('cmsinv:NewInventoryItem')
+        print(url_with_query)
         self.helper.form_action = url_with_query
         self.initial['version'] = 0
         self.initial['inventory_item_type'] = 1
         self.initial['inventory_type'] = 'Drug'
         self.initial['is_clinic_drug_list'] = True
         self.initial['is_master_drug_list'] = True
+        self.initial['clinic_drug_no'] = InventoryItem.generateNextClinicDrugNo()
         if self.drug_obj:
             self.initial['product_name'] = self.drug_obj.name
             self.initial['label_name'] = self.drug_obj.name
             self.drug_reg_no = self.drug_obj.reg_no
             self.initial['registration_no'] = self.drug_reg_no
-            self.initial['clinic_drug_no'] = InventoryItem.generateNextClinicDrugNo()
             self.initial['generic_name'] = self.drug_obj.gen_generic
             self.initial['ingredient'] = self.drug_obj.ingredients_list
         else:
             self.drug_reg_no = ''
-        print(self.drug_reg_no)
         self.helper.layout = Layout(
             Row(
                 Column('alias', css_class='form-group col-sm-4'),
@@ -169,7 +179,7 @@ class NewInventoryItemForm(ModelForm):
                         <div id="id_registration_no" 
                              class="alert alert-secondary pt-2 pb-2" 
                             data-value="{{ drug_obj.name }}">
-                            <b>{{ drug_obj.reg_no }}</b>
+                            {{ drug_obj.reg_no }}&nbsp;
                         </div>
                     </div>
                 """),
@@ -217,7 +227,16 @@ class NewInventoryItemForm(ModelForm):
                 css_class='form-row mb-0',
             ),
             Row(
-                Column('stock_qty', css_class='form-group col-sm-3'),
+                 HTML("""
+                    <div class="form-group col-sm-3 pb-1 mb-0">
+                        <div class="pb-1 mb-1">Stock Qty</div>
+                        <div id="id_stock_qty" 
+                             class="alert alert-secondary pt-2 pb-2" 
+                            data-value="0">
+                            0
+                        </div>
+                    </div>
+                """),
                 Column('expected_qty', css_class='form-group col-sm-3'),
                 Column('reorder_level', css_class='form-group col-sm-3'),
                 Column('priority', css_class='form-group col-sm-3'),
@@ -241,20 +260,28 @@ class NewInventoryItemForm(ModelForm):
                 Column('mini_dispensary_unit', css_class='form-group col-sm-3'),
                 css_class='form-row mb-0',
             ),
-            Hidden('date_created', date.today()),
-            Hidden('last_updated', date.today()),
             Hidden('version', 0),
             Hidden('inventory_item_type', 1),
             # Hidden('registration_no', self.drug_reg_no),
             FormActions(
                 Submit('submit', 'Submit'),
-                Button('cancel', 'Cancel'),
+                Button(
+                    'back', 'Cancel',
+                    css_class='btn-light',
+                    onclick="javascript:history.go(-1);"
+                )
             ),
         )
 
     class Meta:
         model = InventoryItem
-        exclude = ['id', 'registration_no', 'certificate_holder']
+        exclude = ['id', 'registration_no', 'certificate_holder', 'stock_qty']
+        labels = {
+            'dosage': 'Dosage (Q/T)',
+            'frequency': 'Frequency (T/D)',
+            'mini_dosage_unit': 'Minimal dosage (Q/T) unit',
+            'mini_dispensary_unit': 'Minimal dispensary unit',
+        }
         # certificate_holder is a required field but should auto-add upon save based on RegDrug info
 
 class InventoryItemMatchUpdateForm(ModelForm):
@@ -345,7 +372,7 @@ class InventoryItemQuickEditModalForm(BSModalForm):
                 ),
                 css_class='form-row'
             ),
-            Hidden('last_updated', date.today()),
+            Hidden('last_updated', timezone.now()),
             Hidden('version', self.instance.version + 1),
             FormActions(
                 Submit('submit', 'Submit' ),

@@ -14,6 +14,7 @@
                 <tr>
                     <th scope="col">Invoice date</th>
                     <th scope="col">Received date</th>
+                    <th scope="col">Invoice no.</th>
                     <th scope="col">Vendor</th>
                     <th scope="col">Amount</th>
                     <th scope="col">Due Date</th>
@@ -26,6 +27,7 @@
                 <tr>
                     <td>{{ delivery_obj.invoice_date|date:"d-m-Y" }}</td>
                     <td>{{ delivery_obj.received_date|date:"d-m-Y" }}</td>
+                    <td>{{ delivery_obj.invoice_no }}</td>
                     <td>{{ delivery_obj.vendor.name}}</td>
                     <td>{{ delivery_obj.amount }}</td>
                     <td>
