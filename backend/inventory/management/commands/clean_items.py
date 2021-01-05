@@ -6,14 +6,17 @@ from cmsinv.models import (
     InventoryItem, Prescription, PrescriptionDetail, InventoryMovementLog,
     DepletionItem, ReceivedItem
 )
+from inventory.models import (
+    Item, DeliveryItem,
+)
 from django.conf import settings
 from django.utils import timezone
 
 class Command(BaseCommand):
     """
-    Cleans CMS InventoryItem database - mark unused items for Trash
+    Cleans Item database - mark unused items for Trash
     """
-    help = 'Cleans CMS InventoryItem database - mark unused items for Trash'
+    help = 'Cleans Item database - mark unused items for Trash'
 
     def add_arguments(self, parser):
         parser.add_argument('-d', '--delete', action='store_true', help='Mark and delete')
@@ -23,15 +26,15 @@ class Command(BaseCommand):
         delete_flag = kwargs['delete'] or False
         remove_flag = kwargs['remove'] or False
         if remove_flag:  # Remove marked files only
-            print("Removing marked files...")
+            print("Removing marked Items...")
             do_mark_for_trash = False
             do_delete = True
         elif delete_flag:
-            print("Marking then deleting files...")
+            print("Marking then deleting Item...")
             do_mark_for_trash = True
             do_delete = True
         else:
-            print("Marking files for trash...")
+            print("Marking Items for trash...")
             do_mark_for_trash = True
             do_delete = False
 
@@ -88,23 +91,29 @@ class Command(BaseCommand):
                     count += 1
                     if item.id not in items_to_keep:
                         print(f"Mark for deletion #{item.id:<6}|{item.name}")
-                        item.note = "Marked for deletion [{timezone.now()}]" + item.note
+                        if item.note:
+                            item.note = f"Marked for deletion [{timezone.now()}]" + str(item.note)
+                        else:
+                            item.note = f"Marked for deletion [{timezone.now()}]"
                         item.save()
                         marked_set.add(item.id)
                         
                 self.stdout.write(f"Marked {len(marked_set)} items for deletion. Use -r flag to delete marked files")
 
         elif do_delete:
-            marked_set = Item.objects.get(
+            marked_set = Item.objects.filter(
                 note__icontains="Marked for deletion"
             )
             print(f"Got {marked_set.count()} items marked for deletion")
+            count = 0
+            for item in marked_set:
+                print(f"#{item.id:<6}|{item.name}")
+                count += 1     
             confirm_delete = input("Are you sure you want to delete the items? Type 'YES' to confirm: ")
             if confirm_delete == 'YES':
                 count = 0
-                for item_id in marked_set:
-                        item = Item.objects.get(pk=item_id)
-                        print(f"#{item.id:<6}|{item.name}")
-                        item.delete()
-                        count += 1                    
+                for item in marked_set:
+                    print(f"Deleting #{item.id:<6}|{item.name}")
+                    item.delete()
+                    count += 1                    
                 self.stdout.write(f"Deleted {count} items")

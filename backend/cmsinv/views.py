@@ -343,14 +343,20 @@ class NewInventoryItem(CreateView, LoginRequiredMixin):
         response = super().form_valid(form)
 
         # Create new corresponding inventory.Item
-        newItem = Item(
-            name = self.object.product_name,
-            cmsid = self.object.id,
-            reg_no = self.object.registration_no,
-            item_type = ItemType.objects.get(value=1),
-            is_active = True,
+        item_data = {
+            'name': self.object.product_name,
+            'cmsid': self.object.id,
+            'reg_no': self.object.registration_no,
+            'item_type': ItemType.objects.get(value=1),
+            'is_active': True,
+        }
+        item_obj, created = Item.objects.get_or_create(
+            cmsid=self.object.id, defaults=item_data,
         )
-        newItem.save()
+        if created:
+            print(f"Item created: {item_obj}")
+        else:
+            print(f"Item #{ item_obj.id } updated: {item_obj}")
         return response
 
     def get_success_url(self):

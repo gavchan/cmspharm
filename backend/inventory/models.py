@@ -106,8 +106,10 @@ class Item(models.Model):
         Vendor, on_delete=models.PROTECT,
         blank=True, null=True,
     )
-    cmsid = models.PositiveIntegerField(blank=True, null=True, unique=True)
-    reg_no = models.CharField(max_length=255, blank=True, null=True, unique=True)
+    cmsid = models.PositiveIntegerField(blank=True, null=True)
+    # cmsid: cannot enforce unique as they could be None
+    reg_no = models.CharField(max_length=255, blank=True, null=True)
+    # reg_no: cannot enforce unique as they could be None
     item_type = models.ForeignKey(
         ItemType, on_delete=models.PROTECT,
         blank=True, null=True,
