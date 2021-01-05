@@ -35,7 +35,7 @@
               </td>
             <td>
                 <a type="button"
-                    href="{% url 'inventory:DeliveryOrderAddDeliveryItem' %}?delivery={{ delivery_id }}&cmsid={{ drug_obj.id }}&next={{ request.path }}" 
+                    href="{% url 'inventory:DeliveryOrderAddDeliveryItem' delivery_id %}?cmsid={{ drug_obj.id }}&next={{ request.path }}" 
                     class="btn_modal_trigger btn btn-sm btn-info"
                 ><i class="fad fa-layer-plus"></i>
                 </a>

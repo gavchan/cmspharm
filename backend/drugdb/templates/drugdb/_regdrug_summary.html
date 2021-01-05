@@ -8,11 +8,19 @@
         Registered Drug No.: {{ drug_obj.reg_no }}
       </span>
       <span>
+        {% if drug_obj.itemid %}
         <a
-          href="{% url 'inventory:DeliveryItemList' %}?regno={{ drug_obj.reg_no }}"
+          href="{% url 'inventory:DeliveryItemList' %}?q={{ drug_obj.reg_no }}"
           class="btn btn-sm btn-secondary text-white"
-        >Delivered Drugs
+        >Delivered Item
         </a>
+        {% else %}
+        <a
+          href="{% url 'cmsinv:NewInventoryItem' %}?reg_no={{ drug_obj.reg_no }}"
+          class="btn btn-sm btn-secondary text-white"
+        >Add as new CMS Item
+        </a> 
+        {% endif %}
       </span>
     </div>
   </div>
@@ -30,7 +38,20 @@
     </div>
     <div class="row mb-0">
       <div class="col-md-2">Product Name</div>
-      <div class="col-md-10">{{ drug_obj.name}}</div>
+      <div class="col-md-6">{{ drug_obj.name}}</div>
+      <div class="col-md-2">Item ID</div>
+      <div class="col-md-2 mt-0 mb-0">
+        {% if perms.inventory.change_item and drug_obj.itemid %}
+        <button
+          type="button"
+          class="btn_modal_trigger btn btn-sm btn-link"
+          data-id="{% url 'inventory:ItemUpdateModal' drug_obj.itemid %}"
+        >{{ drug_obj.itemid }}<i class="fad fa-file-alt"></i>
+        </button>
+        {% else %}
+        {{ drug_obj.itemid }}
+        {% endif %}
+      </div>
     </div>
     <div class="row mb-0">
       <div class="col-md-2">Cert. Holder</div>

@@ -188,6 +188,13 @@ class ItemUpdateModal(BSModalUpdateView, LoginRequiredMixin, PermissionRequiredM
         if self.request.GET.get('next'):
             self.next_url = self.request.GET.get('next')
         return super().dispatch(request, *args, **kwargs)
+    
+    def get_form_kwargs(self):
+        kwargs = super(ItemUpdateModal, self).get_form_kwargs()
+        kwargs.update({
+            'next_url': self.next_url,
+            })
+        return kwargs
 
     def get_success_url(self):
         try:
@@ -393,9 +400,27 @@ class NewVendor(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
     model = Vendor
     template_name = 'inventory/new_vendor.html'
     form_class = NewVendorForm
+    next_url = None
+
+    def dispatch(self, request, *args, **kwargs):
+        self.next_url = request.GET.get('next')
+        print(self.next_url)
+        return super().dispatch(request, *args, **kwargs)
+    
+    def get_form_kwargs(self):
+        kwargs = super(NewVendor, self).get_form_kwargs()
+        kwargs.update({
+            'next_url': self.next_url,
+            })
+        return kwargs
 
     def get_success_url(self):
-        return f"{reverse('home')}?vendor={self.object.pk}"
+        try:
+            resolve(self.next_url)
+        except Resolver404: 
+            return reverse('inventory:VendorList')
+        return f"{self.next_url}?vendor={self.object.pk}"
+
 
 class NewVendorModal(BSModalCreateView, LoginRequiredMixin, PermissionRequiredMixin):
     """Add new vendor modal"""
@@ -458,6 +483,26 @@ class VendorDeleteModal(BSModalDeleteView, LoginRequiredMixin, PermissionRequire
     template_name = 'inventory/vendor_confirm_delete_modal.html'
     success_message = 'Success: Vendor deleted'
     success_url = reverse_lazy('inventory:VendorList')
+    next_url = None
+
+    def dispatch(self, request, *args, **kwargs):
+        self.next_url = request.GET.get('next')
+        print(self.next_url)
+        return super().dispatch(request, *args, **kwargs)
+    
+    def get_form_kwargs(self):
+        kwargs = super(NewVendor, self).get_form_kwargs()
+        kwargs.update({
+            'next_url': self.next_url,
+            })
+        return kwargs
+
+    def get_success_url(self):
+        try:
+            resolve(self.next_url)
+        except Resolver404: 
+            return reverse('inventory:VendorList')
+        return self.next_url
 
 
 class DeliveryOrderList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
@@ -666,7 +711,6 @@ def DeliveryOrderDetail(request, *args, **kwargs):
     query = request.GET.get('q')
     item_query = request.GET.get('iq')
     stype = request.GET.get('stype')
-    print(f"Item search: {item_query}")
     if item_query:
         last_query = item_query
         object_list = Item.objects.filter(
@@ -847,13 +891,14 @@ class DeliveryOrderAddDeliveryItem(LoginRequiredMixin, PermissionRequiredMixin, 
     success_message = 'Success: Drug added'
 
     def dispatch(self, request, *args, **kwargs):
-        if request.GET.get('delivery'):
-            self.delivery_obj = DeliveryOrder.objects.get(id=request.GET.get('delivery'))
+        if kwargs['delivery_id']:
+            self.delivery_obj = DeliveryOrder.objects.get(id=kwargs['delivery_id]'])
             print(f"Got delivery { self.delivery_obj.id }")
         else:
             print('Error: no delivery_id')
         if request.GET.get('cmsid'):
             self.drug_obj = InventoryItem.objects.get(pk=request.GET.get('cmsid'))
+            # Auto create/update item in case not already in database
             item_details = {
                 'name': self.drug_obj.product_name,
                 'cmsid': self.drug_obj.id,
@@ -893,38 +938,38 @@ class DeliveryOrderAddDeliveryItem(LoginRequiredMixin, PermissionRequiredMixin, 
     def get_success_url(self):
         return reverse('inventory:DeliveryOrderDetail', args=(self.delivery_obj.pk,))
 
-@login_required
-@permission_required('inventory.view_deliveryorder')
-def ItemSelectDrugView(request, *args, **kwargs):
-    """Display summary plus add items"""
-    MAX_QUERY_COUNT = 50
+# @login_required
+# @permission_required('inventory.view_deliveryorder')
+# def ItemSelectDrugView(request, *args, **kwargs):
+#     """Display summary plus add items"""
+#     MAX_QUERY_COUNT = 50
 
-    # Get query from request and search RegisteredDrug    
-    query = request.GET.get('q')
-    print(f"q={query}")
-    if query:
-        last_query = query
-        object_list = RegisteredDrug.objects.filter(
-            Q(name__icontains=query) |
-            Q(reg_no__icontains=query) |
-            Q(ingredients__name__icontains=query)
-        )[:MAX_QUERY_COUNT]
-        last_query_count = object_list.count
-    else:
-        last_query = ''
-        object_list = RegisteredDrug.objects.all()[:MAX_QUERY_COUNT]
-        last_query_count = object_list.count
-    if request.is_ajax():
-        html = render_to_string(
-            template_name='inventory/_drug_search_results_partial.html',
-            context={
-                'drug_list': object_list,
-                }
-        )
-        data_dict = {"html_from_view": html}
-        return JsonResponse(data=data_dict, safe=False)
+#     # Get query from request and search RegisteredDrug    
+#     query = request.GET.get('q')
+#     print(f"q={query}")
+#     if query:
+#         last_query = query
+#         object_list = RegisteredDrug.objects.filter(
+#             Q(name__icontains=query) |
+#             Q(reg_no__icontains=query) |
+#             Q(ingredients__name__icontains=query)
+#         )[:MAX_QUERY_COUNT]
+#         last_query_count = object_list.count
+#     else:
+#         last_query = ''
+#         object_list = RegisteredDrug.objects.all()[:MAX_QUERY_COUNT]
+#         last_query_count = object_list.count
+#     if request.is_ajax():
+#         html = render_to_string(
+#             template_name='inventory/_drug_search_results_partial.html',
+#             context={
+#                 'drug_list': object_list,
+#                 }
+#         )
+#         data_dict = {"html_from_view": html}
+#         return JsonResponse(data=data_dict, safe=False)
 
-    return render(request, "inventory/item_select_drug_view.html")
+#     return render(request, "inventory/item_select_drug_view.html")
 
 
 class DeliveryItemList(ListView, LoginRequiredMixin, PermissionRequiredMixin):

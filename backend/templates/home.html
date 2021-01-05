@@ -4,75 +4,32 @@
 
 {% include "_modal.html" %}
 
-<p>Logged in as {{ user.username }}</p>
-
-<div class="card">
-  <div class="card-header bg-secondary text-white">
-    Quick Access
-  </div>
-  <div class="card-body">
-    <ul class="nav flex-column">
-      {% if perms.ledger.view_expense %}
-      <li class="nav-item">
-        <a
-          href="{% url 'ledger:ExpenseList' %}"
-          class="btn btn-sm btn-primary mb-1"
-        >View Expenses</a
-        >
-      </li>
-      {% endif %}
-      {% if perms.inventory.view_deliveryorder %}
-      <li class="nav item">
-        <a href="{% url 'inventory:DeliveryOrderList' %}"
-          class="btn btn-sm btn-success mb-1"
-        >View Delivery Orders
-        </a>
-      </li>
-      <li class="nav item">
-        <a href="{% url 'inventory:DeliveryItemList' %}" 
-          class="btn btn-sm btn-info mb-1"
-        >View Delivered Drugs/Items
-        </a>
-      </li>
-      <li class="nav item">
-        <a href="{% url 'inventory:ItemList' %}"
-          class="btn btn-sm btn-info mb-1"
-        >View Inventory Items
-        </a>
-      </li>
-      {% endif %}
-      
-  </ul>
-    <!-- <p><a
-        href="{% url 'ledger:NewExpenseSelectVendor' %}"
-        class="btn btn-sm btn-success mb-1"
-        >Add New Expense</a
-      ></p>
-    <p><a
-        href="{% url 'cmsinv:InventoryItemList' %}"
-        class="btn btn-sm btn-info mb-1"
-        >Add Drug to Inventory</a
-      ></p> -->
-  </div>
-</div>
-    
-
 <div class="card shadow">
     <div class="card-header bg-dark text-white">
         Add Delivery Order / Expense
     </div>
     <div class="card-body">
-      <p>Search for vendor/supplier then click on icon for adding delivery order / expense:</p>   
-        <div class="input-group input-group-sm">
+      <p>Search for vendor/supplier then click on icon for adding delivery order / expense:</p>
+      <div class="row">
+        <div class="col-sm-10">
+          <div class="input-group input-group-sm mb-2">
             <div class="input-group-prepend">
                 <span class="input-group-text" id="search-icon">
-                    Search vendor&nbsp;<i class="far fa-search"></i> </span>
+                    <i class="far fa-search"></i> </span>
             </div>
             <input class="form-control" id="user-input" placeholder="Search by name or alias" size="50">
         </div>
-        <div id="search-results">               
-            {% include 'inventory/_choose_vendor.html' %}
-        </div>
+      </div>
+      <div class="col-sm-2">
+        <a href="{% url 'inventory:NewVendor' %}?next={{ request.path }}" id="btn_new_vendor" class="btn btn-sm btn-success btn-block"
+          >New Vendor 
+        </a>
+      </div>
+    </div>
+      
+      <div id="search-results">               
+          {% include 'inventory/_choose_vendor.html' %}
+      </div>
     </div>
 </div>
 

@@ -34,12 +34,8 @@ CMS Inventory Items
 
 <script type="text/javascript">
     $(document).ready(function () {
-        $(".show-item-details").each(function () {
-            $(this).modalForm({
-                formURL: $(this).data('id')
-            });
-        });
-        $(".btn_quickedit").each(function () {
+        
+        $(".btn_modal_trigger").each(function () {
             $(this).modalForm({
                 formURL: $(this).data('id')
             });

@@ -250,7 +250,7 @@ class InventoryItem(models.Model):
             print('Warning: clinic_drug_no digits does not match configured.')
         next_no = str(int(no_numeric) + 1)
         next_clinic_drug_no = f"{PREFIX}{next_no.rjust(DIGIT_LENGTH, '0')}"
-        print(f"Last clinic drug no.: {last_clinic_drug_no}; Generated next no.: {next_clinic_drug_no}")
+        # print(f"Last clinic drug no.: {last_clinic_drug_no}; Generated next no.: {next_clinic_drug_no}")
 
         return(next_clinic_drug_no)
 

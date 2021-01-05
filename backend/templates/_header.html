@@ -13,79 +13,62 @@
             <ul class="navbar-nav mr-auto mt-2 mt-sm-0">
                 {% if perms.ledger.can_add_expense %}
                 <li class="nav-item">
-                    <a href="{% url 'ledger:NewExpense' %}" class="nav-link"><i class="fal fa-plus"></i> Expense</a>
+                    <a href="{% url 'ledger:NewExpense' %}" class="nav-link"><i class="far fa-plus"></i>&nbsp;<i class="far fa-file-invoice-dollar"></i></a>
                 </li>
                 {% endif %}
 
                 {% if perms.ledger.can_view_expense %}
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="{% url 'ledger:ExpenseList' %}"
-                        id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Expenses
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                        <a href="{% url 'inventory:VendorList' %}?vtype=any" class="dropdown-item">View Vendors</a>
-                        <a href="{% url 'ledger:ExpenseList' %}" class="dropdown-item">View Expenses</a>
-                        <a href="{% url 'ledger:ExpenseCategoryList' %}" class="dropdown-item">View Categories</a>
-                        <a href="{% url 'inventory:NewVendor' %}" class="dropdown-item">Add Vendor</a>
-                    {% comment %}    
-                        <a href="{% url 'ledger:NewExpenseCategory' %}" class="dropdown-item">Add Category</a>
-                    {% endcomment %}
-                        <a href="{% url 'ledger:ExpenseExportCsv' %}" class="dropdown-item">Export Expenses</a></p>
-                    </div>
+                <li class="nav-item">
+                    <a href="{% url 'ledger:ExpenseList' %}" class="nav-link">Expenses</a>
                 </li>
                 {% endif %}
                 {% if perms.inventory.can_view_deliveryorder %}
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="{% url 'inventory:DeliveryOrderList' %}"
-                        id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Delivery/Orders 
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                        <a href="{% url 'inventory:VendorList' %}?vtype=supp" class="dropdown-item">View Suppliers</a>
-                        <a href="{% url 'inventory:DeliveryOrderList' %}" class="dropdown-item">View Delivery Orders</a>
-                        <a href="{% url 'inventory:DeliveryItemList' %}" class="dropdown-item">View Delivered Drugs/Items</a>
-                        <a href="{% url 'inventory:NewVendor' %}" class="dropdown-item">Add Supplier</a>
-                    </div>
+                <li class="nav-item">
+                    <a href="{% url 'inventory:DeliveryOrderList' %}" class="nav-link">Deliveries</a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'inventory:DeliveryItemList' %}" class="nav-link">Delivered Items</a>
                 </li>
                 {% endif %}
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#"
-                        id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        CMS+
-                    </a>
-                    <div class="dropdown-menu">
-                        <a href="{% url 'cmsinv:InventoryItemList' %}" class="dropdown-item">
-                            View Item Inventory List
-                        </a>
-                        <a href="{% url 'cmsinv:SupplierList' %}" class="dropdown-item">
-                            View Supplier Manufacturer List
-                        </a>
-                        <a href="{% url 'cmsinv:InventoryMovementLog' %}" class="dropdown-item">
-                            View Inventory Movement Log
-                        </a>
-                        <a href="{% url 'cmssys:AuditLog' %}" class="dropdown-item">
-                            View Audit Log
-                        </a>
-                    </div>
+                {% if perms.cmsinv.view_inventoryitem %}
+                <li class="nav-item">
+                    <a href="{% url 'cmsinv:InventoryItemList' %}" class="nav-link">CMS Inventory</a>
+                </li>
+                {% endif%}
+                <li class="nav-item">
+                    <a href="{% url 'drugdb:DrugList' %}?t=1" class="nav-link">Reg Drugs</a>
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="{% url 'cmsinv:InventoryItemList' %}"
                         id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Reference 
+                        <i class="fad fa-tags"></i>
                     </a>
                     <div class="dropdown-menu">
-                        <a href="{% url 'drugdb:DrugList' %}" class="dropdown-item">View Registered Drugs</a>
-                        <a href="{% url 'inventory:ItemList' %}" class="dropdown-item">View Item List</a>
+                        <a href="{% url 'inventory:ItemList' %}" class="dropdown-item">Item List</a>
+                        <a href="{% url 'inventory:VendorList' %}" class="dropdown-item">Vendor List</a>
+                        {% if perms.cmsinv.view_auditlog %}
+                        <a href="{% url 'cmsinv:SupplierList' %}" class="dropdown-item">
+                            CMS Supplier Manufacturer List
+                        </a>
+                        <a href="{% url 'cmsinv:InventoryMovementLog' %}" class="dropdown-item">
+                            CMS Inventory Movement Log
+                        </a>
+                        <a href="{% url 'cmssys:AuditLog' %}" class="dropdown-item">
+                            CMS Audit Log
+                        </a>
+                        {% endif %}
                     </div>
                 </li>
-            
             </ul>
             <ul class="navbar-nav my-2 my-sm-0">
-                <li class="nav-item dropdown">
-                    <a href="{% url 'admin:index' %}" class="nav-link">Admin</a>
+                {% if user.is_staff %}
+                <li class="nav-item">
+                    <a href="{% url 'admin:index' %}" class="nav-link">[{{ user.username }}]</a>
                 </li>
-                <li class="nav-item dropdown">
+                {% else %}
+                <span class="navbar-text">[{{ user.username }}]</span>
+                {% endif %}
+                <li class="nav-item">
                     <a href="{% url 'logout' %}" class="nav-link">Logout</a>
                 </li>
             </ul>

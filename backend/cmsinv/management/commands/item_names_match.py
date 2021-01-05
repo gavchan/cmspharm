@@ -13,44 +13,45 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
 
         # Loop through CMS inventory item records, match registered drugs with same reg_no
-        items = InventoryItem.objects.all()
+        cmsitems = InventoryItem.objects.all()
 
         item_count = 0
         updated_count = 0
 
-        for item in items:
+        for cmsitem in cmsitems:
             item_count += 1
 
             # Check for matching Registered drug based on reg_no
             try:
-                drug_obj = RegisteredDrug.objects.get(reg_no=item.registration_no) or None
+                drug_obj = RegisteredDrug.objects.get(reg_no=cmsitem.registration_no) or None
             except RegisteredDrug.DoesNotExist:
-                self.stdout.write(f"#{item.id:4} | Skip [{item.registration_no}] {item.product_name} - No matching Reg Drug.")
+                self.stdout.write(f"#{cmsitem.id:4} | Skip [{cmsitem.registration_no}] {cmsitem.product_name} - No matching Reg Drug.")
                 continue
             if drug_obj:
                 updated_count += 1
                 
-                old_product_name = item.product_name
-                old_label_name = item.label_name
-                old_generic_name = item.generic_name
+                old_product_name = cmsitem.product_name
+                old_label_name = cmsitem.label_name
+                old_generic_name = cmsitem.generic_name
                 # If alias is None, set as old_product_name
 
-                if item.alias is None:
-                    item.alias = old_product_name
-                item.product_name = drug_obj.name
-                item.label_name = drug_obj.name
-                item.ingredient = drug_obj.ingredients_list
-                item.inventory_type = 'Drug'
-                # item.generic_name = ' '.join([drug_obj.gen_generic, drug_obj.gen_dosage]).strip()
+                if cmsitem.alias is None:
+                    cmsitem.alias = old_product_name
+                cmsitem.product_name = drug_obj.name
+                cmsitem.label_name = drug_obj.name
+                cmsitem.ingredient = drug_obj.ingredients_list
+                cmsitem.inventory_type = 'Drug'
+                # cmsitem.generic_name = ' '.join([drug_obj.gen_generic, drug_obj.gen_dosage]).strip()
                 # Above commented version tags on generated dosage to generic_name
-                item.generic_name = drug_obj.gen_generic.strip()
+                cmsitem.generic_name = drug_obj.gen_generic.strip()
                 
-                self.stdout.write(f"#{item.id:4} | PRODUCT [{old_product_name}] => [{item.product_name}]")
-                self.stdout.write(f"#{item.id:4} | LABEL   [{old_label_name}] => [{item.label_name}]")
-                self.stdout.write(f"#{item.id:4} | GENERIC [{old_generic_name}] => [{item.generic_name}]")
-                self.stdout.write(f"#{item.id:4} | INGR => [{item.ingredient}]\n=====")
-                item.save()
+                self.stdout.write(f"#{cmsitem.id:4} | PRODUCT [{old_product_name}] => [{cmsitem.product_name}]")
+                self.stdout.write(f"#{cmsitem.id:4} | LABEL   [{old_label_name}] => [{cmsitem.label_name}]")
+                self.stdout.write(f"#{cmsitem.id:4} | GENERIC [{old_generic_name}] => [{cmsitem.generic_name}]")
+                self.stdout.write(f"#{cmsitem.id:4} | INGR => [{cmsitem.ingredient}]\n=====")
+                cmsitem.save()
                 # Match RegisteredDrug to CMS Inventory Item
+                drug_obj.
 
             # drug_count += 1
             # active_ingr = drug.ingredient_list.split(',')

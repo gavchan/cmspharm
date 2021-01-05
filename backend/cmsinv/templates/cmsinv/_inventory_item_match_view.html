@@ -9,21 +9,16 @@ Requires the following parameters:
 
 {% if item_obj %}
 <div class="card shadow mb-2">
-    {% if item_obj.discontinue %}
-    <div class="card-header d-flex justify-content-between align-items-center
-                bg-secondary text-white">
-    {% else %}
     <div class="card-header d-flex justify-content-between align-items-center
                 bg-light">
-    {% endif %}
       <span>
-        CMS Inventory Item
+        <i class="fad fa-prescription-bottle-alt"></i>&nbsp;CMS Inventory Item
         {% if item_obj.registration_no %}
         &nbsp;
         [Permit No.: 
         <a 
           href="{% url 'cmsinv:MatchInventoryItemList' item_obj.registration_no %}"
-          class="btn btn-primary btn-sm"
+          class="btn-link"
         >{{ item_obj.registration_no }}
         </a>
         ]

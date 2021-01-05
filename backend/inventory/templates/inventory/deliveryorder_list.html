@@ -26,7 +26,33 @@
               </div>
             </div>
             <div class="col-sm-2 px-1">
-              <button id="btn_filter_results" class="btn btn-sm btn-secondary btn-block">Filter by Date</button>
+              <div class="input-group input-group-sm">
+                <select 
+                  name="t" 
+                  id="inputGroupSelectType" 
+                  class="custom-select input-control-sm"
+                  >
+                  <option value=""
+                    default
+                  >All</option>
+                  <option value="1"
+                    {% if disp_type == '1' %} selected {% endif %}
+                  >Unsynced
+                  </option>
+                  <option value="2"
+                    {% if disp_type == '2' %} selected {% endif %}
+                  >Synced
+                  </option>
+                  <option value="3"
+                    {% if disp_type == '3' %} selected {% endif %}
+                  >Due
+                  </option>
+                  <option value="4"
+                    {% if disp_type == '4' %} selected {% endif %}
+                  >Paid
+                  </option>
+                </select>
+              </div>
             </div>
           </div>
           <div class="row mb-2">
@@ -101,33 +127,6 @@
             </div>
             
             <div class="col-sm-2 px-1">
-              <div class="input-group input-group-sm">
-                <select 
-                  name="t" 
-                  id="inputGroupSelectType" 
-                  class="custom-select input-control-sm"
-                  >
-                  <option value=""
-                    default
-                  >All</option>
-                  <option value="1"
-                    {% if disp_type == '1' %} selected {% endif %}
-                  >Unsynced
-                  </option>
-                  <option value="2"
-                    {% if disp_type == '2' %} selected {% endif %}
-                  >Synced
-                  </option>
-                  <option value="3"
-                    {% if disp_type == '3' %} selected {% endif %}
-                  >Due
-                  </option>
-                  <option value="4"
-                    {% if disp_type == '4' %} selected {% endif %}
-                  >Paid
-                  </option>
-                </select>
-              </div>
             </div>
           </div>
         </form>
@@ -144,7 +143,7 @@
         </div>
         <div class="row mb-2">
           <div class="col-sm-12">
-            <button id="btn-export_excel" class="btn btn-sm btn-light btn-block" disabled>Disabled</button>
+            <button id="" class="btn btn-sm btn-light btn-block" disabled>Disabled</button>
           </div>
         </div>
       </div>

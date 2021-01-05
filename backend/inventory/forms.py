@@ -89,14 +89,20 @@ class NewVendorModalForm(BSModalForm):
 class NewVendorForm(ModelForm):
     
     def __init__(self, *args, **kwargs):
+        self.next_url = kwargs.pop('next_url')
         super(NewVendorForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.render_unmentioned_fields = False
         self.helper.form_id = 'id-NewVendorForm'
         self.helper.form_class = 'cmmForms'
         self.helper.form_method = 'post'
-        self.helper.form_action = reverse(
-            'inventory:NewVendor')
+        if self.next_url:
+            url_with_query = "%s?next=%s" % (
+                reverse('inventory:NewVendor'), self.next_url
+            )
+        else:
+            self.next_url = reverse('inventory:NewVendor')
+        self.helper.form_action = url_with_query
         self.helper.layout = Layout(
             Row(
                 Column('name', css_class='form-group col-md-4 mb-0'),
@@ -544,7 +550,7 @@ class NewItemFromVendorForm(ModelForm):
 class ItemUpdateModalForm(BSModalForm):
 
     def __init__(self, *args, **kwargs):
-        print(f"args={args}; kwargs={kwargs}")
+        self.next_url = kwargs.pop('next_url')
         super(ItemUpdateModalForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_tag = True
@@ -552,9 +558,14 @@ class ItemUpdateModalForm(BSModalForm):
         self.helper.form_id = 'id-ItemUpdateForm'
         self.helper.form_class = 'cmmForms'
         self.helper.form_method = 'post'
-        self.helper.form_action = reverse(
-            'inventory:ItemUpdateModal', args=(self.instance.pk,)
+        if self.next_url:
+            action_url = "%s?next=%s" % (
+                reverse('inventory:ItemUpdateModal', args=(self.instance.pk,)),
+                self.next_url
             )
+        else:
+            action_url = reverse('inventory:ItemUpdateModal', args=(self.instance.pk,))
+        self.helper.form_action = action_url
         self.initial['active'] = True
         self.helper.layout = Layout(
             Row(
@@ -651,12 +662,6 @@ class NewItemForm(ModelForm):
         model = Item
         exclude = ['id', 'date_created', 'last_updated', 'updated_by', ]
 
-
-class ItemUpdateForm(ModelForm):
-    class Meta:
-        model = Item
-        exclude = ['id', 'version', 'date_created',]
-
 class DeliveryOrderAddDeliveryItemForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
@@ -664,7 +669,6 @@ class DeliveryOrderAddDeliveryItemForm(ModelForm):
         self.drug_obj = kwargs.pop('drug_obj', None)
         self.item_obj = kwargs.pop('item_obj', None)
         self.next_url = kwargs.pop('next_url', None)
-        
         super(DeliveryOrderAddDeliveryItemForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper(self)
         self.helper.form_tag = True
@@ -673,18 +677,19 @@ class DeliveryOrderAddDeliveryItemForm(ModelForm):
         self.helper.form_class = 'cmmForms'
         self.helper.form_method = 'post'
         if self.drug_obj:
-            url_with_query = "%s?delivery=%s&cmsid=%s" % (
-                reverse('inventory:DeliveryOrderAddDeliveryItem', None),
-                self.delivery_obj.id, self.drug_obj.id 
+            url_with_query = "%s?cmsid=%s" % (
+                reverse('inventory:DeliveryOrderAddDeliveryItem', args=(self.delivery_obj.id,)),
+                self.drug_obj.id 
             )
         else:
-            url_with_query = "%s?delivery=%s&item=%s" % (
-                reverse('inventory:DeliveryOrderAddDeliveryItem', None),
-                self.delivery_obj.id, self.item_obj.id 
+            url_with_query = "%s?item=%s" % (
+                reverse('inventory:DeliveryOrderAddDeliveryItem', args=(self.delivery_obj.id,)),
+                self.item_obj.id 
             )
+        if self.next_url:
+            url_with_query = url_with_query + "&next=" + self.next_url
         self.helper.form_action = url_with_query
         self.helper.layout = Layout(
-            Hidden('next', self.helper.form_action),
             Hidden('version', '1'),
             Hidden('item', self.item_obj.id),
             Hidden('delivery_order', self.delivery_obj.id),
