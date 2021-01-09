@@ -3,11 +3,23 @@
 {% block content %}
 
 {% include '_modal.html' %}
-{% include 'inventory/_item_summary.html' %}
-{% include 'drugdb/_regdrug_summary.html' %}
-{% include 'cmsinv/_inventory_item_summary.html' %}
-{% include 'cmsinv/_deliveryitem_list_table.html' %}
 
+<div class="card shadow">
+    <div class="card-header bg-light">
+      <div class="d-flex justify-content-between align-items-center">
+        <span>
+          <i class="fad fa-file-alt"></i>
+          Item [ {{ item_obj.id }} ] {{ item_obj.name }}</span>
+      </div>
+    </div>
+    <div class="card-body">
+        {% include 'inventory/_item_summary.html' %}
+        {% include 'drugdb/_regdrug_summary.html' %}
+        {% include 'cmsinv/_inventory_item_summary.html' %}
+        {% include 'cmsinv/_deliveryitem_list_table.html' %}
+    </div>
+  </div>
+  
 {% endblock %}
 
 {% block extrascripts %}

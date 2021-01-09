@@ -23,22 +23,12 @@
           &nbsp;<span class="badge badge-danger">Inactive</span>
           {% endif %}
         </div>
-        <div class="col-sm-2">CMS ID</div>
-        <div class="col-sm-3 mt-0 mb-0">
-          {% if item_obj.cmsid %}
-          <a
-            class="btn-link"
-            href="#"
-          ><i class="fad fa-file-alt"></i>&nbsp;{{ item_obj.cmsid }}</i>
-          </a>
-          {% else %}
-          {{ item_obj.cmsid }}
-          {% endif %}
-        </div>
+        <div class="col-sm-2">Last Updated</div>
+        <div class="col-sm-3">{{ item_obj.last_updated|date:'d-m-Y H:i' }}</div>
       </div>
       <div class="row mb-0">
-        <div class="col-sm-2">Note</div>
-        <div class="col-sm-5">{{ item_obj.note}}</div>
+        <div class="col-sm-2">Item Type</div>
+        <div class="col-sm-5">{{ item_obj.item_type.name }}</div> 
         <div class="col-sm-2">Reg No.</div>
         <div class="col-sm-3 mt-0 mb-0">
           {% if item_obj.reg_no %}
@@ -54,22 +44,38 @@
       </div>
       <div class="row mb-0">
         <div class="col-sm-2">Vendor</div>
-        <div class="col-sm-5">{{ item_obj.vendor.name }}</div>
-        <div class="col-sm-2">Category</div>
-        <div class="col-sm-3">{{ item_obj.category }}</div>
+        <div class="col-sm-5">{{ item_obj.vendor.name }}</div> 
+        <div class="col-sm-2">CMS ID</div>
+        <div class="col-sm-3 mt-0 mb-0">
+          {% if item_obj.cmsid %}
+          <a
+            class="btn-link"
+            href="{% url 'cmsinv:InventoryItemDetail' item_obj.cmsid %}"
+          ><i class="fad fa-file-alt"></i>&nbsp;{{ item_obj.cmsid }}</i>
+          </a>
+          <a
+            class="btn_modal_trigger btn-link"
+            data-id="{% url 'cmsinv:InventoryItemQuickEditModal' item_obj.cmsid %}"
+          ><i class="fad fa-edit"></i>
+          </a>
+         
+          {% else %}
+          {{ item_obj.cmsid }}
+          {% endif %}
+        </div>
       </div>
       <div class="row mb-0">
-        <div class="col-sm-2">Item Type</div>
-        <div class="col-sm-5">{{ item_obj.item_type.name }}</div>
-        <div class="col-sm-2">Last Updated</div>
-        <div class="col-sm-3">{{ item_obj.last_updated|date:'d-m-Y H:i' }}</div>
+        <div class="col-sm-2">Note</div>
+        <div class="col-sm-5">{{ item_obj.note}}</div>
+        <div class="col-sm-2">Category</div>
+        <div class="col-sm-3">{{ item_obj.category.name }}</div>
       </div>
     </div>
 </div>
 
 {% else %}
 <div class="alert alert-danger" role="alert">
-    No matching Item
+    No Item found
 </div>
 
 {% endif %}

@@ -1,7 +1,7 @@
 {% if drug_obj %}
 
 <div class="card shadow mb-2">
-  <div class="card-header text-white bg-info">
+  <div class="card-header text-white bg-dark">
     <div class="d-flex justify-content-between align-items-center">
       <span>
         <i class="fad fa-pills" aria-hidden="true"></i>&nbsp;
@@ -40,6 +40,11 @@
           class="btn-link"
           href="{% url 'inventory:ItemDetail' drug_obj.itemid %}"
         ><i class="fad fa-file-alt"></i>&nbsp;{{ drug_obj.itemid }}
+        </a>
+        <a
+          class="btn_modal_trigger btn-link"
+          data-id="{% url 'inventory:ItemUpdateModal' drug_obj.itemid %}"
+        ><i class="fad fa-edit"></i>
         </a>
         {% else %}
         {{ drug_obj.itemid }}

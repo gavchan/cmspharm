@@ -65,7 +65,7 @@
         </a>
       </div>
       <div class="col-md-2 mb-0">Received Date</div>
-      <div class="col-md-2 mb-0">{{ delivery_obj.received_date}}</div>
+      <div class="col-md-2 mb-0">{{ delivery_obj.received_date|date:'d-m-Y'}}</div>
       <div class="col-md-2 text-right">
         {% if delivery_obj.cms_synced %}
         <span
@@ -85,7 +85,7 @@
       <div class="col-md-2 mb-0">Invoice No.</div>
       <div class="col-md-4 mb-0">{{ delivery_obj.invoice_no }}</div>
       <div class="col-md-2 mb-0">Invoice Date</div>
-      <div class="col-md-2 mb-0">{{ delivery_obj.invoice_date }}</div>
+      <div class="col-md-2 mb-0">{{ delivery_obj.invoice_date|date:'d-m-Y' }}</div>
       <div class="col-md-2 text-right">
         {% if delivery_obj.is_paid %}
         <span class="badge badge-success">Paid</span>
@@ -102,13 +102,23 @@
       </div>
       <div class="col-md-4 mb-0">$ {{ delivery_obj.amount }}</div>
       <div class="col-md-2 mb-0">Due Date</div>
-      <div class="col-md-4 mb-0">{{ delivery_obj.due_date }}</div>
+      <div class="col-md-4 mb-0">{{ delivery_obj.due_date|date:'d-m-Y' }}</div>
     </div>
     <div class="form-row">
       <div class="col-md-2 mb-0">Remarks</div>
-      <div class="col-md-4 mb-0">{{ delivery_obj.remarks }}</div>
+      <div class="col-md-4 mb-0">
+        {% if delivery_obj.remarks %}
+        {{ delivery_obj.remarks }}
+        {% else %}-
+        {% endif %}
+      </div>
       <div class="col-md-2 mb-0">Other Ref</div>
-      <div class="col-md-4 mb-0">{{ delivery_obj.other_ref }}</div>
+      <div class="col-md-4 mb-0">
+        {% if delivery_obj.other_ref %}
+        {{ delivery_obj.other_ref }}
+        {% else %}-
+        {% endif %}
+      </div>
     </div>
   </div>
 </div>

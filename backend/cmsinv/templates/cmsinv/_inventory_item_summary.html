@@ -3,7 +3,7 @@
 {% if cmsitem_obj %}
 <div class="card shadow mb-2">
     <div class="card-header d-flex justify-content-between align-items-center
-                bg-light">
+                text-white bg-info">
       <span>
         <i class="fad fa-prescription-bottle-alt"></i>&nbsp;CMS Inventory Item #{{ cmsitem_obj.id }}
         {% if cmsitem_obj.discontinue %}
@@ -58,7 +58,7 @@
                 Stock Quantity
             </div>
             <div class="col-sm-3">
-                {{ cmsitem_obj.stock_qty }}
+                {{ cmsitem_obj.stock_qty|floatformat }}
             </div>
 
         </div>
@@ -70,10 +70,14 @@
                 {{ cmsitem_obj.alias }}
             </div>
             <div class="col-sm-2">
-                Standard Cost
+                Standard
+                {% if cmsitem_obj.average_cost %}(Average){% endif %} Cost
             </div>
             <div class="col-sm-3">
                 {{ cmsitem_obj.standard_cost }}
+                {% if cmsitem_obj.average_cost %}
+                ( {{ cmsitem_obj.average_cost }} )
+                {% endif %}
             </div>
         </div>
         <div class="row">
