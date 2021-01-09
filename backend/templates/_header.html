@@ -22,19 +22,17 @@
                     <a href="{% url 'ledger:ExpenseList' %}" class="nav-link">Expenses</a>
                 </li>
                 {% endif %}
-                {% if perms.inventory.view_deliveryorder %}
                 <li class="nav-item">
                     <a href="{% url 'inventory:DeliveryOrderList' %}" class="nav-link">Deliveries</a>
                 </li>
                 <li class="nav-item">
                     <a href="{% url 'inventory:DeliveryItemList' %}" class="nav-link">Delivered Items</a>
                 </li>
-                {% endif %}
                 {% if perms.cmsinv.view_inventoryitem %}
                 <li class="nav-item">
                     <a href="{% url 'cmsinv:InventoryItemList' %}" class="nav-link">CMS Inventory</a>
                 </li>
-                {% endif%}
+                {% endif %}
                 <li class="nav-item">
                     <a href="{% url 'drugdb:DrugList' %}?t=1" class="nav-link">Reg Drugs</a>
                 </li>

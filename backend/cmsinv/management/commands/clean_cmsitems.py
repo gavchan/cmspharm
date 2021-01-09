@@ -17,11 +17,13 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('-d', '--delete', action='store_true', help='Mark and delete')
+        parser.add_argument('-f', '--force', action='store_true', help='Force delete (No prompt)')
         parser.add_argument('-r', '--remove', action='store_true', help='Remove marked/trashed')
         
     def handle(self, *args, **kwargs):
         delete_flag = kwargs['delete'] or False
         remove_flag = kwargs['remove'] or False
+        force_flag = kwargs['force'] or False
         if remove_flag:  # Remove marked files only
             print("Removing marked files...")
             do_mark_for_trash = False
@@ -86,7 +88,11 @@ class Command(BaseCommand):
             if len(final_set) == 0:
                 print("No files to delete")
             elif do_delete:  # Delete
-                confirm_delete = input("Are you sure you want to delete the items? Type 'YES' to confirm: ")
+                if force_flag:
+                    confirm_delete = 'YES'
+                else:
+                    confirm_delete = input("Are you sure you want to delete the items? Type 'YES' to confirm: ")
+                
                 if confirm_delete == 'YES':
                     count = 0
                     for item_id in final_set:
