@@ -5,6 +5,10 @@ from .models import (
     Request, RequestItem, Delivery, ReceivedItem,
     Depletion, DepletionItem, DepletionDepletionItem
 )
+from .custom_filters import DuplicateRegNoFilter
+
+class InventoryItemAdmin(admin.ModelAdmin):
+    list_filter = (DuplicateRegNoFilter, )
 
 class CMSModelAdmin(admin.ModelAdmin):
     pass
@@ -36,7 +40,7 @@ class CMSModelAdmin(admin.ModelAdmin):
 admin.site.register(Advisory, CMSModelAdmin)
 admin.site.register(Instruction, CMSModelAdmin)
 admin.site.register(Supplier, CMSModelAdmin)
-admin.site.register(InventoryItem, CMSModelAdmin)
+admin.site.register(InventoryItem, InventoryItemAdmin)
 admin.site.register(InventoryItemType, CMSModelAdmin)
 admin.site.register(InventoryItemSupplier, CMSModelAdmin)
 admin.site.register(InventoryMovementLog, CMSModelAdmin)

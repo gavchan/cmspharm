@@ -121,7 +121,7 @@ class InventoryItemUpdateForm(ModelForm):
 
     class Meta:
         model = InventoryItem
-        exclude = ['id', 'date_created', 'last_updated', 'stock_qty', 'inventory_item_type']
+        exclude = ['id', 'date_created', 'last_updated', 'stock_qty', 'inventory_item_type', 'version']
         labels = {
             'dosage': 'Dosage (Q/T)',
             'frequency': 'Frequency (T/D)',
@@ -132,7 +132,7 @@ class InventoryItemUpdateForm(ModelForm):
 class NewInventoryItemForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
-        self.drug_obj = kwargs.pop('drug_obj', None)
+        self.regdrug_obj = kwargs.pop('regdrug_obj', None)
         self.vendor_obj = kwargs.pop('vendor_obj', None)
         super(NewInventoryItemForm, self).__init__(*args, **kwargs)
         # today_date = timezone.now().strftime('%Y-%m-%d')
@@ -141,10 +141,10 @@ class NewInventoryItemForm(ModelForm):
         self.helper.form_id = 'id-InventoryItemForm'
         self.helper.form_class = 'cmmForms'
         self.helper.form_method = 'post'
-        if self.drug_obj:
+        if self.regdrug_obj:
             url_with_query = "%s?reg_no=%s" % (
                 reverse('cmsinv:NewInventoryItem', None),
-                self.drug_obj.reg_no 
+                self.regdrug_obj.reg_no 
             )
         elif self.vendor_obj:
             url_with_query = "%s?vendor=%s" % (
@@ -161,13 +161,13 @@ class NewInventoryItemForm(ModelForm):
         self.initial['is_clinic_drug_list'] = True
         self.initial['is_master_drug_list'] = True
         self.initial['clinic_drug_no'] = InventoryItem.generateNextClinicDrugNo()
-        if self.drug_obj:
-            self.initial['product_name'] = self.drug_obj.name
-            self.initial['label_name'] = self.drug_obj.name
-            self.drug_reg_no = self.drug_obj.reg_no
+        if self.regdrug_obj:
+            self.initial['product_name'] = self.regdrug_obj.name
+            self.initial['label_name'] = self.regdrug_obj.name
+            self.drug_reg_no = self.regdrug_obj.reg_no
             self.initial['registration_no'] = self.drug_reg_no
-            self.initial['generic_name'] = self.drug_obj.gen_generic
-            self.initial['ingredient'] = self.drug_obj.ingredients_list
+            self.initial['generic_name'] = self.regdrug_obj.gen_generic
+            self.initial['ingredient'] = self.regdrug_obj.ingredients_list
         else:
             self.drug_reg_no = ''
         self.helper.layout = Layout(
@@ -178,8 +178,8 @@ class NewInventoryItemForm(ModelForm):
                         <div class="pb-1 mb-1">Registration no</div>
                         <div id="id_registration_no" 
                              class="alert alert-secondary pt-2 pb-2" 
-                            data-value="{{ drug_obj.name }}">
-                            {{ drug_obj.reg_no }}&nbsp;
+                            data-value="{{ regdrug_obj.name }}">
+                            {{ regdrug_obj.reg_no }}&nbsp;
                         </div>
                     </div>
                 """),

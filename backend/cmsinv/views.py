@@ -117,13 +117,13 @@ class InventoryItemDetail(DetailView, LoginRequiredMixin):
             print(f"No delivery record for {self.object.product_name}")
         data['drug_obj'] = self.drug_obj
         data['deliveryitem_obj_list'] = self.deliveryitem_obj_list
-        data['item_obj'] = self.object
+        data['cmsitem_obj'] = self.object
         return data
 
 class InventoryItemModalDetail(BSModalReadView, LoginRequiredMixin):
     model = InventoryItem
     template_name = 'cmsinv/inventory_item_modal_detail.html'
-    item_obj = None
+    cmsitem_obj = None
     drug_obj = None
     drug_delivery_obj = None
     match_drug_list = None
@@ -144,7 +144,7 @@ class InventoryItemModalDetail(BSModalReadView, LoginRequiredMixin):
             print(f"No delivery record for {self.object.product_name}")
         data['drug_obj'] = self.drug_obj
         data['delivery_obj_list'] = self.delivery_obj_list
-        data['item_obj'] = self.object
+        data['cmsitem_obj'] = self.object
         data['match_drug_list'] = self.match_drug_list
         return data
 
@@ -240,11 +240,15 @@ class InventoryItemUpdate(UpdateView, LoginRequiredMixin):
         response = super().form_valid(form)
 
         # Update corresponding inventory.Item
+        if form.instance.registration_no:
+            reg_no = form.instance.registration_no.upper()
+        else:
+            reg_no = None
         item_data = {
             'name': form.instance.product_name,
             'cmsid': self.object.id,
-            'reg_no': form.instance.registration_no,
-            'item_type': ItemType.objects.get(value=1),
+            'reg_no': reg_no,
+            'item_type': ItemType.objects.get(name="Drug"),  # CMS InventoryItems are by default "Drug"
             'is_active': not form.instance.discontinue,
         }
         item, created = Item.objects.update_or_create(cmsid=self.object.id, defaults=item_data)
@@ -263,12 +267,12 @@ class InventoryItemUpdate(UpdateView, LoginRequiredMixin):
 #     success_url = reverse_lazy('cmsinv:InventoryItemList')
 
 class NewInventoryItem(CreateView, LoginRequiredMixin):
-    """Add new drug delivery"""
+    """Add new CMS inventory item"""
     model = InventoryItem
     template_name = 'cmsinv/new_inventory_item.html'
     form_class = NewInventoryItemForm
     context_object_name = 'new_inventory_item'
-    drug_obj = None
+    regdrug_obj = None
     drug_reg_no = ''
     vendor_obj = None
 
@@ -276,9 +280,9 @@ class NewInventoryItem(CreateView, LoginRequiredMixin):
         if request.GET.get('reg_no'):
             self.drug_reg_no = request.GET.get('reg_no')
             try:
-                self.drug_obj = RegisteredDrug.objects.get(reg_no=self.drug_reg_no)
+                self.regdrug_obj = RegisteredDrug.objects.get(reg_no=self.drug_reg_no)
             except:
-                self.drug_obj = None
+                self.regdrug_obj = None
         else:
             self.drug_reg_no = ''
         if request.GET.get('vendor'):
@@ -290,8 +294,8 @@ class NewInventoryItem(CreateView, LoginRequiredMixin):
     
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
-        if self.drug_obj:
-            data['drug_obj'] = self.drug_obj
+        if self.regdrug_obj:
+            data['regdrug_obj'] = self.regdrug_obj
         else:
             data['product_name'] = ''
         return data
@@ -299,38 +303,41 @@ class NewInventoryItem(CreateView, LoginRequiredMixin):
     def get_form_kwargs(self):
         kwargs = super(NewInventoryItem, self).get_form_kwargs()
         kwargs.update({
-            'drug_obj': self.drug_obj,
+            'regdrug_obj': self.regdrug_obj,
             'vendor_obj': self.vendor_obj,
             })
         return kwargs
 
     def form_valid(self, form):
-        print(f'Form valid, {self.drug_obj} / {self.vendor_obj}')
+        print(f'Form valid, {self.regdrug_obj} / {self.vendor_obj}')
         form.instance.updated_by = self.request.user
         form.instance.date_created = timezone.now()
         form.instance.last_updated = timezone.now()
 
-        if self.drug_obj:  # Assign cert_holder if RegisteredDrug
+        if self.regdrug_obj:  # Assign cert_holder if RegisteredDrug
             cert_holder_data = {
-                'name': self.drug_obj.company.name,
-                'address': self.drug_obj.company.address,
+                'name': self.regdrug_obj.company.name,
+                'address': self.regdrug_obj.company.address,
                 'supp_type': 'Certificate Holder',
                 'updated_by': self.request.user.username,
             }
             cert_holder_obj, created = Supplier.objects.get_or_create(
-                name=self.drug_obj.company.name.upper(),
+                name=self.regdrug_obj.company.name.upper(),
                 defaults=cert_holder_data,
                 )
             if created:
                 print(f"Cert Holder created: {cert_holder_obj}")
             form.instance.certificate_holder = cert_holder_obj
-            form.instance.registration_no = self.drug_obj.reg_no
+            form.instance.registration_no = self.regdrug_obj.reg_no
+
         elif self.vendor_obj:  # Assign vendor if given
             vendor_data = {
                 'name': self.vendor_obj.name,
                 'address': self.vendor_obj.address,
                 'supp_type': 'Supplier',
-                'updated_by': self.request.user.username
+                'date_created': timezone.now(),
+                'last_updated': timezone.now(),
+                'updated_by': self.request.user.username,
             }
             supp_obj, created = Supplier.objects.get_or_create(
                 name=self.vendor_obj.name.upper(),
@@ -341,20 +348,31 @@ class NewInventoryItem(CreateView, LoginRequiredMixin):
             form.instance.certificate_holder = supp_obj
         
         response = super().form_valid(form)
-
         # Create new corresponding inventory.Item
+        if self.object.registration_no:
+            reg_no = form.instance.registration_no.upper()
+        else:
+            reg_no = None
         item_data = {
             'name': self.object.product_name,
             'cmsid': self.object.id,
-            'reg_no': self.object.registration_no,
+            'reg_no': reg_no,
             'item_type': ItemType.objects.get(value=1),
             'is_active': True,
+            'updated_by': self.request.user.username,
+            'last_updated': timezone.now(),
         }
         item_obj, created = Item.objects.get_or_create(
             cmsid=self.object.id, defaults=item_data,
         )
         if created:
             print(f"Item created: {item_obj}")
+
+            # Update RegDrug object if it is a registered drug
+            if self.regdrug_obj:
+                self.regdrug_obj.itemid = item_obj.id
+                self.regdrug_obj.save()
+                print(f"RegDrug {self.regdrug_obj.reg_no} updated with itemid {self.regdrug_obj.itemid}")
         else:
             print(f"Item #{ item_obj.id } updated: {item_obj}")
         return response
@@ -362,65 +380,64 @@ class NewInventoryItem(CreateView, LoginRequiredMixin):
     def get_success_url(self):
         return reverse('cmsinv:InventoryItemDetail', args=(self.object.pk,))
 
-class MatchInventoryItemList(ListView, LoginRequiredMixin):
-    """
-    CMS Inventory Item List Matching Non-CMS Delivery Record
-    """
-    model = InventoryItem
-    template_name = "cmsinv/match_inventory_item_list.html"
-    context_object_name = 'match_item_list_obj'
-    drug_reg_no = ''
-    keyword = ''
-    ingredients = ''
-    drug_obj = None
-    delivery_obj_list = None
-    item_obj = None
+# class MatchInventoryItemList(ListView, LoginRequiredMixin):
+#     """
+#     CMS Inventory Item List Matching Non-CMS Delivery Record
+#     """
+#     model = InventoryItem
+#     template_name = "cmsinv/match_inventory_item_list.html"
+#     context_object_name = 'match_item_list_obj'
+#     drug_reg_no = ''
+#     keyword = ''
+#     ingredients = ''
+#     drug_obj = None
+#     delivery_obj_list = None
+#     cmsitem_obj = None
 
-    def dispatch(self, request, *args, **kwargs):
-        if 'reg_no' in kwargs:
-            self.drug_reg_no = kwargs['reg_no']
-            try:
-                self.item_obj = InventoryItem.objects.get(registration_no=self.drug_reg_no)
-            except InventoryItem.DoesNotExist:
-                self.item_obj = None
-            try:
-                self.drug_obj = RegisteredDrug.objects.get(reg_no=self.drug_reg_no)
-            except RegisteredDrug.DoesNotExist:
-                self.drug_obj = None 
-            try:
-                self.delivery_obj_list = DeliveryItem.objects.filter(item__reg_no=self.drug_reg_no)[:5]
-            except DeliveryItem.DoesNotExist:
-                self.delivery_obj_list = None
+#     def dispatch(self, request, *args, **kwargs):
+#         if 'reg_no' in kwargs:
+#             self.drug_reg_no = kwargs['reg_no']
+#             try:
+#                 self.cmsitem_obj = InventoryItem.objects.get(registration_no=self.drug_reg_no)
+#             except InventoryItem.DoesNotExist:
+#                 self.cmsitem_obj = None
+#             try:
+#                 self.drug_obj = RegisteredDrug.objects.get(reg_no=self.drug_reg_no)
+#             except RegisteredDrug.DoesNotExist:
+#                 self.drug_obj = None 
+#             try:
+#                 self.delivery_obj_list = DeliveryItem.objects.filter(item__reg_no=self.drug_reg_no)[:5]
+#             except DeliveryItem.DoesNotExist:
+#                 self.delivery_obj_list = None
 
-        else:
-            print("Error: missing reg_no")
-        return super().dispatch(request, *args, **kwargs)
+#         else:
+#             print("Error: missing reg_no")
+#         return super().dispatch(request, *args, **kwargs)
     
-    def get_context_data(self, **kwargs):
-        data = super().get_context_data(**kwargs)
-        data['drug_obj'] =  self.drug_obj
-        data['item_obj'] = self.item_obj
-        print(data['drug_obj'])
-        data['delivery_obj_list'] = self.delivery_obj_list
-        return data
+#     def get_context_data(self, **kwargs):
+#         data = super().get_context_data(**kwargs)
+#         data['drug_obj'] =  self.drug_obj
+#         data['cmsitem_obj'] = self.cmsitem_obj
+#         data['delivery_obj_list'] = self.delivery_obj_list
+#         return data
 
-    def get_queryset(self):
-        if self.drug_obj:
-            self.keyword = self.drug_obj.name
-            self.ingredients = self.drug_obj.ingredients_list
-        else:
-            print('Error no existing reg no.')
-        if self.keyword == None:
-            self.keyword = ''
-        if self.ingredients == None:
-            self.ingredients = ''
-        object_list = InventoryItem.objects.filter(
-            Q(product_name__icontains=self.keyword) |
-            Q(generic_name__icontains=self.keyword) |
-            Q(alias__icontains=self.keyword) |
-            Q(ingredient__icontains=self.ingredients)
-        ).order_by('discontinue').exclude(registration_no=self.drug_reg_no)[:100]
-        return object_list
+#     def get_queryset(self):
+#         if self.drug_obj:
+#             self.keyword = self.drug_obj.name
+#             self.ingredients = self.drug_obj.ingredients_list
+#         else:
+#             print('Error no existing reg no.')
+#         if self.keyword == None:
+#             self.keyword = ''
+#         if self.ingredients == None:
+#             self.ingredients = ''
+#         object_list = InventoryItem.objects.filter(
+#             Q(product_name__icontains=self.keyword) |
+#             Q(generic_name__icontains=self.keyword) |
+#             Q(alias__icontains=self.keyword) |
+#             Q(ingredient__icontains=self.ingredients)
+#         ).order_by('discontinue').exclude(registration_no=self.drug_reg_no)[:100]
+#         return object_list
 
 # class InventoryItemMatchUpdate(UpdateView, LoginRequiredMixin):
 #     """

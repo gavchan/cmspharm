@@ -1,0 +1,75 @@
+{% if item_obj %}
+<div class="card shadow mb-2">
+    <div class="card-header">
+      <div class="d-flex justify-content-between align-items-center">
+        <span>
+          <i class="fas fa-layer-group"></i>&nbsp;Item # {{ item_obj.id }}
+        </span>
+        <span>
+          <button
+            class="btn_modal_trigger btn btn-sm btn-secondary text-white"
+            data-id="{% url 'inventory:ItemUpdateModal' item_obj.pk %}"
+          >Edit
+          </button>
+        </span>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="row mb-0">
+        <div class="col-sm-2">Name</div>
+        <div class="col-sm-5">
+          {{ item_obj.name }}
+          {% if not item_obj.is_active %}
+          &nbsp;<span class="badge badge-danger">Inactive</span>
+          {% endif %}
+        </div>
+        <div class="col-sm-2">CMS ID</div>
+        <div class="col-sm-3 mt-0 mb-0">
+          {% if item_obj.cmsid %}
+          <a
+            class="btn-link"
+            href="#"
+          ><i class="fad fa-file-alt"></i>&nbsp;{{ item_obj.cmsid }}</i>
+          </a>
+          {% else %}
+          {{ item_obj.cmsid }}
+          {% endif %}
+        </div>
+      </div>
+      <div class="row mb-0">
+        <div class="col-sm-2">Note</div>
+        <div class="col-sm-5">{{ item_obj.note}}</div>
+        <div class="col-sm-2">Reg No.</div>
+        <div class="col-sm-3 mt-0 mb-0">
+          {% if item_obj.reg_no %}
+          <a
+            class="btn-link"
+            href="{% url 'drugdb:DrugDetailMatch' item_obj.reg_no %}"
+          ><i class="fad fa-file-alt"></i>&nbsp;{{ item_obj.reg_no }}
+          </a>
+          {% else %}
+          {{ item_obj.reg_no }}
+          {% endif %}
+        </div>
+      </div>
+      <div class="row mb-0">
+        <div class="col-sm-2">Vendor</div>
+        <div class="col-sm-5">{{ item_obj.vendor.name }}</div>
+        <div class="col-sm-2">Category</div>
+        <div class="col-sm-3">{{ item_obj.category }}</div>
+      </div>
+      <div class="row mb-0">
+        <div class="col-sm-2">Item Type</div>
+        <div class="col-sm-5">{{ item_obj.item_type.name }}</div>
+        <div class="col-sm-2">Last Updated</div>
+        <div class="col-sm-3">{{ item_obj.last_updated|date:'d-m-Y H:i' }}</div>
+      </div>
+    </div>
+</div>
+
+{% else %}
+<div class="alert alert-danger" role="alert">
+    No matching Item
+</div>
+
+{% endif %}

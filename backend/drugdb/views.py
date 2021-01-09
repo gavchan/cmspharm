@@ -16,6 +16,14 @@ from .models import (
     Company,
 )
 
+from cmsinv.models import (
+    InventoryItem
+)
+
+from inventory.models import (
+    Item, DeliveryItem
+)
+
 class RegisteredDrugList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
     """List of registered drugs"""
     permission_required = ('drugdb.view_registereddrug', )
@@ -50,7 +58,7 @@ class RegisteredDrugList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
         else:
             self.last_query = ''
             self.last_query_count = object_list.count
-        return object_list
+        return object_list.distinct().order_by('name')
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
@@ -80,3 +88,66 @@ class CompanyList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
     def get_queryset(self):
         return Company.objects.all()
   
+class DrugDetailMatch(ListView, LoginRequiredMixin):
+    """
+    CMS Inventory Item List Matching Non-CMS Delivery Record
+    """
+    model = InventoryItem
+    template_name = "drugdb/drug_detail_match.html"
+    context_object_name = 'match_item_list_obj'
+    drug_reg_no = ''
+    keyword = ''
+    ingredients = ''
+    drug_obj = None
+    deliveryitem_obj_list = None
+    cmsitem_obj = None
+    item_obj = None
+
+    def dispatch(self, request, *args, **kwargs):
+        if 'reg_no' in kwargs:
+            self.drug_reg_no = kwargs['reg_no']
+            try:
+                self.cmsitem_obj = InventoryItem.objects.get(registration_no=self.drug_reg_no)
+            except InventoryItem.DoesNotExist:
+                self.cmsitem_obj = None
+            try:
+                self.item_obj = Item.objects.get(reg_no=self.drug_reg_no)
+            except Item.DoesNotExist:
+                self.item_obj = None
+            try:
+                self.drug_obj = RegisteredDrug.objects.get(reg_no=self.drug_reg_no)
+            except RegisteredDrug.DoesNotExist:
+                self.drug_obj = None 
+            try:
+                self.deliveryitem_obj_list = DeliveryItem.objects.filter(item__reg_no=self.drug_reg_no)[:5]
+            except DeliveryItem.DoesNotExist:
+                self.deliveryitem_obj_list = None
+        else:
+            print("Error: missing reg_no")
+        return super().dispatch(request, *args, **kwargs)
+    
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        data['drug_obj'] =  self.drug_obj
+        data['cmsitem_obj'] = self.cmsitem_obj
+        data['item_obj'] = self.item_obj
+        data['deliveryitem_obj_list'] = self.deliveryitem_obj_list
+        return data
+
+    def get_queryset(self):
+        if self.drug_obj:
+            self.keyword = self.drug_obj.name
+            self.ingredients = self.drug_obj.ingredients_list
+        else:
+            print('Error no existing reg no.')
+        if self.keyword == None:
+            self.keyword = ''
+        if self.ingredients == None:
+            self.ingredients = ''
+        object_list = InventoryItem.objects.filter(
+            Q(product_name__icontains=self.keyword) |
+            Q(generic_name__icontains=self.keyword) |
+            Q(alias__icontains=self.keyword) |
+            Q(ingredient__icontains=self.ingredients)
+        ).order_by('discontinue').exclude(registration_no=self.drug_reg_no)[:100]
+        return object_list

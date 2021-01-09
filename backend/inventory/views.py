@@ -160,10 +160,20 @@ class ItemDetail(DetailView, LoginRequiredMixin, PermissionRequiredMixin):
     permission_required = ('inventory.view_item', )
     model = Item
     template_name = 'inventory/item_detail.html'
-    context_object_name = 'item_detail'
+    context_object_name = 'item_obj'
 
-    # def get_context_data(self, **kwargs):
-    #     context = super().get_context_data(**kwargs)
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        if self.object.cmsid:
+            data['cmsitem_obj'] = InventoryItem.objects.get(id=self.object.cmsid) or None
+        if self.object.reg_no:
+            data['drug_obj'] = RegisteredDrug.objects.get(reg_no=self.object.reg_no) or None
+        try:
+            delivered_items = DeliveryItem.objects.filter(item__id=self.object.id)[:5]
+        except DeliveryItem.DoesNotExist:
+            delivered_items = None
+        data['deliveryitem_obj_list'] = delivered_items
+        return data
 
 
 # class ItemUpdate(UpdateView, LoginRequiredMixin, PermissionRequiredMixin):

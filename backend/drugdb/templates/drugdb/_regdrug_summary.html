@@ -8,13 +8,7 @@
         Registered Drug No.: {{ drug_obj.reg_no }}
       </span>
       <span>
-        {% if drug_obj.itemid %}
-        <a
-          href="{% url 'inventory:DeliveryItemList' %}?q={{ drug_obj.reg_no }}"
-          class="btn btn-sm btn-secondary text-white"
-        >Delivered Item
-        </a>
-        {% else %}
+        {% if not drug_obj.itemid %}
         <a
           href="{% url 'cmsinv:NewInventoryItem' %}?reg_no={{ drug_obj.reg_no }}"
           class="btn btn-sm btn-secondary text-white"
@@ -26,40 +20,39 @@
   </div>
   <div class="card-body">
     <div class="row mb-0">
-      <div class="col-md-2">Permit No.</div>
-      <div class="col-md-6">
+      <div class="col-sm-2">Permit No.</div>
+      <div class="col-sm-5">
         {{ drug_obj.reg_no }}&nbsp;
         {% if not drug_obj.is_active %}
         <span class="badge badge-danger">Inactive</span>
         {% endif %}
       </div>
-      <div class="col-md-2">Last Updated</div>
-      <div class="col-md-2">{{ drug_obj.last_updated|date:"d-m-Y" }}</div>
+      <div class="col-sm-2">Last Updated</div>
+      <div class="col-sm-3">{{ drug_obj.last_updated|date:"d-m-Y H:i" }}</div>
     </div>
     <div class="row mb-0">
-      <div class="col-md-2">Product Name</div>
-      <div class="col-md-6">{{ drug_obj.name}}</div>
-      <div class="col-md-2">Item ID</div>
-      <div class="col-md-2 mt-0 mb-0">
+      <div class="col-sm-2">Product Name</div>
+      <div class="col-sm-5">{{ drug_obj.name}}</div>
+      <div class="col-sm-2">Item ID</div>
+      <div class="col-sm-3 mt-0 mb-0">
         {% if perms.inventory.change_item and drug_obj.itemid %}
-        <button
-          type="button"
-          class="btn_modal_trigger btn btn-sm btn-link"
-          data-id="{% url 'inventory:ItemUpdateModal' drug_obj.itemid %}"
-        >{{ drug_obj.itemid }}<i class="fad fa-file-alt"></i>
-        </button>
+        <a
+          class="btn-link"
+          href="{% url 'inventory:ItemDetail' drug_obj.itemid %}"
+        ><i class="fad fa-file-alt"></i>&nbsp;{{ drug_obj.itemid }}
+        </a>
         {% else %}
         {{ drug_obj.itemid }}
         {% endif %}
       </div>
     </div>
     <div class="row mb-0">
-      <div class="col-md-2">Cert. Holder</div>
-      <div class="col-md-10">{{ drug_obj.company.name }}</div>
+      <div class="col-sm-2">Cert. Holder</div>
+      <div class="col-sm-10">{{ drug_obj.company.name }}</div>
     </div>
     <div class="row mb-0">
-      <div class="col-md-2">Ingredients</div>
-      <div class="col-md-10">{{ drug_obj.ingredients_list }}</div>
+      <div class="col-sm-2">Ingredients</div>
+      <div class="col-sm-10">{{ drug_obj.ingredients_list }}</div>
     </div>
   </div>
 </div>

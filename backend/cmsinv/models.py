@@ -173,7 +173,7 @@ class InventoryItem(models.Model):
         db_column='certificate_holder_id'
         )
     clinic_drug_no = models.CharField(max_length=255, blank=True, null=True, unique=True)
-    dangerous_sign = TextBooleanField()  # MySQL text field, behaves like Boolean
+    dangerous_sign = TextBooleanField(default=False)  # MySQL text field, behaves like Boolean
     date_created = models.DateTimeField(auto_now_add=True)
     discontinue = TextBooleanField()  # MySQL text field, behaves like Boolean
     dosage = models.CharField(max_length=255, blank=True, null=True)

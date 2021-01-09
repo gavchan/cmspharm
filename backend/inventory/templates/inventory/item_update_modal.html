@@ -31,6 +31,8 @@
   </div>
   
   <div class="modal-footer d-flex justify-content-between align-items-center">
+    {% if perms.inventory.delete_item %}
     <a class="btn btn-sm btn-danger" href="{% url 'inventory:ItemDelete' object.pk %}">Delete</a>
+    {% endif %}
     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
   </div>

@@ -10,55 +10,50 @@
             <th scope="col">Alias/CertHolder</th>
             <th scope="col">Product/Label</th>
             <th scope="col">Generic/Ingredients</th>
-            <th scope="col">Stock Qty</th>
-            <th scope="col">Cost</th>
+            <th scope="col" class="text-center">Stock Qty</th>
+            <th scope="col" class="text-center">Cost (Avg)</th>
             <th scope="col">Action</th>
         </tr>
     </thead>
     <tbody>
-        {% for item in match_item_list_obj %}
+        {% for cmsitem in match_item_list_obj %}
         
         <tr 
-            {% if item.discontinue %}
+            {% if cmsitem.discontinue %}
             class="table-secondary text-muted"
             {% endif %}
         >
-            <td><b>{{ item.registration_no }}</b>
-                {% if item.discontinue %}
+            <td><b>{{ cmsitem.registration_no }}</b>
+                {% if cmsitem.discontinue %}
                 <br><span class="badge badge-secondary">Inactive</span>
                 {% else %}
-                <br>{{ item.clinic_drug_no }}
+                <br>{{ cmsitem.clinic_drug_no }}
             </td>
                 {% endif %}
             <td>
-                <b>{{ item.alias }}</b>
-                <br>{{ item.certificate_holder }}
+                <b>{{ cmsitem.alias }}</b>
+                <br>{{ cmsitem.certificate_holder }}
             </td>
-            <td><b>{{ item.product_name }}</b>
-            <br>{{ item.label_name }}</td>
+            <td><b>{{ cmsitem.product_name }}</b>
+            <br>{{ cmsitem.label_name }}</td>
             <td>
-                <b>{{ item.generic_name }}</b>
-                <br>{{ item.ingredient }}
+                <b>{{ cmsitem.generic_name }}</b>
+                <br>{{ cmsitem.ingredient }}
             </td>
-            <td>
-                {{ item.stock_qty }}
+            <td class="text-center">
+                {{ cmsitem.stock_qty }}
             </td>
-            <td>
-                {{ item.standard_cost }}
+            <td class="text-center">
+                {% if cmsitem.standard_cost %}
+                {{ cmsitem.standard_cost }}
+                {% else %}-
+                {% endif %}
+                <br>({% if cmsitem.average_cost %}{{ cmsitem.average_cost}}{% else %} - {% endif %})
             </td>
             <td class="item-action-cell">
-                <button 
-                    type="button" 
-                    {% if item.registration_no %}
-                        class="btn_modal_trigger show-item-details btn btn-link"
-                    {% else %}
-                        class="show-item-details btn btn-sm btn-danger"
-                    {% endif %}
-                    data-id="{% url 'cmsinv:InventoryItemModalDetail' item.pk %}"
-                    ><i class="fad fa-file"></i></button>
                 <button
                   class="btn_modal_trigger btn btn-link"
-                  data-id="{% url 'cmsinv:InventoryItemQuickEditModal' item.pk %}?next={{ request.path }}"  
+                  data-id="{% url 'cmsinv:InventoryItemQuickEditModal' cmsitem.pk %}?next={{ request.path }}"  
                 ><i class="fad fa-edit"></i>
                 </button>
             </td>
