@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.urls import reverse, reverse_lazy, resolve, Resolver404
 from django.shortcuts import redirect, render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
-
+from django.forms.models import model_to_dict
 from django.db.models import Q
 from drugdb.models import (
     RegisteredDrug,
@@ -339,15 +339,67 @@ class NewInventoryItem(CreateView, LoginRequiredMixin):
                 'last_updated': timezone.now(),
                 'updated_by': self.request.user.username,
             }
-            supp_obj, created = Supplier.objects.get_or_create(
+            supplier_obj, created = Supplier.objects.get_or_create(
                 name=self.vendor_obj.name.upper(),
                 defaults=vendor_data,
             )
-            if created:
-                print(f"Supplier created: {supp_obj}")
-            form.instance.certificate_holder = supp_obj
+            if created: # Update AuditLog
+                print(f"New supplier added: ({supplier_obj.name})")
+
+                audit_str_dict = {**new_supplier_data,
+                    'dateCreated': datetime.strftime(supplier_obj.date_created, "%a %b %d %H:%M:%S %Z %Y"),
+                    'lastUpdated': datetime.strftime(supplier_obj.last_updated, "%a %b %d %H:%M:%S %Z %Y"),
+                    'type': 'Supplier',
+                }
+                sorted_dict = dict(sorted(audit_str_dict.items()))
+                audit_str = "||".join([
+                    ":=".join((underscore_to_camel(key), str(value))) for (key, value) in sorted_dict.items()
+                ])
+                
+                newAuditLogEntry = AuditLog(
+                    actor = cmsuser_obj.username,
+                    class_name = 'SupplierManufacturer',
+                    event_name = 'INSERT',
+                    old_value = None,
+                    new_value = audit_str,
+                    persisted_object_version = 'null',
+                    persisted_object_id = supplier_obj.id,
+                    session_id = session_id,
+                    uri = uri,
+                )
+                newAuditLogEntry.save()
+                if newAuditLogEntry.id:
+                    print(f"New audit log entry added: {audit_str}")
+                else:
+                    print("Error writing audit log entry")
+            form.instance.certificate_holder = supplier_obj
         
+        # Submit form 
         response = super().form_valid(form)
+
+        # Successful save => Update AuditLog for InventoryItem
+        audit_str_dict = model_to_dict(self.object)
+        sorted_dict = dict(sorted(audit_str_dict.items()))
+        audit_str = "||".join([
+            ":=".join((underscore_to_camel(key), str(value))) for (key, value) in sorted_dict.items()
+        ])
+        newAuditLogEntry = AuditLog(
+            actor = self.request.user.username,
+            class_name = 'InventoryItem',
+            event_name = 'INSERT',
+            old_value = None,
+            new_value = audit_str,
+            persisted_object_version = 'null',
+            persisted_object_id = self.object.id,
+            session_id = self.request.session.session_key,
+            uri = reverse('cmsinv:NewInventoryItem'),
+        )
+        newAuditLogEntry.save()
+        if newAuditLogEntry.id:
+            print(f"New audit log entry added: {audit_str}")
+        else:
+            print("Error writing audit log entry")
+
         # Create new corresponding inventory.Item
         if self.object.registration_no:
             reg_no = form.instance.registration_no.upper()
@@ -632,9 +684,9 @@ def NewDeliveryFromDeliveryOrderModalView(request, *args, **kwargs):
     else:
         print("Error: no delivery_id")
     uri = request.GET.get('next', reverse('inventory:DeliveryOrderDetail', args=(delivery_obj.id,)))
-    session_id = request.session.session_key
+    session_id = request.session.session_id
     # Get cmsuser id
-    cmsuser_obj = CmsUser.objects.get(username='admin')
+    cmsuser_obj = request.user
     itemupdate_list = []
     for listitem in delivery_obj.delivery_items.all():
         if listitem.item.cmsid:
@@ -696,7 +748,7 @@ def NewDeliveryFromDeliveryOrderModalView(request, *args, **kwargs):
                     new_value = audit_str,
                     persisted_object_version = 'null',
                     persisted_object_id = supplier_obj.id,
-                    session_id = session_id,
+                    session_id = session_key,
                     uri = uri,
                 )
                 newAuditLogEntry.save()
