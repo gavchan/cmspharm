@@ -108,13 +108,13 @@ class Command(BaseCommand):
                     item = InventoryItem.objects.get(pk=item_id)
                     print(f"#{item.id:<6}|{item.discontinue}|{item.product_name}")
                     item.location = "Trash"
-                    item.remarks = "Marked for deletion [{timezone.now()}]"
+                    item.remarks = f"Marked for deletion [{timezone.now()}]"
                     item.save()
                     count += 1
                 self.stdout.write(f"Marked {count} items for deletion. Use -r flag to delete marked files")
 
         elif do_delete:
-            final_set = InventoryItem.objects.get(
+            final_set = InventoryItem.objects.filter(
                 location="Trash",
                 remarks__icontains="Marked for deletion"
             )
