@@ -11,18 +11,18 @@
 
         <div class= "collapse navbar-collapse" id="navbarBaseToggler">
             <ul class="navbar-nav mr-auto mt-2 mt-sm-0">
-                {% if perms.ledger.can_add_expense %}
+                {% if perms.ledger.add_expense %}
                 <li class="nav-item">
                     <a href="{% url 'ledger:NewExpense' %}" class="nav-link"><i class="far fa-plus"></i>&nbsp;<i class="far fa-file-invoice-dollar"></i></a>
                 </li>
                 {% endif %}
 
-                {% if perms.ledger.can_view_expense %}
+                {% if perms.ledger.view_expense %}
                 <li class="nav-item">
                     <a href="{% url 'ledger:ExpenseList' %}" class="nav-link">Expenses</a>
                 </li>
                 {% endif %}
-                {% if perms.inventory.can_view_deliveryorder %}
+                {% if perms.inventory.view_deliveryorder %}
                 <li class="nav-item">
                     <a href="{% url 'inventory:DeliveryOrderList' %}" class="nav-link">Deliveries</a>
                 </li>
