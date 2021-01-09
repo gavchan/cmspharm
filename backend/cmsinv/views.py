@@ -684,9 +684,9 @@ def NewDeliveryFromDeliveryOrderModalView(request, *args, **kwargs):
     else:
         print("Error: no delivery_id")
     uri = request.GET.get('next', reverse('inventory:DeliveryOrderDetail', args=(delivery_obj.id,)))
-    session_id = request.session.session_id
+    session_id = request.session.session_key
     # Get cmsuser id
-    cmsuser_obj = request.user
+    cmsuser_obj = CmsUser.objects.get(username='cmsman')
     itemupdate_list = []
     for listitem in delivery_obj.delivery_items.all():
         if listitem.item.cmsid:
@@ -748,7 +748,7 @@ def NewDeliveryFromDeliveryOrderModalView(request, *args, **kwargs):
                     new_value = audit_str,
                     persisted_object_version = 'null',
                     persisted_object_id = supplier_obj.id,
-                    session_id = session_key,
+                    session_id = session_id,
                     uri = uri,
                 )
                 newAuditLogEntry.save()

@@ -902,7 +902,7 @@ class DeliveryOrderAddDeliveryItem(LoginRequiredMixin, PermissionRequiredMixin, 
 
     def dispatch(self, request, *args, **kwargs):
         if kwargs['delivery_id']:
-            self.delivery_obj = DeliveryOrder.objects.get(id=kwargs['delivery_id]'])
+            self.delivery_obj = DeliveryOrder.objects.get(id=kwargs['delivery_id'])
             print(f"Got delivery { self.delivery_obj.id }")
         else:
             print('Error: no delivery_id')
