@@ -281,9 +281,12 @@ class DeliveryItem(models.Model):
     def standard_cost(self):
         """Standard average cost of items (not including bonus items or discounts)"""
         try:
-            std_cost = round(self.unit_price * self.purchase_quantity / (self.items_per_purchase * self.purchase_quantity), 2)
-        except:
-            std_cost = 0.00
+            if self.is_sample:
+                std_cost = round(self.unit_price * self.bonus_quantity / (self.items_per_purchase * self.bonus_quantity), 2)
+            else:
+                std_cost = round(self.unit_price * self.purchase_quantity / (self.items_per_purchase * self.purchase_quantity), 2)
+        except ZeroDivisionError:
+            std_cost = 0.0
         return  std_cost
 
     @property
@@ -291,7 +294,7 @@ class DeliveryItem(models.Model):
         """Average cost of items (including bonus items and discounts)"""
         try:
             avg_cost = round(self.total_price / self.items_quantity, 2)
-        except:
+        except ZeroDivisionError:
             avg_cost = 0.00
         return avg_cost
 

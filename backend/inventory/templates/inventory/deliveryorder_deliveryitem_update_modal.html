@@ -59,7 +59,11 @@ $(document).ready(function () {
     let avgcost = 0
     let totalcost = purchase * unitprice * (1 - discount)
     if (quantity !== 0) {
-      stdcost = totalcost / (purchase * itemspp);
+      if($('#id_is_sample').is(':checked')) {
+        stdcost = (bonus * unitprice) / (bonus * itemspp);
+      } else {
+        stdcost = totalcost / (purchase * itemspp);
+      }
       avgcost = totalcost / quantity; 
     }
     if (isNaN(stdcost)) { stdcost = 0 }
