@@ -12,6 +12,8 @@
 </div>
 
 <div class="modal-footer">
+    {% if perms.ledger.delete_expense %}
     <a href="{% url 'ledger:ExpenseDeleteModal' object.pk %}" class="btn btn-sm btn-danger"> Delete </a>
+    {% endif %}
     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 </div>

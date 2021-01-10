@@ -4,7 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.decorators import login_required, permission_required
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse, reverse_lazy, resolve, Resolver404
 from django.db.models import Q, Sum
 
 from django.template.loader import render_to_string
@@ -136,12 +136,24 @@ class ExpenseUpdate(UpdateView, LoginRequiredMixin, PermissionRequiredMixin):
     form_class = ExpenseUpdateForm
     template_name = "ledger/expense_update.html"
     success_message = 'Success: Expense was updated'
-    success_url = reverse_lazy('ledger:ExpenseList')
+    next_url = ''
+
+    def dispatch(self, request, *args, **kwargs):
+        if self.request.GET.get('next'):
+            self.next_url = self.request.GET.get('next')
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         data['expense_obj'] = self.object
         return data
+
+    def get_success_url(self):
+        try:
+            resolve(self.next_url)
+        except Resolver404:
+            return reverse('ledger:ExpenseDetail', args=(self.object.pk,))
+        return self.next_url
 
 class ExpenseUpdateModal(BSModalUpdateView, LoginRequiredMixin, PermissionRequiredMixin):
     """Update Expense"""
@@ -150,12 +162,25 @@ class ExpenseUpdateModal(BSModalUpdateView, LoginRequiredMixin, PermissionRequir
     form_class = ExpenseUpdateModalForm
     template_name = "ledger/expense_update_modal.html"
     success_message = 'Success: Expense was updated'
-    success_url = reverse_lazy('ledger:ExpenseList')
+    next_url = ''
+
+    def dispatch(self, request, *args, **kwargs):
+        if self.request.GET.get('next'):
+            self.next_url = self.request.GET.get('next')
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         data['expense_obj'] = self.object
         return data
+
+    def get_success_url(self):
+        try:
+            resolve(self.next_url)
+        except Resolver404:
+            return reverse('ledger:ExpenseDetail', args=(self.object.pk,))
+        return self.next_url
+
 
 class ExpenseDeleteModal(BSModalDeleteView, LoginRequiredMixin, PermissionRequiredMixin):
     """Update Expense modal"""
