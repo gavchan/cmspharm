@@ -110,10 +110,12 @@ class Command(BaseCommand):
                 print(f"#{item.id:<6}|{item.name}")
                 count += 1     
             confirm_delete = input("Are you sure you want to delete the items? Type 'YES' to confirm: ")
-            if confirm_delete == 'YES':
+            if confirm_delete.upper() == 'YES' or confirm_delete.upper() == 'Y':
                 count = 0
                 for item in marked_set:
                     print(f"Deleting #{item.id:<6}|{item.name}")
                     item.delete()
                     count += 1                    
                 self.stdout.write(f"Deleted {count} items")
+            else:
+                print("Aborting delete")

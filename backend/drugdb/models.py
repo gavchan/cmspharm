@@ -1,7 +1,6 @@
 from django.db import models
 from django.urls import reverse
 from cmsinv.models import InventoryItem
-from inventory.models import Delivery
 from ledger.models import Expense
 import re
 
@@ -14,7 +13,7 @@ class RegisteredDrug(models.Model):
     reg_no = models.CharField(unique=True, max_length=255, blank=True, null=True)
     itemid = models.PositiveIntegerField(blank=True, null=True, unique=True)
     # reg_no: equivalent to "permit_no" in drug database
-    ingredients_str = models.TextField(blank=True, null=True)
+    # ingredients_str = models.TextField(blank=True, null=True)
     # Company Name and Company Address
     ingredients = models.ManyToManyField(
         'Ingredient', 
@@ -25,6 +24,7 @@ class RegisteredDrug(models.Model):
         )
     date_created = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
+    last_synced = models.DateTimeField(auto_now=True) 
     is_active = models.BooleanField(default=True)
 
     class Meta:

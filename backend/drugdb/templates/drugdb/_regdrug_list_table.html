@@ -5,7 +5,7 @@
             <th scope="col" width="10%">Reg no.</th>
             <th scope="col" width="40%">Product name / Ingredients</th>
             <th scope="col" width="32%">Company</th>
-            <th scope="col" class="text-center" width="10%">Action</th>
+            <th scope="col" class="text-right" width="10%">Action</th>
         </tr>
     </thead>
     <tbody>
@@ -17,17 +17,17 @@
             <td><b>{{ drug.name }}</b>
             <br>{{ drug.ingredients_list }}</td>
             <td>{{ drug.company }}</td>
-            <td class="text-center">
-                <a href="{% url 'drugdb:DrugDetailMatch' drug.reg_no %}"
-                class="btn btn-sm btn-info"
-                ><i class="fad fa-file"></i>
-                </a>
+            <td class="text-right">
                 {% if not drug.itemid %}
                 <a href="{% url 'cmsinv:NewInventoryItem' %}?reg_no={{ drug.reg_no }}"
                 class="btn btn-sm btn-success"
                 ><i class="far fa-layer-plus"></i>
                 </a>
                 {% endif %}
+                <a href="{% url 'drugdb:DrugDetailMatch' drug.reg_no %}"
+                class="btn btn-sm btn-info"
+                ><i class="fad fa-file"></i>
+                </a>
             </td>
         </tr>
 

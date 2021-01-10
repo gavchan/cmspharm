@@ -18,12 +18,22 @@
             <td>{{ listitem.delivery_order.invoice_date|date:"d-m-Y" }}</td>
             <td class="text-left" width="35%">
                 {% if listitem.item.cmsid %}
+                <a 
+                    class="btn-link"
+                    href="{% url 'cmsinv:InventoryItemDetail' listitem.item.cmsid %}?next={{ request.get_full_path }}">
+                    {{ listitem.item.name }}
+                </a>
                 <button
                     class="btn_modal_trigger btn btn-sm btn-link text-left ml-0 pl-0"
                     data-id="{% url 'cmsinv:InventoryItemQuickEditModal' listitem.item.cmsid %}?next={{ request.get_full_path }}"  
-                >{{ listitem.item.name }}&nbsp;<i class="fad fa-edit"></i>
+                >&nbsp;<i class="fad fa-edit"></i>
                 </button>
                 {% else %}
+                <a 
+                    class="btn-link"
+                    href="{% url 'inventory:ItemDetail' listitem.item.id %}?next={{ request.get_full_path }}">
+                    {{ listitem.item.name }}
+                </a>
                 <button
                     class="btn_modal_trigger btn btn-sm btn-link ml-0 pl-0"
                     data-id="{% url 'inventory:ItemUpdateModal' listitem.item.id %}?next={{ request.get_full_path }}"  

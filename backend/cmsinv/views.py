@@ -109,21 +109,40 @@ class InventoryItemDetail(DetailView, LoginRequiredMixin):
         try:
             self.drug_obj = RegisteredDrug.objects.get(reg_no=self.object.registration_no)
         except RegisteredDrug.DoesNotExist:
-            print(f"No registration no. for {self.object.product_name}")
+            self.drug_obj = None
         try:
             self.deliveryitem_obj_list = DeliveryItem.objects.filter(item__cmsid=self.object.id)[:10]
         except DeliveryItem.DoesNotExist:
             self.deliveryitem_obj_list = None
-            print(f"No delivery record for {self.object.product_name}")
+            # print(f"No delivery record for {self.object.product_name}")
         # Try get first 3 ingredients from CMS Item
-        try:
-            related_ingredients = self.object.ingredient.split(',')[:3]
-        except:
-            related_ingredients = []
-        if len(related_ingredients) > 0:
+        if self.object.ingredient:
+            try:
+                related_words = self.object.ingredient.split(',')
+            except:
+                related_words = []
+        else:
+            # If no ingredient, try product_name
+            try:
+                related_words = self.object.product_name.split(' ')
+            except:
+                related_words = []
+        if len(related_words) > 0:
+            # Assign first non-numeric string to keyword for filter
+            keyword = ''
+            index = 0
+            while keyword == '' and index < len(related_words):
+                print(related_words[index], keyword)
+                try:
+                    float(related_words[index])
+                    index += 1
+                except ValueError:
+                    keyword = related_words[index]
+                    index += 1
+
             self.drug_list = RegisteredDrug.objects.filter(
-                Q(ingredients__name__icontains=related_ingredients[0]) |
-                Q(name__icontains=related_ingredients[0])
+                Q(ingredients__name__icontains=keyword) |
+                Q(name__icontains=keyword)
             ).order_by('name')[:100]
         else:
             self.drug_list = None
@@ -131,7 +150,7 @@ class InventoryItemDetail(DetailView, LoginRequiredMixin):
         data['deliveryitem_obj_list'] = self.deliveryitem_obj_list
         data['cmsitem_obj'] = self.object
         data['drug_list'] = self.drug_list
-        data['related_keyword'] = related_ingredients[0]
+        data['related_keyword'] = keyword 
         return data
 
 class InventoryItemModalDetail(BSModalReadView, LoginRequiredMixin):

@@ -157,7 +157,7 @@ Vendors
               type="button"
               class="btn_modal_trigger btn btn-sm btn-success"
               data-id="{% url 'inventory:NewDeliveryOrder' %}?vendor={{ vendor.id }}&next={{ request.path }}"
-            ><i class="fad fa-box-alt"></i>
+            ><i class="fal fa-box-open"></i>
             </button>
             {% endif %}
             {% if perms.ledger.add_expense %}

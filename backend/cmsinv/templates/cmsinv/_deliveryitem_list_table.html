@@ -13,8 +13,8 @@
                     <th scope="col">Purchased+Bonus</th>
                     <th scope="col">Unit Price</th>
                     <th scope="col">Expiry Date</th>
-                    <th scope="col">Std (Avg) Cost</th>
-                    <th scope="col">Action</th>
+                    <th scope="col" class="text-center">Std (Avg) Cost</th>
+                    <th scope="col" class="text-right">Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -35,17 +35,17 @@
                     </td>
                     <td>{{ item.unit_price|intcomma }} / {{ item.purchase_unit }} of {{ item.items_per_purchase|floatformat }} {{ item.items_unit }}</td>
                     <td>{{ item.expiry_date|date:'d-m-Y'}}</td>
-                    <td>${{ item.standard_cost}} ( ${{ item.average_cost }} )</td>
-                    <td>
+                    <td class="text-center">${{ item.standard_cost}} ( ${{ item.average_cost }} )</td>
+                    <td class="text-right">
                         <button 
                             data-id="{% url 'inventory:DeliveryItemUpdateModal' item.delivery_order.pk item.pk %}" 
                             class="btn_modal_trigger btn btn-sm btn-primary">
-                            <i class="fad fa-file-alt"></i>
+                            <i class="fad fa-file-edit"></i>
                     </button>
                         <a
                           class="btn_modal_trigger btn btn-sm btn-info"
                           href="{% url 'inventory:DeliveryOrderDetail' item.delivery_order.pk %}"
-                        ><i class="fad fa-file-import"></i></a>
+                        ><i class="fad fa-file"></i></a>
                     </td>
                 </tr>
                 {% endfor %}
