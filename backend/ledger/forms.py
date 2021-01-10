@@ -104,6 +104,9 @@ class ExpenseCategoryUpdateForm(ModelForm):
 
 class NewExpenseSelectVendorForm(ModelForm):
 
+    invoice_date = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
+    expected_date = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
+
     def __init__(self, *args, **kwargs):
         self.vendor_obj = kwargs.pop('vendor_obj', None)
 
@@ -193,6 +196,10 @@ class NewExpenseSelectVendorForm(ModelForm):
 
 class ExpenseUpdateForm(ModelForm):
 
+    entry_date = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
+    invoice_date = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
+    expected_date = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
+    
     def __init__(self, *args, **kwargs):
         # self.request = kwargs.pop('request', None)
         super(ExpenseUpdateForm, self).__init__(*args, **kwargs)
@@ -280,6 +287,9 @@ class ExpenseUpdateForm(ModelForm):
 
 
 class NewExpenseForm(ModelForm):
+
+    invoice_date = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
+    expected_date = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
 
     def __init__(self, *args, **kwargs):
         self.vendor_obj = kwargs.pop('vendor_obj', None)
@@ -372,6 +382,8 @@ class NewExpenseForm(ModelForm):
 
 class NewExpenseModalForm(BSModalForm):
 
+    invoice_date = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
+    expected_date = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
     def __init__(self, *args, **kwargs):
         self.vendor_obj = kwargs.pop('vendor_obj', None)
 
@@ -457,6 +469,10 @@ class NewExpenseModalForm(BSModalForm):
 
 
 class ExpenseUpdateModalForm(BSModalForm):
+
+    entry_date = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
+    invoice_date = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
+    expected_date = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
 
     def __init__(self, *args, **kwargs):
         # self.request = kwargs.pop('request', None)
@@ -544,6 +560,7 @@ class ExpenseUpdateModalForm(BSModalForm):
 
 class DeliveryPaymentModalForm(BSModalForm):
 
+    expected_date = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
     def __init__(self, *args, **kwargs):
         self.delivery_obj = kwargs.pop('delivery_obj', None)
         super(DeliveryPaymentModalForm, self).__init__(*args, **kwargs)
@@ -621,14 +638,6 @@ class DeliveryPaymentModalForm(BSModalForm):
         exclude = ['id', 'date_created', 'last_updated']
         widgets = {
             'expected_date': DatePickerInput(
-                options={
-                    "format": "YYYY-MM-DD",
-                    "showClose": True,
-                    "showClear": True,
-                    "showTodayButton": True,
-                }
-            ),
-            'invoice_date': DatePickerInput(
                 options={
                     "format": "YYYY-MM-DD",
                     "showClose": True,

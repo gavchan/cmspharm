@@ -1,8 +1,9 @@
 {% extends 'base.html' %}
-
 {% load crispy_forms_tags %}
+{{form.media}}
 
 {% block content %}
+  {% include '_modal.html' %}
 
 <div class="card shadow">
     <div class="card-header">

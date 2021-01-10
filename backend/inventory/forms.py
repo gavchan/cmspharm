@@ -208,6 +208,10 @@ class VendorUpdateModalForm(BSModalForm):
         exclude = ['id', 'version', 'date_created', 'last_updated',]
 
 class NewDeliveryOrderForm(ModelForm):
+    received_date = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
+    invoice_date = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
+    due_date = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
+
     def __init__(self, *args, **kwargs):
         self.vendor_obj= kwargs.pop('vendor_obj', None)
         super(NewDeliveryOrderForm, self).__init__(*args, **kwargs)
@@ -293,6 +297,10 @@ class NewDeliveryOrderForm(ModelForm):
                 }
 class NewDeliveryOrderModalForm(BSModalForm):
     
+    received_date = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
+    invoice_date = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
+    due_date = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
+    
     def __init__(self, *args, **kwargs):
         self.vendor_obj= kwargs.pop('vendor_obj', None)
         super(NewDeliveryOrderModalForm, self).__init__(*args, **kwargs)
@@ -375,6 +383,10 @@ class NewDeliveryOrderModalForm(BSModalForm):
 
 class DeliveryOrderUpdateModalForm(BSModalForm):
     
+    received_date = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
+    invoice_date = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
+    due_date = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
+    
     def __init__(self, *args, **kwargs):
         super(DeliveryOrderUpdateModalForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
@@ -445,6 +457,8 @@ class DeliveryOrderUpdateModalForm(BSModalForm):
                 }
 class DeliveryItemUpdateModalForm(BSModalForm):
 
+    expiry_month = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'YYYYMM'}))
+    
     def __init__(self, *args, **kwargs):
         self.delivery_obj = kwargs.pop('delivery_obj', None)
         super(DeliveryItemUpdateModalForm, self).__init__(*args, **kwargs)
@@ -663,6 +677,8 @@ class NewItemForm(ModelForm):
         exclude = ['id', 'date_created', 'last_updated', 'updated_by', ]
 
 class DeliveryOrderAddDeliveryItemForm(ModelForm):
+
+    expiry_month = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'YYYYMM'}))
 
     def __init__(self, *args, **kwargs):
         self.delivery_obj = kwargs.pop('delivery_obj', None)
