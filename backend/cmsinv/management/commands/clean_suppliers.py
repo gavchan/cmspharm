@@ -110,7 +110,7 @@ class Command(BaseCommand):
                     if created:
                         new_suppliers += 1
                         print(f"\nAdded supplier: {cert_holder_obj.name}")
-                        cmsitem.certificate_holder = cert_holder_obj.id
+                        cmsitem.certificate_holder = cert_holder_obj
                         cmsitem.inventory_item_type = drugtype
                     else:
                         sys.stdout.write('.')
