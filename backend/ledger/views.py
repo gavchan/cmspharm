@@ -421,11 +421,13 @@ def ExpenseRemoveDeliveryOrder(request, *args, **kwargs):
         delivery_obj.save()
         # Update expense_obj invoice_no
         invoice_nums = expense_obj.invoice_no.split(',')
-        removed_invoice_no = invoice_nums.pop()
+        removed_invoice_no = invoice_nums.pop(invoice_nums.index(delivery_obj.invoice_no))
         if len(invoice_nums) > 1:
             expense_obj.invoice_no = ','.join(invoice_nums)
-        else:
+        elif len(invoice_nums) == 1:
             expense_obj.invoice_no = invoice_nums[0]
+        else:
+            expense_obj.invoice_no = ''
         expense_obj.save()
         print(f"Delivery #{delivery_obj.id} #{removed_invoice_no} removed from expense #{expense_obj.id}")
     return HttpResponseRedirect(reverse('ledger:ExpenseDetail', args=(expense_obj.id,)))

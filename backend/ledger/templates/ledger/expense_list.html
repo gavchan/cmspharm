@@ -146,13 +146,14 @@ crispy_forms_tags %} {% block content %}
               class="btn btn-sm btn-info"
               ><i class="far fa-file-invoice-dollar"></i>
             </a>
-            {% endif %}
+            {% else %}
             <a
               href="{% url 'ledger:ExpenseUpdate' expense.pk %}"
               class="btn-expense_update btn btn-sm btn-primary"
             >
               <i class="fad fa-edit"></i>
             </a>
+            {% endif %}
           </td>
         </tr>
 
