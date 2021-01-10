@@ -271,7 +271,7 @@ class InventoryItemSupplier(models.Model):
     CMS table inventory_item_supplier_manufacturer is a legacy table using a composite key as the primary key
     Django does not support composite keys and a many-to-many field could not be used for this table
     Workaround:
-    - The legacy databased was modified to add an autoincrement `id` primary key
+    - The legacy database was modified to add an autoincrement `id` primary key
     - see backend/scripts/alter-cmsdb-generate-id-from-composite-key.py
     """
  

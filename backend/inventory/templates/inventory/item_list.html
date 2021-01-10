@@ -187,7 +187,7 @@
                 <th scope="col">Type</th>
                 <th scope="col">Reg No.</th>
                 <th scope="col">CMS ID</th>
-                <th scope="col">Action</th>
+                <th scope="col" class="text-right">Action</th>
             </tr>
         </thead>
         <tbody>
@@ -199,11 +199,12 @@
                 {% endif %}
             >
                 <td>
+                  {{ item_obj.name }}
                   <button
                         type="button"
                         class="btn_modal_trigger btn btn-sm btn-link text-left"
                         data-id="{% url 'inventory:ItemUpdateModal' item_obj.pk %}"
-                    >{{ item_obj.name }}&nbsp;<i class="fad fa-edit"></i>
+                    ><i class="fad fa-edit"></i>
                     </button>
                 </td>
                 <td>{{ item_obj.note }}</td>
@@ -214,7 +215,7 @@
                 </td>
                 <td>{{ item_obj.reg_no }}</td>
                 <td>{{ item_obj.cmsid }}</td>
-                <td>
+                <td class="text-right">
                   <a 
                     class="btn btn-sm btn-info"
                     href="{% url 'inventory:ItemDetail' item_obj.pk %}"
