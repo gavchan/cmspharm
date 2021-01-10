@@ -27,16 +27,24 @@
                 <tr>
                     <td>
                         {% if listitem.item.cmsid %}
+                        <a class="btn-link"
+                            href="{% url 'cmsinv:InventoryItemDetail' listitem.item.cmsid %}">
+                            {{ listitem.item.name }}
+                        </a>
                         <button
-                            class="btn_modal_trigger btn btn-sm btn-link"
+                            class="btn_modal_trigger btn btn-sm btn-link text-left"
                             data-id="{% url 'cmsinv:InventoryItemQuickEditModal' listitem.item.cmsid %}"  
-                        >{{ listitem.item.name }}&nbsp;<i class="fad fa-edit"></i>
+                        ><i class="fad fa-edit"></i>
                         </button>
                         {% else %}
+                        <a class="btn-link"
+                            href="{% url 'inventory:ItemDetail' listitem.item.id %}">
+                            {{ listitem.item.name }}
+                        </a>
                         <button
-                            class="btn_modal_trigger btn btn-sm btn-link"
+                            class="btn_modal_trigger btn btn-sm btn-link text-left"
                             data-id="{% url 'inventory:ItemUpdateModal' listitem.item.id %}"  
-                        >{{ listitem.item.name }}&nbsp;<i class="fad fa-edit"></i>
+                        ><i class="fad fa-edit"></i>
                         </button>
                         {% endif %}
                     </td>
