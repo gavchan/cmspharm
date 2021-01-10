@@ -24,6 +24,7 @@ from cmssys.models import (
 )
 from .models import (
     InventoryItem,
+    InventoryItemType,
     Supplier,
     InventoryMovementLog,
     Delivery,
@@ -343,20 +344,22 @@ class NewInventoryItem(CreateView, LoginRequiredMixin):
 
     def form_valid(self, form):
         print(f'Form valid, {self.regdrug_obj} / {self.vendor_obj}')
-        form.instance.updated_by = self.request.user
+        user = self.request.user.username
+        uri = reverse('cmsinv:NewInventoryItem')
+        form.instance.updated_by = user
         form.instance.version = 0
         form.instance.date_created = timezone.now()
         form.instance.last_updated = timezone.now()
         session_id = self.request.session.session_key
-        uri = reverse('cmsinv:NewInventoryItem')
-        user = self.request.user.username
 
         if self.regdrug_obj:  # Assign cert_holder if RegisteredDrug
             cert_holder_data = {
                 'name': self.regdrug_obj.company.name,
                 'address': self.regdrug_obj.company.address,
                 'supp_type': 'Certificate Holder',
-                'updated_by': self.request.user.username,
+                'date_created': timezone.now(),
+                'last_updated': timezone.now(),
+                'updated_by': user,
             }
             cert_holder_obj, created = Supplier.objects.get_or_create(
                 name=self.regdrug_obj.company.name.upper(),
@@ -382,7 +385,7 @@ class NewInventoryItem(CreateView, LoginRequiredMixin):
                     old_value = None,
                     new_value = audit_str,
                     persisted_object_version = 'null',
-                    persisted_object_id = supplier_obj.id,
+                    persisted_object_id = cert_holder_obj.id,
                     session_id = session_id,
                     uri = uri,
                 )
@@ -393,16 +396,16 @@ class NewInventoryItem(CreateView, LoginRequiredMixin):
                     print("Error writing audit log entry")
             form.instance.certificate_holder = cert_holder_obj
             form.instance.registration_no = self.regdrug_obj.reg_no
-            form.instance.inventory_item_type = InventoryItemType.objects.get(name='Drug')
+            form.instance.inventory_item_type = InventoryItemType.objects.get(id=1)
 
         elif self.vendor_obj:  # Assign vendor if given
-            vendor_data = {
+            new_supplier_data = {
                 'name': self.vendor_obj.name,
                 'address': self.vendor_obj.address,
                 'supp_type': 'Supplier',
                 'date_created': timezone.now(),
                 'last_updated': timezone.now(),
-                'updated_by': self.request.user.username,
+                'updated_by': user,
             }
             supplier_obj, created = Supplier.objects.get_or_create(
                 name=self.vendor_obj.name.upper(),
@@ -465,7 +468,7 @@ class NewInventoryItem(CreateView, LoginRequiredMixin):
         else:
             print("Error writing audit log entry")
 
-        # Create new corresponding inventory.Item
+        # Create new corresponding inventory.Item if not existing
         if self.object.registration_no:
             reg_no = form.instance.registration_no.upper()
         else:
@@ -479,9 +482,14 @@ class NewInventoryItem(CreateView, LoginRequiredMixin):
             'updated_by': self.request.user.username,
             'last_updated': timezone.now(),
         }
-        item_obj, created = Item.objects.get_or_create(
-            cmsid=self.object.id, defaults=item_data,
-        )
+        if reg_no:
+            item_obj, created = Item.objects.get_or_create(
+                reg_no=reg_no, defaults=item_data,
+            )
+        else:
+           item_obj, created = Item.objects.get_or_create(
+            id=cmsid, defaults=item_data,
+        ) 
         if created:
             print(f"Item created: {item_obj}")
 
