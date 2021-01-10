@@ -109,15 +109,29 @@ class InventoryItemDetail(DetailView, LoginRequiredMixin):
         try:
             self.drug_obj = RegisteredDrug.objects.get(reg_no=self.object.registration_no)
         except RegisteredDrug.DoesNotExist:
-            print("No registration no. for {self.object.product_name}")
+            print(f"No registration no. for {self.object.product_name}")
         try:
             self.deliveryitem_obj_list = DeliveryItem.objects.filter(item__cmsid=self.object.id)[:10]
         except DeliveryItem.DoesNotExist:
             self.deliveryitem_obj_list = None
             print(f"No delivery record for {self.object.product_name}")
+        # Try get first 3 ingredients from CMS Item
+        try:
+            related_ingredients = self.object.ingredient.split(',')[:3]
+        except:
+            related_ingredients = []
+        if len(related_ingredients) > 0:
+            self.drug_list = RegisteredDrug.objects.filter(
+                Q(ingredients__name__icontains=related_ingredients[0]) |
+                Q(name__icontains=related_ingredients[0])
+            ).order_by('name')[:100]
+        else:
+            self.drug_list = None
         data['drug_obj'] = self.drug_obj
         data['deliveryitem_obj_list'] = self.deliveryitem_obj_list
         data['cmsitem_obj'] = self.object
+        data['drug_list'] = self.drug_list
+        data['related_keyword'] = related_ingredients[0]
         return data
 
 class InventoryItemModalDetail(BSModalReadView, LoginRequiredMixin):
@@ -311,8 +325,12 @@ class NewInventoryItem(CreateView, LoginRequiredMixin):
     def form_valid(self, form):
         print(f'Form valid, {self.regdrug_obj} / {self.vendor_obj}')
         form.instance.updated_by = self.request.user
+        form.instance.version = 0
         form.instance.date_created = timezone.now()
         form.instance.last_updated = timezone.now()
+        session_id = self.request.session.session_key
+        uri = reverse('cmsinv:NewInventoryItem')
+        user = self.request.user.username
 
         if self.regdrug_obj:  # Assign cert_holder if RegisteredDrug
             cert_holder_data = {
@@ -325,10 +343,38 @@ class NewInventoryItem(CreateView, LoginRequiredMixin):
                 name=self.regdrug_obj.company.name.upper(),
                 defaults=cert_holder_data,
                 )
-            if created:
+            if created: # Update AuditLog
                 print(f"Cert Holder created: {cert_holder_obj}")
+
+                audit_str_dict = {**cert_holder_data,
+                    'dateCreated': datetime.strftime(cert_holder_obj.date_created, "%a %b %d %H:%M:%S %Z %Y"),
+                    'lastUpdated': datetime.strftime(cert_holder_obj.last_updated, "%a %b %d %H:%M:%S %Z %Y"),
+                    'type': 'Supplier',
+                }
+                sorted_dict = dict(sorted(audit_str_dict.items()))
+                audit_str = "||".join([
+                    ":=".join((underscore_to_camel(key), str(value))) for (key, value) in sorted_dict.items()
+                ])
+                
+                newAuditLogEntry = AuditLog(
+                    actor = user,
+                    class_name = 'SupplierManufacturer',
+                    event_name = 'INSERT',
+                    old_value = None,
+                    new_value = audit_str,
+                    persisted_object_version = 'null',
+                    persisted_object_id = supplier_obj.id,
+                    session_id = session_id,
+                    uri = uri,
+                )
+                newAuditLogEntry.save()
+                if newAuditLogEntry.id:
+                    print(f"New audit log entry added: {audit_str}")
+                else:
+                    print("Error writing audit log entry")
             form.instance.certificate_holder = cert_holder_obj
             form.instance.registration_no = self.regdrug_obj.reg_no
+            form.instance.inventory_item_type = InventoryItemType.objects.get(name='Drug')
 
         elif self.vendor_obj:  # Assign vendor if given
             vendor_data = {
@@ -357,7 +403,7 @@ class NewInventoryItem(CreateView, LoginRequiredMixin):
                 ])
                 
                 newAuditLogEntry = AuditLog(
-                    actor = cmsuser_obj.username,
+                    actor = user,
                     class_name = 'SupplierManufacturer',
                     event_name = 'INSERT',
                     old_value = None,
@@ -384,15 +430,15 @@ class NewInventoryItem(CreateView, LoginRequiredMixin):
             ":=".join((underscore_to_camel(key), str(value))) for (key, value) in sorted_dict.items()
         ])
         newAuditLogEntry = AuditLog(
-            actor = self.request.user.username,
+            actor = user,
             class_name = 'InventoryItem',
             event_name = 'INSERT',
             old_value = None,
             new_value = audit_str,
             persisted_object_version = 'null',
             persisted_object_id = self.object.id,
-            session_id = self.request.session.session_key,
-            uri = reverse('cmsinv:NewInventoryItem'),
+            session_id = session_id,
+            uri = uri,
         )
         newAuditLogEntry.save()
         if newAuditLogEntry.id:

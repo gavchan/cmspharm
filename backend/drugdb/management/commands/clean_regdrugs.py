@@ -67,7 +67,13 @@ class Command(BaseCommand):
                     if not created:
                         print(f"\nUpdated item #{item.id} for {record}")
                 else:
-                    item, created = Item.objects.get_or_create(reg_no=record.reg_no, defaults=item_data)
+                    try:
+                        item, created = Item.objects.get_or_create(reg_no=record.reg_no, defaults=item_data)
+                    except Exception as err:
+                        print(err)
+                        print(f"CMS: [{cmsitem.id}] {cmsitem.registration_no} RegDrug:[{record.id}] {record.reg_no}")
+                        print("Error processing {record.reg_no}. Aborting operation")
+                        sys.exit(1)
                     # Only update if not matching cmsitem.id, reg_no
                     if not created:
                         if item.cmsid != cmsitem.id:

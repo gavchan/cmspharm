@@ -13,10 +13,34 @@
         {% for vendor in vendor_list %}
     
         <tr>
-          <td>{{ vendor.name }}</td>
-          <td>{{ vendor.default_exp_category }}</td>
-          <td>{{ vendor.contact_person }}</td>
-          <td>{{ vendor.tel_main }}</td>
+          <td>
+            {% if perms.inventory.change_vendor %}
+            <button
+              type="button"
+              class="btn_modal_trigger btn btn-sm btn-link text-left"
+              data-id="{% url 'inventory:VendorUpdateModal' vendor.pk %}?next={{ request.path }}"
+            >{{ vendor.name }}&nbsp;<i class="fad fa-edit"></i>
+            </button>
+            {% endif %}
+            </td>
+          <td>
+            {% if vendor.default_exp_category %}
+            {{ vendor.default_exp_category.name }}
+            {% else %}-
+            {% endif %}
+          </td>
+          <td>
+            {% if vendor.contact_person %}
+            {{ vendor.contact_person }}
+            {% else %}-
+            {% endif %}
+          </td>
+          <td>
+            {% if vendor.tel_main %}
+            {{ vendor.tel_main }}
+            {% else %}-
+            {% endif %}
+          </td>
           <td class="text-right">
             {% if vendor.is_supplier and perms.inventory.add_deliveryorder %}
             <a
@@ -46,14 +70,7 @@
             </button> -->
             {% endif %}
             
-            {% if perms.inventory.change_vendor %}
-            <button
-              type="button"
-              class="btn_modal_trigger btn btn-sm btn-info"
-              data-id="{% url 'inventory:VendorUpdateModal' vendor.pk %}?next={{ request.path }}"
-            ><i class="fad fa-edit"></i>
-            </button>
-            {% endif %}
+            
           </td>
         </tr>
         {% endfor %}

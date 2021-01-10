@@ -137,7 +137,7 @@ class NewInventoryItemForm(ModelForm):
         super(NewInventoryItemForm, self).__init__(*args, **kwargs)
         # today_date = timezone.now().strftime('%Y-%m-%d')
         self.helper = FormHelper()
-        self.helper.render_unmentioned_fields = True
+        self.helper.render_unmentioned_fields = False
         self.helper.form_id = 'id-InventoryItemForm'
         self.helper.form_class = 'cmmForms'
         self.helper.form_method = 'post'
@@ -190,7 +190,7 @@ class NewInventoryItemForm(ModelForm):
             Row(
                 Column('product_name', css_class='form-group col-md-4 col-sm-6'),
                 Column('product_name_chinese', css_class='form-group col-md-4 col-sm-3'),
-                Column(UneditableField('inventory_item_type'), css_class='form-group col-md-4 col-sm-3'),
+                # Column(UneditableField('inventory_item_type'), css_class='form-group col-md-4 col-sm-3'),
                 # Column('certificate_holder', css_class='form-group col-md-4 col-sm-4'),
                 css_class='form-row mb-0',
             ),
@@ -260,9 +260,6 @@ class NewInventoryItemForm(ModelForm):
                 Column('mini_dispensary_unit', css_class='form-group col-sm-3'),
                 css_class='form-row mb-0',
             ),
-            Hidden('version', 0),
-            Hidden('inventory_item_type', 1),
-            # Hidden('registration_no', self.drug_reg_no),
             FormActions(
                 Submit('submit', 'Submit'),
                 Button(
@@ -275,7 +272,7 @@ class NewInventoryItemForm(ModelForm):
 
     class Meta:
         model = InventoryItem
-        exclude = ['id', 'registration_no', 'certificate_holder', 'stock_qty']
+        exclude = ['id', 'registration_no', 'certificate_holder', 'stock_qty', 'version', 'inventory_item_type']
         labels = {
             'dosage': 'Dosage (Q/T)',
             'frequency': 'Frequency (T/D)',

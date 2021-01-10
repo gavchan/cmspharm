@@ -19,7 +19,7 @@
             <td class="text-left" width="35%">
                 {% if listitem.item.cmsid %}
                 <button
-                    class="btn_modal_trigger btn btn-sm btn-link ml-0 pl-0"
+                    class="btn_modal_trigger btn btn-sm btn-link text-left ml-0 pl-0"
                     data-id="{% url 'cmsinv:InventoryItemQuickEditModal' listitem.item.cmsid %}?next={{ request.get_full_path }}"  
                 >{{ listitem.item.name }}&nbsp;<i class="fad fa-edit"></i>
                 </button>

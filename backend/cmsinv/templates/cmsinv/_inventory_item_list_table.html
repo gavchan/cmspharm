@@ -6,13 +6,13 @@
 <table class="table table-sm table-striped">
     <thead>
         <tr>
-            <th scope="col">Ref no.</th>
-            <th scope="col">Alias/CertHolder</th>
-            <th scope="col">Product/Label</th>
-            <th scope="col">Generic/Ingredients</th>
-            <th scope="col" class="text-center">Stock Qty</th>
-            <th scope="col" class="text-center">Cost (Avg)</th>
-            <th scope="col">Action</th>
+            <th scope="col" width="10%">Ref no.</th>
+            <th scope="col" width="20%">Alias/CertHolder</th>
+            <th scope="col" width="20%">Product/Label</th>
+            <th scope="col" width="26%">Generic/Ingredients</th>
+            <th scope="col" width="8%" class="text-center">Stock Qty</th>
+            <th scope="col" width="8%" class="text-center">Cost (Avg)</th>
+            <th scope="col" width="8%">Action</th>
         </tr>
     </thead>
     <tbody>
@@ -59,7 +59,7 @@
                 <button
                   class="btn_modal_trigger btn btn-sm btn-secondary"
                   data-id="{% url 'cmsinv:InventoryItemQuickEditModal' cmsitem.pk %}?next={{ request.path }}"  
-                ><i class="fad fa-edit"></i>
+                ><i class="far fa-file-edit"></i>
                 </button>
             </td>
         </tr>

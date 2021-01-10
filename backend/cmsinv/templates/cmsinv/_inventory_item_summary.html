@@ -67,7 +67,9 @@
                 Alias
             </div>
             <div class="col-sm-5">
-                {{ cmsitem_obj.alias }}
+                {% if cmsitem_obj.alias %}{{ cmsitem_obj.alias }}
+                {% else %}-
+                {% endif %}
             </div>
             <div class="col-sm-2">
                 Standard

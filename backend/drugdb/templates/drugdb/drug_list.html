@@ -121,52 +121,14 @@
               </a>
             </div>
         </div>
-        
         {% if drug_list %}
-        <table class="table table-sm table-striped">
-            <thead>
-                <tr>
-                    <th scope="col" width="8%">ID</th>
-                    <th scope="col" width="10%">Reg no.</th>
-                    <th scope="col" width="40%">Product name / Ingredients</th>
-                    <th scope="col" width="32%">Company</th>
-                    <th scope="col" class="text-center" width="10%">Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for drug in drug_list %}
-                
-                <tr>
-                    <td>{{ drug.id }}</td>
-                    <td>{{ drug.reg_no}}</td>
-                    <td><b>{{ drug.name }}</b>
-                    <br>{{ drug.ingredients_list }}</td>
-                    <td>{{ drug.company }}</td>
-                    <td class="text-center">
-                        <a href="{% url 'drugdb:DrugDetailMatch' drug.reg_no %}"
-                        class="btn btn-sm btn-primary"
-                        ><i class="fad fa-file-search"></i>
-                        </a>
-                        {% if not drug.itemid %}
-                        <a href="{% url 'cmsinv:NewInventoryItem' %}?reg_no={{ drug.reg_no }}"
-                        class="btn btn-sm btn-success"
-                        ><i class="far fa-layer-plus"></i>
-                        </a>
-                        {% endif %}
-                    </td>
-                </tr>
-
-                {% endfor %}
-
-            </tbody>
-        </table>
+        {% include 'drugdb/_regdrug_list_table.html' %}
 
         {% else %}
+
+        <p>No drugs in list</p>
         
-        <p>No drugs in database</p>
-
         {% endif %}
-
     </div>
 </div>
 {% endblock %}

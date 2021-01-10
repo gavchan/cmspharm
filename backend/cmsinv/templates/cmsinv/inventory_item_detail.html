@@ -18,8 +18,29 @@
     {% include 'cmsinv/_inventory_item_summary.html' %}
     {% include 'drugdb/_regdrug_summary.html' %}
     {% include 'cmsinv/_deliveryitem_list_table.html' %}
+    {% if drug_list %}
+    <div class="card shadow">
+        <div class="card-header">
+            Related Registered Drugs
+            {% if related_keyword %}
+            (matching '{{ related_keyword }}')
+            {% endif %}
+        </div>
+        <div class="card-body">
+            {% include 'drugdb/_regdrug_list_table.html' %}
+        </div>
+    </div>
+    {% else %}
+
+    <div class="alert alert-warning d-flex justify-content-between align-items-center" role="alert">
+      No related registered drugs matching '{{ related_keyword }}'
+    </div>
+    {% endif %}
+
   </div>
 </div>
+
+
 
 {% endblock %}
 
