@@ -198,7 +198,14 @@
                 class="table-secondary text-muted"
                 {% endif %}
             >
-                <td>{{ item_obj.name }}</td>
+                <td>
+                  <button
+                        type="button"
+                        class="btn_modal_trigger btn btn-sm btn-link text-left"
+                        data-id="{% url 'inventory:ItemUpdateModal' item_obj.pk %}"
+                    >{{ item_obj.name }}&nbsp;<i class="fad fa-edit"></i>
+                    </button>
+                </td>
                 <td>{{ item_obj.note }}</td>
                 <td>{{ item_obj.item_type.name}}
                     {% if not item_obj.is_active %}
@@ -208,12 +215,11 @@
                 <td>{{ item_obj.reg_no }}</td>
                 <td>{{ item_obj.cmsid }}</td>
                 <td>
-                    <button
-                        type="button"
-                        class="btn_modal_trigger btn btn-sm btn-primary"
-                        data-id="{% url 'inventory:ItemUpdateModal' item_obj.pk %}"
-                    ><i class="fad fa-file-alt"></i>
-                    </button>
+                  <a 
+                    class="btn btn-sm btn-info"
+                    href="{% url 'inventory:ItemDetail' item_obj.pk %}">
+                  ><i class="fad fa-file"></i>
+                 </a>   
                 </td>
             </tr>
 
