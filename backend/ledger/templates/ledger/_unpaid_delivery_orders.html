@@ -38,10 +38,12 @@
                         class="btn btn-sm btn-info"
                         ><i class="fad fa-box-alt"></i>
                         </a>
+                        {% if not delivery_obj.is_paid and not delivery_obj.cms_synced %}
                         <a href="{% url 'ledger:ExpenseAddDeliveryOrder' expense_obj.id delivery_obj.id %}" 
                           class="btn btn-sm btn-primary"
                         ><i class="fal fa-layer-plus"></i>
                         </a>
+                        {% endif %}
                     </td>
                 </tr>
                 {% endif %}

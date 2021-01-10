@@ -358,6 +358,8 @@ class ExpenseDetail(DetailView, LoginRequiredMixin, PermissionRequiredMixin):
                 'invoice_date': order.invoice_date,
                 'received_date': order.received_date,
                 'amount': order.amount,
+                'is_paid': order.is_paid,
+                'cms_synced': order.cms_synced,
             }
             delivery_detail['items'] = []
             count = 0
