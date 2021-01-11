@@ -557,7 +557,7 @@ class DeliveryOrderList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
             object_list = object_list.filter(received_date__gte=self.begin)
         if self.end:
             object_list = object_list.filter(received_date__lte=self.end)
-        return object_list
+        return object_list.order_by('-last_updated')
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
