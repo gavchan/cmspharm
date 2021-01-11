@@ -1,8 +1,9 @@
 <table class="table table-hover table-sm table-striped">
     <thead>
         <tr>
+            <th scope="col">Last updated</th>
             <th scope="col">Invoice date</th>
-            <th scope="col">Received date</th>
+            <th scope="col">Invoice no.</th>
             <th scope="col">Vendor</th>
             <th scope="col" class="text-right">Amount</th>
             <th scope="col" class="text-center" colspan="2">Status</th>
@@ -13,8 +14,9 @@
         {% for delivery_obj in deliveryorder_list %}
         
         <tr>
+            <td>{{ delivery_obj.last_updated|date:"d-m-y H:i" }}</td>
             <td>{{ delivery_obj.invoice_date|date:"d-m-y" }}</td>
-            <td>{{ delivery_obj.received_date|date:"d-m-y" }}</td>
+            <td>{{ delivery_obj.invoice_no }}</td>
             <td>{{ delivery_obj.vendor.name}}</td>
             <td class="text-right">{{ delivery_obj.amount }}</td>
             <td class="text-right">
