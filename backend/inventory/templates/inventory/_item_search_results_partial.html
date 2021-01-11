@@ -6,7 +6,7 @@
             <th scope="col">Note</th>
             <th scope="col">Reg no.</th>
             <th scope="col">CMS id</th>
-            <th scope="col">Action</th>
+            <th scope="col" class="text-right">Action</th>
         </tr>
     </thead>
     <tbody>
@@ -31,10 +31,11 @@
             <td>
                 {{ item_obj.cmsid }}
             </td>
-            <td>
-                <a type="button"
+            <td class="text-right">
+                <a
+                    type="button"
                     href="{% url 'inventory:DeliveryOrderAddDeliveryItem' delivery_id %}?item={{ item_obj.id }}&next={{ request.path }}" 
-                    class="btn_modal_trigger btn btn-sm btn-info"
+                    class="btn btn-sm btn-primary"
                 ><i class="fad fa-layer-plus"></i>
                 </a>
             </td>

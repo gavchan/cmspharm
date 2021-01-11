@@ -10,14 +10,11 @@
       <div class="d-flex justify-content-between align-items-center">
         Add New Item
         <span>
-          <button id="btn_save_details" class="btn btn-sm btn-primary">
-            Save
-          </button>
           <a
-            href="{% url 'home' %}"
+            href="#btn_cancel"
             id="btn_cancel"
             class="btn btn-sm btn-secondary"
-          >
+            onclick="javascript:history.go(-1);">
             Cancel
           </a>
         </span>
@@ -47,16 +44,4 @@
     </div>
 </div>
 
-{% endblock %}
-
-{% block extrascripts %}
-<script type="text/javascript">
-    $(document).ready(function () {
-
-      $("#btn_save_details").click(function() {
-        $('#form').submit()
-      });
-
-    });
-</script>
 {% endblock %}

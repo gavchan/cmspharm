@@ -257,6 +257,14 @@ class NewDeliveryOrderForm(ModelForm):
                 css_class="form-row",            
             ),
             FormActions(
+                HTML("""
+                <button type="button" class="btn btn-warning" id="btn_set_received">
+                    Received=Invoice
+                </button>
+                <button class="btn btn-warning" type="button" id="btn_due1m">
+                    Due=+1m
+                </button>
+                        """),
                 Submit('submit', 'Submit'),
                 Button(
                     'back', 'Cancel',
@@ -348,6 +356,9 @@ class NewDeliveryOrderModalForm(BSModalForm):
             ),
             FormActions(
                 Submit('submit', 'Submit'),
+                HTML("""
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                """),
             ),
         )
 
@@ -423,6 +434,9 @@ class DeliveryOrderUpdateModalForm(BSModalForm):
             Hidden('version', self.instance.version + 1),
             FormActions(
                 Submit('submit', 'Submit'),
+                HTML("""
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                """),
             ),
         )
 
@@ -556,11 +570,6 @@ class DeliveryItemUpdateModalForm(BSModalForm):
         model = DeliveryItem
         exclude = ['id']
 
-class NewItemFromVendorForm(ModelForm):
-    class Meta:
-        model = InventoryItem
-        exclude = ['id', 'version', 'date_created',]
-
 class ItemUpdateModalForm(BSModalForm):
 
     def __init__(self, *args, **kwargs):
@@ -605,11 +614,69 @@ class ItemUpdateModalForm(BSModalForm):
             Hidden('version', self.instance.version + 1),
             FormActions(
                 Submit('submit', 'Submit'),
-                Button(
-                    'back', 'Cancel',
-                    css_class='btn-light',
-                    onclick="javascript:history.go(-1);"
-                ),
+                HTML("""
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                """),
+            ),
+        )
+
+    class Meta:
+        model = Item
+        exclude = ['id', 'date_created', 'last_updated', 'updated_by', ]
+
+class NewItemModalForm(BSModalForm):
+
+    def __init__(self, *args, **kwargs):
+        self.drug_obj = kwargs.pop('drug_obj', None)
+        self.vendor_obj = kwargs.pop('vendor_obj', None)
+        self.next_url = kwargs.pop('next_url')
+        super(NewItemModalForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = True
+        self.helper.render_unmentioned_fields = False
+        self.helper.form_id = 'id-NewItemForm'
+        self.helper.form_class = 'cmmForms'
+        self.helper.form_method = 'post'
+        if self.next_url:
+            action_url = "%s?next=%s" % (
+                reverse('inventory:NewItemModal'),
+                self.next_url
+            )
+        else:
+            action_url = reverse('inventory:NewItemModal')
+        self.helper.form_action = action_url
+        self.initial['active'] = True
+        self.initial['item_type'] = ItemType.objects.get(name='Consumable').id
+        self.initial['category'] = Category.objects.get(name='Consumable').id
+        try:
+            self.initial['vendor'] = self.vendor_obj.id
+        except:
+            pass
+        self.helper.layout = Layout(
+            Hidden('version', '1'),
+            Row(
+                Column('name', css_class='form-group col-md-8'),
+                Column(UneditableField('cmsid'), css_class='form-group col-md-4'),
+                css_class='form-row',
+            ),
+            Row(
+                Column('note', css_class='form-group col-md-8 mb-0'),
+                Column(UneditableField('reg_no'), css_class='form-group col-md-4'),
+                css_class='form-row',
+            ),
+            Row(
+                Column('vendor', css_class='form-group col-md-4 mb-0'),
+                Column('category', css_class='form-group col-md-4 mb-0'),
+                Column(UneditableField('item_type'), css_class='form-group col-md-4 mb-0'),
+                css_class="form-row",
+            ),
+            Row(Column('is_active'), css_class='form-row'),
+            Hidden('item_type',  ItemType.objects.get(name='Consumable').id),
+            FormActions(
+                Submit('submit', 'Submit'),
+                HTML("""
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                """),
             ),
         )
 
@@ -618,12 +685,13 @@ class ItemUpdateModalForm(BSModalForm):
         exclude = ['id', 'date_created', 'last_updated', 'updated_by', ]
 
 
+
 class NewItemForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         self.drug_obj = kwargs.pop('drug_obj', None)
         self.vendor_obj = kwargs.pop('vendor_obj', None)
-        print(f"args={args}; kwargs={kwargs}")
+        self.next_url = kwargs.pop('next_url')
         super(NewItemForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_tag = True
@@ -631,17 +699,21 @@ class NewItemForm(ModelForm):
         self.helper.form_id = 'id-NewItemForm'
         self.helper.form_class = 'cmmForms'
         self.helper.form_method = 'post'
-        self.helper.form_action = reverse(
-            'inventory:NewItem'
+        if self.next_url:
+            action_url = "%s?next=%s" % (
+                reverse('inventory:NewItem'),
+                self.next_url
             )
+        else:
+            action_url = reverse('inventory:NewItem')
+        self.helper.form_action = action_url
         self.initial['active'] = True
         self.initial['item_type'] = ItemType.objects.get(name='Consumable').id
         self.initial['category'] = Category.objects.get(name='Consumable').id
         try:
             self.initial['vendor'] = self.vendor_obj.id
         except:
-            print('No vendor id')
-        print(self.initial['item_type'])
+            pass
         self.helper.layout = Layout(
             Hidden('version', '1'),
             Row(

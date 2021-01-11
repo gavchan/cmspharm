@@ -27,7 +27,7 @@ from cmsinv.models import InventoryItem, InventoryItemType
 from .forms import (
     NewCategoryForm, CategoryUpdateForm,
     NewVendorForm, NewVendorModalForm, VendorUpdateForm, VendorUpdateModalForm,
-    ItemUpdateModalForm, NewItemForm,
+    ItemUpdateModalForm, NewItemForm, NewItemModalForm,
     NewDeliveryOrderForm, NewDeliveryOrderModalForm, DeliveryOrderUpdateModalForm,
     DeliveryOrderAddDeliveryItemForm, DeliveryItemUpdateModalForm,
 )
@@ -259,39 +259,52 @@ class NewItem(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
         kwargs.update({
             'vendor_obj': self.vendor_obj,
             'drug_obj': self.drug_obj,
+            'next_url': self.next_url,
             })
         return kwargs
 
-# class NewItemModal(BSModalCreateView, LoginRequiredMixin, PermissionRequiredMixin):
-#     """Add new drug to items"""
-#     permission_required = ('inventory.add_item')
-#     template_name = 'inventory/new_item_modal.html'
-#     form_class = NewItemModalForm
-#     drug_obj = None
-#     success_message = 'Success: Drug added'
+class NewItemModal(BSModalCreateView, LoginRequiredMixin, PermissionRequiredMixin):
+    """Add new drug to items"""
+    permission_required = ('inventory.add_item')
+    template_name = 'inventory/new_item_modal.html'
+    form_class = NewItemModalForm
+    success_message = 'Success: Item added'
+    drug_obj = None
+    vendor_obj = None
+    next_url = None
 
-#     def dispatch(self, request, *args, **kwargs):
-#        if 'drug_id' in kwargs:
-#             self.drug_obj = RegisteredDrug.objects.get(id=kwargs['drug_id'])
-#             print(f"Retrieved {self.drug_obj}")
-#        return super().dispatch(request, *args, **kwargs)
+    def dispatch(self, request, *args, **kwargs):
+        if self.request.GET.get('vendor'):
+            self.vendor_obj = Vendor.objects.get(id=self.request.GET.get('vendor')) or None
+        if self.request.GET.get('regno'):
+            self.drug_obj = RegisteredDrug.objects.get(id=self.request.GET.get('regno')) or None
+        self.next_url = self.request.GET.get('next') or None
+        return super().dispatch(request, *args, **kwargs)
 
-#     def get_context_data(self, **kwargs):
-#         data = super().get_context_data(**kwargs)
-#         if self.drug_obj:
-#             data['drug_obj'] = self.drug_obj
-#         return data
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        if self.drug_obj:
+            data['drug_obj'] = self.drug_obj
+        if self.vendor_obj:
+            data['vendor_obj'] = self.vendor_obj
+        return data
 
-#     def get_success_url(self):
-#         return reverse('inventory:ItemList')
+    def get_success_url(self):
+        try:
+            resolve(self.next_url)
+            return self.next_url
+        except Resolver404: 
+            return reverse('inventory:ItemList')
+        return reverse('inventory:ItemList')
 
-#     def get_form_kwargs(self):
-#         kwargs = super(NewItemModal, self).get_form_kwargs()
-#         kwargs.update({
-#             'drug_obj': self.drug_obj,
-#             })
-#         print(kwargs)
-#         return kwargs
+    def get_form_kwargs(self):
+        kwargs = super(NewItemModal, self).get_form_kwargs()
+        kwargs.update({
+            'vendor_obj': self.vendor_obj,
+            'drug_obj': self.drug_obj,
+            'next_url': self.next_url,
+            })
+        return kwargs
 
 
 # class NewItemFromVendor(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
