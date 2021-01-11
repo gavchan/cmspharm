@@ -261,7 +261,7 @@ class DeliveryItem(models.Model):
     items_unit = models.CharField(max_length=10, choices=ITEMS_UNIT_CHOICES, blank=True, null=True)
     batch_num = models.CharField(max_length=100, blank=True, null=True)
     other_ref = models.CharField(max_length=100, blank=True, null=True)
-    expiry_month = models.CharField(verbose_name='Expiry (YYYYMM)',max_length=8, default="", blank=True, null=True)
+    expiry_month = models.CharField(verbose_name='Expiry (YYYYMM)', max_length=8, default="", blank=True, null=True)
     is_sample = models.BooleanField(default=False)
     # expiry_month: format of yyyymm, or yyyymmdd; to supercede expiry_date
     version = models.PositiveIntegerField(default=1)

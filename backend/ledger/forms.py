@@ -3,6 +3,7 @@ from django import forms
 from django.forms import ModelForm
 from django.conf import settings
 from django.urls import reverse
+from django.utils import timezone
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import (
     Layout, Row, Column, Div, HTML, Submit, Button, Hidden,
@@ -105,7 +106,10 @@ class ExpenseCategoryUpdateForm(ModelForm):
 class NewExpenseSelectVendorForm(ModelForm):
 
     invoice_date = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
-    expected_date = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
+    expected_date = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'})
+        )
 
     def __init__(self, *args, **kwargs):
         self.vendor_obj = kwargs.pop('vendor_obj', None)
@@ -118,8 +122,8 @@ class NewExpenseSelectVendorForm(ModelForm):
         self.helper.form_method = 'post'
         self.helper.form_action = reverse(
             'ledger:NewExpenseSelectVendor')
-        #self.initial['entry_date'] = date.today().strftime('%Y-%m-%d')
-        today_date = date.today().strftime('%Y-%m-%d')
+        #self.initial['entry_date'] = timezone.now().strftime('%Y-%m-%d')
+        today_date = timezone.now().strftime('%Y-%m-%d')
         self.initial['payment_method'] = PaymentMethod.objects.get(
             name='Cheque').pk
         self.initial['version'] = 1
@@ -198,7 +202,10 @@ class ExpenseUpdateForm(ModelForm):
 
     entry_date = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
     invoice_date = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
-    expected_date = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
+    expected_date = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'})
+        )
     
     def __init__(self, *args, **kwargs):
         # self.request = kwargs.pop('request', None)
@@ -289,7 +296,10 @@ class ExpenseUpdateForm(ModelForm):
 class NewExpenseForm(ModelForm):
 
     invoice_date = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
-    expected_date = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
+    expected_date = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'})
+        )
 
     def __init__(self, *args, **kwargs):
         self.vendor_obj = kwargs.pop('vendor_obj', None)
@@ -302,8 +312,8 @@ class NewExpenseForm(ModelForm):
         self.helper.form_method = 'post'
         self.helper.form_action = reverse(
             'ledger:NewExpense')
-        #self.initial['entry_date'] = date.today().strftime('%Y-%m-%d')
-        today_date = date.today().strftime('%Y-%m-%d')
+        #self.initial['entry_date'] = timezone.now().strftime('%Y-%m-%d')
+        today_date = timezone.now().strftime('%Y-%m-%d')
         self.initial['payment_method'] = PaymentMethod.objects.get(
             name='Cheque').pk
         self.initial['version'] = 1
@@ -383,7 +393,10 @@ class NewExpenseForm(ModelForm):
 class NewExpenseModalForm(BSModalForm):
 
     invoice_date = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
-    expected_date = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
+    expected_date = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'})
+        )
     def __init__(self, *args, **kwargs):
         self.vendor_obj = kwargs.pop('vendor_obj', None)
 
@@ -395,8 +408,8 @@ class NewExpenseModalForm(BSModalForm):
         self.helper.form_method = 'post'
         self.helper.form_action = reverse(
             'ledger:NewExpenseModal')
-        #self.initial['entry_date'] = date.today().strftime('%Y-%m-%d')
-        today_date = date.today().strftime('%Y-%m-%d')
+        #self.initial['entry_date'] = timezone.now().strftime('%Y-%m-%d')
+        today_date = timezone.now().strftime('%Y-%m-%d')
         self.initial['payment_method'] = PaymentMethod.objects.get(
             name='Cheque').pk
         self.initial['version'] = 1
@@ -472,7 +485,10 @@ class ExpenseUpdateModalForm(BSModalForm):
 
     entry_date = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
     invoice_date = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
-    expected_date = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
+    expected_date = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'})
+        )
 
     def __init__(self, *args, **kwargs):
         # self.request = kwargs.pop('request', None)
@@ -560,7 +576,10 @@ class ExpenseUpdateModalForm(BSModalForm):
 
 class DeliveryPaymentModalForm(BSModalForm):
 
-    expected_date = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
+    expected_date = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'})
+        )
     def __init__(self, *args, **kwargs):
         self.delivery_obj = kwargs.pop('delivery_obj', None)
         super(DeliveryPaymentModalForm, self).__init__(*args, **kwargs)
@@ -575,8 +594,8 @@ class DeliveryPaymentModalForm(BSModalForm):
         self.helper.form_method = 'post'
         self.helper.form_action = reverse(
             'ledger:DeliveryPaymentModal', args=(self.delivery_obj.id,))
-        #self.initial['entry_date'] = date.today().strftime('%Y-%m-%d')
-        today_date = date.today().strftime('%Y-%m-%d')
+        #self.initial['entry_date'] = timezone.now().strftime('%Y-%m-%d')
+        today_date = timezone.now().strftime('%Y-%m-%d')
         self.exp_category_drug = ExpenseCategory.objects.get(code='1').id
         self.initial['entry_date'] = today_date
         self.initial['payment_method'] = PaymentMethod.objects.get(

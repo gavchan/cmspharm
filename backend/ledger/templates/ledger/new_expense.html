@@ -11,16 +11,13 @@
       <div class="d-flex justify-content-between align-items-center">
         Add New Expense
         <span>
-          <a href="{% url 'inventory:NewVendor' %}" class="btn btn-sm btn-info">New Vendor</a>
-          <button id="btn_save_details" class="btn btn-sm btn-primary">
-            Save
-          </button>
+          {% if not vendor_obj %}
+          <a href="{% url 'inventory:NewVendor' %}?next={{ request.get_full_path }}" class="btn btn-sm btn-info">New Vendor</a>
+          {% endif %}
           <a
-            href="{% url 'home' %}"
+            href="javascript: history.go(-1)"
             id="btn_cancel"
-            class="btn btn-sm btn-secondary"
-          >
-            Cancel
+          ><span aria-hidden="true">&times;</span>
           </a>
         </span>
       </div>

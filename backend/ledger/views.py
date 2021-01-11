@@ -1,4 +1,3 @@
-from datetime import date
 import csv
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
@@ -6,7 +5,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.contrib.auth.decorators import login_required, permission_required
 from django.urls import reverse, reverse_lazy, resolve, Resolver404
 from django.db.models import Q, Sum
-
+from django.utils import timezone
 from django.template.loader import render_to_string
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -90,7 +89,7 @@ class ExpenseList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
     paginate_by = 20
     last_query = ''
     last_query_count = 0
-    today =  date.today().strftime('%Y-%m-%d')
+    today =  timezone.now().strftime('%Y-%m-%d')
     begin = ''
     end = ''
 
@@ -206,7 +205,7 @@ class ExpenseDeleteModal(BSModalDeleteView, LoginRequiredMixin, PermissionRequir
 
 #     def get_context_data(self, **kwargs):
 #         data = super().get_context_data(**kwargs)
-#         data['today'] = date.today().strftime('%Y-%m-%d')
+#         data['today'] = timezone.now().strftime('%Y-%m-%d')
 #         data['vendor_obj'] = self.vendor_obj
 #         return data
 
@@ -235,7 +234,7 @@ class NewExpense(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
-        data['today'] = date.today().strftime('%Y-%m-%d')
+        data['today'] = timezone.now().strftime('%Y-%m-%d')
         data['vendor_obj'] = self.vendor_obj
         return data
 
@@ -264,7 +263,7 @@ class NewExpenseModal(BSModalCreateView, LoginRequiredMixin, PermissionRequiredM
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
-        data['today'] = date.today().strftime('%Y-%m-%d')
+        data['today'] = timezone.now().strftime('%Y-%m-%d')
         data['vendor_obj'] = self.vendor_obj
         return data
 
@@ -329,7 +328,7 @@ class DeliveryPaymentModal(BSModalCreateView, LoginRequiredMixin, PermissionRequ
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
-        data['today'] = date.today().strftime('%Y-%m-%d')
+        data['today'] = timezone.now().strftime('%Y-%m-%d')
         data['delivery_obj'] = self.delivery_obj
         return data
 
@@ -375,7 +374,7 @@ class ExpenseDetail(DetailView, LoginRequiredMixin, PermissionRequiredMixin):
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
-        data['today'] = date.today().strftime('%Y-%m-%d')
+        data['today'] = timezone.now().strftime('%Y-%m-%d')
         detail_list = [] 
         for order in self.deliveryorder_list.all():
             delivery_detail = {

@@ -43,7 +43,7 @@ class Command(BaseCommand):
         payment_ref = line[5]
         desc = line[6]
         payment_method_raw = line[7]
-        today = date.today().strftime('%Y-%m-%d')
+        today = timezone.now().strftime('%Y-%m-%d')
         other_ref = f"Imported on {today}"
         
         # Process Expense Category

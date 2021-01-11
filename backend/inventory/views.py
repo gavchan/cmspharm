@@ -31,7 +31,7 @@ from .forms import (
     NewDeliveryOrderForm, NewDeliveryOrderModalForm, DeliveryOrderUpdateModalForm,
     DeliveryOrderAddDeliveryItemForm, DeliveryItemUpdateModalForm,
 )
-from datetime import date
+from django.utils import timezone
 
 class CategoryList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
     """List of inventory categories"""
@@ -427,7 +427,6 @@ class NewVendor(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
 
     def dispatch(self, request, *args, **kwargs):
         self.next_url = request.GET.get('next')
-        print(self.next_url)
         return super().dispatch(request, *args, **kwargs)
     
     def get_form_kwargs(self):
@@ -620,7 +619,7 @@ class NewDeliveryOrder(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
-        data['today'] = date.today().strftime('%Y-%m-%d')
+        data['today'] = timezone.now().strftime('%Y-%m-%d')
         data['vendor_obj'] = self.vendor_obj
         return data
 
@@ -655,7 +654,7 @@ class NewDeliveryOrderModal(BSModalCreateView, LoginRequiredMixin, PermissionReq
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
-        data['today'] = date.today().strftime('%Y-%m-%d')
+        data['today'] = timezone.now().strftime('%Y-%m-%d')
         data['vendor_obj'] = self.vendor_obj
         return data
 
@@ -1015,21 +1014,21 @@ class DeliveryItemList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
             object_list = DeliveryItem.objects.filter(
                 Q(item__name__icontains=query)|
                 Q(item__reg_no__icontains=query)
-            ).order_by('-delivery_order__received_date')
+            ).order_by('-delivery_order__invoice_date')
             self.last_query_count = object_list.count
         else:
             self.last_query = ''
-            object_list = DeliveryItem.objects.all().order_by('-delivery_order__received_date')
+            object_list = DeliveryItem.objects.all().order_by('-delivery_order__invoice_date')
             self.last_query_count = object_list.count
         if self.begin:
-            object_list = object_list.filter(received_date__gte=self.begin)
+            object_list = object_list.filter(delivery_order__invoice_date__gte=self.begin)
         if self.end:
-            object_list = object_list.filter(received_date__lte=self.end)
+            object_list = object_list.filter(delivery_order__invoice_date__lte=self.end)
         return object_list
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
-        data['today'] = date.today().strftime('%Y-%m-%d')
+        data['today'] = timezone.now().strftime('%Y-%m-%d')
         data['last_query'] = self.last_query
         data['last_query_count'] = self.last_query_count
         data['disp_type'] = self.disp_type

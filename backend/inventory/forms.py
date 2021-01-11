@@ -1,6 +1,7 @@
 from django import forms
 from django.forms import ModelForm
 from django.urls import reverse
+from django.utils import timezone
 from django.contrib.auth.models import User
 from .models import Category, Vendor, Item, DeliveryOrder, DeliveryItem, ItemType
 from cmsinv.models import InventoryItem
@@ -18,7 +19,7 @@ from crispy_forms.bootstrap import (
     )
 from bootstrap_datepicker_plus import DatePickerInput
 from bootstrap_modal_forms.forms import BSModalForm
-from datetime import date
+# from datetime import date
 
 class NewCategoryForm(ModelForm):
     class Meta:
@@ -101,7 +102,7 @@ class NewVendorForm(ModelForm):
                 reverse('inventory:NewVendor'), self.next_url
             )
         else:
-            self.next_url = reverse('inventory:NewVendor')
+            url_with_query = reverse('inventory:NewVendor')
         self.helper.form_action = url_with_query
         self.helper.layout = Layout(
             Row(
@@ -210,7 +211,10 @@ class VendorUpdateModalForm(BSModalForm):
 class NewDeliveryOrderForm(ModelForm):
     received_date = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
     invoice_date = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
-    due_date = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
+    due_date = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'})
+        )
 
     def __init__(self, *args, **kwargs):
         self.vendor_obj= kwargs.pop('vendor_obj', None)
@@ -222,8 +226,8 @@ class NewDeliveryOrderForm(ModelForm):
         self.helper.form_method = 'post'
         self.helper.form_action = reverse(
             'inventory:NewDeliveryOrder')
-        #self.initial['entry_date'] = date.today().strftime('%Y-%m-%d')
-        today_date = date.today().strftime('%Y-%m-%d')
+        #self.initial['entry_date'] = timezone.now().strftime('%Y-%m-%d')
+        today_date = timezone.now().strftime('%Y-%m-%d')
         self.initial['received_date'] = today_date
         self.initial['payment_method'] = PaymentMethod.objects.get(name='Cheque').pk
         self.initial['version'] = 1
@@ -319,8 +323,8 @@ class NewDeliveryOrderModalForm(BSModalForm):
         self.helper.form_method = 'post'
         self.helper.form_action = reverse(
             'inventory:NewDeliveryOrderModal')
-        #self.initial['entry_date'] = date.today().strftime('%Y-%m-%d')
-        today_date = date.today().strftime('%Y-%m-%d')
+        #self.initial['entry_date'] = timezone.now().strftime('%Y-%m-%d')
+        today_date = timezone.now().strftime('%Y-%m-%d')
         self.initial['received_date'] = today_date
         self.initial['payment_method'] = PaymentMethod.objects.get(name='Cheque').pk
         self.initial['version'] = 1
@@ -396,7 +400,10 @@ class DeliveryOrderUpdateModalForm(BSModalForm):
     
     received_date = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
     invoice_date = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
-    due_date = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
+    due_date = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'})
+        )
     
     def __init__(self, *args, **kwargs):
         super(DeliveryOrderUpdateModalForm, self).__init__(*args, **kwargs)
@@ -471,7 +478,9 @@ class DeliveryOrderUpdateModalForm(BSModalForm):
                 }
 class DeliveryItemUpdateModalForm(BSModalForm):
 
-    expiry_month = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'YYYYMM'}))
+    expiry_month = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={'placeholder': 'YYYYMM'}))
     
     def __init__(self, *args, **kwargs):
         self.delivery_obj = kwargs.pop('delivery_obj', None)
@@ -750,7 +759,10 @@ class NewItemForm(ModelForm):
 
 class DeliveryOrderAddDeliveryItemForm(ModelForm):
 
-    expiry_month = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'YYYYMM'}))
+    expiry_month = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={'placeholder': 'YYYYMM'})
+        )
 
     def __init__(self, *args, **kwargs):
         self.delivery_obj = kwargs.pop('delivery_obj', None)
