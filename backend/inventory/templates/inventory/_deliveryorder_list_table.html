@@ -17,7 +17,13 @@
             <td>{{ delivery_obj.last_updated|date:"d-m-y H:i" }}</td>
             <td>{{ delivery_obj.invoice_date|date:"d-m-y" }}</td>
             <td>{{ delivery_obj.invoice_no }}</td>
-            <td>{{ delivery_obj.vendor.name}}</td>
+            <td>
+                <a 
+                    class="btn-link"
+                    href="{% url 'inventory:VendorDetail' delivery_obj.vendor.id %}?next={{ request.path }}">
+                {{ delivery_obj.vendor.name}}
+                </a>
+            </td>
             <td class="text-right">{{ delivery_obj.amount }}</td>
             <td class="text-right">
                 {% if delivery_obj.is_paid %}

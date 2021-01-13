@@ -1,0 +1,148 @@
+{% if vendor_obj %}
+<div class="card shadow mb-2">
+    <div class="card-header">
+      <div class="d-flex justify-content-between align-items-center">
+        <span>
+          {% if vendor_obj.is_supplier %}
+          <i class="fas fa-layer-group"></i>&nbsp;Supplier: {{ vendor_obj.name }}
+          {% else %}
+          <i class="fas fa-layer-group"></i>&nbsp;Vendor: {{ vendor_obj.name }}
+          {% endif %}
+        </span>
+        <span>
+          {% if vendor_obj.is_supplier and perms.inventory.add_deliveryorder %}
+          <a
+            href="{% url 'inventory:NewDeliveryOrder' %}?vendor={{ vendor.id }}&next={{ request.path }}"
+            class="btn btn-sm btn-success"
+          ><i class="fal fa-box-open"></i>
+          </a>
+          <!-- <button
+            type="button"
+            class="btn_modal_trigger btn btn-sm btn-success"
+            data-id="{% url 'inventory:NewDeliveryOrder' %}?vendor={{ vendor.id }}"
+          ><i class="fad fa-box-alt"></i>
+          </button> -->
+          {% endif %}
+          {% if perms.ledger.add_expense %}
+            <a
+              href="{% url 'ledger:NewExpense' %}?vendor={{ vendor.id }}&next={{ request.path }}"
+              class="btn btn-sm btn-primary"
+            ><i class="far fa-file-invoice-dollar"></i>
+            </a>
+            <!-- <button 
+              type="button"
+              class="btn_modal_trigger btn btn-sm btn-primary"
+              data-id="{% url 'ledger:NewExpense' %}?vendor={{ vendor.id }}"  
+            >
+            </button> -->
+            {% endif %}
+          <button
+            class="btn_modal_trigger btn btn-sm btn-secondary text-white"
+            data-id="{% url 'inventory:VendorUpdateModal' vendor_obj.pk %}"
+          >Edit
+          </button>
+        </span>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="row mb-0">
+        <div class="col-sm-2">Name</div>
+        <div class="col-sm-5">
+          {{ vendor_obj.name }}
+          {% if not vendor_obj.is_active %}
+          &nbsp;<span class="badge badge-danger">Inactive</span>
+          {% endif %}
+        </div>
+        <div class="col-sm-2">Last Updated</div>
+        <div class="col-sm-3">{{ vendor_obj.last_updated|date:'d-m-Y H:i' }}</div>
+      </div>
+      <div class="row mb-0">
+        <div class="col-sm-2">Alias</div>
+        <div class="col-sm-5">
+          {% if vendor_obj.alias %}{{ vendor_obj.alias }}
+          {% else %}-
+          {% endif %}
+        </div> 
+        <div class="col-sm-2">Account No.</div>
+        <div class="col-sm-3 mt-0 mb-0">
+          {% if vendor_obj.account_no %}{{ vendor_obj.account_no}}
+          {% else %}-
+          {% endif %}
+        </div>
+      </div>
+      <div class="row mb-0">
+        <div class="col-sm-2">Expense Description</div>
+        <div class="col-sm-5 mt-0 mb-0">
+          {% if vendor_obj.default_description %}
+          {{ vendor_obj.default_description }}
+          {% else %}-
+          {% endif %}
+        </div>
+        <div class="col-sm-2">Expense Category</div>
+        <div class="col-sm-3">
+          {% if vendor_obj.default_exp_category%}
+          {{ vendor_obj.default_exp_category.name }}
+          {% else %}-
+          {% endif %}
+        </div>
+      </div>
+      <div class="row mb-0">
+        <div class="col-sm-2">Address</div>
+        <div class="col-sm-5">
+          {% if vendor_obj.alias %}{{ vendor_obj.address}}
+          {% else %}-
+          {% endif %}
+        </div>  
+        <div class="col-sm-2">Email</div>
+        <div class="col-sm-3">
+          {% if vendor_obj.email %}{{ vendor_obj.email }}
+          {% else %}-
+          {% endif %}
+        </div>
+      </div>
+      <div class="row mb-0">
+        <div class="col-sm-2">Remarks</div>
+        <div class="col-sm-5 mt-0 mb-0">
+          {% if vendor_obj.remarks %}
+          {{ vendor_obj.remarks }}
+          {% else %}-
+          {% endif %}
+        </div>
+        <div class="col-sm-2">Contact Person</div>
+        <div class="col-sm-3">
+          {% if vendor_obj.contact_person %}
+          {{ vendor_obj.contact_person }}
+          {% else %}-
+          {% endif %}
+        </div>
+      </div>
+      <div class="row mb-0">
+        <div class="col-sm-2">Telephone</div>
+        <div class="col-sm-5 mt-0 mb-0">
+          {% if vendor_obj.tel_mobile %}
+          [Mobile] {{ vendor_obj.tel_mobile }}
+          {% endif %}
+          {% if vendor_obj.tel_main %}
+          [Main] {{ vendor_obj.tel_main }}
+          {% endif %}
+          {% if vendor_obj.tel_office %}
+          [Office] {{ vendor_obj.office }}
+          {% endif %}
+        </div>
+        <div class="col-sm-2">Fax</div>
+        <div class="col-sm-3">
+          {% if vendor_obj.fax %}
+          {{ vendor_obj.fax }}
+          {% else %}-
+          {% endif %}
+        </div>
+      </div>
+    </div>
+</div>
+
+{% else %}
+<div class="alert alert-danger" role="alert">
+    No vendor found
+</div>
+
+{% endif %}

@@ -60,7 +60,7 @@ class Vendor(models.Model):
     remarks = models.TextField(blank=True, null=True)
     default_exp_category = models.ForeignKey(
         'ledger.ExpenseCategory', on_delete=models.PROTECT,
-        verbose_name="Default expense category",
+        verbose_name="Expense category",
         blank=True, null=True
     )
     default_description = models.CharField(max_length=255, blank=True, null=True)

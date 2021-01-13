@@ -97,8 +97,7 @@
         </div>
         <div class="col-sm-2">
           <a
-            href=""
-            id="btn_new_delivery"
+            href="{% url 'inventory:NewDeliveryOrder' %}"
             class="btn btn-sm btn-secondary btn-block"
             >New Delivery</a
           >
@@ -206,9 +205,6 @@
       });
     });
 
-    $("#btn-add_expense").modalForm({
-      formURL: "{% url 'ledger:NewExpenseModal' %}",
-    });
     $("#datepicker_from").datetimepicker({
       format: "L",
     });

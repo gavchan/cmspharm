@@ -10,41 +10,46 @@
             <thead>
                 <tr>
                     <th scope="col">Date received</th>
-                    <th scope="col">Purchased+Bonus</th>
+                    <th scope="col">Product</th>
+                    <th scope="col">Units+Bonus</th>
                     <th scope="col">Unit Price</th>
                     <th scope="col">Expiry Date</th>
-                    <th scope="col" class="text-center">Std (Avg) Cost</th>
+                    <th scope="col" class="text-center">Std $</th>
+                    <th scope="col" class="text-center">Avg $</th>
                     <th scope="col" class="text-right">Action</th>
                 </tr>
             </thead>
             <tbody>
-                {% for item in deliveryitem_obj_list %}
+                {% for listitem in deliveryitem_obj_list %}
                 <tr>
-                    <td>{{ item.delivery_order.received_date|date:'d-m-Y' }}</td>
+                    <td>{{ listitem.delivery_order.received_date|date:'d-m-Y' }}</td>
+                    <td>{{ listitem.item.name }}</td>
                     <td>
-                        {% if item.is_sample %}
+                        {% if listitem.is_sample %}
                         <span class="badge badge-info ml-2 mt-0"
                         >Sample
                         </span>
                         {% else %}
-                            {{ item.purchase_quantity|floatformat}}
-                            {% if item.bonus_quantity %}
-                            + {{ item.bonus_quantity|floatformat }}
+                            {{ listitem.purchase_quantity|floatformat}}
+                            {% if listitem.bonus_quantity %}
+                            + {{ listitem.bonus_quantity|floatformat }}
                             {% endif %}
                         {% endif %}
                     </td>
-                    <td>{{ item.unit_price|intcomma }} / {{ item.purchase_unit }} of {{ item.items_per_purchase|floatformat }} {{ item.items_unit }}</td>
-                    <td>{{ item.expiry_date|date:'d-m-Y'}}</td>
-                    <td class="text-center">${{ item.standard_cost}} ( ${{ item.average_cost }} )</td>
+                    <td>{{ listitem.unit_price|intcomma }} / {{ listitem.purchase_unit }} of {{ listitem.items_per_purchase|floatformat }}
+                        {% if listitem.items_unit %}{{ listitem.items_unit }}{% endif %}</td>
+                    <td>{{ listitem.expiry_date|date:'d-m-Y'}}</td>
+                    <td class="text-center">{{ listitem.standard_cost}}</td>
+                    <td class="text-center">{{ listitem.average_cost }}</td>
                     <td class="text-right">
                         <button 
-                            data-id="{% url 'inventory:DeliveryItemUpdateModal' item.delivery_order.pk item.pk %}" 
+                            data-id="{% url 'inventory:DeliveryItemUpdateModal' listitem.delivery_order.pk listitem.pk %}" 
                             class="btn_modal_trigger btn btn-sm btn-primary">
                             <i class="fad fa-file-edit"></i>
                     </button>
                         <a
                           class="btn_modal_trigger btn btn-sm btn-info"
-                          href="{% url 'inventory:DeliveryOrderDetail' item.delivery_order.pk %}"
+                          href="{% url 'inventory:DeliveryOrderDetail' listitem.delivery_order.pk %}"
                         ><i class="fad fa-file"></i></a>
                     </td>
                 </tr>

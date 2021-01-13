@@ -1,36 +1,34 @@
 {% extends 'base.html' %}
 
-{% block title %}
-  Vendor: {{ vendor_detail.name }}
+{% block content %}
+
+{% include '_modal.html' %}
+
+<div class="card shadow">
+    <div class="card-header bg-light">
+      <div class="d-flex justify-content-between align-items-center">
+        <span>
+          <i class="fad fa-file-alt"></i>
+          Vendor/Supplier [ {{ vendor_obj.id }} ] {{ vendor_obj.name }}</span>
+      </div>
+    </div>
+    <div class="card-body">
+        {% include 'inventory/_vendor_summary.html' %}
+        {% include 'cmsinv/_deliveryitem_list_table.html' %}
+    </div>
+  </div>
+  
 {% endblock %}
 
-{% block main %}
+{% block extrascripts %}
+<script type="text/javascript">
+    $(document).ready(function () {
 
-    <h1>{{ vendor_detail.name }}</h1>
-    
-    <table class="table table-sm table-striped">
-        <tbody>
-            <tr>
-                <th scope="row">Vendor ID</th>
-                <td>{{ vendor_detail.id }}</td>
-            </tr>
-            <tr>
-                <th scope="row">Product Name</th>
-                <td>{{ vendor_detail.name }}</td>
-            </tr>
-            <tr>
-                <th scope="row">Alias</th>
-                <td>{{ vendor_detail.email }}</td>
-            </tr>
-            <tr>
-                <th scope="row">Description</th>
-                <td>{{ vendor_detail.contact_person }}</td>
-            </tr>
-        </tbody>
-    </table>
-
-{% endblock %}
-
-{% block sidebar %}
-
+      $(".btn_modal_trigger").each(function () {
+            $(this).modalForm({
+                formURL: $(this).data('id')
+            });
+        });
+    });
+</script>
 {% endblock %}

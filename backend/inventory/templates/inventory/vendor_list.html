@@ -147,8 +147,14 @@ Vendors
         {% for vendor in vendor_list %}
     
         <tr>
-          <td>{{ vendor.name }}</td>
-          <td>{{ vendor.default_exp_category }}</td>
+          <td>
+            <a 
+              href="{% url 'inventory:VendorDetail' vendor.id %}"
+              class="btn-link">
+            {{ vendor.name }}
+            </a>
+          </td>
+          <td>{{ vendor.default_exp_category.name }}</td>
           <td>{{ vendor.contact_person }}</td>
           <td>{{ vendor.tel_main }}</td>
           <td class="text-right">

@@ -414,7 +414,26 @@ class VendorDetail(DetailView, LoginRequiredMixin, PermissionRequiredMixin):
     permission_required = ('inventory.view_vendor', )
     model = Vendor
     template_name = 'inventory/vendor_detail.html'
-    context_object_name = 'vendor_detail'
+    context_object_name = 'vendor_obj'
+    next_url = None
+
+    def dispatch(self, request, *args, **kwargs):
+        if 'pk' in kwargs:
+            self.object = Vendor.objects.get(id=kwargs['pk'])
+        else:
+            print("Error: missing pk")
+        self.next_url = request.GET.get('next') or '/'
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        data['vendor_obj'] = self.object
+        try:
+            delivered_items = DeliveryItem.objects.filter(delivery_order__vendor__id=self.object.id)[:20]
+        except DeliveryItem.DoesNotExist:
+            delivered_items = None
+        data['deliveryitem_obj_list'] = delivered_items
+        return data
 
 
 class NewVendor(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
@@ -463,7 +482,6 @@ def get_vendor_id(request):
         data = {'vendor_id': vendor_id, }
         return HttpResponse(json.dumps(data), content_type='application/json')
     return HttpResponse("/")
-
 
 class VendorUpdate(UpdateView, LoginRequiredMixin, PermissionRequiredMixin):
     """Update details for vendor"""

@@ -14,12 +14,17 @@
     
         <tr>
           <td>
+            <a 
+              class="btn-link"
+              href="{% url 'inventory:VendorDetail' vendor.pk %}?next={{ request.path }}">
+              {{ vendor.name }}
+            </a>
             {% if perms.inventory.change_vendor %}
             <button
               type="button"
               class="btn_modal_trigger btn btn-sm btn-link text-left"
               data-id="{% url 'inventory:VendorUpdateModal' vendor.pk %}?next={{ request.path }}"
-            >{{ vendor.name }}&nbsp;<i class="fad fa-edit"></i>
+            ><i class="fad fa-edit"></i>
             </button>
             {% endif %}
             </td>
