@@ -162,4 +162,4 @@ class Income(LedgerEntry):
         return reverse('ledger:IncomeDetail', kwargs={'pk': self.pk})
 
     def __str__(self):
-        return f"{self.entry_date} | ${self.amount} - {self.payee}"
+        return f"{self.entry_date} | ${self.amount} - {self.payer}"

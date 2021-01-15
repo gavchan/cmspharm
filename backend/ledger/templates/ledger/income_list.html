@@ -135,7 +135,7 @@
       <tbody>
         {% for income in income_list_obj %}
         <tr>
-          <td>{{ income.expected_date|date:"d-m-y" }}</td>
+          <td>{{ income.expected_date|date:"Y-m-d" }}</td>
           <td>{{ income.payer.name }}</td>
           <td>{{ income.payer.category.name }}</td>
           <td>{{ income.other_ref }}</td>
