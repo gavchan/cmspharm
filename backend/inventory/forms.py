@@ -209,12 +209,6 @@ class VendorUpdateModalForm(BSModalForm):
         exclude = ['id', 'version', 'date_created', 'last_updated',]
 
 class NewDeliveryOrderForm(ModelForm):
-    received_date = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
-    invoice_date = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
-    due_date = forms.CharField(
-        required=False,
-        widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'})
-        )
 
     def __init__(self, *args, **kwargs):
         self.vendor_obj= kwargs.pop('vendor_obj', None)
@@ -243,18 +237,67 @@ class NewDeliveryOrderForm(ModelForm):
                     # FieldWithButtons('vendor', StrictButton('<i class="far fa-user-plus"></i>', id='add_vendor_button', css_class='btn-secondary')),
                     css_class='form-group col-md-8 mb-0'
                     ),
-                Column('received_date', css_class='form-group col-md-4 mb-0'),
+                # Column('received_date', css_class='form-group col-md-4 mb-0'),
+                Div(HTML("""
+                    <label for="received_date">Received date</label>
+                    <div class="input-group date" id="datepicker_received_date" data-target-input="nearest">
+                        <input type="text" 
+                            class="form-control datetimepicker-input"
+                            data-target="#datepicker_received_date"
+                            placeholder="YYYY-MM-DD"
+                            name="received_date"
+                        >
+                        <div class="input-group-append" data-target="#datepicker_received_date" data-toggle="datetimepicker">
+                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                        </div>
+                    </div>
+                    """),
+                    css_class='form-group col-md-4'
+                ),
                 css_class='form-row',
             ),
             Row(
                 Column('invoice_no', css_class='form-group col-md-8 mb-0'),
-                Column('invoice_date', css_class='form-group col-md-4 mb-0'),
+                # Column('invoice_date', css_class='form-group col-md-4 mb-0'),
+                Div(HTML("""
+                    <label for="invoice_date">Invoice date</label>
+                    <div class="input-group date" id="datepicker_invoice_date" data-target-input="nearest">
+                        <input type="text" 
+                            class="form-control datetimepicker-input"
+                            data-target="#datepicker_invoice_date"
+                            placeholder="YYYY-MM-DD"
+                            name="invoice_date"
+                        >
+                        <div class="input-group-append" data-target="#datepicker_invoice_date" data-toggle="datetimepicker">
+                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                        </div>
+                    </div>
+                    """),
+                    css_class='form-group col-md-4'
+                ),
                 css_class='form-row',
             ),
             Row(
                 Column('other_ref', css_class='form-group col-md-4 mb-0'),
                 Column('amount', css_class='form-group col-md-4 mb-0'),
-                Column('due_date', css_class='form-group col-md-4 mb-0'),
+                # Column('due_date', css_class='form-group col-md-4 mb-0'),
+                Div(HTML("""
+                    <label for="due_date">Due date</label>
+                    <div class="input-group date" id="datepicker_due_date" data-target-input="nearest">
+                        <input type="text" 
+                            class="form-control datetimepicker-input"
+                            data-target="#datepicker_due_date"
+                            placeholder="YYYY-MM-DD"
+                            name="due_date"
+                        >
+                        <div class="input-group-append" data-target="#datepicker_due_date" data-toggle="datetimepicker">
+                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                        </div>
+                    </div>
+                    """),
+                    css_class='form-group col-md-4'
+                ),
+                css_class='form-row',
             ),
             Row(
                 Column(Field('remarks', css_class='form-group col-md-12 mb-0', rows="2")),
@@ -281,37 +324,8 @@ class NewDeliveryOrderForm(ModelForm):
     class Meta:
         model = DeliveryOrder
         exclude = ['id', 'version', 'date_created', 'last_updated',]
-        widgets = {
-                    'received_date': DatePickerInput(
-                        options={
-                            "format": "YYYY-MM-DD",
-                            "showClose": True,
-                            "showClear": True,
-                            "showTodayButton": True,
-                        }
-                    ),
-                    'invoice_date': DatePickerInput(
-                        options={
-                            "format": "YYYY-MM-DD",
-                            "showClose": True,
-                            "showClear": True,
-                            "showTodayButton": True,
-                        }
-                    ),
-                    'due_date': DatePickerInput(
-                        options={
-                            "format": "YYYY-MM-DD",
-                            "showClose": True,
-                            "showClear": True,
-                            "showTodayButton": True,
-                        }
-                    ),
-                }
+        
 class NewDeliveryOrderModalForm(BSModalForm):
-    
-    received_date = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
-    invoice_date = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
-    due_date = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
     
     def __init__(self, *args, **kwargs):
         self.vendor_obj= kwargs.pop('vendor_obj', None)
@@ -341,18 +355,67 @@ class NewDeliveryOrderModalForm(BSModalForm):
                     # FieldWithButtons('vendor', StrictButton('<i class="far fa-user-plus"></i>', id='add_vendor_button', css_class='btn-secondary')),
                     css_class='form-group col-md-8 mb-0'
                     ),
-                Column('received_date', css_class='form-group col-md-4 mb-0'),
+                # Column('received_date', css_class='form-group col-md-4 mb-0'),
+                Div(HTML("""
+                    <label for="received_date">Received date</label>
+                    <div class="input-group date" id="datepicker_received_date" data-target-input="nearest">
+                        <input type="text" 
+                            class="form-control datetimepicker-input"
+                            data-target="#datepicker_received_date"
+                            placeholder="YYYY-MM-DD"
+                            name="received_date"
+                        >
+                        <div class="input-group-append" data-target="#datepicker_received_date" data-toggle="datetimepicker">
+                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                        </div>
+                    </div>
+                    """),
+                    css_class='form-group col-md-4'
+                ),
                 css_class='form-row',
             ),
             Row(
                 Column('invoice_no', css_class='form-group col-md-8 mb-0'),
-                Column('invoice_date', css_class='form-group col-md-4 mb-0'),
+                # Column('invoice_date', css_class='form-group col-md-4 mb-0'),
+                Div(HTML("""
+                    <label for="invoice_date">Invoice date</label>
+                    <div class="input-group date" id="datepicker_invoice_date" data-target-input="nearest">
+                        <input type="text" 
+                            class="form-control datetimepicker-input"
+                            data-target="#datepicker_invoice_date"
+                            placeholder="YYYY-MM-DD"
+                            name="invoice_date"
+                        >
+                        <div class="input-group-append" data-target="#datepicker_invoice_date" data-toggle="datetimepicker">
+                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                        </div>
+                    </div>
+                    """),
+                    css_class='form-group col-md-4'
+                ),
                 css_class='form-row',
             ),
             Row(
                 Column('other_ref', css_class='form-group col-md-4 mb-0'),
                 Column('amount', css_class='form-group col-md-4 mb-0'),
-                Column('due_date', css_class='form-group col-md-4 mb-0'),
+                # Column('due_date', css_class='form-group col-md-4 mb-0'),
+                Div(HTML("""
+                    <label for="due_date">Due date</label>
+                    <div class="input-group date" id="datepicker_due_date" data-target-input="nearest">
+                        <input type="text" 
+                            class="form-control datetimepicker-input"
+                            data-target="#datepicker_due_date"
+                            placeholder="YYYY-MM-DD"
+                            name="due_date"
+                        >
+                        <div class="input-group-append" data-target="#datepicker_due_date" data-toggle="datetimepicker">
+                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                        </div>
+                    </div>
+                    """),
+                    css_class='form-group col-md-4'
+                ),
+                css_class='form-row',
             ),
             Row(
                 Column(Field('remarks', css_class='form-group col-md-12 mb-0', rows="2")),
@@ -369,32 +432,6 @@ class NewDeliveryOrderModalForm(BSModalForm):
     class Meta:
         model = DeliveryOrder
         exclude = ['id', 'version', 'date_created', 'last_updated',]
-        widgets = {
-                    'received_date': DatePickerInput(
-                        options={
-                            "format": "YYYY-MM-DD",
-                            "showClose": True,
-                            "showClear": True,
-                            "showTodayButton": True,
-                        }
-                    ),
-                    'invoice_date': DatePickerInput(
-                        options={
-                            "format": "YYYY-MM-DD",
-                            "showClose": True,
-                            "showClear": True,
-                            "showTodayButton": True,
-                        }
-                    ),
-                    'due_date': DatePickerInput(
-                        options={
-                            "format": "YYYY-MM-DD",
-                            "showClose": True,
-                            "showClear": True,
-                            "showTodayButton": True,
-                        }
-                    ),
-                }
 
 class DeliveryOrderUpdateModalForm(BSModalForm):
     
@@ -420,18 +457,69 @@ class DeliveryOrderUpdateModalForm(BSModalForm):
                     UneditableField('vendor'),
                     css_class='form-group col-md-8 mb-0'
                     ),
-                Column('received_date', css_class='form-group col-md-4 mb-0'),
+                # Column('received_date', css_class='form-group col-md-4 mb-0'),
+                Div(HTML("""
+                    <label for="received_date">Received date</label>
+                    <div class="input-group date" id="datepicker_received_date" data-target-input="nearest">
+                        <input type="text" 
+                            class="form-control datetimepicker-input"
+                            data-target="#datepicker_received_date"
+                            placeholder="YYYY-MM-DD"
+                            name="received_date"
+                            value="{{ deliveryorder_obj.received_date}}
+                        >
+                        <div class="input-group-append" data-target="#datepicker_received_date" data-toggle="datetimepicker">
+                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                        </div>
+                    </div>
+                    """),
+                    css_class='form-group col-md-4'
+                ),
                 css_class='form-row',
             ),
             Row(
                 Column('invoice_no', css_class='form-group col-md-8 mb-0'),
-                Column('invoice_date', css_class='form-group col-md-4 mb-0'),
+                # Column('invoice_date', css_class='form-group col-md-4 mb-0'),
+                Div(HTML("""
+                    <label for="invoice_date">Invoice date</label>
+                    <div class="input-group date" id="datepicker_invoice_date" data-target-input="nearest">
+                        <input type="text" 
+                            class="form-control datetimepicker-input"
+                            data-target="#datepicker_invoice_date"
+                            placeholder="YYYY-MM-DD"
+                            name="invoice_date"
+                            value="{{ deliveryorder_obj.invoice_date }}"
+                        >
+                        <div class="input-group-append" data-target="#datepicker_invoice_date" data-toggle="datetimepicker">
+                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                        </div>
+                    </div>
+                    """),
+                    css_class='form-group col-md-4'
+                ),
                 css_class='form-row',
             ),
             Row(
                 Column('other_ref', css_class='form-group col-md-4 mb-0'),
                 Column('amount', css_class='form-group col-md-4 mb-0'),
-                Column('due_date', css_class='form-group col-md-4 mb-0'),
+                # Column('due_date', css_class='form-group col-md-4 mb-0'),
+                Div(HTML("""
+                    <label for="due_date">Due date</label>
+                    <div class="input-group date" id="datepicker_due_date" data-target-input="nearest">
+                        <input type="text" 
+                            class="form-control datetimepicker-input"
+                            data-target="#datepicker_due_date"
+                            placeholder="YYYY-MM-DD"
+                            name="due_date"
+                            value="{{ deliveryorder_obj.due_date}}
+                        >
+                        <div class="input-group-append" data-target="#datepicker_due_date" data-toggle="datetimepicker">
+                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                        </div>
+                    </div>
+                    """),
+                    css_class='form-group col-md-4'
+                ),
             ),
             Row(
                 Column(Field('remarks', css_class='form-group col-md-12 mb-0', rows="2")),
@@ -450,32 +538,7 @@ class DeliveryOrderUpdateModalForm(BSModalForm):
     class Meta:
         model = DeliveryOrder
         exclude = ['id', 'items', 'is_paid', 'bill', 'date_created', 'last_updated',]
-        widgets = {
-                    'received_date': DatePickerInput(
-                        options={
-                            "format": "YYYY-MM-DD",
-                            "showClose": True,
-                            "showClear": True,
-                            "showTodayButton": True,
-                        }
-                    ),
-                    'invoice_date': DatePickerInput(
-                        options={
-                            "format": "YYYY-MM-DD",
-                            "showClose": True,
-                            "showClear": True,
-                            "showTodayButton": True,
-                        }
-                    ),
-                    'due_date': DatePickerInput(
-                        options={
-                            "format": "YYYY-MM-DD",
-                            "showClose": True,
-                            "showClear": True,
-                            "showTodayButton": True,
-                        }
-                    )
-                }
+
 class DeliveryItemUpdateModalForm(BSModalForm):
 
     expiry_month = forms.CharField(

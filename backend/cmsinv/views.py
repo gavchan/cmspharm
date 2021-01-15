@@ -37,7 +37,7 @@ from .forms import (
     InventoryItemMatchUpdateForm,
     InventoryItemQuickEditModalForm,
     SupplierQuickEditModalForm,
-    NewDeliveryFromDeliveryOrderModalForm,
+    # NewDeliveryFromDeliveryOrderModalForm,
 )
 
 from bootstrap_modal_forms.generic import BSModalReadView, BSModalUpdateView, BSModalCreateView

@@ -67,5 +67,8 @@
         $("#id_vendor").change(function() {
             $("#id_payee").val($("#id_vendor option:selected").text());
         });
+        $(".date").datetimepicker({
+          format: "YYYY-MM-DD",
+        });
     })
 </script>

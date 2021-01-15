@@ -50,7 +50,10 @@
         $("#id-DeliveryOrderForm").submit();
       });
     $("#id_invoice_no.textinput").focus();
-  });
+    $(".date").datetimepicker({
+      format: "YYYY-MM-DD",
+    });
+ });
 </script>
 
 {% endblock %}

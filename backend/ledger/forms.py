@@ -207,9 +207,11 @@ class ExpenseUpdateForm(ModelForm):
             Hidden('version', self.instance.version +1),
             FormActions(
                 Submit('submit', 'Submit'),
-                HTML("""
-                <a class="btn btn-light" href="{% url 'ledger:ExpenseList' %}">Cancel</a>
-                """),
+                Button(
+                    'back', 'Cancel',
+                    css_class='btn-light',
+                    onclick="javascript:history.go(-1);"
+                ),
             ),
         )
 
@@ -422,6 +424,9 @@ class NewExpenseModalForm(BSModalForm):
             ),
             FormActions(
                 Submit('submit', 'Submit'),
+                HTML("""
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                """),
             ),
         )
 
@@ -535,7 +540,7 @@ class ExpenseUpdateModalForm(BSModalForm):
             FormActions(
                 Submit('submit', 'Submit'),
                 HTML("""
-                <a class="btn btn-light" href="{% url 'ledger:ExpenseList' %}">Cancel</a>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                 """),
             ),
         )
@@ -630,6 +635,9 @@ class DeliveryPaymentModalForm(BSModalForm):
             Hidden('category', self.exp_category_drug),
             FormActions(
                 Submit('submit', 'Submit'),
+                HTML("""
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                """),
             ),
         )
 
@@ -716,6 +724,9 @@ class NewIncomeModalForm(BSModalForm):
             ),
             FormActions(
                 Submit('submit', 'Submit'),
+                HTML("""
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                """),
             ),
         )
 
@@ -798,6 +809,9 @@ class IncomeUpdateModalForm(BSModalForm):
             ),
             FormActions(
                 Submit('submit', 'Submit'),
+                HTML("""
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                """),
             ),
         )
 

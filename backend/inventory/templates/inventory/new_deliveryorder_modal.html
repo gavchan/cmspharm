@@ -33,5 +33,8 @@
     $("#id_vendor").change(function() {
         $("#id_payee").val($("#id_vendor option:selected").text());
     });
-        $("#id_invoice_no.textinput").focus()
+    $("#id_invoice_no.textinput").focus();
+    $(".date").datetimepicker({
+      format: "YYYY-MM-DD",
+    });
 </script>

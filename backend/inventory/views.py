@@ -606,6 +606,11 @@ class DeliveryOrderUpdateModal(BSModalUpdateView, LoginRequiredMixin, Permission
     template_name = 'inventory/deliveryorder_update_modal.html'
     vendor_obj = None
 
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        data['deliveryorder_obj'] = self.object
+        return data
+
     def get_success_url(self):
         return reverse('inventory:DeliveryOrderDetail', args=(self.object.pk,))
 
