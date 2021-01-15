@@ -7,6 +7,7 @@ backend/static/
 backend/staticfiles/
 backend/dev
 *.key
+*.xlsx
 *.csv
 xx_*
 backend/config/asgi.py
