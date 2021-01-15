@@ -159,10 +159,10 @@
       formURL: "{% url 'ledger:NewExpenseModal' %}",
     });
     $("#datepicker_from").datetimepicker({
-      format: "L",
+      format: "YYYY-MM-DD",
     });
     $("#datepicker_to").datetimepicker({
-      format: "L",
+      format: "YYYY-MM-DD",
       useCurrent: false,
     });
     $("#datepicker_from").on("change.datetimepicker", function (e) {

@@ -102,102 +102,6 @@ class ExpenseCategoryUpdateForm(ModelForm):
         model = ExpenseCategory
         exclude = ['id', ]
 
-
-# class NewExpenseSelectVendorForm(ModelForm):
-
-#     invoice_date = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
-#     expected_date = forms.CharField(
-#         required=False,
-#         widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'})
-#         )
-
-#     def __init__(self, *args, **kwargs):
-#         self.vendor_obj = kwargs.pop('vendor_obj', None)
-
-#         super(NewExpenseSelectVendorForm, self).__init__(*args, **kwargs)
-#         self.helper = FormHelper()
-#         self.helper.render_unmentioned_fields = False
-#         self.helper.form_id = 'id-ExpenseForm'
-#         self.helper.form_class = 'cmmForms'
-#         self.helper.form_method = 'post'
-#         self.helper.form_action = reverse(
-#             'ledger:NewExpenseSelectVendor')
-#         #self.initial['entry_date'] = timezone.now().strftime('%Y-%m-%d')
-#         today_date = timezone.now().strftime('%Y-%m-%d')
-#         self.initial['payment_method'] = PaymentMethod.objects.get(
-#             name='Cheque').pk
-#         self.initial['version'] = 1
-#         try:
-#             # Assign vendor_id if available
-#             vendor_id = self.vendor_obj.pk
-#         except:
-#             vendor_id = None
-#         self.initial['vendor'] = vendor_id
-
-#         self.helper.layout = Layout(
-#             Hidden('entry_date', today_date),
-#             Hidden('version', '1'),
-#             Row(
-#                 Column(
-#                     FieldWithButtons('vendor', StrictButton(
-#                         '<i class="far fa-user-plus"></i>', id='add_vendor_button', css_class='btn-secondary')),
-#                     css_class='form-group col-md-8 mb-0'
-#                 ),
-#                 Column('payee', css_class='form-group col-md-4 mb-0'),
-#                 css_class='form-row',
-#             ),
-#             Row(
-#                 Column('category', css_class='form-group col-md-4 mb-0'),
-#                 Column('invoice_no', css_class='form-group col-md-4 mb-0'),
-#                 Column('invoice_date', css_class='form-group col-md-4 mb-0'),
-#                 css_class='form-row',
-#             ),
-#             Row(
-#                 Column('payment_method', css_class='form-group col-md-4 mb-0'),
-#                 Column('amount', css_class='form-group col-md-4 mb-0'),
-#                 Column('description', css_class='form-group col-md-4 mb-0'),
-#                 css_class='form-row',
-#             ),
-#             Row(
-#                 Column('payment_ref', css_class='form-group col-md-4 mb-0'),
-#                 Column('expected_date', css_class='form-group col-md-4 mb-0'),
-#                 Column('other_ref', css_class='form-group col-md-4 mb-0'),
-#                 css_class="form-row",),
-#             Row(
-#                 Column(
-#                     Field('remarks', css_class='form-group col-md-8 mb-0', rows="1")),
-#                 css_class="form-row",
-#             ),
-#             FormActions(
-#                 Submit('submit', 'Submit'),
-#                 Button('cancel', 'Cancel', onclick="window.location.href = '{}';".format(
-#                     reverse('ledger:ExpenseList')))
-#             ),
-#         )
-
-#     class Meta:
-#         model = Expense
-#         exclude = ['id', ]
-#         widgets = {
-#             'expected_date': DatePickerInput(
-#                 options={
-#                     "format": "YYYY-MM-DD",
-#                     "showClose": True,
-#                     "showClear": True,
-#                     "showTodayButton": True,
-#                 }
-#             ),
-#             'invoice_date': DatePickerInput(
-#                 options={
-#                     "format": "YYYY-MM-DD",
-#                     "showClose": True,
-#                     "showClear": True,
-#                     "showTodayButton": True,
-#                 }
-#             ),
-#         }
-
-
 class ExpenseUpdateForm(ModelForm):
 
     entry_date = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
@@ -221,7 +125,23 @@ class ExpenseUpdateForm(ModelForm):
         print(self.instance)
         self.helper.layout = Layout(
             Row(
-                Column('entry_date', css_class='form-group col-md-4 mb-0'),
+                Div(HTML("""
+                    <label for="entry_date">Entry date</label>
+                    <div class="input-group date" id="datepicker_entry_date" data-target-input="nearest">
+                        <input type="text" 
+                            class="form-control datetimepicker-input"
+                            data-target="#datepicker_entry_date"
+                            placeholder="YYYY-MM-DD"
+                            name="entry_date"
+                            value="{{ expense_obj.entry_date|date:'Y-m-d' }}"
+                        >
+                        <div class="input-group-append" data-target="#datepicker_entry_date" data-toggle="datetimepicker">
+                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                        </div>
+                    </div>
+                    """),
+                    css_class='form-group col-md-4'
+                ),
                 Column(Field('version', disabled=True),
                     css_class='form-group col-md-4 mb-0'),
             ),
@@ -233,7 +153,23 @@ class ExpenseUpdateForm(ModelForm):
             Row(
                 Column('category', css_class='form-group col-md-4 mb-0'),
                 Column('invoice_no', css_class='form-group col-md-4 mb-0'),
-                Column('invoice_date', css_class='form-group col-md-4 mb-0'),
+                Div(HTML("""
+                    <label for="invoice_date">Invoice date</label>
+                    <div class="input-group date" id="datepicker_invoice_date" data-target-input="nearest">
+                        <input type="text" 
+                            class="form-control datetimepicker-input"
+                            data-target="#datepicker_invoice_date"
+                            placeholder="YYYY-MM-DD"
+                            name="invoice_date"
+                            value="{{ expense_obj.invoice_date|date:'Y-m-d' }}"
+                        >
+                        <div class="input-group-append" data-target="#datepicker_invoice_date" data-toggle="datetimepicker">
+                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                        </div>
+                    </div>
+                    """),
+                    css_class='form-group col-md-4'
+                ),
                 css_class='form-row',
             ),
             Row(
@@ -244,7 +180,22 @@ class ExpenseUpdateForm(ModelForm):
             ),
             Row(
                 Column('payment_ref', css_class='form-group col-md-4 mb-0'),
-                Column('expected_date', css_class='form-group col-md-4 mb-0'),
+                Div(HTML("""
+                    <label for="expected_date">Payment date</label>
+                    <div class="input-group date" id="datepicker_expected_date" data-target-input="nearest">
+                        <input type="text" 
+                            class="form-control datetimepicker-input"
+                            data-target="#datepicker_expected_date"
+                            placeholder="YYYY-MM-DD"
+                            name="expected_date"
+                        >
+                        <div class="input-group-append" data-target="#datepicker_expected_date" data-toggle="datetimepicker">
+                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                        </div>
+                    </div>
+                    """),
+                    css_class='form-group col-md-4'
+                ),
                 Column('other_ref', css_class='form-group col-md-4 mb-0'),
                 css_class="form-row",),
             Row(
@@ -265,33 +216,7 @@ class ExpenseUpdateForm(ModelForm):
     class Meta:
         model = Expense
         exclude = ['id', ]
-        widgets = {
-            'entry_date': DatePickerInput(
-                options={
-                    "format": "YYYY-MM-DD",
-                    "showClose": True,
-                    "showClear": True,
-                    "showTodayButton": True,
-                }
-            ),
-            'expected_date': DatePickerInput(
-                options={
-                    "format": "YYYY-MM-DD",
-                    "showClose": True,
-                    "showClear": True,
-                    "showTodayButton": True,
-                }
-            ),
-            'invoice_date': DatePickerInput(
-                options={
-                    "format": "YYYY-MM-DD",
-                    "showClose": True,
-                    "showClear": True,
-                    "showTodayButton": True,
-                }
-            ),
-        }
-
+        
 
 class NewExpenseForm(ModelForm):
 
@@ -339,7 +264,22 @@ class NewExpenseForm(ModelForm):
             Row(
                 Column('category', css_class='form-group col-md-4 mb-0'),
                 Column('invoice_no', css_class='form-group col-md-4 mb-0'),
-                Column('invoice_date', css_class='form-group col-md-4 mb-0'),
+                Div(HTML("""
+                    <label for="invoice_date">Invoice date</label>
+                    <div class="input-group date" id="datepicker_invoice_date" data-target-input="nearest">
+                        <input type="text" 
+                            class="form-control datetimepicker-input"
+                            data-target="#datepicker_invoice_date"
+                            placeholder="YYYY-MM-DD"
+                            name="invoice_date"
+                        >
+                        <div class="input-group-append" data-target="#datepicker_invoice_date" data-toggle="datetimepicker">
+                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                        </div>
+                    </div>
+                    """),
+                    css_class='form-group col-md-4'
+                ),
                 css_class='form-row',
             ),
             Row(
@@ -350,7 +290,22 @@ class NewExpenseForm(ModelForm):
             ),
             Row(
                 Column('payment_ref', css_class='form-group col-md-4 mb-0'),
-                Column('expected_date', css_class='form-group col-md-4 mb-0'),
+                Div(HTML("""
+                    <label for="expected_date">Payment date</label>
+                    <div class="input-group date" id="datepicker_expected_date" data-target-input="nearest">
+                        <input type="text" 
+                            class="form-control datetimepicker-input"
+                            data-target="#datepicker_expected_date"
+                            placeholder="YYYY-MM-DD"
+                            name="expected_date"
+                        >
+                        <div class="input-group-append" data-target="#datepicker_expected_date" data-toggle="datetimepicker">
+                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                        </div>
+                    </div>
+                    """),
+                    css_class='form-group col-md-4'
+                ),
                 Column('other_ref', css_class='form-group col-md-4 mb-0'),
                 css_class="form-row",),
             Row(
@@ -371,24 +326,6 @@ class NewExpenseForm(ModelForm):
     class Meta:
         model = Expense
         exclude = ['id', ]
-        widgets = {
-            'expected_date': DatePickerInput(
-                options={
-                    "format": "YYYY-MM-DD",
-                    "showClose": True,
-                    "showClear": True,
-                    "showTodayButton": True,
-                }
-            ),
-            'invoice_date': DatePickerInput(
-                options={
-                    "format": "YYYY-MM-DD",
-                    "showClose": True,
-                    "showClear": True,
-                    "showTodayButton": True,
-                }
-            ),
-        }
 
 class NewExpenseModalForm(BSModalForm):
 
@@ -434,7 +371,22 @@ class NewExpenseModalForm(BSModalForm):
             Row(
                 Column('category', css_class='form-group col-md-4 mb-0'),
                 Column('invoice_no', css_class='form-group col-md-4 mb-0'),
-                Column('invoice_date', css_class='form-group col-md-4 mb-0'),
+                Div(HTML("""
+                    <label for="invoice_date">Invoice date</label>
+                    <div class="input-group date" id="datepicker_invoice_date" data-target-input="nearest">
+                        <input type="text" 
+                            class="form-control datetimepicker-input"
+                            data-target="#datepicker_invoice_date"
+                            placeholder="YYYY-MM-DD"
+                            name="invoice_date"
+                        >
+                        <div class="input-group-append" data-target="#datepicker_invoice_date" data-toggle="datetimepicker">
+                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                        </div>
+                    </div>
+                    """),
+                    css_class='form-group col-md-4'
+                ),
                 css_class='form-row',
             ),
             Row(
@@ -445,7 +397,22 @@ class NewExpenseModalForm(BSModalForm):
             ),
             Row(
                 Column('payment_ref', css_class='form-group col-md-4 mb-0'),
-                Column('expected_date', css_class='form-group col-md-4 mb-0'),
+                Div(HTML("""
+                    <label for="expected_date">Payment date</label>
+                    <div class="input-group date" id="datepicker_expected_date" data-target-input="nearest">
+                        <input type="text" 
+                            class="form-control datetimepicker-input"
+                            data-target="#datepicker_expected_date"
+                            placeholder="YYYY-MM-DD"
+                            name="expected_date"
+                        >
+                        <div class="input-group-append" data-target="#datepicker_expected_date" data-toggle="datetimepicker">
+                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                        </div>
+                    </div>
+                    """),
+                    css_class='form-group col-md-4'
+                ),
                 Column('other_ref', css_class='form-group col-md-4 mb-0'),
                 css_class="form-row",),
             Row(
@@ -461,25 +428,6 @@ class NewExpenseModalForm(BSModalForm):
     class Meta:
         model = Expense
         exclude = ['id', ]
-        widgets = {
-            'expected_date': DatePickerInput(
-                options={
-                    "format": "YYYY-MM-DD",
-                    "showClose": True,
-                    "showClear": True,
-                    "showTodayButton": True,
-                }
-            ),
-            'invoice_date': DatePickerInput(
-                options={
-                    "format": "YYYY-MM-DD",
-                    "showClose": True,
-                    "showClear": True,
-                    "showTodayButton": True,
-                }
-            ),
-        }
-
 
 class ExpenseUpdateModalForm(BSModalForm):
 
@@ -503,7 +451,23 @@ class ExpenseUpdateModalForm(BSModalForm):
 
         self.helper.layout = Layout(
             Row(
-                Column('entry_date', css_class='form-group col-md-4 mb-0'),
+                Div(HTML("""
+                    <label for="entry_date">Entry date</label>
+                    <div class="input-group date" id="datepicker_entry_date" data-target-input="nearest">
+                        <input type="text" 
+                            class="form-control datetimepicker-input"
+                            data-target="#datepicker_entry_date"
+                            placeholder="YYYY-MM-DD"
+                            name="entry_date"
+                            value="{{ expense_obj.entry_date|date:'Y-m-d' }}"
+                        >
+                        <div class="input-group-append" data-target="#datepicker_entry_date" data-toggle="datetimepicker">
+                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                        </div>
+                    </div>
+                    """),
+                    css_class='form-group col-md-4'
+                ),
                 Column(Field('version', disabled=True),
                     css_class='form-group col-md-4 mb-0'),
             ),
@@ -515,7 +479,23 @@ class ExpenseUpdateModalForm(BSModalForm):
             Row(
                 Column('category', css_class='form-group col-md-4 mb-0'),
                 Column('invoice_no', css_class='form-group col-md-4 mb-0'),
-                Column('invoice_date', css_class='form-group col-md-4 mb-0'),
+                Div(HTML("""
+                    <label for="invoice_date">Invoice date</label>
+                    <div class="input-group date" id="datepicker_invoice_date" data-target-input="nearest">
+                        <input type="text" 
+                            class="form-control datetimepicker-input"
+                            data-target="#datepicker_invoice_date"
+                            placeholder="YYYY-MM-DD"
+                            name="invoice_date"
+                            value="{{ expense_obj.invoice_date|date:'Y-m-d' }}"
+                        >
+                        <div class="input-group-append" data-target="#datepicker_invoice_date" data-toggle="datetimepicker">
+                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                        </div>
+                    </div>
+                    """),
+                    css_class='form-group col-md-4'
+                ),
                 css_class='form-row',
             ),
             Row(
@@ -526,7 +506,23 @@ class ExpenseUpdateModalForm(BSModalForm):
             ),
             Row(
                 Column('payment_ref', css_class='form-group col-md-4 mb-0'),
-                Column('expected_date', css_class='form-group col-md-4 mb-0'),
+                Div(HTML("""
+                    <label for="expected_date">Payment date</label>
+                    <div class="input-group date" id="datepicker_expected_date" data-target-input="nearest">
+                        <input type="text" 
+                            class="form-control datetimepicker-input"
+                            data-target="#datepicker_expected_date"
+                            placeholder="YYYY-MM-DD"
+                            name="expected_date"
+                            value="{{ expense_obj.expected_date|date:'Y-m-d' }}"
+                        >
+                        <div class="input-group-append" data-target="#datepicker_expected_date" data-toggle="datetimepicker">
+                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                        </div>
+                    </div>
+                    """),
+                    css_class='form-group col-md-4'
+                ),
                 Column('other_ref', css_class='form-group col-md-4 mb-0'),
                 css_class="form-row",),
             Row(
@@ -547,39 +543,9 @@ class ExpenseUpdateModalForm(BSModalForm):
     class Meta:
         model = Expense
         exclude = ['id', ]
-        widgets = {
-            'entry_date': DatePickerInput(
-                options={
-                    "format": "YYYY-MM-DD",
-                    "showClose": True,
-                    "showClear": True,
-                    "showTodayButton": True,
-                }
-            ),
-            'expected_date': DatePickerInput(
-                options={
-                    "format": "YYYY-MM-DD",
-                    "showClose": True,
-                    "showClear": True,
-                    "showTodayButton": True,
-                }
-            ),
-            'invoice_date': DatePickerInput(
-                options={
-                    "format": "YYYY-MM-DD",
-                    "showClose": True,
-                    "showClear": True,
-                    "showTodayButton": True,
-                }
-            ),
-        }
 
 class DeliveryPaymentModalForm(BSModalForm):
 
-    expected_date = forms.CharField(
-        required=False,
-        widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'})
-        )
     def __init__(self, *args, **kwargs):
         self.delivery_obj = kwargs.pop('delivery_obj', None)
         super(DeliveryPaymentModalForm, self).__init__(*args, **kwargs)
@@ -633,7 +599,22 @@ class DeliveryPaymentModalForm(BSModalForm):
             ),
             Row(
                 Column('payment_ref', css_class='form-group col-md-4 mb-0'),
-                Column('expected_date', css_class='form-group col-md-4 mb-0'),
+                Div(HTML("""
+                    <label for="expected_date">Payment date</label>
+                    <div class="input-group date" id="datepicker_expected_date" data-target-input="nearest">
+                        <input type="text" 
+                            class="form-control datetimepicker-input"
+                            data-target="#datepicker_expected_date"
+                            placeholder="YYYY-MM-DD"
+                            name="expected_date"
+                        >
+                        <div class="input-group-append" data-target="#datepicker_expected_date" data-toggle="datetimepicker">
+                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                        </div>
+                    </div>
+                    """),
+                    css_class='form-group col-md-4'
+                ),
                 Column('other_ref', css_class='form-group col-md-4 mb-0'),
                 css_class="form-row",),
             Row(
@@ -655,16 +636,7 @@ class DeliveryPaymentModalForm(BSModalForm):
     class Meta:
         model = Expense
         exclude = ['id', 'date_created', 'last_updated']
-        widgets = {
-            'expected_date': DatePickerInput(
-                options={
-                    "format": "YYYY-MM-DD",
-                    "showClose": True,
-                    "showClear": True,
-                    "showTodayButton": True,
-                }
-            ),
-        }
+
 
 class NewIncomeModalForm(BSModalForm):
 
@@ -698,13 +670,43 @@ class NewIncomeModalForm(BSModalForm):
             Row(
                 Column('amount', css_class='form-group col-md-4 mb-0'),
                 Column('payment_ref', css_class='form-group col-md-4 mb-0'),
-                Column('expected_date', css_class='form-group col-md-4 mb-0'),
+                Div(HTML("""
+                    <label for="expected_date">Payment date</label>
+                    <div class="input-group date" id="datepicker_expected_date" data-target-input="nearest">
+                        <input type="text" 
+                            class="form-control datetimepicker-input"
+                            data-target="#datepicker_expected_date"
+                            placeholder="YYYY-MM-DD"
+                            name="expected_date"
+                        >
+                        <div class="input-group-append" data-target="#datepicker_expected_date" data-toggle="datetimepicker">
+                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                        </div>
+                    </div>
+                    """),
+                    css_class='form-group col-md-4'
+                ),
                 css_class='form-row',
             ),
             Row(
                 Column('other_ref', css_class='form-group col-md-4 mb-0'),
                 Column('invoice_no', css_class='form-group col-md-4 mb-0'),
-                Column('invoice_date', css_class='form-group col-md-4 mb-0'),
+                Div(HTML("""
+                    <label for="invoice_date">Invoice date</label>
+                    <div class="input-group date" id="datepicker_invoice_date" data-target-input="nearest">
+                        <input type="text" 
+                            class="form-control datetimepicker-input"
+                            data-target="#datepicker_invoice_date"
+                            placeholder="YYYY-MM-DD"
+                            name="invoice_date"
+                        >
+                        <div class="input-group-append" data-target="#datepicker_invoice_date" data-toggle="datetimepicker">
+                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                        </div>
+                    </div>
+                    """),
+                    css_class='form-group col-md-4'
+                ),
                 css_class='form-row',
             ),
             Row(
@@ -720,24 +722,7 @@ class NewIncomeModalForm(BSModalForm):
     class Meta:
         model = Income
         exclude = ['id', ]
-        widgets = {
-            'expected_date': DatePickerInput(
-                options={
-                    "format": "YYYY-MM-DD",
-                    "showClose": True,
-                    "showClear": True,
-                    "showTodayButton": True,
-                }
-            ),
-            'invoice_date': DatePickerInput(
-                options={
-                    "format": "YYYY-MM-DD",
-                    "showClose": True,
-                    "showClear": True,
-                    "showTodayButton": True,
-                }
-            ),
-        }
+
 
 class IncomeUpdateModalForm(BSModalForm):
 
@@ -765,13 +750,45 @@ class IncomeUpdateModalForm(BSModalForm):
             Row(
                 Column('amount', css_class='form-group col-md-4 mb-0'),
                 Column('payment_ref', css_class='form-group col-md-4 mb-0'),
-                Column('expected_date', css_class='form-group col-md-4 mb-0'),
+                Div(HTML("""
+                    <label for="expected_date">Payment date</label>
+                    <div class="input-group date" id="datepicker_expected_date" data-target-input="nearest">
+                        <input type="text" 
+                            class="form-control datetimepicker-input"
+                            data-target="#datepicker_expected_date"
+                            placeholder="YYYY-MM-DD"
+                            name="expected_date"
+                            value="{{ income_obj.expected_date|date:'Y-m-d' }}"
+                        >
+                        <div class="input-group-append" data-target="#datepicker_expected_date" data-toggle="datetimepicker">
+                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                        </div>
+                    </div>
+                    """),
+                    css_class='form-group col-md-4'
+                ),
                 css_class='form-row',
             ),
             Row(
                 Column('other_ref', css_class='form-group col-md-4 mb-0'),
                 Column('invoice_no', css_class='form-group col-md-4 mb-0'),
-                Column('invoice_date', css_class='form-group col-md-4 mb-0'),
+                Div(HTML("""
+                    <label for="invoice_date">Invoice date</label>
+                    <div class="input-group date" id="datepicker_invoice_date" data-target-input="nearest">
+                        <input type="text" 
+                            class="form-control datetimepicker-input"
+                            data-target="#datepicker_invoice_date"
+                            placeholder="YYYY-MM-DD"
+                            name="invoice_date"
+                            value="{{ income_obj.invoice_date|date:'Y-m-d' }}"
+                        >
+                        <div class="input-group-append" data-target="#datepicker_invoice_date" data-toggle="datetimepicker">
+                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                        </div>
+                    </div>
+                    """),
+                    css_class='form-group col-md-4'
+                ),
                 css_class='form-row',
             ),
             Row(
@@ -787,21 +804,3 @@ class IncomeUpdateModalForm(BSModalForm):
     class Meta:
         model = Income
         exclude = ['id', 'version', 'entry_date']
-        widgets = {
-            'expected_date': DatePickerInput(
-                options={
-                    "format": "YYYY-MM-DD",
-                    "showClose": True,
-                    "showClear": True,
-                    "showTodayButton": True,
-                }
-            ),
-            'invoice_date': DatePickerInput(
-                options={
-                    "format": "YYYY-MM-DD",
-                    "showClose": True,
-                    "showClear": True,
-                    "showTodayButton": True,
-                }
-            ),
-        }

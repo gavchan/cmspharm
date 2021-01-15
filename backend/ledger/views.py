@@ -552,3 +552,8 @@ class IncomeUpdateModal(BSModalUpdateView, LoginRequiredMixin, PermissionRequire
     form_class = IncomeUpdateModalForm
     template_name = "ledger/income_update_modal.html"
     success_message = 'Success: Income was updated'
+
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        data['income_obj'] = self.object
+        return data

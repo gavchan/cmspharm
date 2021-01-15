@@ -50,7 +50,9 @@
           formURL: $(this).data('form-url')
         });
       });
-    
+      $(".date").datetimepicker({
+          format: "YYYY-MM-DD",
+      });
     });
 </script>
 {% endblock %}
