@@ -121,7 +121,7 @@ class IncomeSource(models.Model):
     """
     name = models.CharField(max_length=255, unique=True)
     code = models.CharField(max_length=255, unique=True)
-    account_no = models.CharField(max_length=255)
+    account_no = models.CharField(max_length=255, blank=True, null=True)
     category = models.ForeignKey(
         IncomeCategory, on_delete=models.PROTECT,
         blank=True, null=True
