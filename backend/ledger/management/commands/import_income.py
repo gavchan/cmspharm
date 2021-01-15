@@ -33,7 +33,7 @@ class Command(BaseCommand):
             name='Medical Card',
             defaults={
                 'name': 'Medical Card',
-                'code': IncomeCategory.objects.all().count() + 1,
+                'code': str(IncomeCategory.objects.all().count() + 1),
                 'description': 'Medical Card Income',
                 'active': True,
             })
@@ -44,7 +44,7 @@ class Command(BaseCommand):
             print(f"Processing {index:3}|{row['Date']} - ${row['Amount']} from {row['Payer']}")
             payerData = {
                 'name': row['Payer'],
-                'code': IncomeSource.objects.all().count() + 1,
+                'code': str(IncomeSource.objects.all().count() + 1),
                 'active': True
             }
             payer, created = IncomeSource.objects.get_or_create(name=row['Payer'], defaults=payerData)
@@ -65,7 +65,7 @@ class Command(BaseCommand):
             )
             newIncome.save()
             if newIncome.id:
-                print(f"Created income #{newIncome.id}: ${newIncome.amount} from {newIncome.payer}")
+                print(f"Created income #{newIncome.id}: ${newIncome.amount} from {newIncome.payer.name}")
             else:
                 print(newIncome)
         
