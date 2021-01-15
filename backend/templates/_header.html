@@ -22,6 +22,11 @@
                     <a href="{% url 'ledger:ExpenseList' %}" class="nav-link">Expenses</a>
                 </li>
                 {% endif %}
+                {% if perms.ledger.view_income %}
+                <li class="nav-item">
+                    <a href="{% url 'ledger:IncomeList' %}" class="nav-link">Income</a>
+                </li>
+                {% endif %}
                 <li class="nav-item">
                     <a href="{% url 'inventory:DeliveryOrderList' %}" class="nav-link">Deliveries</a>
                 </li>

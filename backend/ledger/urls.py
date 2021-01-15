@@ -18,4 +18,9 @@ urlpatterns = [
     path('expense/<int:pk>/', views.ExpenseDetail.as_view(), name='ExpenseDetail'),
     path('expense/new/', views.NewExpense.as_view(), name='NewExpense'),
     path('expense/', views.ExpenseList.as_view(), name='ExpenseList'),
+    path('income/<int:pk>/delete/modal/', views.IncomeDeleteModal.as_view(), name='IncomeDeleteModal'),
+    path('income/<int:pk>/update/modal/', views.IncomeUpdateModal.as_view(), name='IncomeUpdateModal'),
+    path('income/<int:pk>/', views.IncomeDetail.as_view(), name='IncomeDetail'),
+    path('income/new/modal', views.NewIncomeModal.as_view(), name='NewIncomeModal'),
+    path('income/', views.IncomeList.as_view(), name='IncomeList'),
     ]

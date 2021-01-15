@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  Income Record: {{ income_obj.entry_date }}
+{% endblock %}
+
+{% block content %}
+  {% include '_modal.html' %}
+
+  <div class="card shadow">
+    <div class="card-header text-white bg-info">
+      <div class="d-flex justify-content-between align-items-center">
+        <span>
+          <i class="far fa-file-invoice-dollar" aria-hidden="true"></i>
+          Income on {{ income_obj.expected_date }}
+        </span>
+        <span>
+          <a
+            href="{% url 'ledger:IncomeList' %}"
+            class="btn btn-sm btn-dark text-white"
+          ><i class="fal fa-step-backward"></i>&nbsp;Income List
+          </a>
+          <button
+            class="btn_modal_trigger btn btn-sm btn-light"
+            data-id="{% url 'ledger:IncomeUpdateModal' income_obj.id %}?next={{ request.path }}"
+          >Edit
+          </button>
+        </span>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="form-row">
+        <div class="col-md-2 mb-0">Income Source</div>
+        <div class="col-md-5 mb-0"><strong>{{ income_obj.payer.name }}</strong></div>
+        <div class="col-md-2 mb-0">Entry Date</div>
+        <div class="col-md-3 mb-0">{{ income_obj.entry_date|date:"d-m-Y" }}</div>
+      </div>
+      <div class="form-row">
+        <div class="col-md-2 mb-0">Amount</div>
+        <div class="col-md-5 mb-0"><strong>$ {{ income_obj.amount }}</strong></div>
+        <div class="col-md-2 mb-0">Payment Method</div>
+        <div class="col-md-3 mb-0">{{ income_obj.payment_method.name }}</div>
+      </div>
+      <div class="form-row">
+        <div class="col-md-2 mb-0">Paid Date</div>
+        <div class="col-md-5 mb-0 d-flex justify-content-between align-items-center">
+          {{ income_obj.expected_date|date:"d-m-Y"}}
+        </div>
+        <div class="col-md-2 mb-0">Category</div>
+        <div class="col-md-3 mb-0">{{ income_obj.payer.category.name }}</div>
+      </div>
+      <div class="form-row">
+        <div class="col-md-2 mb-0">Invoice No.</div>
+        <div class="col-md-5 mb-0">
+            {% if income_obj.invoice_no %}{{ income_obj.invoice_no }}
+            {% else %}-
+            {% endif %}
+        </div>
+        <div class="col-md-2 mb-0">Invoice Date</div>
+        <div class="col-md-3">
+            {% if income_obj.invoice_date %}
+            {{ income_obj.invoice_date |date:"d-m-Y"}}
+            {% else %}-
+            {% endif %}
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="col-md-2 mb-0">Payment Ref</div>
+        <div class="col-md-5 mb-0">
+            {% if income_obj.payment_ref %}
+            {{ income_obj.payment_ref }}
+            {% else %}-
+            {% endif %}
+        </div>
+        <div class="col-md-2 mb-0">Other Ref</div>
+        <div class="col-md-3 mb-0">
+            {% if income_obj.other_ref %}
+            {{ income_obj.other_ref }}
+            {% else %}-
+            {% endif %}
+        </div> 
+      </div>
+      <div class="form-row">
+        <div class="col-md-2 mb-0">Description</div>
+        <div class="col-md-5 mb-0">
+            {% if income_obj.description %}
+            {{ income_obj.description }}
+            {% else %}-
+            {% endif %}
+        </div>
+        <div class="col-md-2 mb-0">Remarks</div>
+        <div class="col-md-3 mb-0">
+            {% if income_obj.remarks %}
+            {{ income_obj.remarks }}
+            {% else %}-
+            {% endif %}
+        </div>
+      </div>
+      <hr>
+    </div>
+  </div>
+{% endblock %}
+
+{% block extrascripts %}
+<script type="text/javascript">
+  $(document).ready(function () {
+      $(".btn_modal_trigger").each(function() {
+          $(this).modalForm({
+              formURL: $(this).data('id')
+          });
+      });
+  });
+</script>
+{% endblock %}

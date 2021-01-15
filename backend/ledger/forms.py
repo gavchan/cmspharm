@@ -18,7 +18,7 @@ from crispy_forms.bootstrap import (
 )
 from bootstrap_datepicker_plus import DatePickerInput
 from bootstrap_modal_forms.forms import BSModalForm
-from .models import ExpenseCategory, Expense, PaymentMethod, Vendor
+from .models import ExpenseCategory, Expense, PaymentMethod, Vendor, Income
 
 
 class NewExpenseCategoryForm(ModelForm):
@@ -103,99 +103,99 @@ class ExpenseCategoryUpdateForm(ModelForm):
         exclude = ['id', ]
 
 
-class NewExpenseSelectVendorForm(ModelForm):
+# class NewExpenseSelectVendorForm(ModelForm):
 
-    invoice_date = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
-    expected_date = forms.CharField(
-        required=False,
-        widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'})
-        )
+#     invoice_date = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
+#     expected_date = forms.CharField(
+#         required=False,
+#         widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'})
+#         )
 
-    def __init__(self, *args, **kwargs):
-        self.vendor_obj = kwargs.pop('vendor_obj', None)
+#     def __init__(self, *args, **kwargs):
+#         self.vendor_obj = kwargs.pop('vendor_obj', None)
 
-        super(NewExpenseSelectVendorForm, self).__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.helper.render_unmentioned_fields = False
-        self.helper.form_id = 'id-ExpenseForm'
-        self.helper.form_class = 'cmmForms'
-        self.helper.form_method = 'post'
-        self.helper.form_action = reverse(
-            'ledger:NewExpenseSelectVendor')
-        #self.initial['entry_date'] = timezone.now().strftime('%Y-%m-%d')
-        today_date = timezone.now().strftime('%Y-%m-%d')
-        self.initial['payment_method'] = PaymentMethod.objects.get(
-            name='Cheque').pk
-        self.initial['version'] = 1
-        try:
-            # Assign vendor_id if available
-            vendor_id = self.vendor_obj.pk
-        except:
-            vendor_id = None
-        self.initial['vendor'] = vendor_id
+#         super(NewExpenseSelectVendorForm, self).__init__(*args, **kwargs)
+#         self.helper = FormHelper()
+#         self.helper.render_unmentioned_fields = False
+#         self.helper.form_id = 'id-ExpenseForm'
+#         self.helper.form_class = 'cmmForms'
+#         self.helper.form_method = 'post'
+#         self.helper.form_action = reverse(
+#             'ledger:NewExpenseSelectVendor')
+#         #self.initial['entry_date'] = timezone.now().strftime('%Y-%m-%d')
+#         today_date = timezone.now().strftime('%Y-%m-%d')
+#         self.initial['payment_method'] = PaymentMethod.objects.get(
+#             name='Cheque').pk
+#         self.initial['version'] = 1
+#         try:
+#             # Assign vendor_id if available
+#             vendor_id = self.vendor_obj.pk
+#         except:
+#             vendor_id = None
+#         self.initial['vendor'] = vendor_id
 
-        self.helper.layout = Layout(
-            Hidden('entry_date', today_date),
-            Hidden('version', '1'),
-            Row(
-                Column(
-                    FieldWithButtons('vendor', StrictButton(
-                        '<i class="far fa-user-plus"></i>', id='add_vendor_button', css_class='btn-secondary')),
-                    css_class='form-group col-md-8 mb-0'
-                ),
-                Column('payee', css_class='form-group col-md-4 mb-0'),
-                css_class='form-row',
-            ),
-            Row(
-                Column('category', css_class='form-group col-md-4 mb-0'),
-                Column('invoice_no', css_class='form-group col-md-4 mb-0'),
-                Column('invoice_date', css_class='form-group col-md-4 mb-0'),
-                css_class='form-row',
-            ),
-            Row(
-                Column('payment_method', css_class='form-group col-md-4 mb-0'),
-                Column('amount', css_class='form-group col-md-4 mb-0'),
-                Column('description', css_class='form-group col-md-4 mb-0'),
-                css_class='form-row',
-            ),
-            Row(
-                Column('payment_ref', css_class='form-group col-md-4 mb-0'),
-                Column('expected_date', css_class='form-group col-md-4 mb-0'),
-                Column('other_ref', css_class='form-group col-md-4 mb-0'),
-                css_class="form-row",),
-            Row(
-                Column(
-                    Field('remarks', css_class='form-group col-md-8 mb-0', rows="1")),
-                css_class="form-row",
-            ),
-            FormActions(
-                Submit('submit', 'Submit'),
-                Button('cancel', 'Cancel', onclick="window.location.href = '{}';".format(
-                    reverse('ledger:ExpenseList')))
-            ),
-        )
+#         self.helper.layout = Layout(
+#             Hidden('entry_date', today_date),
+#             Hidden('version', '1'),
+#             Row(
+#                 Column(
+#                     FieldWithButtons('vendor', StrictButton(
+#                         '<i class="far fa-user-plus"></i>', id='add_vendor_button', css_class='btn-secondary')),
+#                     css_class='form-group col-md-8 mb-0'
+#                 ),
+#                 Column('payee', css_class='form-group col-md-4 mb-0'),
+#                 css_class='form-row',
+#             ),
+#             Row(
+#                 Column('category', css_class='form-group col-md-4 mb-0'),
+#                 Column('invoice_no', css_class='form-group col-md-4 mb-0'),
+#                 Column('invoice_date', css_class='form-group col-md-4 mb-0'),
+#                 css_class='form-row',
+#             ),
+#             Row(
+#                 Column('payment_method', css_class='form-group col-md-4 mb-0'),
+#                 Column('amount', css_class='form-group col-md-4 mb-0'),
+#                 Column('description', css_class='form-group col-md-4 mb-0'),
+#                 css_class='form-row',
+#             ),
+#             Row(
+#                 Column('payment_ref', css_class='form-group col-md-4 mb-0'),
+#                 Column('expected_date', css_class='form-group col-md-4 mb-0'),
+#                 Column('other_ref', css_class='form-group col-md-4 mb-0'),
+#                 css_class="form-row",),
+#             Row(
+#                 Column(
+#                     Field('remarks', css_class='form-group col-md-8 mb-0', rows="1")),
+#                 css_class="form-row",
+#             ),
+#             FormActions(
+#                 Submit('submit', 'Submit'),
+#                 Button('cancel', 'Cancel', onclick="window.location.href = '{}';".format(
+#                     reverse('ledger:ExpenseList')))
+#             ),
+#         )
 
-    class Meta:
-        model = Expense
-        exclude = ['id', ]
-        widgets = {
-            'expected_date': DatePickerInput(
-                options={
-                    "format": "YYYY-MM-DD",
-                    "showClose": True,
-                    "showClear": True,
-                    "showTodayButton": True,
-                }
-            ),
-            'invoice_date': DatePickerInput(
-                options={
-                    "format": "YYYY-MM-DD",
-                    "showClose": True,
-                    "showClear": True,
-                    "showTodayButton": True,
-                }
-            ),
-        }
+#     class Meta:
+#         model = Expense
+#         exclude = ['id', ]
+#         widgets = {
+#             'expected_date': DatePickerInput(
+#                 options={
+#                     "format": "YYYY-MM-DD",
+#                     "showClose": True,
+#                     "showClear": True,
+#                     "showTodayButton": True,
+#                 }
+#             ),
+#             'invoice_date': DatePickerInput(
+#                 options={
+#                     "format": "YYYY-MM-DD",
+#                     "showClose": True,
+#                     "showClear": True,
+#                     "showTodayButton": True,
+#                 }
+#             ),
+#         }
 
 
 class ExpenseUpdateForm(ModelForm):
@@ -657,6 +657,146 @@ class DeliveryPaymentModalForm(BSModalForm):
         exclude = ['id', 'date_created', 'last_updated']
         widgets = {
             'expected_date': DatePickerInput(
+                options={
+                    "format": "YYYY-MM-DD",
+                    "showClose": True,
+                    "showClear": True,
+                    "showTodayButton": True,
+                }
+            ),
+        }
+
+class NewIncomeModalForm(BSModalForm):
+
+    def __init__(self, *args, **kwargs):
+
+        super(NewIncomeModalForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.render_unmentioned_fields = False
+        self.helper.form_id = 'id-IncomeForm'
+        self.helper.form_class = 'cmmForms'
+        self.helper.form_method = 'post'
+        self.helper.form_action = reverse(
+            'ledger:NewIncomeModal')
+        today_date = timezone.now().strftime('%Y-%m-%d')
+        print(today_date)
+        self.initial['payment_method'] = PaymentMethod.objects.get(
+            name='Bank Tx').pk
+        self.helper.layout = Layout(
+            Hidden('version', 1),
+            Hidden('entry_date', today_date),
+            Row(
+                Column(
+                    'payer',
+                    # FieldWithButtons('vendor', StrictButton(
+                    #     '<i class="far fa-user-plus"></i>', id='add_vendor_button', css_class='btn-secondary')),
+                    css_class='form-group col-md-8 mb-0'
+                ),
+                Column('payment_method', css_class='form-group col-md-4 mb-0'),
+                css_class='form-row',
+            ),
+            Row(
+                Column('amount', css_class='form-group col-md-4 mb-0'),
+                Column('payment_ref', css_class='form-group col-md-4 mb-0'),
+                Column('expected_date', css_class='form-group col-md-4 mb-0'),
+                css_class='form-row',
+            ),
+            Row(
+                Column('other_ref', css_class='form-group col-md-4 mb-0'),
+                Column('invoice_no', css_class='form-group col-md-4 mb-0'),
+                Column('invoice_date', css_class='form-group col-md-4 mb-0'),
+                css_class='form-row',
+            ),
+            Row(
+                Column('description', css_class='form-group col-md-4 mb-0'),
+                Field('remarks', css_class='form-group col-md-8 mb-0', rows="1"),
+                css_class="form-row",
+            ),
+            FormActions(
+                Submit('submit', 'Submit'),
+            ),
+        )
+
+    class Meta:
+        model = Income
+        exclude = ['id', ]
+        widgets = {
+            'expected_date': DatePickerInput(
+                options={
+                    "format": "YYYY-MM-DD",
+                    "showClose": True,
+                    "showClear": True,
+                    "showTodayButton": True,
+                }
+            ),
+            'invoice_date': DatePickerInput(
+                options={
+                    "format": "YYYY-MM-DD",
+                    "showClose": True,
+                    "showClear": True,
+                    "showTodayButton": True,
+                }
+            ),
+        }
+
+class IncomeUpdateModalForm(BSModalForm):
+
+    def __init__(self, *args, **kwargs):
+
+        super(IncomeUpdateModalForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.render_unmentioned_fields = False
+        self.helper.form_id = 'id-IncomeForm'
+        self.helper.form_class = 'cmmForms'
+        self.helper.form_method = 'post'
+        self.helper.form_action = reverse(
+            'ledger:IncomeUpdateModal', args=(self.instance.pk,))
+        self.helper.layout = Layout(
+            Row(
+                Column(
+                    'payer',
+                    # FieldWithButtons('vendor', StrictButton(
+                    #     '<i class="far fa-user-plus"></i>', id='add_vendor_button', css_class='btn-secondary')),
+                    css_class='form-group col-md-8 mb-0'
+                ),
+                Column('payment_method', css_class='form-group col-md-4 mb-0'),
+                css_class='form-row',
+            ),
+            Row(
+                Column('amount', css_class='form-group col-md-4 mb-0'),
+                Column('payment_ref', css_class='form-group col-md-4 mb-0'),
+                Column('expected_date', css_class='form-group col-md-4 mb-0'),
+                css_class='form-row',
+            ),
+            Row(
+                Column('other_ref', css_class='form-group col-md-4 mb-0'),
+                Column('invoice_no', css_class='form-group col-md-4 mb-0'),
+                Column('invoice_date', css_class='form-group col-md-4 mb-0'),
+                css_class='form-row',
+            ),
+            Row(
+                Column('description', css_class='form-group col-md-4 mb-0'),
+                Field('remarks', css_class='form-group col-md-8 mb-0', rows="1"),
+                css_class="form-row",
+            ),
+            FormActions(
+                Submit('submit', 'Submit'),
+            ),
+        )
+
+    class Meta:
+        model = Income
+        exclude = ['id', 'version', 'entry_date']
+        widgets = {
+            'expected_date': DatePickerInput(
+                options={
+                    "format": "YYYY-MM-DD",
+                    "showClose": True,
+                    "showClear": True,
+                    "showTodayButton": True,
+                }
+            ),
+            'invoice_date': DatePickerInput(
                 options={
                     "format": "YYYY-MM-DD",
                     "showClose": True,

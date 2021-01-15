@@ -13,7 +13,9 @@ from django.shortcuts import render
 from bootstrap_modal_forms.generic import BSModalCreateView, BSModalUpdateView, BSModalDeleteView
 from .models import (
     ExpenseCategory,
-    Expense
+    Expense,
+    IncomeSource,
+    Income,
 )
 from inventory.models import (
     DeliveryOrder,
@@ -25,6 +27,8 @@ from .forms import (
     # NewExpenseByVendorModalForm,
     NewExpenseModalForm,
     DeliveryPaymentModalForm,
+    NewIncomeModalForm,
+    IncomeUpdateModalForm,
 )
 from inventory.models import (
     Vendor,
@@ -97,7 +101,6 @@ class ExpenseList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
         query = self.request.GET.get('q')
         self.begin = self.request.GET.get('begin')
         self.end = self.request.GET.get('end')
-        print(f"Date from: {self.begin} to: {self.end}")
         if query:
             self.last_query = query
             object_list = Expense.objects.filter(
@@ -472,3 +475,80 @@ def ExpenseExportCsv(request):
         writer.writerow(expense)
 
     return response
+
+
+class IncomeDetail(DetailView, LoginRequiredMixin, PermissionRequiredMixin):
+    """Show Income Details for Drug Category, allow add delivery"""
+    permission_required = ('ledger.view_income',)
+    template_name = 'ledger/income_detail.html'
+    model = Income
+    context_object_name = 'income_obj'
+
+class IncomeDeleteModal(BSModalDeleteView, LoginRequiredMixin, PermissionRequiredMixin):
+    """Update Income modal"""
+    permission_required = ('ledger.delete_income',)
+    model = Income
+    template_name = 'ledger/income_confirm_delete_modal.html'
+    success_message = 'Success: Income record was deleted.'
+    success_url = reverse_lazy('ledger:IncomeList')
+
+class IncomeList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
+    """Lists Income"""
+    permission_required = ('ledger.view_income')
+    model = Income
+    template_name = "ledger/income_list.html"
+    context_object_name = 'income_list_obj'
+    paginate_by = 20
+    last_query = ''
+    last_query_count = 0
+    today =  timezone.now().strftime('%Y-%m-%d')
+    begin = ''
+    end = ''
+
+    def get_queryset(self):
+        query = self.request.GET.get('q')
+        self.begin = self.request.GET.get('begin')
+        self.end = self.request.GET.get('end')
+        if query:
+            self.last_query = query
+            object_list = Income.objects.filter(
+                Q(payer__icontains=query)
+            ).order_by('-expected_date')
+            self.last_query_count = object_list.count
+        else:
+            self.last_query = ''
+            object_list = Income.objects.all().order_by('-expected_date')
+            self.last_query_count = object_list.count
+        if self.begin and self.end:
+            # Filter date range if both parameters given
+            object_list = object_list.filter(expected_date__range=[self.begin, self.end])
+        elif self.begin and not self.end:
+            # Filter for items later than begin date
+            object_list = object_list.filter(expected_date__gte=self.begin)
+        elif self.end and not self.begin:
+            object_list = object_list.filter(expected_date__lte=self.end)
+        return object_list
+
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        data['last_query'] = self.last_query
+        data['last_query_count'] = self.last_query_count
+        data['begin'] = self.begin
+        data['end'] = self.end
+        return data
+
+class NewIncomeModal(BSModalCreateView, LoginRequiredMixin, PermissionRequiredMixin):
+    """Add new income modal"""
+    permission_required = ('ledger.add_income', )
+    template_name = 'ledger/new_income_modal.html'
+    form_class = NewIncomeModalForm
+    success_url = reverse_lazy('ledger:IncomeList')
+
+
+class IncomeUpdateModal(BSModalUpdateView, LoginRequiredMixin, PermissionRequiredMixin):
+    """Update Income"""
+    permission_required = ('ledger.change_income',)
+    model = Income
+    form_class = IncomeUpdateModalForm
+    template_name = "ledger/income_update_modal.html"
+    success_message = 'Success: Income was updated'

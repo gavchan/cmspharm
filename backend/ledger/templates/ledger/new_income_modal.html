@@ -1,0 +1,18 @@
+{% load crispy_forms_tags %}
+{{form.media}}
+<div class="modal-header">
+    <h3 class="modal-title">New Income Entry</h3>
+    <span>
+        <button type="button" class="btn btn-sm close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </span>
+</div>
+
+<div class="modal-body">
+    {% crispy form %}
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+</div>

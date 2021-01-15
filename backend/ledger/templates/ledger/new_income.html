@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags %}
+{{form.media}}
+
+{% block content %}
+
+
+<div class="card shadow">
+    <div class="card-header">
+      <div class="d-flex justify-content-between align-items-center">
+        Add New Income
+        <span>
+          <a
+            href="javascript: history.go(-1)"
+            id="btn_cancel"
+          ><span aria-hidden="true">&times;</span>
+          </a>
+        </span>
+      </div>
+    </div>
+    <div class="card-body">
+        {% crispy form %}
+    </div>
+</div>
+
+{% endblock %}

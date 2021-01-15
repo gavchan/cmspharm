@@ -93,3 +93,73 @@ class Expense(LedgerEntry):
 
     def __str__(self):
         return f"{self.entry_date} | ${self.amount} - {self.payee}"
+
+class IncomeCategory(models.Model):
+    """
+    Model definition for IncomeCategory
+    """
+    name = models.CharField(max_length=255, unique=True)
+    code = models.CharField(max_length=255, unique=True)
+    description = models.CharField(max_length=255, blank=True, null=True)
+    active = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ['code','-active']
+        verbose_name = 'Income category'
+        verbose_name_plural = 'Income categories'
+    
+    @property
+    def label(self):
+        return '-'.join([self.code, self.name])
+
+    def __str__(self):
+        return f"{self.label}"
+
+class IncomeSource(models.Model):
+    """
+    Model definition for IncomeSource
+    """
+    name = models.CharField(max_length=255, unique=True)
+    code = models.CharField(max_length=255, unique=True)
+    account_no = models.CharField(max_length=255)
+    category = models.ForeignKey(
+        IncomeCategory, on_delete=models.PROTECT,
+        blank=True, null=True
+    )
+    description = models.CharField(max_length=255, blank=True, null=True)
+    active = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ['code','-active']
+        verbose_name = 'Income source'
+    
+    @property
+    def label(self):
+        return '-'.join([self.code, self.name])
+
+    def __str__(self):
+        return f"{self.label}"
+
+class Income(LedgerEntry):
+    """Model definition for Income"""
+    
+    payer = models.ForeignKey(
+        IncomeSource, on_delete=models.PROTECT
+    )
+    payment_method = models.ForeignKey(
+        PaymentMethod, on_delete=models.PROTECT,
+    )
+    payment_ref = models.CharField(verbose_name="Cheque/ref no.", max_length=255, blank=True, null=True)
+    invoice_no = models.CharField(max_length=255, blank=True, null=True)
+    invoice_date = models.DateField(blank=True, null=True)
+    other_ref = models.CharField(max_length=255, blank=True, null=True)
+
+    class Meta:
+        ordering = ['-entry_date']
+        verbose_name = 'Income'
+
+    def get_absolute_url(self):
+        return reverse('ledger:IncomeDetail', kwargs={'pk': self.pk})
+
+    def __str__(self):
+        return f"{self.entry_date} | ${self.amount} - {self.payee}"
