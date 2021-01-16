@@ -250,11 +250,11 @@ class DeliveryItem(models.Model):
         DeliveryOrder, related_name='delivery_items',
         on_delete = models.CASCADE,
     )
-    purchase_quantity = models.DecimalField(max_digits=10, decimal_places=1, default=0)
+    purchase_quantity = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     purchase_unit = models.CharField(max_length=100, choices=PURCHASE_UNIT_CHOICES, default=BOX)
-    bonus_quantity = models.DecimalField(max_digits=10, decimal_places=1, default=0)
+    bonus_quantity = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     unit_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    discount = models.DecimalField(max_digits=4, decimal_places=0, default=0)
+    discount = models.DecimalField(max_digits=4, decimal_places=2, default=0)
     # discount: percentage discount applied to unit_price in calculation of total; e.g. 25 = 25% off
     items_per_purchase = models.DecimalField(max_digits=10, decimal_places=0, default=1)
     # items_per_purchase: number of granular items per unit of purchase. E.g. 1 pack can contain 100 items
