@@ -242,6 +242,7 @@ class NewDeliveryOrderForm(ModelForm):
                     <label for="received_date">Received date</label>
                     <div class="input-group date" id="datepicker_received_date" data-target-input="nearest">
                         <input type="text" 
+                            id="id_received_date"
                             class="form-control datetimepicker-input"
                             data-target="#datepicker_received_date"
                             placeholder="YYYY-MM-DD"
@@ -262,7 +263,8 @@ class NewDeliveryOrderForm(ModelForm):
                 Div(HTML("""
                     <label for="invoice_date">Invoice date</label>
                     <div class="input-group date" id="datepicker_invoice_date" data-target-input="nearest">
-                        <input type="text" 
+                        <input type="text"
+                            id="id_invoice_date"
                             class="form-control datetimepicker-input"
                             data-target="#datepicker_invoice_date"
                             placeholder="YYYY-MM-DD"
@@ -284,7 +286,8 @@ class NewDeliveryOrderForm(ModelForm):
                 Div(HTML("""
                     <label for="due_date">Due date</label>
                     <div class="input-group date" id="datepicker_due_date" data-target-input="nearest">
-                        <input type="text" 
+                        <input type="text"
+                            id="id_due_date"
                             class="form-control datetimepicker-input"
                             data-target="#datepicker_due_date"
                             placeholder="YYYY-MM-DD"
@@ -364,6 +367,7 @@ class NewDeliveryOrderModalForm(BSModalForm):
                             data-target="#datepicker_received_date"
                             placeholder="YYYY-MM-DD"
                             name="received_date"
+                            id="id_received_date"
                         >
                         <div class="input-group-append" data-target="#datepicker_received_date" data-toggle="datetimepicker">
                             <div class="input-group-text"><i class="fa fa-calendar"></i></div>
@@ -385,6 +389,7 @@ class NewDeliveryOrderModalForm(BSModalForm):
                             data-target="#datepicker_invoice_date"
                             placeholder="YYYY-MM-DD"
                             name="invoice_date"
+                            id="id_invoice_date"
                         >
                         <div class="input-group-append" data-target="#datepicker_invoice_date" data-toggle="datetimepicker">
                             <div class="input-group-text"><i class="fa fa-calendar"></i></div>
@@ -407,6 +412,7 @@ class NewDeliveryOrderModalForm(BSModalForm):
                             data-target="#datepicker_due_date"
                             placeholder="YYYY-MM-DD"
                             name="due_date"
+                            id="id_due_date"
                         >
                         <div class="input-group-append" data-target="#datepicker_due_date" data-toggle="datetimepicker">
                             <div class="input-group-text"><i class="fa fa-calendar"></i></div>
@@ -466,6 +472,7 @@ class DeliveryOrderUpdateModalForm(BSModalForm):
                             data-target="#datepicker_received_date"
                             placeholder="YYYY-MM-DD"
                             name="received_date"
+                            id="id_received_date"
                             value="{{ deliveryorder_obj.received_date}}
                         >
                         <div class="input-group-append" data-target="#datepicker_received_date" data-toggle="datetimepicker">
@@ -488,6 +495,7 @@ class DeliveryOrderUpdateModalForm(BSModalForm):
                             data-target="#datepicker_invoice_date"
                             placeholder="YYYY-MM-DD"
                             name="invoice_date"
+                            id="id_invoice_date"
                             value="{{ deliveryorder_obj.invoice_date }}"
                         >
                         <div class="input-group-append" data-target="#datepicker_invoice_date" data-toggle="datetimepicker">
@@ -511,6 +519,7 @@ class DeliveryOrderUpdateModalForm(BSModalForm):
                             data-target="#datepicker_due_date"
                             placeholder="YYYY-MM-DD"
                             name="due_date"
+                            id="id_due_date"
                             value="{{ deliveryorder_obj.due_date}}
                         >
                         <div class="input-group-append" data-target="#datepicker_due_date" data-toggle="datetimepicker">
