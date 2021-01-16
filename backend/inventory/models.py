@@ -287,6 +287,9 @@ class DeliveryItem(models.Model):
                 std_cost = round(self.unit_price * self.purchase_quantity / (self.items_per_purchase * self.purchase_quantity), 2)
         except ZeroDivisionError:
             std_cost = 0.0
+        except Exception as e:
+            std_cost = 0.0
+            print(e)
         return  std_cost
 
     @property
@@ -296,6 +299,9 @@ class DeliveryItem(models.Model):
             avg_cost = round(self.total_price / self.items_quantity, 2)
         except ZeroDivisionError:
             avg_cost = 0.00
+        except Exception as e:
+            avg_cost = 0.0
+            print(e)
         return avg_cost
 
     @property
