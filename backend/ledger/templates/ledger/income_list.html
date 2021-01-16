@@ -33,6 +33,7 @@
                   <div class="input-group input-group-sm">
                     <input
                       class="form-control"
+                      id="query_input"
                       name="q"
                       value="{{ last_query }}"
                       type="text"
@@ -190,6 +191,7 @@
     $("#datepicker_from").on("change.datetimepicker", function (e) {
       $("#datepickerto").datetimepicker("maxDate", e.date);
     });
+    $("#query_input").focus();
   });
 </script>
 {% endblock %}

@@ -26,11 +26,14 @@
                 Permit No.
             </div>
             <div class="col-sm-3">
+                {% if cmsitem_obj.registration_no %}
                 <a 
                     href="{% url 'drugdb:DrugDetailMatch' cmsitem_obj.registration_no %}"
                     class="btn-link"
                 ><i class="fad fa-file-alt"></i>&nbsp;{{ cmsitem_obj.registration_no }}
                 </a>
+                {% else %}-
+                {% endif %}
             </div>
         </div>
         <div class="row">

@@ -693,6 +693,8 @@ class ItemUpdateModalForm(BSModalForm):
                 css_class="form-row"
             ),
             Hidden('version', self.instance.version + 1),
+            Hidden('cmsid', self.instance.cmsid),
+            Hidden('reg_no', self.instance.reg_no),
             FormActions(
                 Submit('submit', 'Submit'),
                 HTML("""

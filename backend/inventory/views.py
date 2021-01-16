@@ -210,7 +210,7 @@ class ItemUpdateModal(BSModalUpdateView, LoginRequiredMixin, PermissionRequiredM
         try:
             resolve(self.next_url)
         except Resolver404:
-            return reverse('inventory:ItemList')
+            return reverse('inventory:ItemDetail', args=(self.object.pk,))
         return self.next_url
 
 class ItemDelete(DeleteView, LoginRequiredMixin, PermissionRequiredMixin):
