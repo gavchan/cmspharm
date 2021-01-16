@@ -162,7 +162,7 @@ class InventoryItem(models.Model):
         'Advisory', on_delete=models.PROTECT, 
         db_column='advisory_id', blank=True, null=True)
     
-    alias = models.CharField(max_length=255, blank=True, null=True, unique=True)
+    alias = models.CharField(max_length=255, blank=True, null=True)
     avg_cost = models.FloatField(default=0)
     category = models.CharField(max_length=255, blank=True, null=True)
 
