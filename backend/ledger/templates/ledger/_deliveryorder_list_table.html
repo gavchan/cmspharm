@@ -31,9 +31,9 @@
         
         <tr>
             <td>
-                {{ record.invoice_date|date:"d-m-Y" }}
+                <strong>{{ record.invoice_date|date:"d-m-Y" }}</strong>
                 <br>
-                {% if record.invoice_no %}{{ record.invoice_no}}
+                {% if record.invoice_no %}<em>{{ record.invoice_no}}</em>
                 {% else %}-
                 {% endif %}
             </td>
