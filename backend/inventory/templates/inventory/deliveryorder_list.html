@@ -62,10 +62,11 @@
                   <div class="input-group input-group-sm">
                     <input
                       class="form-control"
+                      id="query_input"
                       name="q"
                       value="{{ last_query }}"
                       type="text"
-                      placeholder="Search by vendor/supplier"
+                      placeholder="Search by vendor/supplier/invoice no."
                     />
                     <div class="input-group-append">
                       <button class="btn btn-sm btn-secondary">Search</button>
@@ -200,7 +201,8 @@
         + threeMonthsAgo + "&end=" + today;
       window.location = loadurl;
     });
-  }); 
+    $("#query_input").focus();
+  });
 </script>
 
 {% endblock %}

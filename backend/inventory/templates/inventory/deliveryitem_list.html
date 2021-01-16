@@ -35,6 +35,7 @@
                   <div class="input-group input-group-sm">
                     <input
                       class="form-control"
+                      id="query_input"
                       name="q"
                       value="{{ last_query }}"
                       type="text"
@@ -166,6 +167,8 @@
         + threeMonthsAgo + "&end=" + today;
       window.location = loadurl;
     });
+    $("#query_input").focus();
+
   });
 </script>
 

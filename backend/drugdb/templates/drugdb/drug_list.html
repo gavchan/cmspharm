@@ -24,6 +24,7 @@
                         <div class="input-group input-group-sm">
                           <input
                             class="form-control"
+                            id="query_input"
                             name="q"
                             value="{{ last_query }}"
                             type="text"
@@ -151,6 +152,7 @@
     $("#inputGroupSelectType").change(function() {
       optionUpdatePage();
     });
+    $("#query_input").focus();
 
   });
 </script>

@@ -38,6 +38,7 @@ Vendors
           <div class="input-group input-group-sm">
             <input
               class="form-control"
+              id="query_input"
               name="q"
               value="{{ last_query }}"
               type="text"
@@ -227,6 +228,8 @@ Vendors
       let vtype=$("#inputGroupSelectType option:selected").val();
       self.location = "{% url 'inventory:VendorList' %}?vtype=" + vtype;
     });
+    $("#query_input").focus();
+
   });
 </script>
 

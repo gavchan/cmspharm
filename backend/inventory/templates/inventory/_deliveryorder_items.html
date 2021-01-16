@@ -61,12 +61,12 @@
                         >Sample
                         </span>
                         {% else %}
-                        {{ listitem.purchase_quantity|floatformat }}
+                        {{ listitem.purchase_quantity|floatformat:2 }}
                         {% endif %}
                     </td>
                     <td class="text-center">
                         {% if listitem.bonus_quantity %}
-                        {{ listitem.bonus_quantity|floatformat }}
+                        {{ listitem.bonus_quantity|floatformat:2 }}
                         {% else %}-
                         {% endif %}
                     </td>

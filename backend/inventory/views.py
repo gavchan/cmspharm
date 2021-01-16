@@ -566,7 +566,8 @@ class DeliveryOrderList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
         if query:
             self.last_query = query
             object_list = DeliveryOrder.objects.filter(
-                Q(vendor__name__icontains=query)
+                Q(vendor__name__icontains=query) |
+                Q(invoice_no__icontains=query)
             ).order_by('-received_date')
             self.last_query_count = object_list.count
         else:
