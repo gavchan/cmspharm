@@ -473,7 +473,7 @@ class DeliveryOrderUpdateModalForm(BSModalForm):
                             placeholder="YYYY-MM-DD"
                             name="received_date"
                             id="id_received_date"
-                            value="{{ deliveryorder_obj.received_date}}
+                            value="{{ deliveryorder_obj.received_date }}"
                         >
                         <div class="input-group-append" data-target="#datepicker_received_date" data-toggle="datetimepicker">
                             <div class="input-group-text"><i class="fa fa-calendar"></i></div>
@@ -520,7 +520,7 @@ class DeliveryOrderUpdateModalForm(BSModalForm):
                             placeholder="YYYY-MM-DD"
                             name="due_date"
                             id="id_due_date"
-                            value="{{ deliveryorder_obj.due_date}}
+                            value="{{ deliveryorder_obj.due_date}}"
                         >
                         <div class="input-group-append" data-target="#datepicker_due_date" data-toggle="datetimepicker">
                             <div class="input-group-text"><i class="fa fa-calendar"></i></div>
