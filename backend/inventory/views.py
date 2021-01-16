@@ -654,8 +654,17 @@ class NewDeliveryOrder(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
             })
         return kwargs
 
+    def form_valid(self, form):
+        form.instance.updated_by = self.request.user.username
+        form.instance.received_by = self.request.user.username
+        form.instance.date_created = timezone.now()
+        form.instance.last_updated = timezone.now()
+        if form.instance.invoice_date and not form.instance.received_date:
+            form.instance.received_date = form.instance.invoice_date
+        response = super().form_valid(form)
+        return response
+
     def get_success_url(self):
-        
         return reverse('inventory:DeliveryOrderDetail', args=(self.object.pk,))
 
 class NewDeliveryOrderModal(BSModalCreateView, LoginRequiredMixin, PermissionRequiredMixin):

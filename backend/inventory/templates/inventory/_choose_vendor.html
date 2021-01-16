@@ -41,10 +41,9 @@
             {% endif %}
           </td>
           <td>
-            {% if vendor.tel_main %}
-            {{ vendor.tel_main }}
-            {% else %}-
-            {% endif %}
+            {% if vendor.tel_main %}[Main] {{ vendor.tel_main }}{% endif %}
+            {% if vendor.tel_mobile %}[Mobile] {{vendor.tel_mobile }}{% endif %}
+            {% if vendor.tel_office %}[Office] {{ vendor.tel_office }}{% endif %}
           </td>
           <td class="text-right">
             {% if vendor.is_supplier and perms.inventory.add_deliveryorder %}

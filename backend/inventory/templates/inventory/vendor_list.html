@@ -156,16 +156,23 @@ Vendors
             </a>
           </td>
           <td>{{ vendor.default_exp_category.name }}</td>
-          <td>{{ vendor.contact_person }}</td>
-          <td>{{ vendor.tel_main }}</td>
+          <td>
+            {% if vendor.contact_person %}{{ vendor.contact_person }}
+            {% else %}-
+            {% endif %}
+          </td>
+          <td>
+            {% if vendor.tel_main %}[Main] {{ vendor.tel_main }}{% endif %}
+            {% if vendor.tel_mobile %}[Mobile] {{vendor.tel_mobile }}{% endif %}
+            {% if vendor.tel_office %}[Office] {{ vendor.tel_office }}{% endif %}
+          </td>
           <td class="text-right">
-            {% if vendor.is_supplier and perms.inventory.can_add_deliveryorder %}
-            <button
-              type="button"
-              class="btn_modal_trigger btn btn-sm btn-success"
-              data-id="{% url 'inventory:NewDeliveryOrder' %}?vendor={{ vendor.id }}&next={{ request.path }}"
+            {% if vendor.is_supplier and perms.inventory.add_deliveryorder %}
+            <a
+              href="{% url 'inventory:NewDeliveryOrder' %}?vendor={{ vendor.id }}&next={{ request.path }}"
+              class="btn btn-sm btn-success"
             ><i class="fal fa-box-open"></i>
-            </button>
+            </a>
             {% endif %}
             {% if perms.ledger.add_expense %}
             <a 
@@ -173,12 +180,6 @@ Vendors
               class="btn btn-sm btn-primary"
             ><i class="far fa-file-invoice-dollar"></i>
             </a>
-            <!-- <button 
-              type="button"
-              class="btn_modal_trigger btn btn-sm btn-primary"
-              data-id="{% url 'ledger:NewExpenseModal' %}?vendor={{ vendor.id }}"  
-            ><i class="far fa-file-invoice-dollar"></i>
-            </button> -->
             {% endif %}
             {% if perms.inventory.change_vendor %}
             <button
