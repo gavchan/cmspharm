@@ -2,7 +2,7 @@
     <thead>
         
         <tr>
-            <th scope="col" width="8%">Invoice date</th>
+            <th scope="col" width="8%">Invoice date/no.</th>
             <th scope="col" width="8%">Received date</th>
             <th scope="col" width="68%" colspan="5" class="text-center bg-secondary text-white">Purchase</th>
             <th scope="col" width="8%" class="text-right">Amount</th>
@@ -30,7 +30,13 @@
         {% for record in deliveryorder_list %}
         
         <tr>
-            <td>{{ record.invoice_date|date:"d-m-Y" }}</td>
+            <td>
+                {{ record.invoice_date|date:"d-m-Y" }}
+                <br>
+                {% if record.invoice_no %}{{ record.invoice_no}}
+                {% else %}-
+                {% endif %}
+            </td>
             <td>{{ record.received_date|date:"d-m-Y" }}</td>
             <td colspan="5">
                 <table width="100%">

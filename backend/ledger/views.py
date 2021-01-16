@@ -383,6 +383,7 @@ class ExpenseDetail(DetailView, LoginRequiredMixin, PermissionRequiredMixin):
             delivery_detail = {
                 'id': order.id,
                 'invoice_date': order.invoice_date,
+                'invoice_no': order.invoice_no,
                 'received_date': order.received_date,
                 'amount': order.amount,
                 'is_paid': order.is_paid,
