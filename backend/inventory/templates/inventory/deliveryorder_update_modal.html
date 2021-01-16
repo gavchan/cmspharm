@@ -33,13 +33,16 @@
   </div>
 
 <script type="text/javascript">
-$(".btn_modal_trigger").each(function() {
-  console.log("Path: {{ request.path }}")
-  $(this).modalForm({
-    formURL: $(this).data('id') + "?next={{ request.path }}"
+  $(".btn_modal_trigger").each(function() {
+    console.log("Path: {{ request.path }}")
+    $(this).modalForm({
+      formURL: $(this).data('id') + "?next={{ request.path }}"
+    });
   });
-});
-$("#btn_set_received").click(function() {
-  $("#id_received_date").val($("#id_invoice_date").val());
-});
+  $("#btn_set_received").click(function() {
+    $("#id_received_date").val($("#id_invoice_date").val());
+  });
+  $(".date").datetimepicker({
+        format: "YYYY-MM-DD",
+      });
 </script>
