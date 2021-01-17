@@ -488,7 +488,7 @@ class NewInventoryItem(CreateView, LoginRequiredMixin):
             )
         else:
            item_obj, created = Item.objects.get_or_create(
-            id=cmsid, defaults=item_data,
+            id=self.object.id, defaults=item_data,
         ) 
         if created:
             print(f"Item created: {item_obj}")
