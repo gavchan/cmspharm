@@ -21,21 +21,51 @@ CMS Inventory Items
         {% include 'cmsinv/_inventory_item_summary.html' %}
         {% include 'cmsinv/_deliveryitem_list_table.html' %}
 
-        {% if match_item_list_obj %}
         <div class="card shadow">
             <div class="card-header">
-                Related CMS Inventory Items
+              <div class="d-flex justify-content-flex-start align-items-center">
+                {% if related_keyword %}
+                Matching '{{ related_keyword }}'&nbsp;
+                {% endif %}
+                <ul class="nav nav-tabs">
+                  
+                  <li class="nav-item">
+                    <a 
+                      {% if match_item_list_obj %}
+                      class="nav-link active"
+                      {% else %}
+                      class="nav-link"
+                      {% endif %}
+                      aria-current="page" href="{% url 'drugdb:DrugDetailMatch' drug_obj.reg_no %}">
+                      CMS Items
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a
+                      {% if drug_list %} 
+                      class="nav-link active" 
+                      {% else %}
+                      class="nav-link"
+                      {% endif %}
+                      href="{% url 'drugdb:DrugDetailMatch' drug_obj.reg_no %}?r=1">
+                      Related Registered Drugs
+                    </a>
+                  </li>
+                </ul>
+              </div>
             </div>
             <div class="card-body">
+              {% if match_item_list_obj %}
                 {% include 'cmsinv/_inventory_item_list_table.html' %}
+              {% elif drug_list %}
+                {% include 'drugdb/_regdrug_list_table.html' %}
+              {% else %}
+              <div class="alert alert-danger" role="alert">
+                  No related records
+              </div>
+              {% endif %}
             </div>
-        </div>
-
-        {% else %}
-        <div class="alert alert-danger" role="alert">
-            No related CMS inventory items
-        </div>
-        {% endif %}
+          </div>
 
     </div>
 </div>

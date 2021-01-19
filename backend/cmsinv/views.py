@@ -103,8 +103,18 @@ class InventoryItemDetail(DetailView, LoginRequiredMixin):
     model = InventoryItem
     template_name = 'cmsinv/inventory_item_detail.html'
     drug_obj = None
+    drug_list = None
+    match_item_list_obj = None
     deliveryitem_obj_list = None
+    disp_drug_list = False
     
+    def dispatch(self, request, *args, **kwargs):
+        if request.GET.get('r') and request.GET.get('r') == '1':
+            self.disp_drug_list = True
+        else:
+            self.disp_drug_list = False
+        return super().dispatch(request, *args, **kwargs)
+        
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         try:
@@ -138,20 +148,27 @@ class InventoryItemDetail(DetailView, LoginRequiredMixin):
                     float(related_words[index])
                     index += 1
                 except ValueError:
-                    keyword = related_words[index]
+                    keyword = str(related_words[index])
                     index += 1
-
-            self.drug_list = RegisteredDrug.objects.filter(
-                Q(ingredients__name__icontains=keyword) |
-                Q(name__icontains=keyword)
-            ).order_by('name')[:100]
+            if self.disp_drug_list:
+                self.drug_list = RegisteredDrug.objects.filter(
+                    Q(ingredients__name__icontains=keyword) |
+                    Q(name__icontains=keyword)
+                ).order_by('name')[:50]
+            else:
+                self.match_item_list_obj = InventoryItem.objects.filter(
+                    Q(product_name__icontains=keyword) |
+                    Q(ingredient__icontains=keyword)
+                ).order_by('product_name')[:50]
         else:
             self.drug_list = None
+            self.match_item_list_obj = None
         data['drug_obj'] = self.drug_obj
         data['deliveryitem_obj_list'] = self.deliveryitem_obj_list
         data['cmsitem_obj'] = self.object
         data['drug_list'] = self.drug_list
-        data['related_keyword'] = keyword 
+        data['match_item_list_obj'] = self.match_item_list_obj
+        data['related_keyword'] = keyword
         return data
 
 class InventoryItemModalDetail(BSModalReadView, LoginRequiredMixin):

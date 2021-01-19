@@ -102,6 +102,9 @@ class DrugDetailMatch(ListView, LoginRequiredMixin):
     deliveryitem_obj_list = None
     cmsitem_obj = None
     item_obj = None
+    drug_list = None
+    match_item_list_obj = None
+    disp_drug_list = False
 
     def dispatch(self, request, *args, **kwargs):
         if 'reg_no' in kwargs:
@@ -124,14 +127,59 @@ class DrugDetailMatch(ListView, LoginRequiredMixin):
                 self.deliveryitem_obj_list = None
         else:
             print("Error: missing reg_no")
+        if request.GET.get('r') and request.GET.get('r') == '1':
+            self.disp_drug_list = True
+        else:
+            self.disp_drug_list = False
         return super().dispatch(request, *args, **kwargs)
     
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
+
+        # Try get first 3 ingredients from Registered Drug
+        if self.drug_obj.ingredients_list:
+            try:
+                related_words = self.drug_obj.ingredients_list.split(',')
+            except:
+                related_words = []
+        else:
+            # If no ingredient, try product_name
+            try:
+                related_words = self.drug_obj.name.split(' ')
+            except:
+                related_words = []
+        if len(related_words) > 0:
+            # Assign first non-numeric string to keyword for filter
+            keyword = ''
+            index = 0
+            while keyword == '' and index < len(related_words):
+                print(related_words[index], keyword)
+                try:
+                    float(related_words[index])
+                    index += 1
+                except ValueError:
+                    keyword = str(related_words[index])
+                    index += 1
+            if self.disp_drug_list:
+                self.drug_list = RegisteredDrug.objects.filter(
+                    Q(ingredients__name__icontains=keyword) |
+                    Q(name__icontains=keyword)
+                ).order_by('name')[:50]
+            else:
+                self.match_item_list_obj = InventoryItem.objects.filter(
+                    Q(product_name__icontains=keyword) |
+                    Q(ingredient__icontains=keyword)
+                ).order_by('product_name')[:50]
+        else:
+            self.drug_list = None
+            self.match_item_list_obj = None
         data['drug_obj'] =  self.drug_obj
         data['cmsitem_obj'] = self.cmsitem_obj
         data['item_obj'] = self.item_obj
         data['deliveryitem_obj_list'] = self.deliveryitem_obj_list
+        data['drug_list'] = self.drug_list
+        data['match_item_list_obj'] = self.match_item_list_obj
+        data['related_keyword'] = keyword
         return data
 
     def get_queryset(self):
