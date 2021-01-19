@@ -767,8 +767,6 @@ class NewItemModalForm(BSModalForm):
         model = Item
         exclude = ['id', 'date_created', 'last_updated', 'updated_by', ]
 
-
-
 class NewItemForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
@@ -840,7 +838,7 @@ class DeliveryOrderAddDeliveryItemForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         self.delivery_obj = kwargs.pop('delivery_obj', None)
-        self.drug_obj = kwargs.pop('drug_obj', None)
+        self.cmsitem_obj = kwargs.pop('cmsitem_obj', None)
         self.item_obj = kwargs.pop('item_obj', None)
         self.next_url = kwargs.pop('next_url', None)
         super(DeliveryOrderAddDeliveryItemForm, self).__init__(*args, **kwargs)
@@ -850,10 +848,10 @@ class DeliveryOrderAddDeliveryItemForm(ModelForm):
         self.helper.form_id = 'id-AddDeliveryItemForm'
         self.helper.form_class = 'cmmForms'
         self.helper.form_method = 'post'
-        if self.drug_obj:
+        if self.cmsitem_obj:
             url_with_query = "%s?cmsid=%s" % (
                 reverse('inventory:DeliveryOrderAddDeliveryItem', args=(self.delivery_obj.id,)),
-                self.drug_obj.id 
+                self.cmsitem_obj.id 
             )
         else:
             url_with_query = "%s?item=%s" % (
@@ -921,7 +919,7 @@ class DeliveryOrderAddDeliveryItemForm(ModelForm):
                     <table class="table table-sm table-striped">
                         <thead>
                         <tr>
-                            <th scope="col">Quantity ({{drug_obj.unit}})</th>
+                            <th scope="col">Quantity ({{cmsitem_obj.unit}})</th>
                             <th scope="col">Std Cost ($)</th>
                             <th scope="col">Avg Cost ($)</th>
                             <th scope="col">Final Total ($)</th>

@@ -9,13 +9,25 @@
             <ul class="nav nav-tabs card-header-tabs">
               <li class="nav-item">
                 <a 
+                  {% if not db == '1' %}
                   class="nav-link active"
-                  href="{% url 'inventory:DeliveryOrderDetail' delivery_id=delivery_obj.id %}"
-                >Choose Item to Add
+                  {% else %}
+                  class="nav-link"
+                  {% endif %}
+                  href="{% url 'inventory:DeliveryOrderDetail' delivery_id=delivery_obj.id %}?db=0&q={{query}}">
+                  CMS Inventory Items
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="{% url 'drugdb:DrugList' %}">Search Registered Drug List</a>
+                <a 
+                  {% if db == '1' %}
+                  class="nav-link active"
+                  {% else %}
+                  class="nav-link"
+                  {% endif %}
+                  href="{% url 'inventory:DeliveryOrderDetail' delivery_id=delivery_obj.id %}?db=1&q={{query}}">
+                  Registered Drugs
+                </a>
               </li>
             </ul>
         </div>
@@ -27,7 +39,7 @@
             <div class="input-group-prepend">
                 <div id="search-icon" class="input-group-text"><i class="fas fa-search"></i></div>
             </div>
-            <input class="form-control form-control-sm" id="regno-input" placeholder="Reg no.">
+            <input class="form-control form-control-sm" id="regno-input" placeholder="Search reg no">
           </div>
         </div>
         <div class="col-sm-5">
@@ -35,7 +47,7 @@
             <div class="input-group-prepend">
               <div id="search-icon" class="input-group-text"><i class="fas fa-search"></i></div>
             </div>
-            <input class="form-control form-control-sm" id="user-input" placeholder="Search CMS name, ingredient" size="30">
+            <input class="form-control form-control-sm" id="user-input" placeholder="Search by name, ingredient" size="30">
             <div class="input-group-append">
               <a
                 href="{% url 'cmsinv:NewInventoryItem' %}?vendor={{ delivery_obj.vendor.id }}&next={{ request.path }}"
@@ -61,7 +73,11 @@
         </div>
       </div>
       <div id="search-results">
+        {% if db == '1' %}
             {% include 'inventory/_drug_search_results_partial.html' %}
+        {% else %}
+            {% include 'inventory/_cmsitem_search_results_partial.html' %}
+        {% endif %}
       </div>
     </div>
 </div>

@@ -3,9 +3,9 @@
     <thead>
         <tr>
             <th scope="col">Reg no.</th>
-            <th scope="col">Alias / Cert</th>
             <th scope="col">Product name / Ingredients</th>
-            <th scope="col">Stock Qty</th>
+            <th scope="col">Cert Holder</th>
+            <th scope="col">Cms ID</th>
             <th scope="col">Action</th>
         </tr>
     </thead>
@@ -16,29 +16,38 @@
               class="table-secondary text-muted"
               {% endif %}
           >
-              <td><b>{{ drug_obj.registration_no }}</b>
-                  {% if drug_obj.discontinue %}
-                  <br><span class="badge badge-secondary">Inactive</span>
-                  {% else %}
-                  <br>{{ drug_obj.clinic_drug_no }}
+              <td><b>{{ drug_obj.reg_no}}</b>
               </td>
-                  {% endif %}
-              <td>
-                  <b>{{ drug_obj.alias }}</b>
-                  <br>{{ drug_obj.certificate_holder }}
-              </td>
-              <td><b>{{ drug_obj.product_name }}
-                  <br>{{ drug_obj.ingredient }}
+              <td><b>{{ drug_obj.name }}</b>
+                  <br>{{ drug_obj.ingredients_list }}
               </td>
               <td>
-                  {{ drug_obj.stock_qty }}
+                  {{ drug_obj.company.name }}
+              </td>
+              <td>
+                {% if drug_obj.item.cmsid %}
+                <button 
+                  class="btn_modal_trigger btn btn-sm btn-link mr-0"
+                  data-id="{% url 'cmsinv:InventoryItemDetailModal' drug_obj.item.cmsid %}">
+                    {{ drug_obj.item.cmsid }}
+                </button>
+                {% else %}
+                  <span class="badge badge-secondary">Not in CMS</span>
+                {% endif %}
               </td>
             <td>
+                {% if drug_obj.item.cmsid %}
                 <a type="button"
-                    href="{% url 'inventory:DeliveryOrderAddDeliveryItem' delivery_id %}?cmsid={{ drug_obj.id }}&next={{ request.path }}" 
+                    href="{% url 'inventory:DeliveryOrderAddDeliveryItem' delivery_id %}?cmsid={{ drug_obj.item.cmsid }}&next={{ request.path }}" 
                     class="btn_modal_trigger btn btn-sm btn-info"
                 ><i class="fad fa-layer-plus"></i>
                 </a>
+                {% else %}
+                    <a href="{% url 'cmsinv:NewInventoryItem' %}?reg_no={{ drug.reg_no }}"
+                    class="btn btn-sm btn-success"
+                    ><i class="far fa-layer-plus"></i>&nbsp;CMS
+                    </a>
+                {% endif %}
             </td>
         </tr>
 

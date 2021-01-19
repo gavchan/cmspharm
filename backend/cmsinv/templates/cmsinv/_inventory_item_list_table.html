@@ -61,6 +61,11 @@
                     href="{% url 'cmsinv:InventoryItemDetail' cmsitem.pk %}?next={{ request.path }}"
                 ><i class="fad fa-file"></i>
                 </a>
+                <button
+                  class="btn_modal_trigger btn btn-sm btn-secondary"
+                  data-id="{% url 'cmsinv:InventoryItemDetailModal' cmsitem.pk %}?next={{ request.path }}"  
+                ><i class="far fa-file-edit"></i>
+                </button>
             </td>
         </tr>
 

@@ -70,19 +70,6 @@ class NewCategory(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
     form_class = NewCategoryForm
     template_name = 'inventory/new_category.html'
 
-# class NewCategory(BSModalCreateView, LoginRequiredMixin):
-#     model = Category
-#     form_class = NewCategoryModalForm
-#     template_name = 'inventory/new_category_modal.html'
-
-# class CategoryDetail(DetailView, LoginRequiredMixin):
-#     """Display details for category"""
-#     model = Category
-#     template_name = 'inventory/category_detail.html'
-#     context_object_name = 'category_detail'
-
-#     # def get_context_data(self, **kwargs):
-#     #     context = super().get_context_data(**kwargs)
 
 class CategoryUpdate(UpdateView, LoginRequiredMixin, PermissionRequiredMixin):
     """Update details for category"""
@@ -154,7 +141,6 @@ class ItemList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
         data['status'] = self.status
         return data
 
-
 class ItemDetail(DetailView, LoginRequiredMixin, PermissionRequiredMixin):
     """Display details for item"""
     permission_required = ('inventory.view_item', )
@@ -175,16 +161,6 @@ class ItemDetail(DetailView, LoginRequiredMixin, PermissionRequiredMixin):
         data['deliveryitem_obj_list'] = delivered_items
         return data
 
-
-# class ItemUpdate(UpdateView, LoginRequiredMixin, PermissionRequiredMixin):
-#     """Update details for item"""
-#     permission_required = ('inventory.change_item', )
-#     model = Item
-#     form_class = ItemUpdateForm
-#     template_name = 'inventory/item_update_form.html'
-
-#     def get_success_url(self):
-#         return reverse('inventory:ItemDetail', args=(self.object.pk,))
 
 class ItemUpdateModal(BSModalUpdateView, LoginRequiredMixin, PermissionRequiredMixin):
     """Update details for item"""
@@ -307,32 +283,6 @@ class NewItemModal(BSModalCreateView, LoginRequiredMixin, PermissionRequiredMixi
         return kwargs
 
 
-# class NewItemFromVendor(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
-#     """Add new item"""
-#     permission_required = ('inventory.add_item', )
-#     model = Item
-#     form_class = NewItemFromVendorForm
-#     template_name = 'inventory/new_item.html'
-#     vendor_id = ''
-
-#     def dispatch(self, request, *args, **kwargs):
-#         if 'vendor_id' in kwargs:
-#             self.vendor_id = kwargs['vendor_id']
-#         else:
-#             self.vendor_id = ''
-#         return super().dispatch(request, *args, **kwargs)
-
-#     def get_context_data(self, **kwargs):
-#         data = super().get_context_data(**kwargs)
-#         if self.vendor_id:
-#             data['vendor_id'] = self.vendor_id
-#             vendor_obj = Vendor.objects.get(id=self.vendor_id)
-#             data['vendor_name'] = vendor_obj.name
-#         else:
-#             data['vendor_name'] = ''
-#         return data
-
-
 class VendorList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
     """List Vendors"""
     permission_required = ('inventory.view_vendor', )
@@ -371,43 +321,6 @@ class VendorList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
         data['vtype'] = self.vtype
         return data
 
-# class VendorSelectModal(ListView, LoginRequiredMixin, PermissionRequiredMixin):
-#     """List Vendors"""
-#     permission_required = ('inventory.view_vendor', )
-#     model = Vendor
-#     template_name = 'inventory/vendor_select_modal.html'
-#     context_object_name = 'vendor_list'
-#     paginate_by = 20
-#     last_query = ''
-#     last_query_count = 0
-#     suppliers_only = False
-
-#     def get_queryset(self):
-#         self.vtype = self.request.GET.get('vtype') or 'supp'
-#         query = self.request.GET.get('q')
-#         if query:
-#             self.last_query = query
-#             object_list = Vendor.objects.filter(
-#                 Q(name__icontains=query) |
-#                 Q(alias__icontains=query)
-#             )
-#         else:
-#             self.last_query = ''
-#             object_list = Vendor.objects.all()
-#         if self.vtype == 'supp':
-#             object_list = object_list.filter(is_supplier=True)
-#         elif self.vtype == 'misc':
-#             object_list = object_list.filter(is_supplier=False)
-#         self.last_query_count = object_list.count
-
-#         return object_list
-
-#     def get_context_data(self, **kwargs):
-#         data = super().get_context_data(**kwargs)
-#         data['last_query'] = self.last_query
-#         data['last_query_count'] = self.last_query_count
-#         data['vtype'] = self.vtype
-#         return data 
 
 class VendorDetail(DetailView, LoginRequiredMixin, PermissionRequiredMixin):
     """Display details for vendor"""
@@ -434,7 +347,6 @@ class VendorDetail(DetailView, LoginRequiredMixin, PermissionRequiredMixin):
             delivered_items = None
         data['deliveryitem_obj_list'] = delivered_items
         return data
-
 
 class NewVendor(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
     """Add new vendor"""
@@ -544,7 +456,6 @@ class VendorDeleteModal(BSModalDeleteView, LoginRequiredMixin, PermissionRequire
             return reverse('inventory:VendorList')
         return self.next_url
 
-
 class DeliveryOrderList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
     """
     Lists order deliveries
@@ -615,7 +526,6 @@ class DeliveryOrderUpdateModal(BSModalUpdateView, LoginRequiredMixin, Permission
     def get_success_url(self):
         return reverse('inventory:DeliveryOrderDetail', args=(self.object.pk,))
 
-
 class DeliveryOrderDeleteModal(BSModalDeleteView, LoginRequiredMixin, PermissionRequiredMixin):
     """Delete item delivery record"""
     permission_required = ('inventory.delete_deliveryorder', )
@@ -623,7 +533,6 @@ class DeliveryOrderDeleteModal(BSModalDeleteView, LoginRequiredMixin, Permission
     template_name = 'inventory/deliveryorder_confirm_delete_modal.html'
     success_message = 'Success: Delivery Order deleted'
     success_url = reverse_lazy('inventory:DeliveryOrderList')
-
 
 class NewDeliveryOrder(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
     """Add new item delivery"""
@@ -701,46 +610,14 @@ class NewDeliveryOrderModal(BSModalCreateView, LoginRequiredMixin, PermissionReq
     def get_success_url(self):
         return reverse('inventory:DeliveryOrderDetail', args=(self.object.pk,))
 
-# @login_required
-# @permission_required('inventory.add_deliveryorder',)
-# def NewDeliveryOrderSelectVendorView(request, *args, **kwargs):
-#     """Select Vendor for New DeliveryOrder"""
-#     vendors = Vendor.objects.all()
-#     vendor_obj = None
-
-#     MAX_QUERY_COUNT = 20
-#     # Get query from request and search Vendor
-#     vendor = request.GET.get('vendor')
-#     if vendor:
-#         vendor_obj = Vendor.objects.get(id=vendor)
-#         query = None
-#     else:
-#         query = request.GET.get('q')
-#     if query:
-#         last_query = query
-#         object_list = Vendor.objects.filter(Q(name__icontains=query))[:MAX_QUERY_COUNT]
-#         last_query_count = object_list.count
-#     else:
-#         last_query = ''
-#         object_list = Vendor.objects.all()[:MAX_QUERY_COUNT]
-#         last_query_count = object_list.count
-#     if request.is_ajax():
-#         html = render_to_string(
-#             template_name='inventory/_new_deliveryorder_choose_vendor.html',
-#             context={
-#                 'vendor_list': object_list,
-#                 }
-#         )
-#         data_dict = {"html_from_view": html}
-#         return JsonResponse(data=data_dict, safe=False)
-
-#     return render(request, "inventory/new_deliveryorder_view.html", {'vendors': vendors, 'vendor_obj': vendor_obj})
 
 @login_required
 @permission_required('inventory.view_deliveryorder')
 def DeliveryOrderDetail(request, *args, **kwargs):
     """Display summary plus add items"""
     MAX_QUERY_COUNT = 200
+    CMSITEM_DB = '0'
+    REGDRUG_DB = '1'
 
     # Parse delivery_id from request and get related objects
     delivery_obj = None
@@ -749,6 +626,13 @@ def DeliveryOrderDetail(request, *args, **kwargs):
     ctx = {
         'delivery_obj': delivery_obj
     }
+    # Get search type; default is 0=cmsinv.InventoryItem; 1=drugdb.RegisteredDrug
+    if request.GET.get('db') == REGDRUG_DB:
+        searchdb = REGDRUG_DB
+    else:
+        searchdb = CMSITEM_DB
+    print(searchdb)
+    ctx['db'] = searchdb
 
     # Get related DrugDelivery objects associated with delivery_id
     try:
@@ -762,7 +646,7 @@ def DeliveryOrderDetail(request, *args, **kwargs):
         ctx['list_total'] = 0
     ctx['deliveryitems_list'] = deliveryitems_list
 
-    # Get query from request and search RegisteredDrug    
+    # Get query from request and search 
     query = request.GET.get('q')
     item_query = request.GET.get('iq')
     stype = request.GET.get('stype')
@@ -779,6 +663,7 @@ def DeliveryOrderDetail(request, *args, **kwargs):
                 context={
                     'item_list': object_list,
                     'delivery_id': delivery_obj.id,
+                    'db': 0,
                 }
             )
             data_dict = {"html_from_view": html}
@@ -786,30 +671,54 @@ def DeliveryOrderDetail(request, *args, **kwargs):
     elif query:
         last_query = query
         if stype == 'regno':
-            object_list = InventoryItem.objects.filter(
-                Q(registration_no__icontains=query)
-            ).order_by('discontinue')[:MAX_QUERY_COUNT]
+            if searchdb == CMSITEM_DB:
+                object_list = InventoryItem.objects.filter(
+                    Q(registration_no__icontains=query)
+                ).order_by('discontinue')[:MAX_QUERY_COUNT]
+            else:
+                object_list = RegisteredDrug.objects.filter(
+                    Q(reg_no__icontains=query)
+                ).order_by('item__cmsid')[:MAX_QUERY_COUNT]
         else:
             last_query = query
-            object_list = InventoryItem.objects.filter(
-                Q(alias__icontains=query) |
-                Q(product_name__icontains=query) |
-                # Q(generic_name__icontains=query) |
-                Q(ingredient__icontains=query)
-            ).order_by('discontinue')[:MAX_QUERY_COUNT]
+            if searchdb == CMSITEM_DB:
+                object_list = InventoryItem.objects.filter(
+                    Q(alias__icontains=query) |
+                    Q(product_name__icontains=query) |
+                    # Q(generic_name__icontains=query) |
+                    Q(ingredient__icontains=query)
+                ).order_by('discontinue')[:MAX_QUERY_COUNT]
+            else:
+                object_list = RegisteredDrug.objects.filter(
+                    Q(name__icontains=query)
+                ).order_by('item__cmsid')[:MAX_QUERY_COUNT]
         last_query_count = object_list.count
     else:
         last_query = ''
-        object_list = InventoryItem.objects.all().order_by('discontinue')[:MAX_QUERY_COUNT]
+        if searchdb == CMSITEM_DB:
+            object_list = InventoryItem.objects.all().order_by('discontinue')[:MAX_QUERY_COUNT]
+        else:
+            object_list = RegisteredDrug.objects.all().order_by('item__cmsid')[:MAX_QUERY_COUNT]
         last_query_count = object_list.count
     if request.is_ajax():
-        html = render_to_string(
-            template_name='inventory/_drug_search_results_partial.html',
-            context={
-                'drug_list': object_list,
-                'delivery_id': delivery_obj.id,
-            }
-        )
+        if searchdb == CMSITEM_DB:
+            html = render_to_string(
+                template_name='inventory/_cmsitem_search_results_partial.html',
+                context={
+                    'cmsitem_list': object_list,
+                    'delivery_id': delivery_obj.id,
+                    'db': 0,
+                }
+            )
+        else:
+            html = render_to_string(
+                template_name='inventory/_drug_search_results_partial.html',
+                context={
+                    'drug_list': object_list,
+                    'delivery_id': delivery_obj.id,
+                    'db': 1,
+                }
+            ) 
         data_dict = {"html_from_view": html}
         return JsonResponse(data=data_dict, safe=False)
 
@@ -822,7 +731,7 @@ class DeliveryItemUpdateModal(BSModalUpdateView, LoginRequiredMixin, PermissionR
     template_name = 'inventory/deliveryorder_deliveryitem_update_modal.html'
     form_class = DeliveryItemUpdateModalForm
     delivery_obj = None
-    drug_obj = None
+    cmsitem_obj = None
     success_message = 'Success: Delivery Item updated'
 
     def dispatch(self, request, *args, **kwargs):
@@ -832,13 +741,13 @@ class DeliveryItemUpdateModal(BSModalUpdateView, LoginRequiredMixin, PermissionR
             print('error: no delivery_id')
         if 'pk' in kwargs:
             self.object = DeliveryItem.objects.get(pk=kwargs['pk'])
-        self.drug_obj = InventoryItem.objects.get(pk=self.object.item.cmsid)
+        self.cmsitem_obj = InventoryItem.objects.get(pk=self.object.item.cmsid)
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         data['listitem_obj'] = self.object
-        data['drug_obj'] = self.drug_obj
+        data['cmsitem_obj'] = self.cmsitem_obj
         return data
 
     def get_success_url(self):
@@ -940,8 +849,7 @@ class DeliveryOrderAddDeliveryItem(LoginRequiredMixin, PermissionRequiredMixin, 
     model = DeliveryItem
     template_name = 'inventory/deliveryorder_add_deliveryitem.html'
     delivery_obj = None
-    drug_obj = None
-    reg_drug_obj = None
+    cmsitem_obj = None
     item_obj = None
     success_message = 'Success: Drug added'
 
@@ -952,40 +860,40 @@ class DeliveryOrderAddDeliveryItem(LoginRequiredMixin, PermissionRequiredMixin, 
         else:
             print('Error: no delivery_id')
         if request.GET.get('cmsid'):
-            self.drug_obj = InventoryItem.objects.get(pk=request.GET.get('cmsid'))
+            self.cmsitem_obj = InventoryItem.objects.get(pk=request.GET.get('cmsid'))
+            print(self.cmsitem_obj)
             # Auto create/update item in case not already in database
             item_details = {
-                'name': self.drug_obj.product_name,
-                'cmsid': self.drug_obj.id,
-                'reg_no': self.drug_obj.registration_no,
-                'is_active': not self.drug_obj.discontinue,
+                'name': self.cmsitem_obj.product_name,
+                'cmsid': self.cmsitem_obj.id,
+                'reg_no': self.cmsitem_obj.registration_no,
+                'is_active': not self.cmsitem_obj.discontinue,
             }
             self.item_obj, created = Item.objects.update_or_create(
-                cmsid=self.drug_obj.id,
+                cmsid=self.cmsitem_obj.id,
                 defaults=item_details,
             )
             if created:
-                print(f"Item {self.drug_obj.registration_no} | {self.drug_obj.product_name} not in database => created")
+                print(f"Item {self.cmsitem_obj.registration_no} | {self.cmsitem_obj.product_name} not in database => created")
             else:
-                print(f"Got item {self.drug_obj.id}")
+                print(f"Got item {self.cmsitem_obj.id}")
         elif request.GET.get('item'):
             print(f"Request - item={request.GET.get('item')}")
             self.item_obj = Item.objects.get(id=request.GET.get('item'))
-            
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
 
         data = super().get_context_data(**kwargs)
         data['delivery_obj'] = self.delivery_obj
-        data['drug_obj'] = self.drug_obj
+        data['cmsitem_obj'] = self.cmsitem_obj
         return data
 
     def get_form_kwargs(self):
         kwargs = super(DeliveryOrderAddDeliveryItem, self).get_form_kwargs()
         kwargs.update({
             'delivery_obj': self.delivery_obj,
-            'drug_obj': self.drug_obj,
+            'cmsitem_obj': self.cmsitem_obj,
             'item_obj': self.item_obj, 
             })
         return kwargs

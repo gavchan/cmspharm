@@ -171,9 +171,9 @@ class InventoryItemDetail(DetailView, LoginRequiredMixin):
         data['related_keyword'] = keyword
         return data
 
-class InventoryItemModalDetail(BSModalReadView, LoginRequiredMixin):
+class InventoryItemDetailModal(BSModalReadView, LoginRequiredMixin):
     model = InventoryItem
-    template_name = 'cmsinv/inventory_item_modal_detail.html'
+    template_name = 'cmsinv/inventory_item_detail_modal.html'
     cmsitem_obj = None
     drug_obj = None
     drug_delivery_obj = None
@@ -512,9 +512,9 @@ class NewInventoryItem(CreateView, LoginRequiredMixin):
 
             # Update RegDrug object if it is a registered drug
             if self.regdrug_obj:
-                self.regdrug_obj.itemid = item_obj.id
+                self.regdrug_obj.item = item_obj
                 self.regdrug_obj.save()
-                print(f"RegDrug {self.regdrug_obj.reg_no} updated with itemid {self.regdrug_obj.itemid}")
+                print(f"RegDrug {self.regdrug_obj.reg_no} updated with item # {self.regdrug_obj.item.id}")
         else:
             print(f"Item #{ item_obj.id } updated: {item_obj}")
         return response

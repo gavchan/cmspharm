@@ -12,42 +12,42 @@
   </thead>
   <tbody>
       <tr 
-          {% if drug_obj.discontinue %}
+          {% if cmsitem_obj.discontinue %}
           class="table-secondary text-muted"
           {% endif %}
       >
-          <td><b>{{ drug_obj.registration_no }}</b>
-              {% if drug_obj.discontinue %}
+          <td><b>{{ cmsitem_obj.registration_no }}</b>
+              {% if cmsitem_obj.discontinue %}
               <br><span class="badge badge-secondary">Inactive</span>
               {% else %}
-              <br>{{ drug_obj.clinic_drug_no }}
+              <br>{{ cmsitem_obj.clinic_drug_no }}
           </td>
               {% endif %}
           <td>
-              <b>{{ drug_obj.alias }}</b>
-              <br>{{ drug_obj.certificate_holder }}
+              <b>{{ cmsitem_obj.alias }}</b>
+              <br>{{ cmsitem_obj.certificate_holder }}
           </td>
-          <td><b>{{ drug_obj.product_name }}</b>
-          <br>{{ drug_obj.label_name }}</td>
+          <td><b>{{ cmsitem_obj.product_name }}</b>
+          <br>{{ cmsitem_obj.label_name }}</td>
           <td>
-              <b>{{ drug_obj.generic_name }}</b>
-              <br>{{ drug_obj.ingredient }}
+              <b>{{ cmsitem_obj.generic_name }}</b>
+              <br>{{ cmsitem_obj.ingredient }}
           </td>
           <td class="text-right">
-              {{ drug_obj.stock_qty }}
+              {{ cmsitem_obj.stock_qty }}
           </td>
           <td class="text-right">
-              {{ drug_obj.standard_cost }} ({{ drug_obj.avg_cost}})
+              {{ cmsitem_obj.standard_cost }} ({{ cmsitem_obj.avg_cost}})
           </td>
           <td class="item-action-cell text-right">
                 <button 
                   type="button" 
-                  {% if drug_obj.registration_no %}
+                  {% if cmsitem_obj.registration_no %}
                       class="show-item-details btn_modal_trigger btn btn-link"
                   {% else %}
                       class="show-item-details btn_modal_trigger btn btn-sm btn-danger"
                   {% endif %}
-                  data-id="{% url 'cmsinv:InventoryItemModalDetail' drug_obj.pk %}"
+                  data-id="{% url 'cmsinv:InventoryItemDetailModal' cmsitem_obj.pk %}"
                   ><i class="fad fa-file"></i>
                 </button>
           </td>
