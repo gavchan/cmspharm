@@ -11,10 +11,12 @@ class RegisteredDrug(models.Model):
     name = models.CharField(max_length=255, blank=True, null=True)
     # name: Product Name
     reg_no = models.CharField(unique=True, max_length=255, blank=True, null=True)
-    itemid = models.PositiveIntegerField(blank=True, null=True, unique=True)
     # reg_no: equivalent to "permit_no" in drug database
-    # ingredients_str = models.TextField(blank=True, null=True)
-    # Company Name and Company Address
+    itemid = models.PositiveIntegerField(blank=True, null=True, unique=True)
+    item = models.OneToOneField(
+        'inventory.Item', on_delete=models.PROTECT,
+        null=True, blank=True, 
+    )
     ingredients = models.ManyToManyField(
         'Ingredient', 
         related_name='registereddrugs',
