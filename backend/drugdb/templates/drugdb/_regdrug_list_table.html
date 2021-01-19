@@ -1,7 +1,7 @@
 <table class="table table-sm table-striped">
     <thead>
         <tr>
-            <th scope="col" width="8%">ID</th>
+            <th scope="col" width="8%">CMSID</th>
             <th scope="col" width="10%">Reg no.</th>
             <th scope="col" width="40%">Product name / Ingredients</th>
             <th scope="col" width="32%">Company</th>
@@ -12,13 +12,13 @@
         {% for drug in drug_list %}
         
         <tr>
-            <td>{{ drug.id }}</td>
+            <td>{{ drug.item.cmsid }}</td>
             <td>{{ drug.reg_no}}</td>
             <td><b>{{ drug.name }}</b>
             <br>{{ drug.ingredients_list }}</td>
             <td>{{ drug.company }}</td>
             <td class="text-right">
-                {% if not drug.itemid %}
+                {% if not drug.item.id %}
                 <a href="{% url 'cmsinv:NewInventoryItem' %}?reg_no={{ drug.reg_no }}"
                 class="btn btn-sm btn-success"
                 ><i class="far fa-layer-plus"></i>

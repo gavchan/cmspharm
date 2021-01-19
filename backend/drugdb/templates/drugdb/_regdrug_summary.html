@@ -11,7 +11,7 @@
         {% endif %}
       </span>
       <span>
-        {% if not drug_obj.itemid %}
+        {% if not drug_obj.item %}
         <a
           href="{% url 'cmsinv:NewInventoryItem' %}?reg_no={{ drug_obj.reg_no }}"
           class="btn btn-sm btn-secondary text-white"
@@ -27,19 +27,19 @@
       <div class="col-sm-5">{{ drug_obj.name}}</div>
       <div class="col-sm-2">Item ID</div>
       <div class="col-sm-3 mt-0 mb-0">
-        {% if perms.inventory.change_item and drug_obj.itemid %}
+        {% if perms.inventory.change_item and drug_obj.item.id %}
         <a
           class="btn-link"
-          href="{% url 'inventory:ItemDetail' drug_obj.itemid %}"
-        ><i class="fad fa-file-alt"></i>&nbsp;{{ drug_obj.itemid }}
+          href="{% url 'inventory:ItemDetail' drug_obj.item.id %}"
+        ><i class="fad fa-file-alt"></i>&nbsp;{{ drug_obj.item.id }}
         </a>
         <a
           class="btn_modal_trigger btn-link"
-          data-id="{% url 'inventory:ItemUpdateModal' drug_obj.itemid %}"
+          data-id="{% url 'inventory:ItemUpdateModal' drug_obj.item.id %}"
         ><i class="fad fa-edit"></i>
         </a>
         {% else %}
-        {{ drug_obj.itemid }}
+        {{ drug_obj.item.id }}
         {% endif %}
       </div>
     </div>

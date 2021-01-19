@@ -40,9 +40,9 @@ class RegisteredDrugList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
         if self.request.GET.get('t'):
             self.disp_type = self.request.GET.get('t')
         if self.disp_type == '1':   # Display unlinked
-            object_list = RegisteredDrug.objects.filter(itemid=None)
+            object_list = RegisteredDrug.objects.filter(item=None)
         elif self.disp_type == '2':  # Display linked
-            object_list = RegisteredDrug.objects.exclude(itemid=None)
+            object_list = RegisteredDrug.objects.exclude(item=None)
         elif self.disp_type == '3':  # Display inactive
             object_list = RegisteredDrug.objects.filter(is_active=True)
         else:
