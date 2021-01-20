@@ -50,7 +50,7 @@
             <a
               href="{% url 'inventory:NewDeliveryOrder' %}?vendor={{ vendor.id }}&next={{ request.path }}"
               class="btn btn-sm btn-success"
-            ><i class="fal fa-box-open"></i>
+            >+<i class="fal fa-box-open"></i>
             </a>
             <!-- <button
               type="button"
@@ -64,7 +64,7 @@
             <a
               href="{% url 'ledger:NewExpense' %}?vendor={{ vendor.id }}&next={{ request.path }}"
               class="btn btn-sm btn-primary"
-            ><i class="far fa-file-invoice-dollar"></i>
+            >+<i class="far fa-file-invoice-dollar"></i>
             </a>
             <!-- <button 
               type="button"

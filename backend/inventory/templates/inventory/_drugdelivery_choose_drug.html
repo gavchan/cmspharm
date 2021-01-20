@@ -14,7 +14,7 @@
                   {% else %}
                   class="nav-link"
                   {% endif %}
-                  href="{% url 'inventory:DeliveryOrderDetail' delivery_id=delivery_obj.id %}?db=0&q={{query}}">
+                  href="{% url 'inventory:DeliveryOrderDetail' delivery_id=delivery_obj.id %}?db=0&q={{ query }}&stype={{ stype }}">
                   CMS Inventory Items
                 </a>
               </li>
@@ -25,7 +25,7 @@
                   {% else %}
                   class="nav-link"
                   {% endif %}
-                  href="{% url 'inventory:DeliveryOrderDetail' delivery_id=delivery_obj.id %}?db=1&q={{query}}">
+                  href="{% url 'inventory:DeliveryOrderDetail' delivery_id=delivery_obj.id %}?db=1&q={{ query }}&stype={{ stype }}">
                   Registered Drugs
                 </a>
               </li>

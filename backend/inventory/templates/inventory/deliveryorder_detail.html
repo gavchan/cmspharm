@@ -33,6 +33,7 @@
 
 {{ delivery_obj.id|json_script:"delivery_id" }}
 {{ db|json_script:"db" }}
+{{ last_query|json_script:'last_query'}}
 <script type="text/javascript">
     $(document).ready(function () {
         // Modal trigger
@@ -50,7 +51,7 @@
         const results_div = $('#search-results')
         var delivery_id = JSON.parse(document.getElementById("delivery_id").textContent)
         var db = JSON.parse(document.getElementById("db").textContent)
-        console.log(db)
+        var last_query = JSON.parse(document.getElementById("last_query").textContent)
         const endpoint = '/inventory/delivery/' + delivery_id 
         const delay_by_in_ms = 300
         let scheduled_function = false
@@ -68,7 +69,11 @@
             
         }
         // Check for input on document load and execute ajax if not empty
+        if (last_query != '') {
+            user_input.val(last_query)
+        }
         query = user_input.val()
+        
         if (query) {
             const request_parameters = {
                 q: query,

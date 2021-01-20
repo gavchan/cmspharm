@@ -59,12 +59,12 @@
                 <a
                     class="btn btn-sm btn-primary" 
                     href="{% url 'cmsinv:InventoryItemDetail' cmsitem.pk %}?next={{ request.path }}"
-                ><i class="fad fa-file"></i>
+                ><i class="far fa-file-alt"></i>
                 </a>
                 <button
-                  class="btn_modal_trigger btn btn-sm btn-secondary"
+                  class="btn_modal_trigger btn btn-sm btn-info"
                   data-id="{% url 'cmsinv:InventoryItemDetailModal' cmsitem.pk %}?next={{ request.path }}"  
-                ><i class="far fa-file-edit"></i>
+                ><i class="fad fa-file"></i>
                 </button>
             </td>
         </tr>

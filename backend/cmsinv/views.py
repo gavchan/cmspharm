@@ -176,7 +176,7 @@ class InventoryItemDetailModal(BSModalReadView, LoginRequiredMixin):
     template_name = 'cmsinv/inventory_item_detail_modal.html'
     cmsitem_obj = None
     drug_obj = None
-    drug_delivery_obj = None
+    deliveryitem_obj_list = None
     match_drug_list = None
 
     def get_context_data(self, **kwargs):
@@ -189,12 +189,12 @@ class InventoryItemDetailModal(BSModalReadView, LoginRequiredMixin):
             keyword = self.object.product_name.split()[0]
             self.match_drug_list = RegisteredDrug.objects.filter(Q(name__icontains=keyword))
         try:
-            self.delivery_obj_list = DeliveryItem.objects.filter(item__reg_no=self.object.registration_no)[:5]
+            self.deliveryitem_obj_list = DeliveryItem.objects.filter(item__reg_no=self.object.registration_no)[:5]
         except DeliveryItem.DoesNotExist:
-            self.delivery_obj_list = None
+            self.deliveryitem_obj_list = None
             print(f"No delivery record for {self.object.product_name}")
         data['drug_obj'] = self.drug_obj
-        data['delivery_obj_list'] = self.delivery_obj_list
+        data['deliveryitem_obj_list'] = self.deliveryitem_obj_list
         data['cmsitem_obj'] = self.object
         data['match_drug_list'] = self.match_drug_list
         return data

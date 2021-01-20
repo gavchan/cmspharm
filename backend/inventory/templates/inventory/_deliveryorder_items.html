@@ -100,7 +100,7 @@
                 </tr>
                 {% endfor %}
                 <tr>
-                    <th colspan="7" class="text-right">
+                    <th colspan="8" class="text-right">
                         Total:
                         {% if list_total != delivery_obj.amount %}
                         <span class="badge badge-danger ml-2 mt-0"
@@ -108,7 +108,7 @@
                         </span>
                         {% endif %}
                     </th>
-                    <td class="text-right">{{ list_total }}</td>
+                    <td class="text-right"><strong>{{ list_total }}</strong></td>
                 </tr>
     
     

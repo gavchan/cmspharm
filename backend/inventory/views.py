@@ -342,7 +342,9 @@ class VendorDetail(DetailView, LoginRequiredMixin, PermissionRequiredMixin):
         data = super().get_context_data(**kwargs)
         data['vendor_obj'] = self.object
         try:
-            delivered_items = DeliveryItem.objects.filter(delivery_order__vendor__id=self.object.id)[:20]
+            delivered_items = DeliveryItem.objects.filter(
+                delivery_order__vendor__id=self.object.id
+                ).order_by('-delivery_order__received_date')[:20]
         except DeliveryItem.DoesNotExist:
             delivered_items = None
         data['deliveryitem_obj_list'] = delivered_items
@@ -647,9 +649,12 @@ def DeliveryOrderDetail(request, *args, **kwargs):
     ctx['deliveryitems_list'] = deliveryitems_list
 
     # Get query from request and search 
-    query = request.GET.get('q')
-    item_query = request.GET.get('iq')
-    stype = request.GET.get('stype')
+    query = request.GET.get('q') or ''
+    item_query = request.GET.get('iq') or ''
+    stype = request.GET.get('stype') or ''
+    ctx['query'] = query
+    ctx['item_query'] = item_query
+    ctx['stype'] = stype
     if item_query:
         last_query = item_query
         object_list = Item.objects.filter(
@@ -664,6 +669,9 @@ def DeliveryOrderDetail(request, *args, **kwargs):
                     'item_list': object_list,
                     'delivery_id': delivery_obj.id,
                     'db': 0,
+                    'q': query,
+                    'iq': item_query,
+                    'stype': stype,
                 }
             )
             data_dict = {"html_from_view": html}
@@ -708,6 +716,9 @@ def DeliveryOrderDetail(request, *args, **kwargs):
                     'cmsitem_list': object_list,
                     'delivery_id': delivery_obj.id,
                     'db': 0,
+                    'q': query,
+                    'iq': item_query,
+                    'stype': stype,
                 }
             )
         else:
@@ -717,6 +728,9 @@ def DeliveryOrderDetail(request, *args, **kwargs):
                     'drug_list': object_list,
                     'delivery_id': delivery_obj.id,
                     'db': 1,
+                    'q': query,
+                    'iq': item_query,
+                    'stype': stype,
                 }
             ) 
         data_dict = {"html_from_view": html}
