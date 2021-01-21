@@ -20,12 +20,10 @@
       <div class="col-md-10">
         <form action="{% url 'inventory:DeliveryItemList' %}" method="get">
           <div class="row">
-            <div class="col-sm-10">
+            <div class="col-sm-12">
               <div class="row">
                 {% include "_datepicker_from_to.html" %}
               </div>
-            </div>
-            <div class="col-sm-2 px-1">
             </div>
           </div>
           <div class="row mb-2">
@@ -165,6 +163,13 @@
       var threeMonthsAgo = moment().subtract(3, 'months').format("YYYY-MM-DD");
       var loadurl = "{% url 'inventory:DeliveryItemList' %}?begin=" 
         + threeMonthsAgo + "&end=" + today;
+      window.location = loadurl;
+    });
+    $("#btn-view_last_6_months").click(function() {
+      var today = moment().format("YYYY-MM-DD");
+      var oneMonthAgo = moment().subtract(6, 'months').format("YYYY-MM-DD");
+      var loadurl = "{% url 'inventory:DeliveryItemList' %}?begin=" 
+        + oneMonthAgo + "&end=" + today;
       window.location = loadurl;
     });
     $("#query_input").focus();

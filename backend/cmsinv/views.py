@@ -45,10 +45,11 @@ from bootstrap_modal_forms.generic import BSModalReadView, BSModalUpdateView, BS
 # InventoryItem Views
 # ===================
 
-class InventoryItemList(ListView, LoginRequiredMixin):
+class InventoryItemList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
     """
     Lists drug deliveries
     """
+    permission_required = ('cmsinv.view_inventoryitem',)
     template_name = 'cmsinv/inventory_item_list.html'
     model = InventoryItem
     context_object_name = 'match_item_list_obj'
@@ -66,9 +67,9 @@ class InventoryItemList(ListView, LoginRequiredMixin):
             object_list = InventoryItem.objects.filter(
                 Q(registration_no__icontains=query) |
                 Q(product_name__icontains=query) |
-                Q(generic_name__icontains=query) |
+                # Q(generic_name__icontains=query) |
                 Q(alias__icontains=query) |
-                Q(clinic_drug_no__icontains=query) |
+                # Q(clinic_drug_no__icontains=query) |
                 Q(ingredient__icontains=query)
             ).order_by('discontinue')
         else:
@@ -98,8 +99,9 @@ class InventoryItemList(ListView, LoginRequiredMixin):
         data['dd'] = self.dd
         return data
 
-class InventoryItemDetail(DetailView, LoginRequiredMixin):
+class InventoryItemDetail(DetailView, LoginRequiredMixin, PermissionRequiredMixin):
     """Display details of inventory item"""
+    permission_required = ('cmsinv.view_inventoryitem',)
     model = InventoryItem
     template_name = 'cmsinv/inventory_item_detail.html'
     drug_obj = None
@@ -171,7 +173,9 @@ class InventoryItemDetail(DetailView, LoginRequiredMixin):
         data['related_keyword'] = keyword
         return data
 
-class InventoryItemDetailModal(BSModalReadView, LoginRequiredMixin):
+class InventoryItemDetailModal(BSModalReadView, LoginRequiredMixin, PermissionRequiredMixin):
+    """Display details of InventoryItem (modal view)"""
+    permission_required = ('cmsinv.view_inventoryitem',)
     model = InventoryItem
     template_name = 'cmsinv/inventory_item_detail_modal.html'
     cmsitem_obj = None
@@ -199,7 +203,7 @@ class InventoryItemDetailModal(BSModalReadView, LoginRequiredMixin):
         data['match_drug_list'] = self.match_drug_list
         return data
 
-class InventoryItemQuickEditModal(BSModalUpdateView, LoginRequiredMixin):
+class InventoryItemQuickEditModal(BSModalUpdateView, LoginRequiredMixin, PermissionRequiredMixin):
     model = InventoryItem
     template_name = 'cmsinv/inventory_item_quickedit_modal.html'
     form_class = InventoryItemQuickEditModalForm
@@ -265,8 +269,9 @@ class InventoryItemQuickEditModal(BSModalUpdateView, LoginRequiredMixin):
         except Resolver404: 
             return reverse('cmsinv:InventoryItemList')
 
-class InventoryItemUpdate(UpdateView, LoginRequiredMixin):
-    """Update details of drug delivery"""
+class InventoryItemUpdate(UpdateView, LoginRequiredMixin, PermissionRequiredMixin):
+    """Update Inventory Item details"""
+    permission_required = ('cmsinv.change_inventoryitem')
     model = InventoryItem
     form_class = InventoryItemUpdateForm
     template_name = 'cmsinv/inventory_item_update.html'
@@ -317,8 +322,9 @@ class InventoryItemUpdate(UpdateView, LoginRequiredMixin):
 #     model = InventoryItem
 #     success_url = reverse_lazy('cmsinv:InventoryItemList')
 
-class NewInventoryItem(CreateView, LoginRequiredMixin):
+class NewInventoryItem(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
     """Add new CMS inventory item"""
+    permission_required = ('cmsinv.add_inventoryitem',)
     model = InventoryItem
     template_name = 'cmsinv/new_inventory_item.html'
     form_class = NewInventoryItemForm
@@ -522,105 +528,13 @@ class NewInventoryItem(CreateView, LoginRequiredMixin):
     def get_success_url(self):
         return reverse('cmsinv:InventoryItemDetail', args=(self.object.pk,))
 
-# class MatchInventoryItemList(ListView, LoginRequiredMixin):
-#     """
-#     CMS Inventory Item List Matching Non-CMS Delivery Record
-#     """
-#     model = InventoryItem
-#     template_name = "cmsinv/match_inventory_item_list.html"
-#     context_object_name = 'match_item_list_obj'
-#     drug_reg_no = ''
-#     keyword = ''
-#     ingredients = ''
-#     drug_obj = None
-#     delivery_obj_list = None
-#     cmsitem_obj = None
 
-#     def dispatch(self, request, *args, **kwargs):
-#         if 'reg_no' in kwargs:
-#             self.drug_reg_no = kwargs['reg_no']
-#             try:
-#                 self.cmsitem_obj = InventoryItem.objects.get(registration_no=self.drug_reg_no)
-#             except InventoryItem.DoesNotExist:
-#                 self.cmsitem_obj = None
-#             try:
-#                 self.drug_obj = RegisteredDrug.objects.get(reg_no=self.drug_reg_no)
-#             except RegisteredDrug.DoesNotExist:
-#                 self.drug_obj = None 
-#             try:
-#                 self.delivery_obj_list = DeliveryItem.objects.filter(item__reg_no=self.drug_reg_no)[:5]
-#             except DeliveryItem.DoesNotExist:
-#                 self.delivery_obj_list = None
 
-#         else:
-#             print("Error: missing reg_no")
-#         return super().dispatch(request, *args, **kwargs)
-    
-#     def get_context_data(self, **kwargs):
-#         data = super().get_context_data(**kwargs)
-#         data['drug_obj'] =  self.drug_obj
-#         data['cmsitem_obj'] = self.cmsitem_obj
-#         data['delivery_obj_list'] = self.delivery_obj_list
-#         return data
-
-#     def get_queryset(self):
-#         if self.drug_obj:
-#             self.keyword = self.drug_obj.name
-#             self.ingredients = self.drug_obj.ingredients_list
-#         else:
-#             print('Error no existing reg no.')
-#         if self.keyword == None:
-#             self.keyword = ''
-#         if self.ingredients == None:
-#             self.ingredients = ''
-#         object_list = InventoryItem.objects.filter(
-#             Q(product_name__icontains=self.keyword) |
-#             Q(generic_name__icontains=self.keyword) |
-#             Q(alias__icontains=self.keyword) |
-#             Q(ingredient__icontains=self.ingredients)
-#         ).order_by('discontinue').exclude(registration_no=self.drug_reg_no)[:100]
-#         return object_list
-
-# class InventoryItemMatchUpdate(UpdateView, LoginRequiredMixin):
-#     """
-#     CMS Inventory Item List Matching Non-CMS Delivery Record
-#     """
-#     model = InventoryItem
-#     template_name = 'cmsinv/inventory_item_match_update.html'
-#     form_class = InventoryItemMatchUpdateForm
-#     item_obj = None
-#     drug_obj = None
-#     possible_drug_list = None
-#     delivery_obj = None
-#     delivery_obj_list = None
-    
-#     def get_success_url(self):
-#         return reverse('cmsinv:InventoryItemDetail', args=(self.object.pk,))
-        
-#     def get_context_data(self, **kwargs):
-#         data = super().get_context_data(**kwargs)
-#         try:
-#             self.drug_obj = RegisteredDrug.objects.get(reg_no=self.object.registration_no)
-#         except RegisteredDrug.DoesNotExist:
-#             print(f"No registration no. for {self.object.product_name}")
-            
-#         try:
-#             self.delivery_obj_list = DeliveryItem.objects.filter(item__reg_no=self.object.registration_no).order_by('-delivery_order__received_date')[:5]
-#         except DeliveryItem.DoesNotExist:
-#             self.delivery_obj_list = None
-#             print(f"No delivery record for {self.object.product_name}")
-#         if self.delivery_obj_list:
-#             self.delivery_obj = self.delivery_obj_list[0]
-#         data['drug_obj'] = self.drug_obj
-#         data['delivery_obj'] = self.delivery_obj
-#         data['delivery_obj_list'] = self.delivery_obj_list
-#         data['item_obj'] = self.object
-#         return data
-
-class SupplierList(ListView, LoginRequiredMixin):
+class SupplierList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
     """
     Lists CMS suppliers
     """
+    permission_required = ('cmsinv.view_supplier',)
     template_name = 'cmsinv/supplier_list.html'
     model = Supplier
     context_object_name = 'supplier_obj_list'
@@ -657,7 +571,9 @@ class SupplierList(ListView, LoginRequiredMixin):
         data
         return data
 
-class SupplierQuickEditModal(BSModalUpdateView, LoginRequiredMixin):
+class SupplierQuickEditModal(BSModalUpdateView, LoginRequiredMixin, PermissionRequiredMixin):
+    """Quick Edit Modal for Supplier Details"""
+    permission_required = ('cmsinv.change_supplier',)
     model = Supplier
     template_name = 'cmsinv/supplier_quickedit_modal.html'
     context_object_name = 'supplier_obj'
@@ -755,19 +671,11 @@ class InventoryMovementLogList(ListView, LoginRequiredMixin, PermissionRequiredM
         return data
 
 
-# class NewDeliveryFromDeliveryOrderModal(BSModalCreateView, LoginRequiredMixin, PermissionRequiredMixin):
-#     """
-#     Creates new CMS Delivery from DeliveryOrder
-#     """
-#     permission_required = ('cmsinv.view_inventorymovementlog',)
-#     template_name = 'cmsinv/new_delivery_from_deliveryorder_modal.html'
-#     model = Delivery
-#     form_class = NewDeliveryFromDeliveryOrderModalForm
-    
 def underscore_to_camel(word):
     return word.split('_')[0] + ''.join(x.capitalize() or '_' for x in word.split('_')[1:])
 
 @login_required
+@permission_required('cmsinv.change_inventoryitem', 'inventory.add_deliveryorder',)
 def NewDeliveryFromDeliveryOrderModalView(request, *args, **kwargs):
     if kwargs['delivery_id']:
         delivery_obj = get_object_or_404(DeliveryOrder, pk=kwargs['delivery_id'])

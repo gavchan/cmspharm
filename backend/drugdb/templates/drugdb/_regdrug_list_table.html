@@ -2,9 +2,8 @@
     <thead>
         <tr>
             <th scope="col" width="10%">Reg no.</th>
-            <th scope="col" width="40%">Product name / Ingredients</th>
-            <th scope="col" width="32%">Company</th>
-            <th scope="col" class="text-right" width="8%">CMSID</th>
+            <th scope="col" width="45%">Product name / Ingredients</th>
+            <th scope="col" width="35%">Company</th>
             <th scope="col" class="text-right" width="10%">Action</th>
         </tr>
     </thead>
@@ -19,24 +18,20 @@
             <td class="text-right">
                 {% if drug.item.cmsid %}
                 <button 
-                  class="btn_modal_trigger btn btn-sm btn-link mr-0"
+                  class="btn_modal_trigger btn btn-sm btn-info mr-0"
                   data-id="{% url 'cmsinv:InventoryItemDetailModal' drug.item.cmsid %}">
-                    {{ drug.item.cmsid }}
+                  CMS&nbsp;<i class="fad fa-file"></i>
                 </button>
-                {% else %}&nbsp;
-                {% endif %}
-            </td>
-            <td class="text-right">
-                {% if not drug.item.id %}
+                {% else %}
                 <a href="{% url 'cmsinv:NewInventoryItem' %}?reg_no={{ drug.reg_no }}"
                 class="btn btn-sm btn-success"
                 ><i class="far fa-layer-plus"></i>
                 </a>
-                {% endif %}
                 <a href="{% url 'drugdb:DrugDetailMatch' drug.reg_no %}"
-                class="btn btn-sm btn-info"
-                ><i class="fad fa-file"></i>
+                class="btn btn-sm btn-secondary"
+                ><i class="fad fa-file-search"></i>
                 </a>
+                {% endif %}
             </td>
         </tr>
 
