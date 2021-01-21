@@ -268,6 +268,39 @@ class InventoryItemQuickEditModal(BSModalUpdateView, LoginRequiredMixin, Permiss
             })
         return kwargs
 
+    def form_valid(self, form):
+        form.instance.updated_by = self.request.user.username
+        form.instance.last_updated = timezone.now()
+        form.instance.version = self.object.version + 1
+        response = super().form_valid(form)
+
+        # Update corresponding inventory.Item
+        if form.instance.registration_no:
+            reg_no = form.instance.registration_no.upper()
+            try:
+                drug_obj = RegisteredDrug.objects.get(reg_no=reg_no)
+            except RegisteredDrug.DoesNotExist:
+                print(f"Error. No matching registered drug with permit {reg_no}")
+            if drug_obj:
+                print(f"Found {drug_obj.reg_no} | {drug_obj.name}")
+        else:
+            reg_no = None
+        item_data = {
+            'name': form.instance.product_name,
+            'cmsid': self.object.id,
+            'reg_no': reg_no,
+            'item_type': ItemType.objects.get(name="Drug"),  # CMS InventoryItems are by default "Drug"
+            'is_active': not form.instance.discontinue,
+            'updated_by': self.request.user.username,
+            'last_updated': timezone.now()
+        }
+        item, created = Item.objects.update_or_create(cmsid=self.object.id, defaults=item_data)
+        if created:
+            print(f'Item #{item.id} created: {item.name}')
+        else:
+            print(f"Item #{item.id} updated: {item.name}")
+        return response
+
     def get_success_url(self):
         # return reverse('cmsinv:InventoryItemList')
         try:
@@ -297,7 +330,6 @@ class InventoryItemUpdate(UpdateView, LoginRequiredMixin, PermissionRequiredMixi
 
     def form_valid(self, form):
         form.instance.updated_by = self.request.user.username
-        form.instance.date_created = timezone.now()
         form.instance.last_updated = timezone.now()
         form.instance.version = self.object.version + 1
         response = super().form_valid(form)
@@ -313,6 +345,8 @@ class InventoryItemUpdate(UpdateView, LoginRequiredMixin, PermissionRequiredMixi
             'reg_no': reg_no,
             'item_type': ItemType.objects.get(name="Drug"),  # CMS InventoryItems are by default "Drug"
             'is_active': not form.instance.discontinue,
+            'updated_by': self.request.user.username,
+            'last_updated': timezone.now()
         }
         item, created = Item.objects.update_or_create(cmsid=self.object.id, defaults=item_data)
         if created:

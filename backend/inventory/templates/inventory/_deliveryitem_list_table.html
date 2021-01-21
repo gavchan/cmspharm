@@ -3,24 +3,29 @@
     <thead>
         <tr>
             <th scope="col" width="8%">Invoice Date</th>
-            <th scope="col" width="38%" colspan="2" class="bg-light">Product</th>
+            <th scope="col" width="6%">Invoice No.</th>
+            <th scope="col" width="32%" colspan="2" class="bg-light">Product</th>
             <th scope="col" width="8%" class="text-center bg-light">Num+Bonus</th>
             <th scope="col" width="8%" class="text-right bg-light">Unit $</th>
             <th scope="col" width="10%" class="text-right bg-light">Quantity</th>
             <th scope="col" width="8%" class="text-right bg-light">Std $</th>
             <th scope="col" width="8%" class="text-right bg-light">Avg $</th>
             <th scope="col" width="8%" class="text-right bg-light">Total $</th>
-            <th scope="col" width="4%" class="text-right"></th>
         </tr>
     </thead>
     <tbody>
         {% for listitem in deliveryitem_list %}
         <tr>
             <td>{{ listitem.delivery_order.invoice_date|date:"d-m-Y" }}</td>
+            <td><a href="{% url 'inventory:DeliveryOrderDetail' listitem.delivery_order.id %}" 
+                    class="btn-sm btn-link text-left ml-0"
+                >{{ listitem.delivery_order.invoice_no }}
+                </a>
+            </td>
             <td class="text-left" width="28%">
                 {% if listitem.item.cmsid %}
                 <button
-                  class="btn_modal_trigger btn btn-sm btn-link text-left"
+                  class="btn_modal_trigger btn btn-sm btn-link text-left ml-0"
                   data-id="{% url 'cmsinv:InventoryItemDetailModal' listitem.item.cmsid %}?next={{ request.get_full_path }}"  
                 >{{ listitem.item.name }}
                 </button>
@@ -31,7 +36,7 @@
                 </button>
                 {% else %}
                 <a 
-                    class="btn-sm btn-link"
+                    class="btn-sm btn-link ml-0"
                     href="{% url 'inventory:ItemDetail' listitem.item.id %}?next={{ request.get_full_path }}">
                     {{ listitem.item.name }}
                 </a>
@@ -71,12 +76,6 @@
             <td class="text-right">{{ listitem.standard_cost }}</td>
             <td class="text-right">{{ listitem.average_cost }}</td>
             <td class="text-right">{{ listitem.total_price }}</td>
-            <td class="text-right">
-                <a href="{% url 'inventory:DeliveryOrderDetail' listitem.delivery_order.id %}" 
-                  class="btn btn-sm btn-info"
-                ><i class="fad fa-box-alt" aria-hidden="true"></i>
-                </a>
-            </td>
         </tr>
 
         {% endfor %}

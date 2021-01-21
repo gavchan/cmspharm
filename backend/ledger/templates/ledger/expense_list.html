@@ -135,7 +135,7 @@ crispy_forms_tags %} {% block content %}
         <tr>
           <td>{{ expense.expected_date|date:"d-m-y" }}</td>
           <td>{{ expense.invoice_date|date:"d-m-y" }}</td>
-          <td>{{ expense.invoice_no }}</td>
+          <td>{{ expense.invoice_short }}</td>
           <td>
             <a class="btn-link" href="{% url 'ledger:NewExpense' %}?vendor={{ expense.vendor.id }}">
               <span class="badge badge-secondary ml-2 mt-0"

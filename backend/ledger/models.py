@@ -88,6 +88,17 @@ class Expense(LedgerEntry):
         verbose_name = 'Expense'
         verbose_name_plural = 'Expenses'
 
+    @property
+    def invoice_short(self):
+        if self.invoice_no:
+            invoices = self.invoice_no.split(',')
+            if len(invoices) > 1:
+                return f"{str(invoices[0])},[{len(invoices)} more]"
+            else:
+                return self.invoice_no
+        else:
+            return None
+
     def get_absolute_url(self):
         return reverse('ledger:ExpenseDetail', kwargs={'pk': self.pk})
 
