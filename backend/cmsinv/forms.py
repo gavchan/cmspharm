@@ -306,6 +306,7 @@ class InventoryItemQuickEditModalForm(BSModalForm):
         self.item_obj = kwargs.pop('item_obj', None)
         self.drug_obj = kwargs.pop('drug_obj', None)
         self.set_match_drug = kwargs.pop('set_match_drug', None)
+        self.next_url = kwargs.pop('next_url', '')
         super(InventoryItemQuickEditModalForm, self).__init__(*args, **kwargs)
         
         self.helper = FormHelper()
@@ -313,9 +314,11 @@ class InventoryItemQuickEditModalForm(BSModalForm):
         self.helper.form_id = 'id-InventoryItemQuickEditModalForm'
         self.helper.form_class = 'cmmForms'
         self.helper.form_method = 'post'
-        self.helper.form_action = reverse(
-            'cmsinv:InventoryItemQuickEditModal', args=(self.item_obj.pk, )
+        next_url = "%s?next=%s" % (
+            reverse('cmsinv:InventoryItemQuickEditModal', args=(self.item_obj.pk, )),
+            self.next_url
             )
+        self.helper.form_action = next_url
         self.initial['version'] = 1
         if self.set_match_drug and self.drug_obj:
             # print(f"{self.item_obj.registration_no} set to {self.drug_obj.reg_no}")

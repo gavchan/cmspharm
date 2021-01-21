@@ -204,14 +204,16 @@ class InventoryItemDetailModal(BSModalReadView, LoginRequiredMixin, PermissionRe
         return data
 
 class InventoryItemQuickEditModal(BSModalUpdateView, LoginRequiredMixin, PermissionRequiredMixin):
+    """Simple Edit of InventoryItem key fields"""
+    permission_required = ('cmsinv.change_inventoryitem')
     model = InventoryItem
-    template_name = 'cmsinv/inventory_item_quickedit_modal.html'
+    template_name = 'cmsinv/inventoryitem_quickedit_modal.html'
     form_class = InventoryItemQuickEditModalForm
     item_obj = None
     drug_obj = None
     match_drug_list = None
     set_match_drug = False
-    next_url = None
+    next_url = ''
 
     def dispatch(self, request, *args, **kwargs):
         if 'pk' in kwargs:
@@ -219,7 +221,7 @@ class InventoryItemQuickEditModal(BSModalUpdateView, LoginRequiredMixin, Permiss
         else:
             print("Error: missing pk")
         self.item_obj = self.object
-        self.next_url = request.GET.get('next') or None
+        self.next_url = request.GET.get('next') or ''
         new_reg = self.request.GET.get('reg_no')
         if new_reg:
             self.set_match_drug = True
@@ -258,6 +260,7 @@ class InventoryItemQuickEditModal(BSModalUpdateView, LoginRequiredMixin, Permiss
             'drug_obj': self.drug_obj,
             'item_obj': self.item_obj,
             'set_match_drug': self.set_match_drug,
+            'next_url': self.next_url,
             })
         return kwargs
 

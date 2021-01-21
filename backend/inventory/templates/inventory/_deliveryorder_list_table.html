@@ -23,6 +23,11 @@
                 </a>
             </td>
             <td>
+                <a class="btn-link" href="{% url 'inventory:NewDeliveryOrder' %}?vendor={{ delivery_obj.vendor.id }}">
+                    <span class="badge badge-secondary ml-2 mt-0"
+                    ><i class="far fa-plus"></i>&nbsp;<i class="fal fa-box-open"></i>
+                    </span>
+                </a>
                 {{ delivery_obj.vendor.name}}
                 <a 
                     class="btn-link"

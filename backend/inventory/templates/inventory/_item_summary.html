@@ -60,7 +60,7 @@
           </a>
           <a
             class="btn_modal_trigger btn-link"
-            data-id="{% url 'cmsinv:InventoryItemQuickEditModal' item_obj.cmsid %}"
+            data-id="{% url 'cmsinv:InventoryItemQuickEditModal' item_obj.cmsid %}?next={{ request.path }}"
           ><i class="fad fa-edit"></i>
           </a>
          

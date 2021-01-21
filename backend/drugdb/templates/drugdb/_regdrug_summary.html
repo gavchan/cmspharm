@@ -35,7 +35,7 @@
         </a>
         <a
           class="btn_modal_trigger btn-link"
-          data-id="{% url 'cmsinv:InventoryItemQuickEditModal' drug_obj.item.cmsid %}"
+          data-id="{% url 'cmsinv:InventoryItemQuickEditModal' drug_obj.item.cmsid %}?next={{ request.path }}"
         ><i class="fad fa-edit"></i>
         </a>
         {% elif drug_obj.item.cmsid %}
@@ -97,7 +97,7 @@
                 <td class="match-drug-action-cell">
                     <button
                       class="btn_modal_trigger btn btn-link"
-                      data-id="{% url 'cmsinv:InventoryItemQuickEditModal' item_obj.id %}?reg_no={{drug.reg_no}}"  
+                      data-id="{% url 'cmsinv:InventoryItemQuickEditModal' item_obj.id %}?reg_no={{drug.reg_no}}&next={{ request.path}}"  
                     ><i class="fad fa-edit"></i>
                     </button>
                 </td>

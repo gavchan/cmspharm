@@ -34,7 +34,7 @@
                         </a>
                         <button
                             class="btn_modal_trigger btn btn-sm btn-link text-left"
-                            data-id="{% url 'cmsinv:InventoryItemQuickEditModal' listitem.item.cmsid %}"  
+                            data-id="{% url 'cmsinv:InventoryItemQuickEditModal' listitem.item.cmsid %}?next={{ request.path }}"  
                         ><i class="fad fa-edit"></i>
                         </button>
                         {% else %}

@@ -34,7 +34,7 @@
                   <td class="match-drug-action-cell">
                       <button
                         class="btn_quickedit_reg btn btn-link"
-                        data-id="{% url 'cmsinv:InventoryItemQuickEditModal' item_obj.id %}?reg_no={{drug.reg_no}}"  
+                        data-id="{% url 'cmsinv:InventoryItemQuickEditModal' item_obj.id %}?reg_no={{drug.reg_no}}&next={{ request.path }}"  
                       ><i class="fad fa-edit"></i>
                       </button>
                   </td>
