@@ -124,7 +124,9 @@ class InventoryItemDetail(DetailView, LoginRequiredMixin, PermissionRequiredMixi
         except RegisteredDrug.DoesNotExist:
             self.drug_obj = None
         try:
-            self.deliveryitem_obj_list = DeliveryItem.objects.filter(item__cmsid=self.object.id)[:10]
+            self.deliveryitem_obj_list = DeliveryItem.objects.filter(
+                item__cmsid=self.object.id
+                ).order_by('-delivery_order__received_date')[:10]
         except DeliveryItem.DoesNotExist:
             self.deliveryitem_obj_list = None
             # print(f"No delivery record for {self.object.product_name}")
