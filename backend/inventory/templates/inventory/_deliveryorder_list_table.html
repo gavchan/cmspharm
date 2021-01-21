@@ -28,12 +28,12 @@
                     ><i class="far fa-plus"></i>&nbsp;<i class="fal fa-box-open"></i>
                     </span>
                 </a>
-                {{ delivery_obj.vendor.name}}
                 <a 
                     class="btn-link"
                     href="{% url 'inventory:VendorDetail' delivery_obj.vendor.id %}?next={{ request.path }}">
                     <i class="fad fa-file"></i>
                 </a>
+                {{ delivery_obj.vendor.name}}
             </td>
             <td class="text-right">{{ delivery_obj.amount }}</td>
             <td class="text-right">

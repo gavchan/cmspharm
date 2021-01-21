@@ -137,39 +137,40 @@ class DrugDetailMatch(ListView, LoginRequiredMixin):
         data = super().get_context_data(**kwargs)
 
         # Try get first 3 ingredients from Registered Drug
-        if self.drug_obj.ingredients_list:
-            try:
-                related_words = self.drug_obj.ingredients_list.split(',')
-            except:
-                related_words = []
-        else:
-            # If no ingredient, try product_name
-            try:
-                related_words = self.drug_obj.name.split(' ')
-            except:
-                related_words = []
-        if len(related_words) > 0:
-            # Assign first non-numeric string to keyword for filter
-            keyword = ''
-            index = 0
-            while keyword == '' and index < len(related_words):
-                print(related_words[index], keyword)
+        if self.drug_obj:
+            if self.drug_obj.ingredients_list:
                 try:
-                    float(related_words[index])
-                    index += 1
-                except ValueError:
-                    keyword = str(related_words[index])
-                    index += 1
-            if self.disp_drug_list:
-                self.drug_list = RegisteredDrug.objects.filter(
-                    Q(ingredients__name__icontains=keyword) |
-                    Q(name__icontains=keyword)
-                ).order_by('name')[:50]
+                    related_words = self.drug_obj.ingredients_list.split(',')
+                except:
+                    related_words = []
             else:
-                self.match_item_list_obj = InventoryItem.objects.filter(
-                    Q(product_name__icontains=keyword) |
-                    Q(ingredient__icontains=keyword)
-                ).order_by('product_name')[:50]
+                # If no ingredient, try product_name
+                try:
+                    related_words = self.drug_obj.name.split(' ')
+                except:
+                    related_words = []
+            if len(related_words) > 0:
+                # Assign first non-numeric string to keyword for filter
+                keyword = ''
+                index = 0
+                while keyword == '' and index < len(related_words):
+                    print(related_words[index], keyword)
+                    try:
+                        float(related_words[index])
+                        index += 1
+                    except ValueError:
+                        keyword = str(related_words[index])
+                        index += 1
+                if self.disp_drug_list:
+                    self.drug_list = RegisteredDrug.objects.filter(
+                        Q(ingredients__name__icontains=keyword) |
+                        Q(name__icontains=keyword)
+                    ).order_by('name')[:50]
+                else:
+                    self.match_item_list_obj = InventoryItem.objects.filter(
+                        Q(product_name__icontains=keyword) |
+                        Q(ingredient__icontains=keyword)
+                    ).order_by('product_name')[:50]
         else:
             self.drug_list = None
             self.match_item_list_obj = None
