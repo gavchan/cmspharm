@@ -87,7 +87,12 @@
                         <button type="button" class="btn_modal_trigger btn btn-sm btn-info"
                             data-id="{% url 'inventory:DeliveryItemUpdateModal' delivery_id=delivery_obj.id pk=listitem.id %}"
                         ><i class="fad fa-edit"></i>
-                        </button> 
+                        </button>
+                        {% else %}
+                        <button type="button" class="btn_modal_trigger btn btn-sm btn-info"
+                            data-id="{% url 'inventory:DeliveryItemDetailModal' delivery_id=delivery_obj.id pk=listitem.id %}"
+                        ><i class="fad fa-file"></i>
+                        </button>
                         {% endif %}
                         {% if not delivery_obj.cms_delivery_id and perms.inventory.delete_deliveryitem %}
                         <button type="button" 

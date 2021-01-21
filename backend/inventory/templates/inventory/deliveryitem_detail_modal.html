@@ -1,0 +1,183 @@
+<div class="modal-header">
+  <h5 class="modal-title">Delivery Item Details</h5>
+  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+
+<div class="modal-body">
+  {% include 'cmsinv/_cmsitem_summary_table.html' %}
+  <hr />
+  <div class="row">
+    <div class="col-sm-11">
+       <div class="row">
+          <div class="form-group col-md-4">
+             <div class="row">
+                <div class="col-md-6 mb-0">
+                   <div id="div_id_purchase_quantity" class="form-group">
+                      <label for="id_purchase_quantity" class=" requiredField">
+                      Purchase quantity<span class="asteriskField">*</span> </label> 
+                      <div class="">
+                        <input readonly type="number" name="purchase_quantity" value="{{ listitem_obj.purchase_quantity }}" class="form-control" id="id_purchase_quantity">
+                      </div>
+                   </div>
+                </div>
+                <div 
+                   class="col-md-6 mb-0">
+                   <div id="div_id_bonus_quantity" class="form-group">
+                      <label for="id_bonus_quantity" class=" requiredField">
+                      Bonus quantity<span class="asteriskField">*</span> </label> 
+                      <div class=""> <input readonly type="number" name="bonus_quantity" value="{{ listitem_obj.bonus_quantity}}" class="form-control" id="id_bonus_quantity"> </div>
+                   </div>
+                </div>
+             </div>
+          </div>
+          <div 
+             class="form-group col-md-4">
+             <div class="row">
+                <div 
+                   class="col-md-6 mb-0">
+                   <div id="div_id_unit_price" class="form-group">
+                      <label for="id_unit_price" class=" requiredField">
+                      Unit price<span class="asteriskField">*</span> </label> 
+                      <div class=""> <input readonly type="number" name="unit_price" value="{{ listitem_obj.unit_price }}"  class=" form-control" id="id_unit_price"> </div>
+                   </div>
+                </div>
+                <div 
+                   class="col-md-6 mb-0">
+                   <div id="div_id_discount" class="form-group">
+                      <label for="id_discount" class=" requiredField">
+                      Discount<span class="asteriskField">*</span> </label> 
+                      <div class=""> <input readonly type="number" name="discount" value="{{ listitem_obj.discount }}" class=" form-control"  id="id_discount"> </div>
+                   </div>
+                </div>
+             </div>
+          </div>
+          <div 
+             class="form-group col-md-2">
+             <div id="div_id_purchase_unit" class="form-group">
+                <label for="id_purchase_unit" class=" requiredField">
+                Purchase unit<span class="asteriskField">*</span> </label> 
+                <div class="">
+                   <input readonly type="text" name="purchase_unit" class=" form-control" id="id_purchase_unit">
+                </div>
+             </div>
+          </div>
+          <div 
+             class="form-group col-md-2">
+             {% if listitem_obj.is_sample %}
+             <span class="badge badge-secondary">Sample</span>
+             {% endif %}
+          </div>
+       </div>
+       <div class="row">
+          <div 
+             class="form-group col-md-4">
+             <div class="row">
+                <div 
+                   class="col-md-6 mb-0">
+                   <div id="div_id_items_per_purchase" class="form-group">
+                      <label for="id_items_per_purchase" class=" requiredField">
+                      Items per purchase<span class="asteriskField">*</span> </label> 
+                      <div class=""> <input readonly type="number" name="items_per_purchase" value="{{ listitem_obj.items_per_purchase }}" class="form-control" id="id_items_per_purchase"> </div>
+                   </div>
+                </div>
+                <div 
+                   class="col-md-6 mb-0">
+                   <div id="div_id_items_unit" class="form-group">
+                      <label for="id_items_unit" class="">
+                      Items unit
+                      </label> 
+                      <div class="">
+                         <input readonly name="items_unit" value="{{ listitem_obj.items_unit }}" class=" form-control" id="id_items_unit">
+                      </div>
+                   </div>
+                </div>
+             </div>
+          </div>
+          <div class="form-group col-md-4">
+             <div class="row">
+                <div 
+                   class="col-md-6 mb-0">
+                   <div id="div_id_batch_num" class="form-group">
+                      <label for="id_batch_num" class="">
+                      Batch num
+                      </label> 
+                      <div class=""> <input readonly type="text" name="batch_num" value="{{ listitem_obj.batch_num }}" maxlength="100" class="textinput textInput form-control" id="id_batch_num"> </div>
+                   </div>
+                </div>
+                <div 
+                   class="col-md-6 mb-0">
+                   <div id="div_id_expiry_month" class="form-group">
+                      <label for="id_expiry_month" class="">
+                      Expiry month
+                      </label> 
+                      <div class=""> <input readonly type="text" name="expiry_month" value="{{ listitem_obj.expiry_month}}" placeholder="YYYYMM" class="textinput textInput form-control" id="id_expiry_month"> </div>
+                   </div>
+                </div>
+             </div>
+          </div>
+          <div class="form-group col-md-4 mb-0">
+             <div id="div_id_other_ref" class="form-group">
+                <label for="id_other_ref" class="">
+                Other ref
+                </label> 
+                <div class=""> <input readonly type="text" name="other_ref" value="{{ listitem_obj.other_ref }}"maxlength="100" class="textinput textInput form-control" id="id_other_ref"> </div>
+             </div>
+          </div>
+       </div>
+       <div class="row">
+          <div 
+             class="form-group col-md-2">
+             <div class="form-group">
+             </div>
+          </div>
+          <div 
+             class="form-group col-md-10">
+             <table class="table table-sm table-striped">
+                <thead>
+                   <tr>
+                      <th scope="col">Quantity (TAB)</th>
+                      <th scope="col">Std Cost ($)</th>
+                      <th scope="col">Avg Cost ($)</th>
+                      <th scope="col">Final Total ($)</th>
+                   </tr>
+                </thead>
+                <tbody>
+                   <tr>
+                      <td id="ds_quantity" class="text-center">{{ listitem_obj.items_quantity }}</td>
+                      <td id="ds_stdcost" class="text-center">{{ listitem_obj.standard_cost }}</td>
+                      <td id="ds_avgcost" class="text-center">{{ listitem_obj.average_cost }}</td>
+                      <td id="ds_total" class="text-center">{{ listitem_obj.total_price }}</td>
+                      </td> 
+                </tbody>
+             </table>
+          </div>
+       </div>
+       </form>
+    </div>
+    <div class="col-sm-1">
+    </div>
+  </div>
+</div>
+
+<div class="modal-footer">
+
+  <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">
+    Close
+  </button>
+</div>
+
+<script type="text/javascript">
+$(document).ready(function () {
+  $(".btn_modal_trigger").each(function() {
+      $(this).modalForm({
+          formURL: $(this).data('id')
+      });
+  });
+ 
+  $("#btn_cancel").click(function() {
+    window.history.back()
+  });
+});
+</script>

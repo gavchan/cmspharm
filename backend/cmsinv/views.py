@@ -195,7 +195,9 @@ class InventoryItemDetailModal(BSModalReadView, LoginRequiredMixin, PermissionRe
             keyword = self.object.product_name.split()[0]
             self.match_drug_list = RegisteredDrug.objects.filter(Q(name__icontains=keyword))
         try:
-            self.deliveryitem_obj_list = DeliveryItem.objects.filter(item__reg_no=self.object.registration_no)[:5]
+            self.deliveryitem_obj_list = DeliveryItem.objects.filter(
+                item__reg_no=self.object.registration_no
+            ).order_by('-delivery_order__invoice_date')[:5]
         except DeliveryItem.DoesNotExist:
             self.deliveryitem_obj_list = None
             print(f"No delivery record for {self.object.product_name}")

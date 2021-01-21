@@ -282,7 +282,6 @@ class NewItemModal(BSModalCreateView, LoginRequiredMixin, PermissionRequiredMixi
             })
         return kwargs
 
-
 class VendorList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
     """List Vendors"""
     permission_required = ('inventory.view_vendor', )
@@ -375,7 +374,6 @@ class NewVendor(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
         except Resolver404: 
             return reverse('inventory:VendorList')
         return f"{self.next_url}?vendor={self.object.pk}"
-
 
 class NewVendorModal(BSModalCreateView, LoginRequiredMixin, PermissionRequiredMixin):
     """Add new vendor modal"""
@@ -773,6 +771,33 @@ class DeliveryItemUpdateModal(BSModalUpdateView, LoginRequiredMixin, PermissionR
             'delivery_obj': self.delivery_obj,
             })
         return kwargs
+
+class DeliveryItemDetailModal(BSModalReadView, LoginRequiredMixin, PermissionRequiredMixin):
+    """Update delivery order delivery item"""
+    permission_required = ('inventory.view_deliveryitem', )
+    model = DeliveryItem
+    template_name = 'inventory/deliveryitem_detail_modal.html'
+    delivery_obj = None
+    cmsitem_obj = None
+    
+    def dispatch(self, request, *args, **kwargs):
+        if 'delivery_id' in kwargs:
+            self.delivery_obj = DeliveryOrder.objects.get(pk=kwargs['delivery_id'])
+        else:
+            print('error: no delivery_id')
+        if 'pk' in kwargs:
+            self.object = DeliveryItem.objects.get(pk=kwargs['pk'])
+        self.cmsitem_obj = InventoryItem.objects.get(pk=self.object.item.cmsid)
+        return super().dispatch(request, *args, **kwargs)
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        print(self.object)
+        # if self.object.item.cmisid:
+        #     self.cmsitem_obj = InventoryItem.objects.get(pk=self.object.item.cmsid)
+        data['listitem_obj'] = self.object
+        data['cmsitem_obj'] = self.cmsitem_obj
+        data['delivery_obj'] = self.delivery_obj
+        return data
 
 class DeliveryItemDeleteModal(BSModalDeleteView, LoginRequiredMixin, PermissionRequiredMixin):
     """Update Expense modal"""
