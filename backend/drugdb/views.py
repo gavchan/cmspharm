@@ -137,6 +137,7 @@ class DrugDetailMatch(ListView, LoginRequiredMixin):
         data = super().get_context_data(**kwargs)
 
         # Try get first 3 ingredients from Registered Drug
+        keyword = ''
         if self.drug_obj:
             if self.drug_obj.ingredients_list:
                 try:
@@ -151,7 +152,6 @@ class DrugDetailMatch(ListView, LoginRequiredMixin):
                     related_words = []
             if len(related_words) > 0:
                 # Assign first non-numeric string to keyword for filter
-                keyword = ''
                 index = 0
                 while keyword == '' and index < len(related_words):
                     print(related_words[index], keyword)

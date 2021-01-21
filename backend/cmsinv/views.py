@@ -142,9 +142,9 @@ class InventoryItemDetail(DetailView, LoginRequiredMixin, PermissionRequiredMixi
                 related_words = self.object.product_name.split(' ')
             except:
                 related_words = []
+        keyword = ''
         if len(related_words) > 0:
             # Assign first non-numeric string to keyword for filter
-            keyword = ''
             index = 0
             while keyword == '' and index < len(related_words):
                 print(related_words[index], keyword)
