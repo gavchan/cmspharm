@@ -210,6 +210,16 @@ class VendorUpdateModalForm(BSModalForm):
 
 class NewDeliveryOrderForm(ModelForm):
 
+    received_date = forms.DateField(
+        required=False,
+        widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
+    invoice_date = forms.DateField(
+        required=True,
+        widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
+    due_date = forms.DateField(
+        required=False,
+        widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'})
+        )
     def __init__(self, *args, **kwargs):
         self.vendor_obj= kwargs.pop('vendor_obj', None)
         super(NewDeliveryOrderForm, self).__init__(*args, **kwargs)
@@ -261,7 +271,7 @@ class NewDeliveryOrderForm(ModelForm):
                 Column('invoice_no', css_class='form-group col-md-8 mb-0'),
                 # Column('invoice_date', css_class='form-group col-md-4 mb-0'),
                 Div(HTML("""
-                    <label for="invoice_date">Invoice date</label>
+                    <label for="invoice_date">Invoice date</label>*
                     <div class="input-group date" id="datepicker_invoice_date" data-target-input="nearest">
                         <input type="text"
                             id="id_invoice_date"
@@ -329,7 +339,16 @@ class NewDeliveryOrderForm(ModelForm):
         exclude = ['id', 'version', 'date_created', 'last_updated',]
         
 class NewDeliveryOrderModalForm(BSModalForm):
-    
+    received_date = forms.DateField(
+        required=False,
+        widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
+    invoice_date = forms.DateField(
+        required=True,
+        widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
+    due_date = forms.DateField(
+        required=False,
+        widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'})
+        )
     def __init__(self, *args, **kwargs):
         self.vendor_obj= kwargs.pop('vendor_obj', None)
         super(NewDeliveryOrderModalForm, self).__init__(*args, **kwargs)
@@ -382,7 +401,7 @@ class NewDeliveryOrderModalForm(BSModalForm):
                 Column('invoice_no', css_class='form-group col-md-8 mb-0'),
                 # Column('invoice_date', css_class='form-group col-md-4 mb-0'),
                 Div(HTML("""
-                    <label for="invoice_date">Invoice date</label>
+                    <label for="invoice_date">Invoice date</label>*
                     <div class="input-group date" id="datepicker_invoice_date" data-target-input="nearest">
                         <input type="text" 
                             class="form-control datetimepicker-input"
@@ -441,9 +460,13 @@ class NewDeliveryOrderModalForm(BSModalForm):
 
 class DeliveryOrderUpdateModalForm(BSModalForm):
     
-    received_date = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
-    invoice_date = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
-    due_date = forms.CharField(
+    received_date = forms.DateField(
+        required=False,
+        widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
+    invoice_date = forms.DateField(
+        required=True,
+        widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
+    due_date = forms.DateField(
         required=False,
         widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'})
         )
@@ -488,7 +511,7 @@ class DeliveryOrderUpdateModalForm(BSModalForm):
                 Column('invoice_no', css_class='form-group col-md-8 mb-0'),
                 # Column('invoice_date', css_class='form-group col-md-4 mb-0'),
                 Div(HTML("""
-                    <label for="invoice_date">Invoice date</label>
+                    <label for="invoice_date">Invoice date</label>*
                     <div class="input-group date" id="datepicker_invoice_date" data-target-input="nearest">
                         <input type="text" 
                             class="form-control datetimepicker-input"

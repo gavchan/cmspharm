@@ -104,10 +104,14 @@ class ExpenseCategoryUpdateForm(ModelForm):
 
 class ExpenseUpdateForm(ModelForm):
 
-    entry_date = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
-    invoice_date = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
-    expected_date = forms.CharField(
+    entry_date = forms.DateField(
+        required=True,
+        widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
+    invoice_date = forms.DateField(
         required=False,
+        widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
+    expected_date = forms.DateField(
+        required=True,
         widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'})
         )
     
@@ -126,7 +130,7 @@ class ExpenseUpdateForm(ModelForm):
         self.helper.layout = Layout(
             Row(
                 Div(HTML("""
-                    <label for="entry_date">Entry date</label>
+                    <label for="entry_date">Entry date</label>*
                     <div class="input-group date" id="datepicker_entry_date" data-target-input="nearest">
                         <input type="text" 
                             class="form-control datetimepicker-input"
@@ -144,6 +148,7 @@ class ExpenseUpdateForm(ModelForm):
                 ),
                 Column(Field('version', disabled=True),
                     css_class='form-group col-md-4 mb-0'),
+                Column('permanent', css_class='form-group col-md-4'),
             ),
             Row(
                 Column(UneditableField('vendor'), css_class='form-group col-md-8 mb-0'),
@@ -181,13 +186,14 @@ class ExpenseUpdateForm(ModelForm):
             Row(
                 Column('payment_ref', css_class='form-group col-md-4 mb-0'),
                 Div(HTML("""
-                    <label for="expected_date">Payment date</label>
+                    <label for="expected_date">Payment date</label>*
                     <div class="input-group date" id="datepicker_expected_date" data-target-input="nearest">
                         <input type="text" 
                             class="form-control datetimepicker-input"
                             data-target="#datepicker_expected_date"
                             placeholder="YYYY-MM-DD"
                             name="expected_date"
+                            value="{{ expense_obj.expected_date|date:'Y-m-d' }}"
                         >
                         <div class="input-group-append" data-target="#datepicker_expected_date" data-toggle="datetimepicker">
                             <div class="input-group-text"><i class="fa fa-calendar"></i></div>
@@ -215,6 +221,7 @@ class ExpenseUpdateForm(ModelForm):
             ),
         )
 
+
     class Meta:
         model = Expense
         exclude = ['id', ]
@@ -222,9 +229,11 @@ class ExpenseUpdateForm(ModelForm):
 
 class NewExpenseForm(ModelForm):
 
-    invoice_date = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
-    expected_date = forms.CharField(
+    invoice_date = forms.DateField(
         required=False,
+        widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
+    expected_date = forms.DateField(
+        required=True,
         widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'})
         )
 
@@ -293,7 +302,7 @@ class NewExpenseForm(ModelForm):
             Row(
                 Column('payment_ref', css_class='form-group col-md-4 mb-0'),
                 Div(HTML("""
-                    <label for="expected_date">Payment date</label>
+                    <label for="expected_date">Payment date</label>*
                     <div class="input-group date" id="datepicker_expected_date" data-target-input="nearest">
                         <input type="text" 
                             class="form-control datetimepicker-input"
@@ -331,11 +340,17 @@ class NewExpenseForm(ModelForm):
 
 class NewExpenseModalForm(BSModalForm):
 
-    invoice_date = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
-    expected_date = forms.CharField(
+    entry_date = forms.DateField(
+        required=True,
+        widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
+    invoice_date = forms.DateField(
         required=False,
+        widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
+    expected_date = forms.DateField(
+        required=True,
         widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'})
         )
+
     def __init__(self, *args, **kwargs):
         self.vendor_obj = kwargs.pop('vendor_obj', None)
 
@@ -400,7 +415,7 @@ class NewExpenseModalForm(BSModalForm):
             Row(
                 Column('payment_ref', css_class='form-group col-md-4 mb-0'),
                 Div(HTML("""
-                    <label for="expected_date">Payment date</label>
+                    <label for="expected_date">Payment date</label>*
                     <div class="input-group date" id="datepicker_expected_date" data-target-input="nearest">
                         <input type="text" 
                             class="form-control datetimepicker-input"
@@ -436,10 +451,14 @@ class NewExpenseModalForm(BSModalForm):
 
 class ExpenseUpdateModalForm(BSModalForm):
 
-    entry_date = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
-    invoice_date = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
-    expected_date = forms.CharField(
+    entry_date = forms.DateField(
+        required=True,
+        widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
+    invoice_date = forms.DateField(
         required=False,
+        widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
+    expected_date = forms.DateField(
+        required=True,
         widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'})
         )
 
@@ -550,7 +569,11 @@ class ExpenseUpdateModalForm(BSModalForm):
         exclude = ['id', ]
 
 class DeliveryPaymentModalForm(BSModalForm):
-
+    
+    expected_date = forms.DateField(
+        required=True,
+        widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'})
+        )
     def __init__(self, *args, **kwargs):
         self.delivery_obj = kwargs.pop('delivery_obj', None)
         super(DeliveryPaymentModalForm, self).__init__(*args, **kwargs)
@@ -605,7 +628,7 @@ class DeliveryPaymentModalForm(BSModalForm):
             Row(
                 Column('payment_ref', css_class='form-group col-md-4 mb-0'),
                 Div(HTML("""
-                    <label for="expected_date">Payment date</label>
+                    <label for="expected_date">Payment date</label>*
                     <div class="input-group date" id="datepicker_expected_date" data-target-input="nearest">
                         <input type="text" 
                             class="form-control datetimepicker-input"
@@ -648,6 +671,13 @@ class DeliveryPaymentModalForm(BSModalForm):
 
 class NewIncomeModalForm(BSModalForm):
 
+    invoice_date = forms.DateField(
+        required=False,
+        widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
+    expected_date = forms.DateField(
+        required=True,
+        widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'})
+        )
     def __init__(self, *args, **kwargs):
 
         super(NewIncomeModalForm, self).__init__(*args, **kwargs)
@@ -679,7 +709,7 @@ class NewIncomeModalForm(BSModalForm):
                 Column('amount', css_class='form-group col-md-4 mb-0'),
                 Column('payment_ref', css_class='form-group col-md-4 mb-0'),
                 Div(HTML("""
-                    <label for="expected_date">Payment date</label>
+                    <label for="expected_date">Payment date</label>*
                     <div class="input-group date" id="datepicker_expected_date" data-target-input="nearest">
                         <input type="text" 
                             class="form-control datetimepicker-input"
@@ -737,6 +767,13 @@ class NewIncomeModalForm(BSModalForm):
 
 class IncomeUpdateModalForm(BSModalForm):
 
+    invoice_date = forms.DateField(
+        required=False,
+        widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'}))
+    expected_date = forms.DateField(
+        required=True,
+        widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'})
+        )
     def __init__(self, *args, **kwargs):
 
         super(IncomeUpdateModalForm, self).__init__(*args, **kwargs)
@@ -762,7 +799,7 @@ class IncomeUpdateModalForm(BSModalForm):
                 Column('amount', css_class='form-group col-md-4 mb-0'),
                 Column('payment_ref', css_class='form-group col-md-4 mb-0'),
                 Div(HTML("""
-                    <label for="expected_date">Payment date</label>
+                    <label for="expected_date">Payment date</label>*
                     <div class="input-group date" id="datepicker_expected_date" data-target-input="nearest">
                         <input type="text" 
                             class="form-control datetimepicker-input"
