@@ -75,10 +75,12 @@
                   class="btn btn-sm btn-info"
                 ><i class="fad fa-box-alt"></i>
                 </a>
+                {% if not expense_obj.permanent %}
                 <a href="{% url 'ledger:ExpenseRemoveDeliveryOrder' expense_obj.id record.id %}"
                   class="btn btn-sm btn-warning"
                 ><i class="fal fa-layer-minus"></i>
                 </a>
+                {% endif %}
             </td>
         </tr>
 

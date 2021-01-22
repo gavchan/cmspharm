@@ -8,7 +8,7 @@ from django.db.models import Q, Sum
 from django.utils import timezone
 from django.template.loader import render_to_string
 from django.http import JsonResponse
-from django.shortcuts import render
+from django.shortcuts import redirect, render, get_object_or_404
 
 from bootstrap_modal_forms.generic import BSModalCreateView, BSModalUpdateView, BSModalDeleteView
 from .models import (
@@ -477,6 +477,26 @@ def ExpenseExportCsv(request):
 
     return response
 
+@login_required
+@permission_required('ledger.change_expense')
+def ExpenseConfirmPermanentModalView(request, *args, **kwargs):
+    if kwargs['pk']:
+        expense_obj = get_object_or_404(Expense, pk=kwargs['pk'])
+    else:
+        print("Error: no expense pk")
+    uri = request.GET.get('next', reverse('ledger:ExpenseDetail', args=(expense_obj.id,)))
+    session_id = request.session.session_key
+
+    context = {
+        'expense_obj': expense_obj
+    }
+    # If POST request confirms make permament, set permanent flag
+    if request.method == 'POST':
+        expense_obj.permanent = True
+        expense_obj.save()
+        return redirect(uri)
+
+    return render(request, "ledger/expense_confirm_permanent_modal.html", context)
 
 class IncomeDetail(DetailView, LoginRequiredMixin, PermissionRequiredMixin):
     """Show Income Details for Drug Category, allow add delivery"""
