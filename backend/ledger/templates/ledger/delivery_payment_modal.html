@@ -21,9 +21,9 @@
             <th scope="col">Invoice</th>
             <th scope="col">Paid Date</th>
             <th scope="col">Payee</th>
-            <th scope="col">Amount</th>
-            <th scope="col">Payment</th>
-            <th scope="col">Action</th>
+            <th scope="col">Method</th>
+            <th scope="col" class="text-center">Amount</th>
+            <th scope="col" class="text-right"></th>
           </tr>
         </thead>
         <tbody>
@@ -31,14 +31,14 @@
             <td>{{ delivery_obj.bill.invoice_date|date:"d-m-y" }}</td>
             <td>{{ delivery_obj.bill.expected_date|date:"d-m-y" }}</td>
             <td>{{ delivery_obj.bill.payee }}</td>
-            <td class="text-right">{{ delivery_obj.bill.amount }}</td>
             <td>
               {{ delivery_obj.bill.payment_method }}
               {% if delivery_obj.bill.payment_ref %}
                 # {{ delivery_obj.bill.payment_ref }}
               {% endif %}
             </td>
-            <td>
+            <td class="text-center">{{ delivery_obj.bill.amount }}</td>
+            <td class="text-right">
               <a
                 href="{% url 'ledger:ExpenseDetail' delivery_obj.bill.pk %}"
                 class="btn btn-sm btn-info"

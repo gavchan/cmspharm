@@ -900,7 +900,6 @@ class DeliveryOrderAddDeliveryItem(LoginRequiredMixin, PermissionRequiredMixin, 
             print('Error: no delivery_id')
         if request.GET.get('cmsid'):
             self.cmsitem_obj = InventoryItem.objects.get(pk=request.GET.get('cmsid'))
-            print(self.cmsitem_obj)
             # Auto create/update item in case not already in database
             item_details = {
                 'name': self.cmsitem_obj.product_name,
@@ -922,7 +921,6 @@ class DeliveryOrderAddDeliveryItem(LoginRequiredMixin, PermissionRequiredMixin, 
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
-
         data = super().get_context_data(**kwargs)
         data['delivery_obj'] = self.delivery_obj
         data['cmsitem_obj'] = self.cmsitem_obj

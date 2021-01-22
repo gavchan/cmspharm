@@ -872,6 +872,7 @@ class DeliveryOrderAddDeliveryItemForm(ModelForm):
         self.helper.form_class = 'cmmForms'
         self.helper.form_method = 'post'
         if self.cmsitem_obj:
+            self.initial['items_unit'] = self.cmsitem_obj.unit
             url_with_query = "%s?cmsid=%s" % (
                 reverse('inventory:DeliveryOrderAddDeliveryItem', args=(self.delivery_obj.id,)),
                 self.cmsitem_obj.id 
