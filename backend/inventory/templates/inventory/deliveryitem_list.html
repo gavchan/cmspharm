@@ -49,7 +49,7 @@
                     <ul class="pagination pagination-sm">
                       <li class="page-item">
                         <a
-                          href="{% url 'inventory:DeliveryItemList' %}?q={{ last_query }}&page=1"
+                          href="{% url 'inventory:DeliveryItemList' %}?q={{ last_query }}&t={{ disp_type }}&begin={{ begin }}&end={{ end }}&page=1"
                           class="page-link"
                         >
                           First
@@ -58,7 +58,7 @@
                       {% if page_obj.has_previous %}
                       <li class="page-item">
                         <a
-                          href="{% url 'inventory:DeliveryItemList' %}?q={{ last_query }}&page={{ page_obj.previous_page_number }}"
+                          href="{% url 'inventory:DeliveryItemList' %}?q={{ last_query }}&t={{ disp_type }}&begin={{ begin }}&end={{ end }}&page={{ page_obj.previous_page_number }}"
                           class="page-link"
                         >
                           {{ page_obj.previous_page_number }}
@@ -67,7 +67,7 @@
                       {% endif %}
                       <li class="page-item active">
                         <a
-                          href="{% url 'inventory:DeliveryItemList' %}?q={{ last_query }}&page={{ page_obj.number }}"
+                          href="{% url 'inventory:DeliveryItemList' %}?q={{ last_query }}&t={{ disp_type }}&begin={{ begin }}&end={{ end }}&page={{ page_obj.number }}"
                           class="page-link"
                         >
                           {{ page_obj.number }}
@@ -76,7 +76,7 @@
                       {% if page_obj.has_next %}
                       <li class="page-item">
                         <a
-                          href="{% url 'inventory:DeliveryItemList' %}?q={{ last_query }}&page={{ page_obj.next_page_number }}"
+                          href="{% url 'inventory:DeliveryItemList' %}?q={{ last_query }}&t={{ disp_type }}&begin={{ begin }}&end={{ end }}&page={{ page_obj.next_page_number }}"
                           class="page-link"
                         >
                           {{ page_obj.next_page_number }}
@@ -85,7 +85,7 @@
                       {% endif %}
                       <li class="page-item">
                         <a
-                          href="{% url 'inventory:DeliveryItemList' %}?q={{ last_query }}&page=last"
+                          href="{% url 'inventory:DeliveryItemList' %}?q={{ last_query }}&t={{ disp_type }}&begin={{ begin }}&end={{ end }}&page=last"
                           class="page-link"
                         >
                           Last ({{ page_obj.paginator.num_pages }})
@@ -107,7 +107,7 @@
         <div class="row mb-2">
           <div class="col-sm-12">
             <a 
-              href="{% url 'inventory:NewDeliveryOrder' %}"
+              href="{% url 'inventory:NewDeliveryOrder' %}?next={{ request.path }}"
               class="btn btn-sm btn-success btn-block"
             >New Delivery
             </a>
@@ -154,22 +154,26 @@
     $("#btn-view_last_month").click(function() {
       var today = moment().format("YYYY-MM-DD");
       var oneMonthAgo = moment().subtract(1, 'months').format("YYYY-MM-DD");
-      var loadurl = "{% url 'inventory:DeliveryItemList' %}?begin=" 
+      var loadurl = "{% url 'inventory:DeliveryItemList' %}?q={{ last_query }}&t={{ disp_type }}&begin=" 
         + oneMonthAgo + "&end=" + today;
       window.location = loadurl;
     })
     $("#btn-view_last_3_months").click(function() {
       var today = moment().format("YYYY-MM-DD");
       var threeMonthsAgo = moment().subtract(3, 'months').format("YYYY-MM-DD");
-      var loadurl = "{% url 'inventory:DeliveryItemList' %}?begin=" 
+      var loadurl = "{% url 'inventory:DeliveryItemList' %}?q={{ last_query }}&t={{ disp_type }}&begin=" 
         + threeMonthsAgo + "&end=" + today;
       window.location = loadurl;
     });
     $("#btn-view_last_6_months").click(function() {
       var today = moment().format("YYYY-MM-DD");
       var oneMonthAgo = moment().subtract(6, 'months').format("YYYY-MM-DD");
-      var loadurl = "{% url 'inventory:DeliveryItemList' %}?begin=" 
+      var loadurl = "{% url 'inventory:DeliveryItemList' %}?q={{ last_query }}&t={{ disp_type }}&begin=&end=" 
         + oneMonthAgo + "&end=" + today;
+      window.location = loadurl;
+    });
+    $("#btn-view_all").click(function() {
+      var loadurl = "{% url 'inventory:DeliveryItemList' %}?q={{ last_query }}&t={{ disp_type }}&begin=&end=" 
       window.location = loadurl;
     });
     $("#query_input").focus();

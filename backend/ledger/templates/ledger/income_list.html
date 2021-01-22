@@ -46,7 +46,7 @@
                     <ul class="pagination pagination-sm">
                       <li class="page-item">
                         <a
-                          href="{% url 'ledger:IncomeList' %}?q={{ last_query }}&page=1"
+                          href="{% url 'ledger:IncomeList' %}?q={{ last_query }}&begin={{ begin }}&end={{ end }}&page=1"
                           class="page-link"
                         >
                           First
@@ -55,7 +55,7 @@
                       {% if page_obj.has_previous %}
                       <li class="page-item">
                         <a
-                          href="{% url 'ledger:IncomeList' %}?q={{ last_query }}&page={{ page_obj.previous_page_number }}"
+                          href="{% url 'ledger:IncomeList' %}?q={{ last_query }}&begin={{ begin }}&end={{ end }}&page={{ page_obj.previous_page_number }}"
                           class="page-link"
                         >
                           {{ page_obj.previous_page_number }}
@@ -64,7 +64,7 @@
                       {% endif %}
                       <li class="page-item active">
                         <a
-                          href="{% url 'ledger:IncomeList' %}?q={{ last_query }}&page={{ page_obj.number }}"
+                          href="{% url 'ledger:IncomeList' %}?q={{ last_query }}&begin={{ begin }}&end={{ end }}&page={{ page_obj.number }}"
                           class="page-link"
                         >
                           {{ page_obj.number }}
@@ -73,7 +73,7 @@
                       {% if page_obj.has_next %}
                       <li class="page-item">
                         <a
-                          href="{% url 'ledger:IncomeList' %}?q={{ last_query }}&page={{ page_obj.next_page_number }}"
+                          href="{% url 'ledger:IncomeList' %}?q={{ last_query }}&begin={{ begin }}&end={{ end }}&page={{ page_obj.next_page_number }}"
                           class="page-link"
                         >
                           {{ page_obj.next_page_number }}
@@ -82,7 +82,7 @@
                       {% endif %}
                       <li class="page-item">
                         <a
-                          href="{% url 'ledger:IncomeList' %}?q={{ last_query }}&page=last"
+                          href="{% url 'ledger:IncomeList' %}?q={{ last_query }}&begin={{ begin }}&end={{ end }}&page=last"
                           class="page-link"
                         >
                           Last ({{ page_obj.paginator.num_pages }})
@@ -191,22 +191,26 @@
     $("#btn-view_last_month").click(function() {
       var today = moment().format("YYYY-MM-DD");
       var oneMonthAgo = moment().subtract(1, 'months').format("YYYY-MM-DD");
-      var loadurl = "{% url 'ledger:IncomeList' %}?begin=" 
+      var loadurl = "{% url 'ledger:IncomeList' %}?q={{ last_query }}&begin=" 
         + oneMonthAgo + "&end=" + today;
       window.location = loadurl;
     });
     $("#btn-view_last_3_months").click(function() {
       var today = moment().format("YYYY-MM-DD");
       var threeMonthsAgo = moment().subtract(3, 'months').format("YYYY-MM-DD");
-      var loadurl = "{% url 'ledger:IncomeList' %}?begin=" 
+      var loadurl = "{% url 'ledger:IncomeList' %}?q={{ last_query }}&begin=" 
         + threeMonthsAgo + "&end=" + today;
       window.location = loadurl;
     });
     $("#btn-view_last_6_months").click(function() {
       var today = moment().format("YYYY-MM-DD");
       var oneMonthAgo = moment().subtract(6, 'months').format("YYYY-MM-DD");
-      var loadurl = "{% url 'ledger:IncomeList' %}?begin=" 
+      var loadurl = "{% url 'ledger:IncomeList' %}?q={{ last_query }}&begin=" 
         + oneMonthAgo + "&end=" + today;
+      window.location = loadurl;
+    });
+    $("#btn-view_all").click(function() {
+      var loadurl = "{% url 'ledger:IncomeList' %}?q={{ last_query }}&begin=&end=" 
       window.location = loadurl;
     });
     $("#query_input").focus();
