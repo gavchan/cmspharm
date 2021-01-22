@@ -47,6 +47,7 @@ class LedgerEntry(models.Model):
     description = models.CharField(max_length=255, blank=True, null=True)
     remarks = models.TextField(blank=True, null=True)
     expected_date = models.DateField(verbose_name="Cheque/paid date", blank=True, null=True)
+    permanent = models.BooleanField(default=False)
     # expected_date: refers to due/paid date, cheque date (for cheque expense)
     date_created = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
