@@ -44,11 +44,13 @@
                 class="btn btn-sm btn-info"
               ><i class="fad fa-file-alt"></i>
               </a>
+              {% if not delivery_obj.bill.permanent %}
               <a
                 href="{% url 'ledger:ExpenseUpdate' delivery_obj.bill.pk %}"
                 class="btn-expense_update btn btn-sm btn-primary"
               ><i class="fad fa-edit"></i>
               </a>
+              {% endif %}
             </td>
           </tr>
         </tbody>

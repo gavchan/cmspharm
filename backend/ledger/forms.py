@@ -276,7 +276,7 @@ class NewExpenseForm(ModelForm):
                 Column('category', css_class='form-group col-md-4 mb-0'),
                 Column('invoice_no', css_class='form-group col-md-4 mb-0'),
                 Div(HTML("""
-                    <label for="invoice_date">Invoice date</label>
+                    <label for="invoice_date">Invoice date</label>*
                     <div class="input-group date" id="datepicker_invoice_date" data-target-input="nearest">
                         <input type="text" 
                             class="form-control datetimepicker-input"
@@ -389,7 +389,7 @@ class NewExpenseModalForm(BSModalForm):
                 Column('category', css_class='form-group col-md-4 mb-0'),
                 Column('invoice_no', css_class='form-group col-md-4 mb-0'),
                 Div(HTML("""
-                    <label for="invoice_date">Invoice date</label>
+                    <label for="invoice_date">Invoice date</label>*
                     <div class="input-group date" id="datepicker_invoice_date" data-target-input="nearest">
                         <input type="text" 
                             class="form-control datetimepicker-input"
@@ -504,7 +504,7 @@ class ExpenseUpdateModalForm(BSModalForm):
                 Column('category', css_class='form-group col-md-4 mb-0'),
                 Column('invoice_no', css_class='form-group col-md-4 mb-0'),
                 Div(HTML("""
-                    <label for="invoice_date">Invoice date</label>
+                    <label for="invoice_date">Invoice date</label>*
                     <div class="input-group date" id="datepicker_invoice_date" data-target-input="nearest">
                         <input type="text" 
                             class="form-control datetimepicker-input"
@@ -531,7 +531,7 @@ class ExpenseUpdateModalForm(BSModalForm):
             Row(
                 Column('payment_ref', css_class='form-group col-md-4 mb-0'),
                 Div(HTML("""
-                    <label for="expected_date">Payment date</label>
+                    <label for="expected_date">Payment date</label>*
                     <div class="input-group date" id="datepicker_expected_date" data-target-input="nearest">
                         <input type="text" 
                             class="form-control datetimepicker-input"
