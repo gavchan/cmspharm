@@ -15,11 +15,13 @@
           Expense on {{ expense_obj.entry_date }}
         </span>
         <span>
+          {% if perms.view_expense %}
           <a
             href="{% url 'ledger:ExpenseList' %}"
             class="btn btn-sm btn-dark text-white"
           ><i class="fal fa-step-backward"></i>&nbsp;Expenses
           </a>
+          {% endif %}
           <a
             href="{% url 'inventory:DeliveryOrderList' %}"
             class="btn btn-sm btn-dark text-white"
