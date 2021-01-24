@@ -9,43 +9,6 @@
 
 <div class="modal-body">
   {% include 'drugdb/_regdrug_summary.html' %}
-  {% if match_drug_list %}
-  <div class="card">
-      <div class="card-header d-flex justify-content-between align-items-center">
-          No match registration number match. Possible matching registered drugs:
-          <a href="#" class="btn btn-sm btn-secondary"> Push to CMS </a>
-      </div>
-      <div class="card-body">
-        <table class="table table-sm table-striped">
-          <thead>
-              <tr>
-                  <th scope="col">Reg No.</th>
-                  <th scope="col">Product Name</th>
-                  <th scope="col">Ingredients</th>
-                  <th scope="col">Action</th>
-              </tr>
-          </thead>
-          <tbody>
-            {% for drug in match_drug_list %}
-              <tr>
-                  <td>{{ drug.reg_no }}</td>
-                  <td>{{ drug.name }}</td>
-                  <td>{{ drug.ingredients_list }}</td>
-                  <td class="match-drug-action-cell">
-                      <button
-                        class="btn_quickedit_reg btn btn-link"
-                        data-id="{% url 'cmsinv:InventoryItemQuickEditModal' item_obj.id %}?reg_no={{drug.reg_no}}&next={{ request.path }}"  
-                      ><i class="fad fa-edit"></i>
-                      </button>
-                  </td>
-              </tr>
-              {% endfor %}
-      
-          </tbody>
-        </table>
-      </div>
-  </div>
-  {% endif %}
   <div class="card shadow mb-2">
     <div class="card-header bg-light align-items-center">
       <div class="row">
