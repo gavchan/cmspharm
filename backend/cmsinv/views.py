@@ -276,8 +276,8 @@ class InventoryItemQuickEditModal(BSModalUpdateView, LoginRequiredMixin, Permiss
         form.instance.version = self.object.version + 1
         response = super().form_valid(form)
 
-        # Update corresponding drugdb.RegisteredDrug
         # Update corresponding inventory.Item
+        drug_obj = None
         if self.object.registration_no:
             reg_no = self.object.registration_no.upper()
             try:
@@ -285,7 +285,6 @@ class InventoryItemQuickEditModal(BSModalUpdateView, LoginRequiredMixin, Permiss
             except RegisteredDrug.DoesNotExist:
                 print(f"Error. No matching registered drug with permit {reg_no}")
         else:
-            drug_obj = None
             reg_no = None
         item_data = {
             'name': self.object.product_name,
@@ -344,6 +343,7 @@ class InventoryItemUpdate(UpdateView, LoginRequiredMixin, PermissionRequiredMixi
         response = super().form_valid(form)
 
         # Update corresponding inventory.Item and drugdb.RegisteredDrug
+        drug_obj = None
         if self.object.registration_no:
             reg_no = self.object.registration_no.upper()
             try:
@@ -351,7 +351,6 @@ class InventoryItemUpdate(UpdateView, LoginRequiredMixin, PermissionRequiredMixi
             except RegisteredDrug.DoesNotExist:
                 print(f"Error. No matching registered drug with permit {reg_no}")
         else:
-            drug_obj = None
             reg_no = None
         item_data = {
             'name': form.instance.product_name,
