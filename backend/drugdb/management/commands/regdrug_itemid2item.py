@@ -57,7 +57,7 @@ class Command(BaseCommand):
                 try:
                     regdrug = RegisteredDrug.objects.get(reg_no=item.reg_no)
                 except RegisteredDrug.DoesNotExist:
-                    print(f"Registered Drug {item.reg_no} not found. Removing from item")
+                    print(f"\nRegistered Drug {item.reg_no} not found. Removing from item")
                     item.reg_no = None
                     item.save()
                 if regdrug:
