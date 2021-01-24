@@ -48,5 +48,34 @@ class Command(BaseCommand):
                         fixed += 1
             sys.stdout.write(".")
         print(f"\nProcessed {count} registered drugs; fixed: {fixed}; removed items: {removed}")
+        print(f"---\nChecking item records and reassigning Registered Drug records if reg_no exists")
+        count = 0
+        fixed = 0
+        for item in Item.objects.all():
+            count += 1
+            if item.reg_no:
+                try:
+                    regdrug = RegisteredDrug.objects.get(reg_no=item.reg_no)
+                except RegisteredDrug.DoesNotExist:
+                    print(f"Registered Drug {item.reg_no} not found. Removing from item")
+                    item.reg_no = None
+                    item.save()
+                if regdrug:
+                    if not regdrug.item:
+                        print(f"\nRe-assign item #{item.id} to {regdrug}")
+                        regdrug.item = item
+                        regdrug.save()
+                        fixed += 1
+                    elif regdrug.item != item:
+                        print(f"\nUpdate old item #{regdrug.item} to #{item} for {regdrug}")
+                        regdrug.item = item
+                        regdrug.save()
+                        fixed += 1
+                    else:
+                        sys.stdout.write("s")
+                else:
+                    sys.stdout.write(".")
+        print(f"\nProcessed {count} items; fixed: {fixed}; removed items: {removed}")
+
         
         
