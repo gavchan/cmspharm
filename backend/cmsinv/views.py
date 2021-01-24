@@ -59,7 +59,7 @@ class InventoryItemList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
 
     def get_queryset(self):
         query = self.request.GET.get('q')
-        self.invtype = self.request.GET.get('invtype') or ''
+        self.invtype = self.request.GET.get('invtype') or '0'
         self.status = self.request.GET.get('status') or ''
         self.dd = self.request.GET.get('dd') or 'any'
         if query:
@@ -158,12 +158,12 @@ class InventoryItemDetail(DetailView, LoginRequiredMixin, PermissionRequiredMixi
                 self.drug_list = RegisteredDrug.objects.filter(
                     Q(ingredients__name__icontains=keyword) |
                     Q(name__icontains=keyword)
-                ).order_by('name')[:50]
+                ).distinct().order_by('name')[:50]
             else:
                 self.match_item_list_obj = InventoryItem.objects.filter(
                     Q(product_name__icontains=keyword) |
                     Q(ingredient__icontains=keyword)
-                ).order_by('product_name')[:50]
+                ).distinct().order_by('product_name')[:50]
         else:
             self.drug_list = None
             self.match_item_list_obj = None
