@@ -269,6 +269,8 @@ class InventoryItemQuickEditModal(BSModalUpdateView, LoginRequiredMixin, Permiss
         return kwargs
 
     def form_valid(self, form):
+        if form.instance.registration_no:
+            form.instance.registration_no = form.instance.registration_no.upper()
         form.instance.updated_by = self.request.user.username
         form.instance.last_updated = timezone.now()
         form.instance.version = self.object.version + 1
@@ -283,6 +285,7 @@ class InventoryItemQuickEditModal(BSModalUpdateView, LoginRequiredMixin, Permiss
             except RegisteredDrug.DoesNotExist:
                 print(f"Error. No matching registered drug with permit {reg_no}")
         else:
+            drug_obj = None
             reg_no = None
         item_data = {
             'name': self.object.product_name,
@@ -333,6 +336,8 @@ class InventoryItemUpdate(UpdateView, LoginRequiredMixin, PermissionRequiredMixi
         return data
 
     def form_valid(self, form):
+        if form.instance.registration_no:
+            form.instance.registration_no = form.instance.registration_no.upper()
         form.instance.updated_by = self.request.user.username
         form.instance.last_updated = timezone.now()
         form.instance.version = self.object.version + 1
@@ -346,6 +351,7 @@ class InventoryItemUpdate(UpdateView, LoginRequiredMixin, PermissionRequiredMixi
             except RegisteredDrug.DoesNotExist:
                 print(f"Error. No matching registered drug with permit {reg_no}")
         else:
+            drug_obj = None
             reg_no = None
         item_data = {
             'name': form.instance.product_name,
@@ -362,7 +368,7 @@ class InventoryItemUpdate(UpdateView, LoginRequiredMixin, PermissionRequiredMixi
         else:
             print(f"Item #{item.id} updated: {item.name}")
         
-        # Update corresponding drugdb.RegisteredDrug
+        # Update corresponding drugdb.RegisteredDrug if exists
         if drug_obj:
             drug_obj.item = item
             drug_obj.save()
@@ -421,6 +427,8 @@ class NewInventoryItem(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
 
     def form_valid(self, form):
         print(f'Form valid, {self.regdrug_obj} / {self.vendor_obj}')
+        if form.instance.registration_no:
+            form.instance.registration_no = form.instance.registration_no.upper()
         user = self.request.user.username
         uri = reverse('cmsinv:NewInventoryItem')
         form.instance.updated_by = user
