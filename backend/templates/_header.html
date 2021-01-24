@@ -47,6 +47,7 @@
                         <i class="fad fa-tags"></i>
                     </a>
                     <div class="dropdown-menu">
+                        <a href="{% url 'inventory:Stocktake' %}" class="dropdown-item">Stocktake</a>
                         <a href="{% url 'inventory:ItemList' %}" class="dropdown-item">Item List</a>
                         <a href="{% url 'inventory:VendorList' %}" class="dropdown-item">Vendor List</a>
                         {% if perms.cmsinv.view_auditlog %}

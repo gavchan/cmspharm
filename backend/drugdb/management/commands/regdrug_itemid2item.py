@@ -39,10 +39,13 @@ class Command(BaseCommand):
                     record.save()
                     removed += 1
                 if item:
-                    record.item = item
-                    print(f"\nAssign item #{item.id} to {record}")
-                    record.save()
-                    fixed += 1
+                    if record.item == item:
+                        sys.stdout.write("s")
+                    else:
+                        record.item = item
+                        print(f"\nAssign item #{item.id} to {record}")
+                        record.save()
+                        fixed += 1
             sys.stdout.write(".")
         print(f"\nProcessed {count} registered drugs; fixed: {fixed}; removed items: {removed}")
         

@@ -1,0 +1,59 @@
+{% if drug_list %}
+<table class="table table-sm table-striped mt-2">
+    <thead>
+        <tr>
+            <th scope="col">Reg no.</th>
+            <th scope="col">Product name / Ingredients</th>
+            <th scope="col">Cert Holder</th>
+            <th scope="col">Cms ID</th>
+            <th scope="col">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for drug_obj in drug_list %}
+        <tr 
+              {% if drug_obj.discontinue %}
+              class="table-secondary text-muted"
+              {% endif %}
+          >
+              <td><b>{{ drug_obj.reg_no}}</b>
+              </td>
+              <td><b>{{ drug_obj.name }}</b>
+                  <br>{{ drug_obj.ingredients_list }}
+              </td>
+              <td>
+                  {{ drug_obj.company.name }}
+              </td>
+              <td>
+                {% if drug_obj.item.cmsid %}
+                <button 
+                  class="btn_modal_trigger btn btn-sm btn-link mr-0"
+                  data-id="{% url 'cmsinv:InventoryItemDetailModal' drug_obj.item.cmsid %}">
+                    {{ drug_obj.item.cmsid }}
+                </button>
+                {% else %}
+                  <span class="badge badge-secondary">Not in CMS</span>
+                {% endif %}
+              </td>
+            <td>
+                {% if drug_obj.item.cmsid %}
+                <a type="button"
+                    href="#" 
+                    class="btn_modal_trigger btn btn-sm btn-info"
+                ><i class="fad fa-layer-plus"></i>
+                </a>
+                {% else %}
+                    <a href="#"
+                    class="btn btn-sm btn-success"
+                    ><i class="far fa-layer-plus"></i>&nbsp;CMS
+                    </a>
+                {% endif %}
+            </td>
+        </tr>
+
+        {% endfor %}
+
+    </tbody>
+</table>
+
+{% endif %}

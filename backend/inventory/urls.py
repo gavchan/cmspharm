@@ -30,6 +30,7 @@ urlpatterns = [
     path('item/<int:pk>/delete/', views.ItemDelete.as_view(), name='ItemDelete'),
     path('item/<int:pk>', views.ItemDetail.as_view(), name='ItemDetail'),
     path('items/', views.ItemList.as_view(), name='ItemList'),
+    path('stocktake/', views.StocktakeView, name='Stocktake'),
     # path('vendor/select/modal/', views.VendorSelectModal.as_view(), name='VendorSelectModal'),
     path('vendor/new/', views.NewVendor.as_view(), name='NewVendor'),
     # path('vendor/new/modal/', views.NewVendorModal.as_view(), name='NewVendorModal'),

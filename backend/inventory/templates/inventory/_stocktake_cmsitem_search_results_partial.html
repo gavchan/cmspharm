@@ -1,0 +1,50 @@
+{% if cmsitem_list %}
+<table class="table table-sm table-striped mt-2">
+    <thead>
+        <tr>
+            <th scope="col">Reg no.</th>
+            <th scope="col">Alias / Cert</th>
+            <th scope="col">Product name / Ingredients</th>
+            <th scope="col">Stock Qty</th>
+            <th scope="col">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for cmsitem in cmsitem_list %}
+        <tr 
+              {% if cmsitem.discontinue %}
+              class="table-secondary text-muted"
+              {% endif %}
+          >
+              <td><b>{{ cmsitem.registration_no }}</b>
+                  {% if cmsitem.discontinue %}
+                  <br><span class="badge badge-secondary">Inactive</span>
+                  {% else %}
+                  <br>{{ cmsitem.clinic_drug_no }}
+                  {% endif %}
+              </td>
+              <td>
+                  <b>{{ cmsitem.alias }}</b>
+                  <br>{{ cmsitem.certificate_holder }}
+              </td>
+              <td><b>{{ cmsitem.product_name }}</b>
+                  <br>{{ cmsitem.ingredient }}
+              </td>
+              <td>
+                  {{ cmsitem.stock_qty }}
+              </td>
+            <td>
+                <a type="button"
+                    href="#" 
+                    class="btn_modal_trigger btn btn-sm btn-info"
+                ><i class="fad fa-layer-plus"></i>
+                </a>
+            </td>
+        </tr>
+
+        {% endfor %}
+
+    </tbody>
+</table>
+
+{% endif %}

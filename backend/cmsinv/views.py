@@ -274,23 +274,22 @@ class InventoryItemQuickEditModal(BSModalUpdateView, LoginRequiredMixin, Permiss
         form.instance.version = self.object.version + 1
         response = super().form_valid(form)
 
+        # Update corresponding drugdb.RegisteredDrug
         # Update corresponding inventory.Item
-        if form.instance.registration_no:
-            reg_no = form.instance.registration_no.upper()
+        if self.object.registration_no:
+            reg_no = self.object.registration_no.upper()
             try:
                 drug_obj = RegisteredDrug.objects.get(reg_no=reg_no)
             except RegisteredDrug.DoesNotExist:
                 print(f"Error. No matching registered drug with permit {reg_no}")
-            if drug_obj:
-                print(f"Found {drug_obj.reg_no} | {drug_obj.name}")
         else:
             reg_no = None
         item_data = {
-            'name': form.instance.product_name,
+            'name': self.object.product_name,
             'cmsid': self.object.id,
             'reg_no': reg_no,
             'item_type': ItemType.objects.get(name="Drug"),  # CMS InventoryItems are by default "Drug"
-            'is_active': not form.instance.discontinue,
+            'is_active': not self.object.discontinue,
             'updated_by': self.request.user.username,
             'last_updated': timezone.now()
         }
@@ -299,6 +298,11 @@ class InventoryItemQuickEditModal(BSModalUpdateView, LoginRequiredMixin, Permiss
             print(f'Item #{item.id} created: {item.name}')
         else:
             print(f"Item #{item.id} updated: {item.name}")
+        
+        # Update corresponding drugdb.RegisteredDrug
+        if drug_obj:
+            drug_obj.item = item
+            drug_obj.save()
         return response
 
     def get_success_url(self):
@@ -334,9 +338,13 @@ class InventoryItemUpdate(UpdateView, LoginRequiredMixin, PermissionRequiredMixi
         form.instance.version = self.object.version + 1
         response = super().form_valid(form)
 
-        # Update corresponding inventory.Item
-        if form.instance.registration_no:
-            reg_no = form.instance.registration_no.upper()
+        # Update corresponding inventory.Item and drugdb.RegisteredDrug
+        if self.object.registration_no:
+            reg_no = self.object.registration_no.upper()
+            try:
+                drug_obj = RegisteredDrug.objects.get(reg_no=reg_no)
+            except RegisteredDrug.DoesNotExist:
+                print(f"Error. No matching registered drug with permit {reg_no}")
         else:
             reg_no = None
         item_data = {
@@ -353,6 +361,11 @@ class InventoryItemUpdate(UpdateView, LoginRequiredMixin, PermissionRequiredMixi
             print(f'Item #{item.id} created: {item.name}')
         else:
             print(f"Item #{item.id} updated: {item.name}")
+        
+        # Update corresponding drugdb.RegisteredDrug
+        if drug_obj:
+            drug_obj.item = item
+            drug_obj.save()
         return response
 
     def get_success_url(self):
@@ -534,7 +547,11 @@ class NewInventoryItem(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
 
         # Create new corresponding inventory.Item if not existing
         if self.object.registration_no:
-            reg_no = form.instance.registration_no.upper()
+            reg_no = self.object.registration_no.upper()
+            try:
+                drug_obj = RegisteredDrug.objects.get(reg_no=reg_no)
+            except RegisteredDrug.DoesNotExist:
+                print(f"Error. No matching registered drug with permit {reg_no}")
         else:
             reg_no = None
         item_data = {

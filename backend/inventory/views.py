@@ -161,7 +161,6 @@ class ItemDetail(DetailView, LoginRequiredMixin, PermissionRequiredMixin):
         data['deliveryitem_obj_list'] = delivered_items
         return data
 
-
 class ItemUpdateModal(BSModalUpdateView, LoginRequiredMixin, PermissionRequiredMixin):
     """Update details for item"""
     permission_required = ('inventory.change_item', )
@@ -194,7 +193,6 @@ class ItemDelete(DeleteView, LoginRequiredMixin, PermissionRequiredMixin):
     permission_required = ('inventory.delete_item', )
     model = Item
     success_url = reverse_lazy('inventory:ItemList')
-
 
 class NewItem(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
     """Add new item"""
@@ -319,7 +317,6 @@ class VendorList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
         data['last_query_count'] = self.last_query_count
         data['vtype'] = self.vtype
         return data
-
 
 class VendorDetail(DetailView, LoginRequiredMixin, PermissionRequiredMixin):
     """Display details for vendor"""
@@ -1013,3 +1010,107 @@ class DeliveryItemList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
         data['begin'] = self.begin
         data['end'] = self.end
         return data
+
+@login_required
+@permission_required('cmsinv.change_inventoryitem')
+def StocktakeView(request, *args, **kwargs):
+    """Display summary plus add items"""
+    MAX_QUERY_COUNT = 200
+    CMSITEM_DB = '0'
+    REGDRUG_DB = '1'
+    ctx = {}
+    # Get search type; default is 0=cmsinv.InventoryItem; 1=drugdb.RegisteredDrug
+    if request.GET.get('db') == REGDRUG_DB:
+        searchdb = REGDRUG_DB
+    else:
+        searchdb = CMSITEM_DB
+    print(searchdb)
+    ctx['db'] = searchdb
+
+    # Get query from request and search 
+    query = request.GET.get('q') or ''
+    item_query = request.GET.get('iq') or ''
+    stype = request.GET.get('stype') or ''
+    ctx['query'] = query
+    ctx['item_query'] = item_query
+    ctx['stype'] = stype
+    if item_query:
+        last_query = item_query
+        object_list = Item.objects.filter(
+            item_type=ItemType.objects.get(name='Consumable').id).filter(
+            Q(name__icontains=item_query) 
+        ).order_by('is_active')[:MAX_QUERY_COUNT]
+        last_query_count = object_list.count
+        if request.is_ajax():
+            html = render_to_string(
+                template_name='inventory/_stocktake_item_search_results_partial.html',
+                context={
+                    'item_list': object_list,
+                    'db': 0,
+                    'q': query,
+                    'iq': item_query,
+                    'stype': stype,
+                }
+            )
+            data_dict = {"html_from_view": html}
+            return JsonResponse(data=data_dict, safe=False)
+    elif query:
+        last_query = query
+        if stype == 'regno':
+            if searchdb == CMSITEM_DB:
+                object_list = InventoryItem.objects.filter(
+                    Q(registration_no__icontains=query)
+                ).order_by('discontinue')[:MAX_QUERY_COUNT]
+            else:
+                object_list = RegisteredDrug.objects.filter(
+                    Q(reg_no__icontains=query)
+                ).order_by('item__cmsid')[:MAX_QUERY_COUNT]
+        else:
+            last_query = query
+            if searchdb == CMSITEM_DB:
+                object_list = InventoryItem.objects.filter(
+                    Q(alias__icontains=query) |
+                    Q(product_name__icontains=query) |
+                    # Q(generic_name__icontains=query) |
+                    Q(ingredient__icontains=query)
+                ).order_by('discontinue')[:MAX_QUERY_COUNT]
+            else:
+                object_list = RegisteredDrug.objects.filter(
+                    Q(name__icontains=query)
+                ).order_by('item__cmsid')[:MAX_QUERY_COUNT]
+        last_query_count = object_list.count
+    else:
+        last_query = ''
+        if searchdb == CMSITEM_DB:
+            object_list = InventoryItem.objects.all().order_by('discontinue')[:MAX_QUERY_COUNT]
+        else:
+            object_list = RegisteredDrug.objects.all().order_by('item__cmsid')[:MAX_QUERY_COUNT]
+        last_query_count = object_list.count
+    if request.is_ajax():
+        if searchdb == CMSITEM_DB:
+            html = render_to_string(
+                template_name='inventory/_stocktake_cmsitem_search_results_partial.html',
+                context={
+                    'cmsitem_list': object_list,
+                    'db': 0,
+                    'q': query,
+                    'iq': item_query,
+                    'stype': stype,
+                }
+            )
+        else:
+            html = render_to_string(
+                template_name='inventory/_drug_search_results_partial.html',
+                context={
+                    'drug_list': object_list,
+                    'delivery_id': delivery_obj.id,
+                    'db': 1,
+                    'q': query,
+                    'iq': item_query,
+                    'stype': stype,
+                }
+            ) 
+        data_dict = {"html_from_view": html}
+        return JsonResponse(data=data_dict, safe=False)
+
+    return render(request, "inventory/stocktake.html", context=ctx)
