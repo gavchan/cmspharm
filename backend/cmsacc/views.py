@@ -107,11 +107,62 @@ class CashbookToday(ListView, LoginRequiredMixin, PermissionRequiredMixin):
         if self.period == 'a':
             object_list.filter(
                 date_created__lt=today_cutoff
-            ).order_by('date_created', 'last_updated')
+            ).order_by('-date_created', '-last_updated')
         elif self.period == 'p':
             object_list.filter(
                 date_created__gte=today_cutoff
-            ).order_by('date_created', 'last_updated')
+            ).order_by('-date_created', '-last_updated')
+        return object_list
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['period'] = self.period
+        return context
+
+class BillToday(ListView, LoginRequiredMixin, PermissionRequiredMixin):
+    """
+    Lists monthly CMS billing
+    """
+    PERIOD_CHOICES = [
+        ('a', 'AM'),
+        ('p', 'PM'),
+    ]
+    PERIOD_CUTOFF_HR = 15  # 3pm in 24hr time
+    PERIOD_CUTOFF_MIN = 0
+    permission_required = ('cmsinv.view_bill',)
+    template_name = 'cmsacc/bill_today.html'
+    model = Cashbook
+    context_object_name = 'bill_obj_list'
+    paginate_by = 50
+    begin = None
+    end = None
+    period = None
+
+    def get_queryset(self):
+        self.period = self.request.GET.get('p') or None
+        self.begin = self.request.GET.get('begin')
+        self.end = self.request.GET.get('end')
+        now = datetime.today()
+        print(now)
+        today_date = now.strftime('%Y-%m-%d')
+        today_cutoff = now.replace(hour=self.PERIOD_CUTOFF_HR, minute=self.PERIOD_CUTOFF_MIN)
+        # current_time = timezone.now().strftime('%H:%m')
+        if not self.period:
+            if now >= today_cutoff:
+                self.period = 'p'
+            else:
+                self.period = 'a'
+        object_list = Bill.objects.filter(
+            date_created__icontains=today_date
+        )
+        if self.period == 'a':
+            object_list.filter(
+                date_created__lt=today_cutoff
+            ).order_by('-date_created', '-last_updated')
+        elif self.period == 'p':
+            object_list.filter(
+                date_created__gte=today_cutoff
+            ).order_by('-date_created', '-last_updated')
         return object_list
 
     def get_context_data(self, **kwargs):
