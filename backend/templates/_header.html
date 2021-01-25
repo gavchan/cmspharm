@@ -41,6 +41,11 @@
                 <li class="nav-item">
                     <a href="{% url 'drugdb:DrugList' %}" class="nav-link">Reg Drugs</a>
                 </li>
+                {% if perms.cmsacc.view_cashbook %}
+                <li class="nav-item">
+                    <a href="{% url 'cmsacc:CashbookToday' %}" class="nav-link">Cashbook</a>
+                </li>
+                {% endif %}
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="{% url 'cmsinv:InventoryItemList' %}"
                         id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

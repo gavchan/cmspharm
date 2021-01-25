@@ -23,6 +23,7 @@ urlpatterns = [
     path('admin/', include('admin_honeypot.urls', namespace='admin_honeypot')),
     path('cms-admin/', admin.site.urls),
     path('cms-auth/', include('django.contrib.auth.urls')),
+    path('cmsacc/', include('cmsacc.urls')),
     path('cmsinv/', include('cmsinv.urls')),
     path('cmssys/', include('cmssys.urls')),
     path('drugdb/', include('drugdb.urls')),
