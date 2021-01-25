@@ -188,7 +188,9 @@
     
     {% else %}
 
-    <p>No CMS item in database</p>
+    <div class="alert alert-warning align-items-center" role="alert">
+      No matching CMS Inventory Item. <a href="{% url 'drugdb:DrugList' %}?q={{ last_query }}" class="alert-link">Search Registered Drug List for '{{ last_query }}'</a>
+    </div>
 
     {% endif %} 
     

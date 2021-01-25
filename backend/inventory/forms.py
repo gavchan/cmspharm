@@ -699,12 +699,14 @@ class ItemUpdateModalForm(BSModalForm):
         self.helper.layout = Layout(
             Row(
                 Column('name', css_class='form-group col-md-8'),
-                Column(UneditableField('cmsid'), css_class='form-group col-md-4'),
+                # Column(UneditableField('cmsid'), css_class='form-group col-md-4'),
+                Column('cmsid', css_class='form-group col-md-4'),
                 css_class='form-row',
             ),
             Row(
                 Column('note', css_class='form-group col-md-8 mb-0'),
-                Column(UneditableField('reg_no'), css_class='form-group col-md-4'),
+                # Column(UneditableField('reg_no'), css_class='form-group col-md-4'),
+                Column('reg_no', css_class='form-group col-md-4'),
                 css_class='form-row',
             ),
             Row(
@@ -718,8 +720,8 @@ class ItemUpdateModalForm(BSModalForm):
                 css_class="form-row"
             ),
             Hidden('version', self.instance.version + 1),
-            Hidden('cmsid', self.instance.cmsid),
-            Hidden('reg_no', self.instance.reg_no),
+            # Hidden('cmsid', self.instance.cmsid),
+            # Hidden('reg_no', self.instance.reg_no),
             FormActions(
                 Submit('submit', 'Submit'),
                 HTML("""
