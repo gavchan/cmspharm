@@ -8,7 +8,7 @@ from django.urls import reverse, reverse_lazy, resolve, Resolver404
 from django.shortcuts import redirect, render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
 from django.forms.models import model_to_dict
-from django.db.models import Q
+from django.db.models import Q, Sum, Count
 
 from .models import (
     Bill,
@@ -137,16 +137,15 @@ class BillToday(ListView, LoginRequiredMixin, PermissionRequiredMixin):
     begin = None
     end = None
     period = None
+    session_stats = None
 
     def get_queryset(self):
         self.period = self.request.GET.get('p') or None
         self.begin = self.request.GET.get('begin')
         self.end = self.request.GET.get('end')
         now = datetime.today()
-        print(now)
         today_date = now.strftime('%Y-%m-%d')
         today_cutoff = now.replace(hour=self.PERIOD_CUTOFF_HR, minute=self.PERIOD_CUTOFF_MIN)
-        print(f"Cuttof={today_cutoff}")
         if not self.period:
             if now >= today_cutoff:
                 self.period = 'p'
@@ -166,10 +165,19 @@ class BillToday(ListView, LoginRequiredMixin, PermissionRequiredMixin):
             object_list = object_list = Bill.objects.filter(
             encounter__date_created__icontains=today_date
         )
+        object_list = object_list.exclude(
+            Q(encounter__patient__patient_no='00AM')|
+            Q(encounter__patient__patient_no='00PM')
+        )
+        self.session_stats = object_list.aggregate(
+            count=Count('total'),
+            sumtotal=Sum('total')
+        )
         return object_list
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['period'] = self.period
+        context['session_stats'] = self.session_stats
         return context
     
