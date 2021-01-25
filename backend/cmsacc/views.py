@@ -1,6 +1,6 @@
 
 from django.utils import timezone
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.decorators import login_required, permission_required
@@ -15,6 +15,7 @@ from .models import (
     BillDetail,
     Cashbook,
 )
+from cmssys.models import Encounter
 # class MonthlyBillingList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
 #     """
 #     Lists monthly CMS billing
@@ -129,41 +130,53 @@ class BillToday(ListView, LoginRequiredMixin, PermissionRequiredMixin):
     ]
     PERIOD_CUTOFF_HR = 15  # 3pm in 24hr time
     PERIOD_CUTOFF_MIN = 0
+    RECENT_BILLS = 250
     permission_required = ('cmsinv.view_bill',)
     template_name = 'cmsacc/bill_today.html'
     model = Cashbook
     context_object_name = 'bill_obj_list'
     paginate_by = 50
-    begin = None
-    end = None
     period = None
+    lastdate = None
     session_stats = None
 
     def get_queryset(self):
         self.period = self.request.GET.get('p') or None
-        self.begin = self.request.GET.get('begin')
-        self.end = self.request.GET.get('end')
-        now = datetime.today()
-        today_date = now.strftime('%Y-%m-%d')
-        today_cutoff = now.replace(hour=self.PERIOD_CUTOFF_HR, minute=self.PERIOD_CUTOFF_MIN)
+        self.day = self.request.GET.get('d') or None
+        today = datetime.today()
+        self.lastdate = today - timedelta(days=1)
+
+        # Cycle through recent bills
+        recent_bills = Encounter.objects.order_by('-date_created')[:self.RECENT_BILLS]
+        recent_dates = set()
+        for bill in recent_bills:
+            recent_dates.add(bill.date_created.strftime('%Y-%m-%d'))
+        while not self.lastdate.strftime('%Y-%m-%d') in recent_dates:
+            self.lastdate = self.lastdate - timedelta(days=1)
+        if self.day == '1':  # Last encounter date before today
+            seldate = self.lastdate
+        else:
+            seldate = today
+        query_date = seldate.strftime('%Y-%m-%d')
+        time_cutoff = seldate.replace(hour=self.PERIOD_CUTOFF_HR, minute=self.PERIOD_CUTOFF_MIN)
         if not self.period:
-            if now >= today_cutoff:
+            if seldate >= time_cutoff:
                 self.period = 'p'
             else:
                 self.period = 'a'
         if self.period == 'a':
             object_list = Bill.objects.filter(
-                encounter__date_created__icontains=today_date,
-                encounter__date_created__lt=today_cutoff
+                encounter__date_created__icontains=query_date,
+                encounter__date_created__lt=time_cutoff
             ).order_by('-encounter.date_created', '-last_updated')
         elif self.period == 'p':
             object_list = Bill.objects.filter(
-                encounter__date_created__icontains=today_date,
-                encounter__date_created__gte=today_cutoff
+                encounter__date_created__icontains=query_date,
+                encounter__date_created__gte=time_cutoff
             ).order_by('-encounter.date_created', '-last_updated')
         else:
             object_list = object_list = Bill.objects.filter(
-            encounter__date_created__icontains=today_date
+            encounter__date_created__icontains=query_date
         )
         object_list = object_list.exclude(
             Q(encounter__patient__patient_no='00AM')|
@@ -177,7 +190,9 @@ class BillToday(ListView, LoginRequiredMixin, PermissionRequiredMixin):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['day'] = self.day
         context['period'] = self.period
         context['session_stats'] = self.session_stats
+        context['lastdate'] = self.lastdate.strftime("%Y-%m-%d")
         return context
     

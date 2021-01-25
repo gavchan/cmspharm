@@ -19,9 +19,25 @@
         <form action="{% url 'cmsacc:BillToday' %}" method="get">
           <div class="row mb-2">
             <div class="col-sm-2">
+              <div class="input-group input-group-sm">
+                <select 
+                    name="d" 
+                    id="inputGroupSelectDay" 
+                    class="custom-select"
+                    >
+                    <option value=""
+                    {% if day == '' %} selected {% endif %}
+                    >Today</option>
+                    <option value="1"
+                    {% if day == '1' %} selected {% endif %}
+                    >{{ lastdate }}</option>
+                </select>
+              </div>
+          </div>
+            <div class="col-sm-2">
                 <div class="input-group input-group-sm">
                   <select 
-                      name="t" 
+                      name="p" 
                       id="inputGroupSelectPeriod" 
                       class="custom-select"
                       >
@@ -37,7 +53,7 @@
                   </select>
                 </div>
             </div>
-            <div class="col-sm-10 pt-1">
+            <div class="col-sm-8 pt-1">
               {% if session_stats.count %}
               Session patient count: <strong>{{ session_stats.count }}</strong>, 
               billed amount: <strong>$ {{ session_stats.sumtotal }}</strong>
@@ -60,7 +76,7 @@
           <tr>
             <th scope="col">Encounter date</th>
             <th scope="col">Bill date</th>
-            <th scope="col">Patient No.</th>
+            <th scope="col" class="text-right">Patient No.</th>
             <th scope="col" class="text-right">Total amount</th>
             <th scope="col" class="text-right">Unbalance amount</th>
             <th scope="col">Doctor</th>
@@ -74,7 +90,7 @@
           <tr>
             <td>{{ entry.encounter.date_created|date:"d-m-y H:i"}}</td>
             <td>{{ entry.last_updated|date:"d-m-y H:i" }}</td>
-            <td class="text-center">{{ entry.encounter.patient.patient_no }}</td>
+            <td class="text-right">{{ entry.encounter.patient.patient_no }}</td>
             <td class="text-right">{{ entry.total }}</td>
             <td class="text-right">{{ entry.unbalance_amt }}</td>
             <td>{{ entry.encounter.doctor.name }}</td>
@@ -90,8 +106,8 @@
           {% endfor %}
           <tr>
             <td colspan="2" class="text-right">No. patients:</td>
-            <td class="text-center">{{ session_stats.count }}</td>
-            <td class="text-right">Sum total: {{ session_stats.sumtotal }}</td>
+            <td class="text-center"><strong>{{ session_stats.count }}</strong></td>
+            <td class="text-right"><strong>Sum total: {{ session_stats.sumtotal }}</strong></td>
             <td colspan="4"></td>
           </tr>
         </tbody>
@@ -115,9 +131,13 @@
 
 <script type="text/javascript">
   $(document).ready(function () {
+    $("#inputGroupSelectDay").change(function() {
+      let day = $("#inputGroupSelectDay option:selected").val();
+      self.location = "{% url 'cmsacc:BillToday' %}?d=" + day + "&p={{period}}";
+    });
     $("#inputGroupSelectPeriod").change(function() {
       let period = $("#inputGroupSelectPeriod option:selected").val();
-      self.location = "{% url 'cmsacc:BillToday' %}?p="
+      self.location = "{% url 'cmsacc:BillToday' %}?d={{ day }}&p="
         + period;
     });
 
