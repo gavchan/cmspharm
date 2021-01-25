@@ -468,10 +468,10 @@ class DeliveryOrderList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
     disp_type = '1'
 
     def get_queryset(self):
-        self.disp_type = self.request.GET.get('t')
-        self.begin = self.request.GET.get('begin')
-        self.end = self.request.GET.get('end')
-        query = self.request.GET.get('q')
+        self.disp_type = self.request.GET.get('t') or ''
+        self.begin = self.request.GET.get('begin') or ''
+        self.end = self.request.GET.get('end') or ''
+        query = self.request.GET.get('q') or ''
         if query:
             self.last_query = query
             object_list = DeliveryOrder.objects.filter(
@@ -981,10 +981,10 @@ class DeliveryItemList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
     disp_type = '1'
 
     def get_queryset(self):
-        self.disp_type = self.request.GET.get('t')
-        self.begin = self.request.GET.get('begin')
-        self.end = self.request.GET.get('end')
-        query = self.request.GET.get('q')
+        self.disp_type = self.request.GET.get('t') or ''
+        self.begin = self.request.GET.get('begin') or ''
+        self.end = self.request.GET.get('end') or ''
+        query = self.request.GET.get('q') or ''
         if query:
             self.last_query = query
             object_list = DeliveryItem.objects.filter(

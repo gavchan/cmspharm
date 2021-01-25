@@ -100,8 +100,8 @@ class ExpenseList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
 
     def get_queryset(self):
         query = self.request.GET.get('q')
-        self.begin = self.request.GET.get('begin')
-        self.end = self.request.GET.get('end')
+        self.begin = self.request.GET.get('begin') or ''
+        self.end = self.request.GET.get('end') or ''
         if query:
             self.last_query = query
             object_list = Expense.objects.filter(
@@ -529,8 +529,8 @@ class IncomeList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
 
     def get_queryset(self):
         query = self.request.GET.get('q')
-        self.begin = self.request.GET.get('begin')
-        self.end = self.request.GET.get('end')
+        self.begin = self.request.GET.get('begin') or ''
+        self.end = self.request.GET.get('end') or ''
         if query:
             self.last_query = query
             object_list = Income.objects.filter(

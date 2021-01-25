@@ -701,8 +701,8 @@ class InventoryMovementLogList(ListView, LoginRequiredMixin, PermissionRequiredM
     last_query_count = 0
 
     def get_queryset(self):
-        self.begin = self.request.GET.get('begin')
-        self.end = self.request.GET.get('end')
+        self.begin = self.request.GET.get('begin') or ''
+        self.end = self.request.GET.get('end') or ''
         self.disp_type = self.request.GET.get('t') or ''
         if self.disp_type:
             move_type = dict(self.MOVEMENT_TYPE_CHOICES).get(self.disp_type)

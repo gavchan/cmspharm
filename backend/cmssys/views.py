@@ -30,8 +30,8 @@ class AuditLogList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
     last_query_count = 0
 
     def get_queryset(self):
-        self.begin = self.request.GET.get('begin')
-        self.end = self.request.GET.get('end')
+        self.begin = self.request.GET.get('begin') or ''
+        self.end = self.request.GET.get('end') or ''
         self.disp_type = self.request.GET.get('t') or ''
         if self.disp_type:
             class_type = dict(self.CLASS_TYPE_CHOICES).get(self.disp_type)
