@@ -105,8 +105,7 @@
   
           {% endfor %}
           <tr>
-            <td colspan="2" class="text-right">No. patients:</td>
-            <td class="text-center"><strong>{{ session_stats.count }}</strong></td>
+            <td colspan="3" class="text-right"><strong>Patients in session: {{ session_stats.count }}</strong></td>
             <td class="text-right"><strong>Sum total: {{ session_stats.sumtotal }}</strong></td>
             <td colspan="4"></td>
           </tr>
