@@ -146,22 +146,26 @@ class BillToday(ListView, LoginRequiredMixin, PermissionRequiredMixin):
         print(now)
         today_date = now.strftime('%Y-%m-%d')
         today_cutoff = now.replace(hour=self.PERIOD_CUTOFF_HR, minute=self.PERIOD_CUTOFF_MIN)
+        print(f"Cuttof={today_cutoff}")
         if not self.period:
             if now >= today_cutoff:
                 self.period = 'p'
             else:
                 self.period = 'a'
-        object_list = Bill.objects.filter(
-            encounter__date_created__icontains=today_date
-        )
         if self.period == 'a':
-            object_list.filter(
+            object_list = Bill.objects.filter(
+                encounter__date_created__icontains=today_date,
                 encounter__date_created__lt=today_cutoff
             ).order_by('-encounter.date_created', '-last_updated')
         elif self.period == 'p':
-            object_list.filter(
+            object_list = Bill.objects.filter(
+                encounter__date_created__icontains=today_date,
                 encounter__date_created__gte=today_cutoff
             ).order_by('-encounter.date_created', '-last_updated')
+        else:
+            object_list = object_list = Bill.objects.filter(
+            encounter__date_created__icontains=today_date
+        )
         return object_list
 
     def get_context_data(self, **kwargs):

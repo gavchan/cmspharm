@@ -56,11 +56,10 @@
           <tr>
             <th scope="col">Encounter date</th>
             <th scope="col">Bill date</th>
-            <th scope="col">Last updated</th>
             <th scope="col">Patient No.</th>
-            <th scope="col">Total amount</th>
-            <th scope="col">Unbalance amount</th>
-            <th scope="col">Doctor</th>:
+            <th scope="col" class="text-right">Total amount</th>
+            <th scope="col" class="text-right">Unbalance amount</th>
+            <th scope="col">Doctor</th>
             <th scope="col">Updated by</th>
             <th scope="col">Remarks</th>
           </tr>
@@ -70,14 +69,18 @@
   
           <tr>
             <td>{{ entry.encounter.date_created|date:"d-m-y H:i"}}</td>
-            <td>{{ entry.date_created|date:"d-m-y" }}</td>
             <td>{{ entry.last_updated|date:"d-m-y H:i" }}</td>
-            <td>{{ entry.patient_no }}</td>
-            <td>{{ entry.total }}</td>
-            <td>{{ entry.unbalance_amt }}</td>
+            <td>{{ entry.encounter.patient.patient_no }}</td>
+            <td class="text-right">{{ entry.total }}</td>
+            <td class="text-right">{{ entry.unbalance_amt }}</td>
             <td>{{ entry.encounter.doctor.name }}</td>
             <td>{{ entry.updated_by }}</td>
-            <td>{{ entry.remarks }}</td>
+            <td>
+              {% if entry.remarks %}
+              {{ entry.remarks }}
+              {% else %}-
+              {% endif %}
+            </td>
           </tr>
   
           {% endfor %}
