@@ -91,7 +91,8 @@ class CashbookToday(ListView, LoginRequiredMixin, PermissionRequiredMixin):
         self.period = self.request.GET.get('p') or None
         self.begin = self.request.GET.get('begin')
         self.end = self.request.GET.get('end')
-        now = timezone.now()
+        now = datetime.today()
+        print(now)
         today_date = now.strftime('%Y-%m-%d')
         today_cutoff = now.replace(hour=self.PERIOD_CUTOFF_HR, minute=self.PERIOD_CUTOFF_MIN)
         # current_time = timezone.now().strftime('%H:%m')
