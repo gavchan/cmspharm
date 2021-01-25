@@ -132,6 +132,53 @@ class UserProfile(models.Model):
     def __str__(self):
         return f"{self.id} | ver.{self.version}"
 
+class Patient(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    version = models.BigIntegerField()
+    active = models.TextField()  # This field type is a guess.
+    address_id = models.BigIntegerField(blank=True, null=True)
+    alias1 = models.CharField(max_length=255, blank=True, null=True)
+    alias2 = models.CharField(max_length=255, blank=True, null=True)
+    chinese_given_name = models.CharField(max_length=255, blank=True, null=True)
+    chinese_sur_name = models.CharField(max_length=255, blank=True, null=True)
+    date_created = models.DateTimeField()
+    dob = models.DateTimeField(blank=True, null=True)
+    dob_inexact = models.TextField()  # This field type is a guess.
+    email = models.CharField(max_length=255, blank=True, null=True)
+    epr = models.TextField()  # This field type is a guess.
+    fax = models.CharField(max_length=255, blank=True, null=True)
+    given_name = models.CharField(max_length=255, blank=True, null=True)
+    language_id = models.BigIntegerField(blank=True, null=True)
+    last_updated = models.DateTimeField()
+    medical_background_id = models.BigIntegerField(blank=True, null=True)
+    memo = models.TextField(blank=True, null=True)
+    nextofkin1_id = models.BigIntegerField(blank=True, null=True)
+    nextofkin2_id = models.BigIntegerField(blank=True, null=True)
+    official_id = models.CharField(max_length=255, blank=True, null=True)
+    official_id_type_id = models.BigIntegerField()
+    pager = models.CharField(max_length=255, blank=True, null=True)
+    patient_no = models.CharField(unique=True, max_length=255, blank=True, null=True)
+    referrer_id = models.BigIntegerField(blank=True, null=True)
+    register_clinic = models.CharField(max_length=255, blank=True, null=True)
+    responsible_doctor_id = models.BigIntegerField(blank=True, null=True)
+    security = models.TextField()  # This field type is a guess.
+    sex_id = models.BigIntegerField(blank=True, null=True)
+    special_instructions = models.TextField(blank=True, null=True)
+    sur_name = models.CharField(max_length=255, blank=True, null=True)
+    tel_home = models.CharField(max_length=255, blank=True, null=True)
+    tel_mobile = models.CharField(max_length=255, blank=True, null=True)
+    tel_office = models.CharField(max_length=255, blank=True, null=True)
+    updated_by = models.CharField(max_length=255, blank=True, null=True)
+    address_work_id = models.BigIntegerField(blank=True, null=True)
+    doi = models.DateTimeField(blank=True, null=True)
+    patient_address = models.CharField(max_length=255, blank=True, null=True)
+    patient_type_id = models.BigIntegerField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'patient'
+        
+        
 class EncounterType(models.Model):
     id = models.BigAutoField(primary_key=True)
     version = models.BigIntegerField()
@@ -157,7 +204,11 @@ class Encounter(models.Model):
         db_column='doctor_id',
     )
     last_updated = models.DateTimeField()
-    patient_id = models.BigIntegerField()
+    # patient_id = models.BigIntegerField()
+    patient = models.ForeignKey(
+        Patient, on_delete=models.PROTECT,
+        db_column='patient_id',
+    )
     prescription_id = models.BigIntegerField(blank=True, null=True)
     encounter_type = models.ForeignKey(
         EncounterType, on_delete=models.PROTECT,
