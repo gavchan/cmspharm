@@ -1,5 +1,6 @@
-from datetime import datetime
+
 from django.utils import timezone
+from datetime import datetime
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.decorators import login_required, permission_required
@@ -272,7 +273,7 @@ class InventoryItemQuickEditModal(BSModalUpdateView, LoginRequiredMixin, Permiss
         if form.instance.registration_no:
             form.instance.registration_no = form.instance.registration_no.upper()
         form.instance.updated_by = self.request.user.username
-        form.instance.last_updated = timezone.now()
+        form.instance.last_updated = datetime.today()
         form.instance.version = self.object.version + 1
         response = super().form_valid(form)
 
@@ -293,7 +294,7 @@ class InventoryItemQuickEditModal(BSModalUpdateView, LoginRequiredMixin, Permiss
             'item_type': ItemType.objects.get(name="Drug"),  # CMS InventoryItems are by default "Drug"
             'is_active': not self.object.discontinue,
             'updated_by': self.request.user.username,
-            'last_updated': timezone.now()
+            'last_updated': datetime.today()
         }
         item, created = Item.objects.update_or_create(cmsid=self.object.id, defaults=item_data)
         if created:
@@ -338,7 +339,7 @@ class InventoryItemUpdate(UpdateView, LoginRequiredMixin, PermissionRequiredMixi
         if form.instance.registration_no:
             form.instance.registration_no = form.instance.registration_no.upper()
         form.instance.updated_by = self.request.user.username
-        form.instance.last_updated = timezone.now()
+        form.instance.last_updated = datetime.today()
         form.instance.version = self.object.version + 1
         response = super().form_valid(form)
 
@@ -359,7 +360,7 @@ class InventoryItemUpdate(UpdateView, LoginRequiredMixin, PermissionRequiredMixi
             'item_type': ItemType.objects.get(name="Drug"),  # CMS InventoryItems are by default "Drug"
             'is_active': not form.instance.discontinue,
             'updated_by': self.request.user.username,
-            'last_updated': timezone.now()
+            'last_updated': datetime.today()
         }
         item, created = Item.objects.update_or_create(cmsid=self.object.id, defaults=item_data)
         if created:
@@ -432,8 +433,8 @@ class NewInventoryItem(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
         uri = reverse('cmsinv:NewInventoryItem')
         form.instance.updated_by = user
         form.instance.version = 0
-        form.instance.date_created = timezone.now()
-        form.instance.last_updated = timezone.now()
+        form.instance.date_created = datetime.today()
+        form.instance.last_updated = datetime.today()
         session_id = self.request.session.session_key
 
         if self.regdrug_obj:  # Assign cert_holder if RegisteredDrug
@@ -441,8 +442,8 @@ class NewInventoryItem(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
                 'name': self.regdrug_obj.company.name,
                 'address': self.regdrug_obj.company.address,
                 'supp_type': 'Certificate Holder',
-                'date_created': timezone.now(),
-                'last_updated': timezone.now(),
+                'date_created': datetime.today(),
+                'last_updated': datetime.today(),
                 'updated_by': user,
             }
             cert_holder_obj, created = Supplier.objects.get_or_create(
@@ -487,8 +488,8 @@ class NewInventoryItem(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
                 'name': self.vendor_obj.name,
                 'address': self.vendor_obj.address,
                 'supp_type': 'Supplier',
-                'date_created': timezone.now(),
-                'last_updated': timezone.now(),
+                'date_created': datetime.today(),
+                'last_updated': datetime.today(),
                 'updated_by': user,
             }
             supplier_obj, created = Supplier.objects.get_or_create(
@@ -568,7 +569,7 @@ class NewInventoryItem(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
             'item_type': ItemType.objects.get(value=1),
             'is_active': True,
             'updated_by': self.request.user.username,
-            'last_updated': timezone.now(),
+            'last_updated': datetime.today(),
         }
         if reg_no:
             item_obj, created = Item.objects.get_or_create(
@@ -904,7 +905,7 @@ def NewDeliveryFromDeliveryOrderModalView(request, *args, **kwargs):
                         print(f"New received item added: {cmsreceived_obj}")
                         
                         # Update InventoryItem quantity/costs
-                        last_updated = timezone.now()
+                        last_updated = datetime.today()
                         old_stock_qty = cmsitem_obj.stock_qty
                         old_standard_cost = cmsitem_obj.standard_cost
                         old_avg_cost = cmsitem_obj.avg_cost

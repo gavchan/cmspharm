@@ -178,7 +178,16 @@ class Patient(models.Model):
         managed = False
         db_table = 'patient'
         
-        
+    @property
+    def initials(self):
+        name_initials = self.sur_name[0].upper()
+        if self.given_name:
+            given_names = self.given_name.split(' ')
+        if len(given_names) > 0:
+            for name in given_names:
+                name_initials += name[0].upper()
+        return name_initials
+
 class EncounterType(models.Model):
     id = models.BigAutoField(primary_key=True)
     version = models.BigIntegerField()

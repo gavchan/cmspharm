@@ -1,7 +1,9 @@
 from django import forms
 from django.forms import ModelForm
 from django.urls import reverse
-from django.utils import timezone
+# from django.utils import timezone
+from datetime import datetime
+
 from django.contrib.auth.models import User
 from .models import Category, Vendor, Item, DeliveryOrder, DeliveryItem, ItemType
 from cmsinv.models import InventoryItem
@@ -230,8 +232,8 @@ class NewDeliveryOrderForm(ModelForm):
         self.helper.form_method = 'post'
         self.helper.form_action = reverse(
             'inventory:NewDeliveryOrder')
-        #self.initial['entry_date'] = timezone.now().strftime('%Y-%m-%d')
-        today_date = timezone.now().strftime('%Y-%m-%d')
+        #self.initial['entry_date'] = datetime.today().strftime('%Y-%m-%d')
+        today_date = datetime.today().strftime('%Y-%m-%d')
         self.initial['received_date'] = today_date
         self.initial['payment_method'] = PaymentMethod.objects.get(name='Cheque').pk
         self.initial['version'] = 1
@@ -359,8 +361,8 @@ class NewDeliveryOrderModalForm(BSModalForm):
         self.helper.form_method = 'post'
         self.helper.form_action = reverse(
             'inventory:NewDeliveryOrderModal')
-        #self.initial['entry_date'] = timezone.now().strftime('%Y-%m-%d')
-        today_date = timezone.now().strftime('%Y-%m-%d')
+        #self.initial['entry_date'] = datetime.today().strftime('%Y-%m-%d')
+        today_date = datetime.today().strftime('%Y-%m-%d')
         self.initial['received_date'] = today_date
         self.initial['payment_method'] = PaymentMethod.objects.get(name='Cheque').pk
         self.initial['version'] = 1

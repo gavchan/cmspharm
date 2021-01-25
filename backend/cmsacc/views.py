@@ -1,5 +1,6 @@
-from datetime import datetime
+
 from django.utils import timezone
+from datetime import datetime
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.decorators import login_required, permission_required
@@ -95,7 +96,6 @@ class CashbookToday(ListView, LoginRequiredMixin, PermissionRequiredMixin):
         print(now)
         today_date = now.strftime('%Y-%m-%d')
         today_cutoff = now.replace(hour=self.PERIOD_CUTOFF_HR, minute=self.PERIOD_CUTOFF_MIN)
-        # current_time = timezone.now().strftime('%H:%m')
         if not self.period:
             if now >= today_cutoff:
                 self.period = 'p'
@@ -146,23 +146,22 @@ class BillToday(ListView, LoginRequiredMixin, PermissionRequiredMixin):
         print(now)
         today_date = now.strftime('%Y-%m-%d')
         today_cutoff = now.replace(hour=self.PERIOD_CUTOFF_HR, minute=self.PERIOD_CUTOFF_MIN)
-        # current_time = timezone.now().strftime('%H:%m')
         if not self.period:
             if now >= today_cutoff:
                 self.period = 'p'
             else:
                 self.period = 'a'
         object_list = Bill.objects.filter(
-            date_created__icontains=today_date
+            encounter__date_created__icontains=today_date
         )
         if self.period == 'a':
             object_list.filter(
-                date_created__lt=today_cutoff
-            ).order_by('-date_created', '-last_updated')
+                encounter__date_created__lt=today_cutoff
+            ).order_by('-encounter.date_created', '-last_updated')
         elif self.period == 'p':
             object_list.filter(
-                date_created__gte=today_cutoff
-            ).order_by('-date_created', '-last_updated')
+                encounter__date_created__gte=today_cutoff
+            ).order_by('-encounter.date_created', '-last_updated')
         return object_list
 
     def get_context_data(self, **kwargs):

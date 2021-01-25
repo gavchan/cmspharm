@@ -32,6 +32,7 @@ from .forms import (
     DeliveryOrderAddDeliveryItemForm, DeliveryItemUpdateModalForm,
 )
 from django.utils import timezone
+from datetime import datetime
 
 class CategoryList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
     """List of inventory categories"""
@@ -549,7 +550,7 @@ class NewDeliveryOrder(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
-        data['today'] = timezone.now().strftime('%Y-%m-%d')
+        data['today'] = datetime.today().strftime('%Y-%m-%d')
         data['vendor_obj'] = self.vendor_obj
         return data
 
@@ -563,8 +564,8 @@ class NewDeliveryOrder(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
     def form_valid(self, form):
         form.instance.updated_by = self.request.user.username
         form.instance.received_by = self.request.user.username
-        form.instance.date_created = timezone.now()
-        form.instance.last_updated = timezone.now()
+        form.instance.date_created = datetime.today()
+        form.instance.last_updated = datetime.today()
         if form.instance.invoice_date and not form.instance.received_date:
             form.instance.received_date = form.instance.invoice_date
         response = super().form_valid(form)
@@ -593,7 +594,7 @@ class NewDeliveryOrderModal(BSModalCreateView, LoginRequiredMixin, PermissionReq
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
-        data['today'] = timezone.now().strftime('%Y-%m-%d')
+        data['today'] = datetime.today().strftime('%Y-%m-%d')
         data['vendor_obj'] = self.vendor_obj
         return data
 
@@ -1003,7 +1004,7 @@ class DeliveryItemList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
-        data['today'] = timezone.now().strftime('%Y-%m-%d')
+        data['today'] = datetime.today().strftime('%Y-%m-%d')
         data['last_query'] = self.last_query
         data['last_query_count'] = self.last_query_count
         data['disp_type'] = self.disp_type

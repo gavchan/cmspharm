@@ -2,6 +2,8 @@ from django import forms
 from django.forms import ModelForm
 from django.urls import reverse
 from django.utils import timezone
+from datetime import datetime
+
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import (
     Layout, Row, Column, Div, HTML, Submit, Button, Hidden,
@@ -22,7 +24,6 @@ class InventoryItemUpdateForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(InventoryItemUpdateForm, self).__init__(*args, **kwargs)
-        # today_date = timezone.now().strftime('%Y-%m-%d')
         self.helper = FormHelper()
         self.helper.render_unmentioned_fields = False
         self.helper.form_id = 'id-InventoryItemForm'
@@ -135,7 +136,6 @@ class NewInventoryItemForm(ModelForm):
         self.regdrug_obj = kwargs.pop('regdrug_obj', None)
         self.vendor_obj = kwargs.pop('vendor_obj', None)
         super(NewInventoryItemForm, self).__init__(*args, **kwargs)
-        # today_date = timezone.now().strftime('%Y-%m-%d')
         self.helper = FormHelper()
         self.helper.render_unmentioned_fields = False
         self.helper.form_id = 'id-InventoryItemForm'
@@ -372,7 +372,7 @@ class InventoryItemQuickEditModalForm(BSModalForm):
                 ),
                 css_class='form-row'
             ),
-            Hidden('last_updated', timezone.now()),
+            Hidden('last_updated', datetime.today()),
             Hidden('version', self.instance.version + 1),
             FormActions(
                 Submit('submit', 'Submit' ),
