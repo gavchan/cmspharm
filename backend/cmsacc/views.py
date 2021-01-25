@@ -107,11 +107,11 @@ class CashbookToday(ListView, LoginRequiredMixin, PermissionRequiredMixin):
         if self.period == 'a':
             object_list.filter(
                 date_created__lt=today_cutoff
-            ).order_by('date_created')
+            ).order_by('date_created', 'last_updated')
         elif self.period == 'p':
             object_list.filter(
                 date_created__gte=today_cutoff
-            ).order_by('date_created')
+            ).order_by('date_created', 'last_updated')
         return object_list
 
     def get_context_data(self, **kwargs):
