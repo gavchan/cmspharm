@@ -343,7 +343,8 @@ class InventoryItemQuickEditModalForm(BSModalForm):
                     StrictButton('RegDrug <i class="fad fa-arrow-circle-right"></i>', css_class="btn_update_product btn-sm btn-secondary"), 
                     css_class="form-group col-sm-2 mb-0"
                     ),
-                Column('product_name', css_class='form-group col-sm-10 mb-0'),
+                Column('product_name', css_class='form-group col-sm-8 mb-0'),
+                Column('unit', css_class='form-group col-sm-2'),
                 css_class='form-row mb-0',
             ),
             Row(
@@ -351,7 +352,8 @@ class InventoryItemQuickEditModalForm(BSModalForm):
                     StrictButton('RegDrug <i class="fad fa-arrow-circle-right"></i>', css_class="btn_update_label btn-sm btn-secondary"),
                     css_class="form-group col-sm-2 mb-0"
                 ),
-                Column('label_name', css_class='form-group col-sm-10 mb-0'),
+                Column('label_name', css_class='form-group col-sm-8 mb-0'),
+                Column('unit_price', css_class='form-group col-sm-2'),
                 css_class='form-row',
             ),
             Row(
@@ -388,7 +390,7 @@ class InventoryItemQuickEditModalForm(BSModalForm):
             'discontinue', 'alias', 'registration_no', 'inventory_type',
             'clinic_drug_no', 'is_master_drug_list', 'is_clinic_drug_list',
             'product_name', 'label_name', 'generic_name', 'ingredient',
-            'last_updated', 'version',
+            'last_updated', 'version', 'unit', 'unit_price'
         ]
 
 class SupplierQuickEditModalForm(BSModalForm):

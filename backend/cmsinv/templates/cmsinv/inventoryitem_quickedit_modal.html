@@ -36,9 +36,11 @@
               <button type="button" class="btn btn-sm btn-light" disabled># {{ item_obj.clinic_drug_no }}</button>
               {% endif %}
             </div>
+            {% if user.is_staff %}
             <div class="btn-group" role="group" aria-label="Detail Edit Actions">
               <a href="{% url 'cmsinv:InventoryItemUpdate' item_obj.pk %}" class="btn btn-sm btn-light"><i class="fad fa-edit"></i></a>
             </div>
+            {% endif %}
           </span>
         </div>
         

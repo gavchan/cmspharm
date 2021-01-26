@@ -42,11 +42,13 @@
                     <td class="text-center">{{ listitem.standard_cost}}</td>
                     <td class="text-center">{{ listitem.average_cost }}</td>
                     <td class="text-right">
+                        {% if user.is_staff %}
                         <button 
                             data-id="{% url 'inventory:DeliveryItemUpdateModal' listitem.delivery_order.pk listitem.pk %}" 
                             class="btn_modal_trigger btn btn-sm btn-primary">
                             <i class="fad fa-file-edit"></i>
-                    </button>
+                        </button>
+                        {% endif %}
                         <a
                           class="btn_modal_trigger btn btn-sm btn-info"
                           href="{% url 'inventory:DeliveryOrderDetail' listitem.delivery_order.pk %}"
