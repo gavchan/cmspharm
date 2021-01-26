@@ -16,14 +16,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
   {% block stylesheets %}
+  <link rel="shortcut icon" type="image/png" href="{% static 'favicon.ico' %"/>
   <script src="{% static '/assets/js/jquery.min.js' %}"></script>
   <!-- Bootstrap CSS -->
-  <link href="{% static '/assets/bootstrap/css/bootstrap.css' %}" rel="stylesheet">
+  <link href="{% static '/assets/bootstrap/css/bootstrap.css' %}" rel="stylesheet"/>
   <!-- Font awesome CSS -->
-  <link href="{% static '/assets/css/all.css' %}" rel="stylesheet">
+  <link href="{% static '/assets/css/all.css' %}" rel="stylesheet"/>
   <!-- Custom CSS-->
-  <link href="{% static '/assets/css/cmsman.css' %}" rel="stylesheet">
-  <link href="{% static '/assets/css/tempusdominus-bootstrap-4.min.css' %}" rel="stylesheet">
+  <link href="{% static '/assets/css/cmsman.css' %}" rel="stylesheet"/>
+  <link href="{% static '/assets/css/tempusdominus-bootstrap-4.min.css' %}" rel="stylesheet"/>
 
   <title>
     {% block title %}CMS Manager{% endblock %}
