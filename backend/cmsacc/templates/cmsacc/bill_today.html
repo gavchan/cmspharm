@@ -144,7 +144,11 @@
       self.location = "{% url 'cmsacc:BillToday' %}?d={{ day }}&p="
         + period;
     });
-
+    function autoRefresh()
+    {
+      window.location = window.location.href;
+    }
+    setInterval('autoRefresh()', 5000);
   });
 </script>
 {% endblock %}
