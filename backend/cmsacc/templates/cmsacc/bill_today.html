@@ -94,9 +94,7 @@
             <td class="text-right">{{ entry.total }}</td>
             <td class="text-right">
               {% if entry.unbalance_amt %}
-              <div class="alert alert-secondary" role="alert">
-              {{ entry.unbalance_amt }}
-              </div>
+              <strong>*{{ entry.unbalance_amt }}</strong>
               {% else %}-
               {% endif %}
             </td>
@@ -119,7 +117,7 @@
         </tbody>
       </table>
       {% else %}
-      <div class="alert alert-secondary" role="alert">
+      <div class="alert alertalert-secondary" role="alert">
         No data 
       </div>
       
