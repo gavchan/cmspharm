@@ -775,6 +775,8 @@ def NewDeliveryFromDeliveryOrderModalView(request, *args, **kwargs):
     }
     # If POST request confirm sync, add data to CMS
     if request.method == "POST":
+        doUpdateQuantities = request.POST.get("updateQuantities") == '1'
+
         if len(itemupdate_list) == 0:
             # Set delivery order status to cms_synced
             delivery_obj.cms_synced = True
@@ -783,20 +785,20 @@ def NewDeliveryFromDeliveryOrderModalView(request, *args, **kwargs):
             # Get or create CMS supplier based on vendor name
             new_supplier_data = {
                 'address': delivery_obj.vendor.address,
-                'name': delivery_obj.vendor.name,
+                'name': delivery_obj.vendor.name.upper(),
                 'supp_type': 'Supplier',
                 'updated_by': cmsuser_obj.username,
             }
             supplier_obj, supplier_created = Supplier.objects.get_or_create(
-                name__iexact=delivery_obj.vendor.name, 
+                name__iexact=delivery_obj.vendor.name.upper(), 
                 defaults=new_supplier_data
             )
             if supplier_created:  # Update AuditLog
                 print(f"New supplier added: ({supplier_obj.name})")
 
                 audit_str_dict = {**new_supplier_data,
-                    'dateCreated': datetime.strftime(supplier_obj.date_created, "%a %b %d %H:%M:%S %Z %Y"),
-                    'lastUpdated': datetime.strftime(supplier_obj.last_updated, "%a %b %d %H:%M:%S %Z %Y"),
+                    'dateCreated': datetime.strftime(supplier_obj.date_created, "%a %b %d %H:%M:%S %Y"),
+                    'lastUpdated': datetime.strftime(supplier_obj.last_updated, "%a %b %d %H:%M:%S %Y"),
                     'type': 'Supplier',
                 }
                 sorted_dict = dict(sorted(audit_str_dict.items()))
@@ -843,8 +845,8 @@ def NewDeliveryFromDeliveryOrderModalView(request, *args, **kwargs):
                 delivery_obj.save()
 
                 audit_str_dict = {**new_cmsdelivery_data,
-                    'dateCreated': datetime.strftime(cmsdelivery_obj.date_created, "%a %b %d %H:%M:%S %Z %Y"),
-                    'lastUpdated': datetime.strftime(cmsdelivery_obj.last_updated, "%a %b %d %H:%M:%S %Z %Y"),
+                    'dateCreated': datetime.strftime(cmsdelivery_obj.date_created, "%a %b %d %H:%M:%S %Y"),
+                    'lastUpdated': datetime.strftime(cmsdelivery_obj.last_updated, "%a %b %d %H:%M:%S %Y"),
                     'type': 'Delivery',
                 }
                 sorted_dict = dict(sorted(audit_str_dict.items()))
@@ -909,17 +911,24 @@ def NewDeliveryFromDeliveryOrderModalView(request, *args, **kwargs):
                         old_stock_qty = cmsitem_obj.stock_qty
                         old_standard_cost = cmsitem_obj.standard_cost
                         old_avg_cost = cmsitem_obj.avg_cost
-                        old_discontinue = 'true' if cmsitem_obj.discontinue else 'false'
+                        # old_discontinue = 'true' if cmsitem_obj.discontinue else 'false'
+                        old_discontinue = cmsitem_obj.discontinue
                         old_is_clinic_drug_list = 'false' if cmsitem_obj.is_clinic_drug_list else 'true'
                         old_clinic_drug_no = cmsitem_obj.clinic_drug_no
-                        cmsitem_obj.stock_qty += float(listitem.items_quantity)
+                        if doUpdateQuantities:
+                            cmsitem_obj.stock_qty += float(listitem.items_quantity)
+                            print(f"CMS Item #{cmsitem_obj.id} Old Q {old_stock_qty} => {cmsitem_obj.stock_qty}")
                         if listitem.standard_cost != 0:
                             cmsitem_obj.standard_cost = listitem.standard_cost
                         if listitem.average_cost != 0:
                             cmsitem_obj.avg_cost = listitem.average_cost
-                        cmsitem_obj.discontinue = False
+                        if old_discontinue:
+                            cmsitem_obj.discontinue = False
+                            print(f"CMS Item #{cmsitem_obj.id} set Active")
                         cmsitem_obj.is_clinic_drug_list = True
-                        cmsitem_obj.clinic_drug_no = InventoryItem.generateNextClinicDrugNo()
+                        if not old_clinic_drug_no:
+                            cmsitem_obj.clinic_drug_no = InventoryItem.generateNextClinicDrugNo()
+                            print(f"Generated and added new: {cmsitem_obj.clinic_drug_no}")
                         cmsitem_obj.updated_by = cmsuser_obj.username
                         cmsitem_obj.last_updated = last_updated
                         cmsitem_obj.save()

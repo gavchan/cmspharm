@@ -38,7 +38,7 @@
                 {% endif %}
               </td>
               <td class="text-center">
-                {{ listitem.existing_qty|floatformat }} <strong>+ {{ listitem.items_quantity|floatformat }}</strong>
+                {{ listitem.existing_qty|floatformat }}&nbsp;<span class="quantityToAdd"><strong>+{{ listitem.items_quantity|floatformat }}</strong></span>
               </td>
               <td class="text-center">
                 {{ listitem.old_standard_cost }}
@@ -59,6 +59,9 @@
         </table>
         <hr>
         <p><em>Warning: This operation is irreversible</em></p>
+        <p><input type="checkbox" name="updateQuantities" value="1" id="inputUpdateQuantities" checked>
+          <label for="inputUpdateQuantities">Update quantities</label>
+        </p>
         {% endif %}
         <p>
           <input type="submit" class="btn btn-sm btn-warning" value="Yes - Confirm Sync" /> 
@@ -72,3 +75,15 @@
 <div class="modal-footer">
   <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">Close</button>
 </div>
+<script type="text/javascript">
+$('#inputUpdateQuantities').on('change', function() {
+  // If checked, display quantities
+  console.log("Clicked")
+  if ($('#inputUpdateQuantities').is(':checked')) {
+    $('.quantityToAdd').show();
+  }
+  else {
+    $('.quantityToAdd').hide();
+  }
+});
+</script>
