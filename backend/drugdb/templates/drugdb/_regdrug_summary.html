@@ -27,29 +27,29 @@
       <div class="col-sm-5">{{ drug_obj.name}}</div>
       <div class="col-sm-2">CMS ID</div>
       <div class="col-sm-3 mt-0 mb-0">
-        {% if perms.cmsinv.change_inventoryitem and drug_obj.item.cmsid %}
+        {% if drug_obj.item.cmsid %}
         <a
           class="btn-link"
           href="{% url 'cmsinv:InventoryItemDetail' drug_obj.item.cmsid %}"
         ><i class="fad fa-file-alt"></i>&nbsp;{{ drug_obj.item.cmsid }}
         </a>
+        {% else %}-
+        {% endif %}
+        {% if user.is_staff and drug_obj.item.cmsid %}
         <a
           class="btn_modal_trigger btn-link"
           data-id="{% url 'cmsinv:InventoryItemQuickEditModal' drug_obj.item.cmsid %}?next={{ request.path }}"
         ><i class="fad fa-edit"></i>
         </a>
-        {% elif drug_obj.item.cmsid %}
-        {{ drug_obj.item.cmsid }}
-        {% else%}-
         {% endif %}
       </div>
     </div>
     <div class="row mb-0">
       <div class="col-sm-2">Cert. Holder</div>
       <div class="col-sm-5">{{ drug_obj.company.name }}</div>
+      {% if user.is_staff and drug_obj.item.id %}
       <div class="col-sm-2">Item ID</div>
       <div class="col-sm-3 mt-0 mb-0">
-        {% if perms.inventory.change_item and drug_obj.item.id %}
         <a
           class="btn-link"
           href="{% url 'inventory:ItemDetail' drug_obj.item.id %}"
@@ -60,10 +60,8 @@
           data-id="{% url 'inventory:ItemUpdateModal' drug_obj.item.id %}"
         ><i class="fad fa-edit"></i>
         </a>
-        {% else %}
-        {{ drug_obj.item.id }}
-        {% endif %}
       </div>
+      {% endif %}
     </div>
     <div class="row mb-0">
       <div class="col-sm-2">Ingredients</div>
