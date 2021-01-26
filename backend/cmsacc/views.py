@@ -1,5 +1,7 @@
 
 from django.utils import timezone
+import pytz
+from django.conf import settings
 from datetime import datetime, timedelta
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
@@ -36,13 +38,14 @@ class BillToday(ListView, LoginRequiredMixin, PermissionRequiredMixin):
     period = None
     lastdate = None
     session_stats = None
+    local_timezone = pytz.timezone(settings.TIME_ZONE)
 
     def get_queryset(self):
         self.period = self.request.GET.get('p') or None
         self.day = self.request.GET.get('d') or None
-        today = datetime.today()
+        # today = datetime.today().astimezone(self.local_timezone)
+        today = timezone.now()
         self.lastdate = today - timedelta(days=1)
-
         # Cycle through recent bills
         recent_bills = Encounter.objects.order_by('-date_created')[:self.RECENT_BILLS]
         recent_dates = set()
@@ -56,6 +59,7 @@ class BillToday(ListView, LoginRequiredMixin, PermissionRequiredMixin):
             seldate = today
         query_date = seldate.strftime('%Y-%m-%d')
         time_cutoff = seldate.replace(hour=self.PERIOD_CUTOFF_HR, minute=self.PERIOD_CUTOFF_MIN)
+        print(f"Today:{today}; Cutoff: {time_cutoff}")
         if not self.period:
             if seldate >= time_cutoff:
                 self.period = 'p'
