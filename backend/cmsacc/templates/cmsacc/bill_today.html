@@ -92,7 +92,14 @@
             <td>{{ entry.last_updated|date:"d-m-y H:i" }}</td>
             <td class="text-right">{{ entry.encounter.patient.patient_no }}</td>
             <td class="text-right">{{ entry.total }}</td>
-            <td class="text-right">{{ entry.unbalance_amt }}</td>
+            <td class="text-right">
+              {% if entry.unbalance_amt %}
+              <div class="alert alert-secondary" role="alert">
+              {{ entry.unbalance_amt }}
+              </div>
+              {% else %}-
+              {% endif %}
+            </td>
             <td>{{ entry.encounter.doctor.name }}</td>
             <td>{{ entry.updated_by }}</td>
             <td>
