@@ -144,11 +144,12 @@
       self.location = "{% url 'cmsacc:BillToday' %}?d={{ day }}&p="
         + period;
     });
-    function autoRefresh()
-    {
-      window.location = window.location.href;
+    let day = $("#inputGroupSelectDay option:selected").val();
+    if (day == '') {
+      setInterval(function() {
+        window.location = window.location.href;
+      }, 10000);
     }
-    setInterval('autoRefresh()', 5000);
   });
 </script>
 {% endblock %}
