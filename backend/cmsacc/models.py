@@ -93,6 +93,7 @@ class Cashbook(models.Model):
     last_updated = models.DateTimeField(auto_now=True)
 
     # reference_id - refers to if in CMS table specified in entry_type
+    # E.g. for entry_type='bill', reference_id refers to bill_id
     reference_id = models.CharField(max_length=255, blank=True, null=True)
     remark = models.TextField(choices=REMARK_CHOICES, blank=True, null=True)
     entry_type = models.CharField(

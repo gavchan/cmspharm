@@ -193,32 +193,6 @@ class ExpenseDeleteModal(BSModalDeleteView, LoginRequiredMixin, PermissionRequir
     success_message = 'Success: Expense was deleted.'
     success_url = reverse_lazy('ledger:ExpenseList')
 
-# class NewExpenseByVendorModal(BSModalCreateView, LoginRequiredMixin):
-#     template_name = 'ledger/new_expense_by_vendor_modal.html'
-#     form_class = NewExpenseByVendorModalForm
-#     success_url = reverse_lazy('ledger:ExpenseList')
-#     vendor_obj = None
-    
-#     def dispatch(self, request, *args, **kwargs):
-#         if 'vendor_id' in kwargs:
-#             self.vendor_obj = Vendor.objects.get(id=kwargs['vendor_id'])
-#             print(f"Using {self.vendor_obj.name}")
-#         else:
-#             print('Error: no vendor_id')
-#         return super().dispatch(request, *args, **kwargs)
-
-#     def get_context_data(self, **kwargs):
-#         data = super().get_context_data(**kwargs)
-#         data['today'] = datetime.today().strftime('%Y-%m-%d')
-#         data['vendor_obj'] = self.vendor_obj
-#         return data
-
-#     def get_form_kwargs(self):
-#         kwargs = super(NewExpenseByVendorModal, self).get_form_kwargs()
-#         kwargs.update({
-#             'vendor_obj': self.vendor_obj,
-#             })
-#         return kwargs
 
 class NewExpense(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
     """Add new expense modal"""
@@ -249,6 +223,8 @@ class NewExpense(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
             })
         return kwargs
 
+    def get_success_url(self):
+        return reverse('ledger:ExpenseDetail', args=(self.object.id,))
 class NewExpenseModal(BSModalCreateView, LoginRequiredMixin, PermissionRequiredMixin):
     """Add new expense modal"""
     permission_required = ('ledger.add_expense', )
@@ -278,6 +254,8 @@ class NewExpenseModal(BSModalCreateView, LoginRequiredMixin, PermissionRequiredM
             })
         return kwargs
 
+    def get_success_url(self):
+        return reverse('ledger:ExpenseDetail', args=(self.object.id,))
 
 @login_required
 @permission_required('ledger.add_expense',)
