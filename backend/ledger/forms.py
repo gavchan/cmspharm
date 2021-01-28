@@ -250,8 +250,8 @@ class NewExpenseForm(ModelForm):
         self.helper.form_method = 'post'
         self.helper.form_action = reverse(
             'ledger:NewExpense')
-        #self.initial['entry_date'] = datetime.today().strftime('%Y-%m-%d')
-        today_date = datetime.today().strftime('%Y-%m-%d')
+        #self.initial['entry_date'] = timezone.now().strftime('%Y-%m-%d')
+        today_date = timezone.now().strftime('%Y-%m-%d')
         self.initial['payment_method'] = PaymentMethod.objects.get(
             name='Cheque').pk
         self.initial['version'] = 1
@@ -364,8 +364,8 @@ class NewExpenseModalForm(BSModalForm):
         self.helper.form_method = 'post'
         self.helper.form_action = reverse(
             'ledger:NewExpenseModal')
-        #self.initial['entry_date'] = datetime.today().strftime('%Y-%m-%d')
-        today_date = datetime.today().strftime('%Y-%m-%d')
+        #self.initial['entry_date'] = timezone.now().strftime('%Y-%m-%d')
+        today_date = timezone.now().strftime('%Y-%m-%d')
         self.initial['payment_method'] = PaymentMethod.objects.get(
             name='Cheque').pk
         self.initial['version'] = 1
@@ -590,8 +590,8 @@ class DeliveryPaymentModalForm(BSModalForm):
         self.helper.form_method = 'post'
         self.helper.form_action = reverse(
             'ledger:DeliveryPaymentModal', args=(self.delivery_obj.id,))
-        #self.initial['entry_date'] = datetime.today().strftime('%Y-%m-%d')
-        today_date = datetime.today().strftime('%Y-%m-%d')
+        #self.initial['entry_date'] = timezone.now().strftime('%Y-%m-%d')
+        today_date = timezone.now().strftime('%Y-%m-%d')
         self.exp_category_drug = ExpenseCategory.objects.get(code='1').id
         self.initial['entry_date'] = today_date
         self.initial['payment_method'] = PaymentMethod.objects.get(
@@ -690,7 +690,7 @@ class NewIncomeModalForm(BSModalForm):
         self.helper.form_method = 'post'
         self.helper.form_action = reverse(
             'ledger:NewIncomeModal')
-        today_date = datetime.today().strftime('%Y-%m-%d')
+        today_date = timezone.now().strftime('%Y-%m-%d')
         print(today_date)
         self.initial['payment_method'] = PaymentMethod.objects.get(
             name='Bank Tx').pk

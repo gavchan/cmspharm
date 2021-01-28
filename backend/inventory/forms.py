@@ -232,8 +232,8 @@ class NewDeliveryOrderForm(ModelForm):
         self.helper.form_method = 'post'
         self.helper.form_action = reverse(
             'inventory:NewDeliveryOrder')
-        #self.initial['entry_date'] = datetime.today().strftime('%Y-%m-%d')
-        today_date = datetime.today().strftime('%Y-%m-%d')
+        #self.initial['entry_date'] = timezone.now().strftime('%Y-%m-%d')
+        today_date = timezone.now().strftime('%Y-%m-%d')
         self.initial['received_date'] = today_date
         self.initial['payment_method'] = PaymentMethod.objects.get(name='Cheque').pk
         self.initial['version'] = 1
@@ -361,8 +361,8 @@ class NewDeliveryOrderModalForm(BSModalForm):
         self.helper.form_method = 'post'
         self.helper.form_action = reverse(
             'inventory:NewDeliveryOrderModal')
-        #self.initial['entry_date'] = datetime.today().strftime('%Y-%m-%d')
-        today_date = datetime.today().strftime('%Y-%m-%d')
+        #self.initial['entry_date'] = timezone.now().strftime('%Y-%m-%d')
+        today_date = timezone.now().strftime('%Y-%m-%d')
         self.initial['received_date'] = today_date
         self.initial['payment_method'] = PaymentMethod.objects.get(name='Cheque').pk
         self.initial['version'] = 1

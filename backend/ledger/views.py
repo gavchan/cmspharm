@@ -94,7 +94,7 @@ class ExpenseList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
     paginate_by = 20
     last_query = ''
     last_query_count = 0
-    today =  datetime.today().strftime('%Y-%m-%d')
+    today =  timezone.now().strftime('%Y-%m-%d')
     begin = ''
     end = ''
 
@@ -212,7 +212,7 @@ class NewExpense(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
-        data['today'] = datetime.today().strftime('%Y-%m-%d')
+        data['today'] = timezone.now().strftime('%Y-%m-%d')
         data['vendor_obj'] = self.vendor_obj
         return data
 
@@ -243,7 +243,7 @@ class NewExpenseModal(BSModalCreateView, LoginRequiredMixin, PermissionRequiredM
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
-        data['today'] = datetime.today().strftime('%Y-%m-%d')
+        data['today'] = timezone.now().strftime('%Y-%m-%d')
         data['vendor_obj'] = self.vendor_obj
         return data
 
@@ -310,7 +310,7 @@ class DeliveryPaymentModal(BSModalCreateView, LoginRequiredMixin, PermissionRequ
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
-        data['today'] = datetime.today().strftime('%Y-%m-%d')
+        data['today'] = timezone.now().strftime('%Y-%m-%d')
         data['delivery_obj'] = self.delivery_obj
         return data
 
@@ -356,7 +356,7 @@ class ExpenseDetail(DetailView, LoginRequiredMixin, PermissionRequiredMixin):
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
-        data['today'] = datetime.today().strftime('%Y-%m-%d')
+        data['today'] = timezone.now().strftime('%Y-%m-%d')
         detail_list = [] 
         for order in self.deliveryorder_list.all():
             delivery_detail = {
@@ -501,7 +501,7 @@ class IncomeList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
     paginate_by = 20
     last_query = ''
     last_query_count = 0
-    today =  datetime.today().strftime('%Y-%m-%d')
+    today =  timezone.now().strftime('%Y-%m-%d')
     begin = ''
     end = ''
 

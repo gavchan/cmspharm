@@ -374,7 +374,7 @@ class InventoryItemQuickEditModalForm(BSModalForm):
                 ),
                 css_class='form-row'
             ),
-            Hidden('last_updated', datetime.today()),
+            Hidden('last_updated', timezone.now()),
             Hidden('version', self.instance.version + 1),
             FormActions(
                 Submit('submit', 'Submit' ),
