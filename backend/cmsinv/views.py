@@ -936,24 +936,25 @@ def NewDeliveryFromDeliveryOrderModalView(request, *args, **kwargs):
                             # Successful save
                             print(f"Updated inventory item: {cmsitem_obj.product_name}")
                         
-                            # Update AuditLog:InventoryItem - stock_qty
-                            newAuditLogEntry = AuditLog(
-                                actor = cmsuser_obj.username,
-                                class_name = 'InventoryItem',
-                                event_name = 'UPDATE',
-                                old_value = str(old_stock_qty),
-                                new_value = str(cmsitem_obj.stock_qty),
-                                persisted_object_version = 'null',
-                                persisted_object_id = cmsitem_obj.id,
-                                property_name = "stockQty",
-                                session_id = session_id,
-                                uri = uri,
-                            )
-                            newAuditLogEntry.save()
-                            if newAuditLogEntry.id:
-                                print(f"New audit log entry added UPDATE:{newAuditLogEntry.property_name} {newAuditLogEntry.old_value}=>{newAuditLogEntry.new_value}")
-                            else:
-                                print("Error writing audit log entry")
+                            # Update AuditLog:InventoryItem - stock_qty if changed
+                            if old_stock_qty == cmsitem_obj.stock_qty:
+                                newAuditLogEntry = AuditLog(
+                                    actor = cmsuser_obj.username,
+                                    class_name = 'InventoryItem',
+                                    event_name = 'UPDATE',
+                                    old_value = str(old_stock_qty),
+                                    new_value = str(cmsitem_obj.stock_qty),
+                                    persisted_object_version = 'null',
+                                    persisted_object_id = cmsitem_obj.id,
+                                    property_name = "stockQty",
+                                    session_id = session_id,
+                                    uri = uri,
+                                )
+                                newAuditLogEntry.save()
+                                if newAuditLogEntry.id:
+                                    print(f"New audit log entry added UPDATE:{newAuditLogEntry.property_name} {newAuditLogEntry.old_value}=>{newAuditLogEntry.new_value}")
+                                else:
+                                    print("Error writing audit log entry")
 
                             # Update AuditLog:InventoryItem - standard_cost if not 0
                             if listitem.standard_cost !=0:
