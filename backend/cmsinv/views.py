@@ -557,7 +557,7 @@ class NewInventoryItem(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
         if self.object.registration_no:
             reg_no = self.object.registration_no.upper()
             try:
-                drug_obj = RegisteredDrug.objects.get(reg_no=reg_no)
+                self.drug_obj = RegisteredDrug.objects.get(reg_no=reg_no)
             except RegisteredDrug.DoesNotExist:
                 print(f"Error. No matching registered drug with permit {reg_no}")
         else:
