@@ -159,7 +159,7 @@ class DeliveryOrder(models.Model):
     received_date = models.DateField(blank=True, null=True)
     received_by = models.CharField(max_length=255, blank=True, null=True)
     vendor = models.ForeignKey(
-        Vendor, blank=True, null=True,
+        Vendor, 
         on_delete = models.PROTECT
         )
     amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
