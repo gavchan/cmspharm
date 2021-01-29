@@ -102,16 +102,10 @@
             </div>
           </div>
           <div class="col-sm-2">
-            <a
-              href=""
-              id="btn_new_delivery"
-              class="btn btn-sm btn-secondary btn-block"
-              >New Delivery</a
-            >
           </div>
           <div class="col-sm-2">
             <a href="{% url 'inventory:NewItem' %}?next={{ request.path }}" id="btn_new_item" class="btn btn-sm btn-success btn-block"
-              >New Item
+              >New Consumable
             </a>
           </div>
         </div>
@@ -133,7 +127,7 @@
           </div>
           <div class="col-sm-6">
             {% if is_paginated %}
-            <ul class="pagination">
+            <ul class="pagination pagination-sm">
               <li class="page-item">
                   <a href="{% url 'inventory:ItemList' %}?t={{ item_type }}&s={{ status }}&c={{ category }}&q={{ last_query }}&page=1"
                   class="page-link">

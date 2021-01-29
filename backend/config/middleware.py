@@ -11,7 +11,6 @@ class TimezoneMiddleware(object):
         self.get_response = get_response
 
     def __call__(self, request):
-        print(f"TZ request:{request}")
         tzname = 'UTC'
         if tzname:
             timezone.activate(pytz.timezone(tzname))

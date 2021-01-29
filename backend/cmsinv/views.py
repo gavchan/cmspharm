@@ -494,7 +494,7 @@ class NewInventoryItem(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
             }
             supplier_obj, created = Supplier.objects.get_or_create(
                 name=self.vendor_obj.name.upper(),
-                defaults=vendor_data,
+                defaults=new_supplier_data,
             )
             if created: # Update AuditLog
                 print(f"New supplier added: ({supplier_obj.name})")

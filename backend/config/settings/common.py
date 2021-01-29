@@ -113,7 +113,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'Asia/Hong_Kong'
+# TIME_ZONE = 'Asia/Hong_Kong'
+TIME_ZONE = 'UTC'
 
 DATE_INPUT_FORMATS = ['%Y-%m-%d']
 
