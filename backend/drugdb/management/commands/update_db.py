@@ -89,7 +89,7 @@ class Command(BaseCommand):
             if matched_item:
                 if old_item != matched_item:
                     # Update regdrug item
-                    self.stdout.write(f"\n! Update item #{old_item.id} to {matched_item.id}")
+                    self.stdout.write(f"\n! Update item #{old_item} to #{matched_item.id}")
                     regdrug.item = matched_item
             regdrug.save()
 
