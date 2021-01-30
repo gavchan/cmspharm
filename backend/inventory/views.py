@@ -154,7 +154,11 @@ class ItemDetail(DetailView, LoginRequiredMixin, PermissionRequiredMixin):
         if self.object.cmsid:
             data['cmsitem_obj'] = InventoryItem.objects.get(id=self.object.cmsid) or None
         if self.object.reg_no:
-            data['drug_obj'] = RegisteredDrug.objects.get(reg_no=self.object.reg_no) or None
+            try:
+                data['drug_obj'] = RegisteredDrug.objects.get(reg_no=self.object.reg_no)
+            except RegisteredDrug.DoesNotExist:
+                data['drug_obj'] = None
+                print(f"Error processing item #{self.object.id} with reg_no {self.object.reg_no}: No matching RegDrug")
         try:
             delivered_items = DeliveryItem.objects.filter(item__id=self.object.id)[:5]
         except DeliveryItem.DoesNotExist:
