@@ -53,19 +53,19 @@
                 {% endif %} / {{ listitem.purchase_unit }}
             </td>
             <td class="text-center">
-                {% if listitem.is_sample %}
-                <span class="badge badge-info ml-2 mt-0"
-                >Sample
-                </span>
-                {% else %}
-                    {{ listitem.purchase_quantity|floatformat}}
-                    {% if listitem.bonus_quantity %}
-                    + {{ listitem.bonus_quantity|floatformat }}
-                    {% endif %}
+                {{ listitem.purchase_quantity|floatformat}}
+                {% if listitem.bonus_quantity %}
+                + {{ listitem.bonus_quantity|floatformat }}
                 {% endif %}
             </td>
             <td class="text-right">
+                {% if listitem.is_sample %}
+                <span class="badge badge-info ml-2 mt-0"
+                >Bonus
+                </span>
+                {% else %}
                 {{ listitem.unit_price }}
+                {% endif %}
             </td>
             <td class="text-right">
                 {{ listitem.items_quantity|floatformat }}

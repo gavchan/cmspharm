@@ -83,12 +83,13 @@ class Command(BaseCommand):
                 ingredient_obj.registereddrugs.add(regdrug)
                 if created:
                     self.stdout.write(f"\nAdded: {ingr} from {drug_name}")
-        elif regdrug:  # Update regdrug.last_sycned
+        elif regdrug:  # Update regdrug.last_synced
             old_item = regdrug.item
             regdrug.last_synced = update_date
             if matched_item:
                 if old_item != matched_item:
                     # Update regdrug item
+                    self.stdout.write(f"\nMatched {regdrug.reg_no} - {regdrug.name} with Item #{match_item.id} - {matched_item.name}")
                     self.stdout.write(f"\n! Update item #{old_item} to #{matched_item.id}")
                     regdrug.item = matched_item
             regdrug.save()
