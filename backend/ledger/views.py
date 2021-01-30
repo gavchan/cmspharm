@@ -402,8 +402,9 @@ def ExpenseAddDeliveryOrder(request, *args, **kwargs):
     # Check if existing invoice_no
     
     if expense_obj and delivery_obj:
-        if delivery_obj.invoice_no in expense_obj.invoice_no:
-            print(f"Error: Invoice {delivery_obj.invoice_no} already exists in expense record.")
+        if delivery_obj.invoice_no and expense_obj.invoice_no:
+            if delivery_obj.invoice_no in expense_obj.invoice_no:
+                print(f"Error: Invoice {delivery_obj.invoice_no} already exists in expense record.")
         else:
             # Update delivery_obj
             delivery_obj.bill = expense_obj
