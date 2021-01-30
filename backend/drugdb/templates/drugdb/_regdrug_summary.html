@@ -11,7 +11,7 @@
         {% endif %}
       </span>
       <span>
-        {% if not drug_obj.item %}
+        {% if not drug_obj.item and drug_obj.is_active %}
         <a
           href="{% url 'cmsinv:NewInventoryItem' %}?reg_no={{ drug_obj.reg_no }}"
           class="btn btn-sm btn-secondary text-white"

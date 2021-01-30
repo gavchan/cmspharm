@@ -35,7 +35,10 @@ class RegisteredDrug(models.Model):
   
     @property
     def ingredients_list(self):
-        return ", ".join([i.name for i in self.ingredients.all()])
+        if self.ingredients:
+            return ", ".join([i.name for i in self.ingredients.all()])
+        else:
+            return ''
 
     @property
     def gen_dosage(self):

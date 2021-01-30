@@ -11,7 +11,12 @@
         {% for drug in drug_list %}
         
         <tr>
-            <td>{{ drug.reg_no}}</td>
+            <td>
+                {{ drug.reg_no}}
+                {% if not drug.is_active %}
+                <br><span class="badge badge-sm badge-warning">Discontinued</span>
+                {% endif %}
+            </td>
             <td><b>{{ drug.name }}</b>
             <br>{{ drug.ingredients_list }}</td>
             <td>{{ drug.company }}</td>
@@ -22,11 +27,13 @@
                   data-id="{% url 'cmsinv:InventoryItemDetailModal' drug.item.cmsid %}">
                   CMS&nbsp;<i class="fad fa-file"></i>
                 </button>
-                {% else %}
+                {% elif drug.is_active %}
                 <a href="{% url 'cmsinv:NewInventoryItem' %}?reg_no={{ drug.reg_no }}"
                 class="btn btn-sm btn-success"
                 >+<i class="fad fa-prescription-bottle-alt"></i>
                 </a>
+                {% endif %}
+                {% if not drug.item.cmsid %}
                 <a href="{% url 'drugdb:DrugDetailMatch' drug.reg_no %}"
                 class="btn btn-sm btn-secondary"
                 ><i class="fad fa-file-search"></i>

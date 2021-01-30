@@ -2,6 +2,7 @@ import csv, os, sys
 from datetime import datetime
 from django.core.management.base import BaseCommand, CommandError
 from drugdb.models import RegisteredDrug, Company, Ingredient
+from inventory.models import Item
 from django.conf import settings
 from django.utils import timezone
 import pytz
@@ -38,42 +39,67 @@ class Command(BaseCommand):
             tags = line[5]
 
         # Parse company columns
-        company = {
+        company_data = {
             'name': company_name,
             'address': company_addr,
             'is_active': True,
             'date_created': update_date,
             'last_updated': update_date,
         }
-        # company_id, created = Company.objects.get_or_create(name=company_name, defaults=company)
-        company_id, created = Company.objects.update_or_create(name=company_name, defaults=company)
+        # company, created = Company.objects.get_or_create(name=company_name, defaults=company_data)
+        company, created = Company.objects.update_or_create(name=company_name, defaults=company_data)
         if created:
-            self.stdout.write(f"\nAdded: {company_id} | {company_name}")
+            self.stdout.write(f"\nAdded: {company.id} | {company.name}")
 
-        
+        # Try match item
+        try:
+            matched_item = Item.objects.get(reg_no=drug_permit_no)
+        except:
+            matched_item = None
         # Parse product columns
         product = {
             'name': drug_name,
             'reg_no': drug_permit_no,
-            'company': company_id,
+            'company': company,
+            'item': matched_item,
             # 'tags': tags,
             'is_active': True,
             'date_created': update_date,
             'last_updated': update_date,
+            'last_synced': update_date,
         }
-        # product_id, created = Product.objects.update_or_create(reg_no=drug_permit_no, defaults=product)
-        product_id, created = RegisteredDrug.objects.get_or_create(reg_no=drug_permit_no, defaults=product)
+        # regdrug, created = Product.objects.update_or_create(reg_no=drug_permit_no, defaults=product)
+        regdrug, created = RegisteredDrug.objects.get_or_create(reg_no=drug_permit_no, defaults=product)
         if created:
-            self.stdout.write(f"\nAdded: {product_id} | {drug_permit_no} | {drug_name}")
+            self.stdout.write(f"\nAdded: {regdrug.id} | {drug_permit_no} | {drug_name}")
+            if matched_item:
+                self.stdout.write(f"\nMatched item #{matched_item.id} with {drug_permit_no}")
 
-        # Parse active ingredients
-        ingr_list = active_ingredients.split(",")
-        for ingredient in ingr_list:
-            ingr = ingredient.strip()
-            ingredient_id, created = Ingredient.objects.get_or_create(name=ingr)
-            ingredient_id.registereddrugs.add(product_id)
-            if created:
-                self.stdout.write(f"\nAdded: {ingr} from {drug_name}")
+            # Parse active ingredients
+            ingr_list = active_ingredients.split(",")
+            for ingredient in ingr_list:
+                ingr = ingredient.strip()
+                ingredient_obj, created = Ingredient.objects.get_or_create(name=ingr)
+                ingredient_obj.registereddrugs.add(regdrug)
+                if created:
+                    self.stdout.write(f"\nAdded: {ingr} from {drug_name}")
+        elif regdrug:  # Update regdrug.last_sycned
+            old_item = regdrug.item
+            regdrug.last_synced = update_date
+            if matched_item:
+                if old_item != matched_item:
+                    # Update regdrug item
+                    self.stdout.write(f"\n! Update item #{old_item.id} to {matched_item.id}")
+                    regdrug.item = matched_item
+            regdrug.save()
+
+    def inactivate_drug(self, drug, update_date):
+        registeredDrug = drug
+        drug.is_active = False
+        last_updated = update_date
+        drug.save()
+        self.stdout.write(f"{drug.reg_no} | {drug.name} set inactive\n")
+        return
 
     def handle(self, *args, **options):
         DRUGS_CSV_FILE = options['csvfile']
@@ -118,3 +144,7 @@ class Command(BaseCommand):
         # If permit_no no longer exists, to set as inactive.
         self.stdout.write("====\nChecking for expired permits\n=====\n")
         print(active_permits)
+
+        inactive_drugs = RegisteredDrug.objects.exclude(reg_no__in=active_permits)
+        for drug in inactive_drugs:
+            self.inactivate_drug(drug, db_date)
