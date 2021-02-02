@@ -69,7 +69,7 @@
       <div class="alert alert-secondary" role="alert">
         No outstanding unpaid delivery orders
       </div>
-    
+      {% endif %}
 
         <form method="post" action="{% url 'ledger:NewDeliveryOrderPayment' vendor_obj.id %}" id="order-list-form">
           {% csrf_token %}
