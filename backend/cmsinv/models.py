@@ -1,9 +1,9 @@
 from django.db import models
-from cmssys.models import CmsUser, TextBooleanField 
+from cmssys.models import CMSModel, CmsUser, TextBooleanField 
 
 # CMS INVENTORY/DRUGS Models
 
-class Supplier(models.Model):
+class Supplier(CMSModel):
     """
     Maps to CMS table: supplier_manufacturer
     Stores supplier/cert holder/manufacturer contact details
@@ -16,7 +16,7 @@ class Supplier(models.Model):
         (SUPPLIER, 'Supplier'),
         (MANUFACTURER, 'Manufacturer'),
     ]
-    id = models.BigAutoField(primary_key=True)
+
     version = models.BigIntegerField(default=0)
     address = models.TextField(blank=True, null=True)
     contact_person = models.CharField(max_length=255, blank=True, null=True)
@@ -44,12 +44,12 @@ class Supplier(models.Model):
     def __str__(self):
         return f"{self.name}"
 
-class Advisory(models.Model):
+class Advisory(CMSModel):
     """
     Maps to CMS table: advisory
     Stores drug advisory information
     """
-    id = models.BigAutoField(primary_key=True)
+
     version = models.BigIntegerField(default=0)
     alias = models.CharField(unique=True, max_length=255)
     created_by = models.ForeignKey(
@@ -73,12 +73,12 @@ class Advisory(models.Model):
     def __str__(self):
         return f"{self.alias} | {self.description_chinese} / {self.description}"
 
-class Instruction(models.Model):
+class Instruction(CMSModel):
     """
     Maps to CMS table: instruction
     Stores medication instructions
     """
-    id = models.BigAutoField(primary_key=True)
+
     version = models.BigIntegerField(default=0)
     alias = models.CharField(unique=True, max_length=255)
     created_by = models.ForeignKey(
@@ -100,12 +100,12 @@ class Instruction(models.Model):
     def __str__(self):
         return f"{self.alias} | {self.description_chinese} / {self.description}"
 
-class InventoryItemType(models.Model):
+class InventoryItemType(CMSModel):
     """
     Maps to CMS table: inventory_item_type
     Stores inventory type, note that only type 1=Drug is used in the CMS app
     """
-    id = models.BigAutoField(primary_key=True)
+
     version = models.BigIntegerField(default=0)
     active = models.BooleanField(default=True)
     name = models.CharField(max_length=255)
@@ -120,7 +120,7 @@ class InventoryItemType(models.Model):
         return f"{self.id} | {self.name}"
 
 
-class InventoryItem(models.Model):
+class InventoryItem(CMSModel):
     """
     Maps to CMS table: inventory_item
     Stores details in inventory items, including current stock quantity
@@ -156,7 +156,7 @@ class InventoryItem(models.Model):
         (UNIT, 'Unit'),
         (VIAL, 'Vial'),
     ]
-    id = models.BigAutoField(primary_key=True)
+
     version = models.BigIntegerField(default=0)
     advisory = models.ForeignKey(
         'Advisory', on_delete=models.PROTECT, 
@@ -263,7 +263,7 @@ class InventoryItem(models.Model):
     def __str__(self):
         return f"{self.registration_no} | {self.product_name} / {self.generic_name} [{self.alias}]"
 
-class InventoryItemSupplier(models.Model):
+class InventoryItemSupplier(CMSModel):
     """
     Maps to CMS table: inventory_item_supplier_manufacturer
     Stores which inventory_items are supplied by which supplier_manufacturer
@@ -293,7 +293,7 @@ class InventoryItemSupplier(models.Model):
     def __str__(self):
         return f"{self.supplier.name} - {self.suppliers_idx} : {self.inventory_item.product_name}"
 
-class InventoryMovementLog(models.Model):
+class InventoryMovementLog(CMSModel):
     """
     Maps to CMS table: inventory_movement_log
     Stores movement of inventory drugs (no other type of inventory utilized in CMS app)
@@ -308,7 +308,7 @@ class InventoryMovementLog(models.Model):
         (RECONCILIATION, 'Reconciliation'),
         (STOCK_INIT, 'Stock Initialization'),
     ]
-    id = models.BigAutoField(primary_key=True)
+
     version = models.BigIntegerField(default=1)
     date_created = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
@@ -335,7 +335,7 @@ class InventoryMovementLog(models.Model):
 
 # CMS INVENTORY > REQUEST Models
 
-class Request(models.Model):
+class Request(CMSModel):
     """
     Maps to CMS table: request
     Stores inventory drug order requests
@@ -346,7 +346,7 @@ class Request(models.Model):
         (COMPLETED, 'Completed'),
         (PENDING, 'Pending'),
     ]
-    id = models.BigAutoField(primary_key=True)
+
     version = models.BigIntegerField(default=1)
     create_date = models.DateField(auto_now_add=True)
     date_created = models.DateTimeField(auto_now_add=True)
@@ -381,11 +381,11 @@ class Request(models.Model):
     def __str__(self):
         return f"{self.create_date} | [{self.status}] {self.requested_by.name} request to {self.supplier.name}"
 
-class RequestItem(models.Model):
+class RequestItem(CMSModel):
     """
     Maps to CMS table: request_item
     """
-    id = models.BigAutoField(primary_key=True)
+
     version = models.BigIntegerField(default=1)
     expected_qty = models.FloatField()
     item = models.ForeignKey(
@@ -412,11 +412,11 @@ class RequestItem(models.Model):
 
 # CMS INVENTORY > DELIVERY Models
 
-class Delivery(models.Model):
+class Delivery(CMSModel):
     """Maps to CMS table delivery"""
     """Stores delivery settlement details"""
 
-    id = models.BigAutoField(primary_key=True)
+
     version = models.BigIntegerField(default=1)
 
     # cash_amount - amount to be deducted from CMS cash_book
@@ -454,11 +454,11 @@ class Delivery(models.Model):
             self.create_date, self.cash_amount, self.supplier,
         )
 
-class ReceivedItem(models.Model):
+class ReceivedItem(CMSModel):
     """
     Maps to CMS table: received_item
     """
-    id = models.BigAutoField(primary_key=True)
+
     version = models.BigIntegerField(default=0)
     arrive_date = models.DateField(blank=True, null=True)
     cost = models.FloatField()
@@ -498,8 +498,8 @@ class ReceivedItem(models.Model):
 
 # CMS INVENTORY > RECONCILIATION Model
 
-class DepletionItem(models.Model):
-    id = models.BigAutoField(primary_key=True)
+class DepletionItem(CMSModel):
+
     version = models.BigIntegerField()
     date_created = models.DateTimeField(auto_now_add=True)
     drug = models.ForeignKey(
@@ -522,7 +522,7 @@ class DepletionItem(models.Model):
             self.date_created, self.quantity, self.drug, self.update_reason
         )
 
-class Depletion(models.Model):
+class Depletion(CMSModel):
     """Maps to CMS table: depletion"""
     """Stores inventory depletion info"""
 
@@ -533,7 +533,7 @@ class Depletion(models.Model):
         (STOCKTAKE, 'Stock Take')
     ]
 
-    id = models.BigAutoField(primary_key=True)
+
     version = models.BigIntegerField(default=1)
     last_updated = models.DateTimeField(auto_now=True, blank=True, null=True)
     # move_to - seems not used in CMS app
@@ -553,7 +553,7 @@ class Depletion(models.Model):
             self.id, self.depletion_type, self.remarks, self.last_updated
         )
 
-class DepletionDepletionItem(models.Model):
+class DepletionDepletionItem(CMSModel):
     """
     CMS table depletion_depletion_items is a legacy table using a composite key as the primary key
     Django does not support composite keys and a many-to-many field could not be used for this table
@@ -587,8 +587,8 @@ class DepletionDepletionItem(models.Model):
 # Prescription.id referenced in InventoryMovementLog (Dispensary)
 # Prescription.id referenced in PrescriptionDetail, which could be used to locate InventoryItem.id
 # 
-class Prescription(models.Model):
-    id = models.BigAutoField(primary_key=True)
+class Prescription(CMSModel):
+
     version = models.BigIntegerField(default=0)
     date_created = models.DateTimeField(auto_now_add=True)
     encounter_id = models.BigIntegerField(blank=True, null=True)
@@ -602,8 +602,8 @@ class Prescription(models.Model):
         app_label = 'cmsinv'
  
 
-class PrescriptionDetail(models.Model):
-    id = models.BigAutoField(primary_key=True)
+class PrescriptionDetail(CMSModel):
+
     version = models.BigIntegerField(default=0)
     advisory = models.ForeignKey(
         Advisory, on_delete=models.PROTECT,

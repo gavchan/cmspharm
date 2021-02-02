@@ -824,64 +824,7 @@ class DeliveryItemDeleteModal(BSModalDeleteView, LoginRequiredMixin, PermissionR
     def get_success_url(self):
         return reverse('inventory:DeliveryOrderDetail', args=(self.delivery_obj.id,))
 
-# ****** Save for Update View
-# @login_required
-# @permission_required('inventory.add_deliveryorder', 'inventory.add_deliveryitem', 'cmsinv.view_inventoryitem', )
-# def DeliveryOrderAddItemView(request, *args, **kwargs):
-#     """Add Item and DeliveryItem to DeliveryOrder"""
-    
-#     # Get deliveryorder
-#     if kwargs['delivery_id']:
-#         delivery_obj = DeliveryOrder.objects.get(pk=kwargs['delivery_id'])
-#     else:
-#         delivery_obj = None
-#         print("Error: no delivery_id")
-#     if kwargs['cmsitem_id']:
-#         drug_obj = InventoryItem.objects.get(pk=kwargs['cmsitem_id'])
-#     # if request.method == 'GET':
-#     #     reg_no = request.GET.get('reg_no')
-#     # elif request.method == 'POST':
-#     #     print(request.POST)
-#     #     reg_no = request.POST.get('reg_no')
-#     #     print(f"POST: reg_no - {reg_no}")
-#     # else:
-#     #     print("Invalid request method")
-#     # if reg_no:
-#     #     drug_obj = RegisteredDrug.objects.get(reg_no=reg_no)
-#     #     print(f"Got {drug_obj.name}")
-#     # else:
-#     #     drug_obj = None
 
-#     # Process form if POST, else render blank forms
-#     if request.method == 'POST':
-#         item_form = NewItemForm(request.POST)
-#         deliveryitem_form = NewDeliveryItemForm(request.POST)
-
-#         # Since DeliveryItem has a foreign key to Item, first need to validate and create new item
-#         if item_form.is_valid():
-#             print("Item form valid. Saving item")
-#             print(deliveryitem_form) 
-#             if deliveryitem_form.is_valid():
-#                 print("Forms valid")
-#                 # print(item_form.cleaned_data, deliveryitem_form.cleaned_data)
-#                 # new_item = item_form.save()
-#                 # deliveryitem_form.save()
-#                 return HttpResponseRedirect(reverse('inventory:DeliveryOrderDetail', args=(delivery_obj.pk,)))
-#             else:
-#                 print("DeliveryItem form invalid")
-#         else:
-#             print("Invalid Item form")
-#     else:
-#         item_form = NewItemForm(drug_obj=drug_obj)
-#         deliveryitem_form = NewDeliveryItemForm(delivery_obj=delivery_obj, drug_obj=drug_obj)
-    
-#     ctx = {
-#         'form': item_form,
-#         'form_2': deliveryitem_form,
-#         'delivery_obj': delivery_obj,
-#         'drug_obj': drug_obj,
-#     }
-#     return render(request, "inventory/deliveryorder_add_deliveryitem.html", ctx)
 
 class DeliveryOrderAddDeliveryItem(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     """Add Item and DeliveryItem to DeliveryOrder"""
@@ -1052,7 +995,7 @@ def StocktakeView(request, *args, **kwargs):
                 context={
                     'item_list': object_list,
                     'db': 0,
-                    'q': query,
+                    'q': last_query,
                     'iq': item_query,
                     'stype': stype,
                 }

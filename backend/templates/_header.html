@@ -46,6 +46,11 @@
                     <a href="{% url 'cmsacc:BillToday' %}" class="nav-link">Billing</a>
                 </li>
                 {% endif %}
+                {% if perms.cmsacc.view_payment %}
+                <li class="nav-item">
+                    <a href="{% url 'cmsacc:PaymentToday' %}" class="nav-link">Payments</a>
+                </li>
+                {% endif %}
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="{% url 'cmsinv:InventoryItemList' %}"
                         id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

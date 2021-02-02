@@ -124,6 +124,7 @@ USE_L10N = False
 
 USE_TZ = True
 
+CMS_OFFSET_HRS = 8
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/

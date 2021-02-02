@@ -1,4 +1,7 @@
 from django.db import models
+from django.utils.timezone import get_current_timezone, make_aware, utc
+import datetime, pytz
+from django.conf import settings
 
 # Custom Field Definitions
 class MySQLBitBooleanField(models.BooleanField):
@@ -46,11 +49,52 @@ class TextBooleanField(models.BooleanField):
         else:
             return 1 if value else 0
 
-class AuditLog(models.Model):
+def localize_datetime(dtime):
+    """Makes DateTimeField value UTC-aware and returns datetime string localized
+    in user's timezone in ISO format"""
+    hk_timezone = pytz.timezone('Asia/Hong_Kong')
+    print(dtime)
+    print(hk_timezone)
+    print(get_current_timezone())
+    if dtime.tzinfo is None or dtime.tzinfo.utcoffset(dtime) is None:
+        tz_aware = make_aware(dtime, utc).astimezone(get_current_timezone())
+        return datetime.strftime(tz_aware, '%Y-%m-%d %H:%M:%S')
+    else:
+        return dtime
+
+class CMSModel(models.Model):
+    """
+    Base class for CMS Models
+    Contains time offset utilities to make up for default CMS app incorrect timezone settings
+    CMS uses UTC time derived from system clock that uses UTC+8
+    CMS_OFFSET_HRS defined in django.conf.settings
+    """
+    id = models.BigAutoField(primary_key=True)
+
+    class Meta:
+        abstract = True
+
+    @property
+    def date_created_conv(self):
+        if self.date_created:
+            offset_datetime = self.date_created - datetime.timedelta(hours=settings.CMS_OFFSET_HRS)
+        else:
+            offset_datetime = None
+        return offset_datetime
+
+    @property
+    def last_updated_conv(self):
+        if self.last_updated:
+            offset_datetime = self.last_updated - datetime.timedelta(hours=settings.CMS_OFFSET_HRS)
+        else:
+            offset_datetime = None
+        return offset_datetime
+
+
+class AuditLog(CMSModel):
     """
     Maps to CMS table: audit_log
     """
-    id = models.BigAutoField(primary_key=True)
     version = models.BigIntegerField(default=0)
     actor = models.CharField(max_length=255, blank=True, null=True)
     class_name = models.CharField(max_length=255)
@@ -77,12 +121,13 @@ class AuditLog(models.Model):
 
     def __str__(self):
         return f"{self.date_created} [{self.actor}] {self.event_name} {self.class_name}: {self.property_name} - {self.old_value} => {self.new_value}"
+
   
-class CmsUser(models.Model):
+class CmsUser(CMSModel):
     """
     Maps to CMS table: user
     """
-    id = models.BigAutoField(primary_key=True)
+
     version = models.BigIntegerField(default=0)
     active = models.BooleanField(default=True)
     cname = models.CharField(max_length=255, blank=True, null=True)
@@ -113,11 +158,17 @@ class CmsUser(models.Model):
     def __str__(self):
         return f"{self.id} | {self.name} [{self.username}]"
 
-class UserProfile(models.Model):
+    @property
+    def last_updated_conv(self):
+        offset_datetime = self.last_updated - datetime.timedelta(hours=settings.CMS_OFFSET_HRS)
+        print(offset_datetime)
+        return offset_datetime
+
+class UserProfile(CMSModel):
     """
     Maps to CMS table user_profile
     """
-    id = models.BigAutoField(primary_key=True)
+
     version = models.BigIntegerField(default=0)
 
     class Meta:
@@ -132,8 +183,8 @@ class UserProfile(models.Model):
     def __str__(self):
         return f"{self.id} | ver.{self.version}"
 
-class Patient(models.Model):
-    id = models.BigAutoField(primary_key=True)
+class Patient(CMSModel):
+
     version = models.BigIntegerField()
     active = models.TextField()  # This field type is a guess.
     address_id = models.BigIntegerField(blank=True, null=True)
@@ -188,8 +239,8 @@ class Patient(models.Model):
                 name_initials += name[0].upper()
         return name_initials
 
-class EncounterType(models.Model):
-    id = models.BigAutoField(primary_key=True)
+class EncounterType(CMSModel):
+
     version = models.BigIntegerField()
     label = models.CharField(max_length=255)
     value = models.CharField(max_length=255)
@@ -202,8 +253,8 @@ class EncounterType(models.Model):
         return f"{self.id} | label={self.label}; value={self.value}"
 
 
-class Encounter(models.Model):
-    id = models.BigAutoField(primary_key=True)
+class Encounter(CMSModel):
+
     version = models.BigIntegerField()
     # bill_id = models.BigIntegerField()
     consultation_notes_id = models.BigIntegerField(blank=True, null=True)

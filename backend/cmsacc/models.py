@@ -1,11 +1,12 @@
 from django.db import models
-from cmssys.models import Encounter
-
-class Bill(models.Model):
+from cmssys.models import CMSModel, Encounter, TextBooleanField, localize_datetime
+from django.conf import settings
+import datetime
+class Bill(CMSModel):
     """
     Maps to CMS table to track bills charged to patient:encounter_id
     """
-    id = models.BigAutoField(primary_key=True)
+
     version = models.BigIntegerField(default=1)
     date_created = models.DateTimeField(auto_now_add=True)
     encounter = models.ForeignKey(
@@ -28,17 +29,17 @@ class Bill(models.Model):
         managed = False
         db_table = 'bill'
         app_label = 'cmsacc'
-        ordering = ['-date_created']
+        ordering = ['-last_updated']
 
     def __str__(self):
         return f"{self.date_created} | Encounter #{self.encounter_id} Total ${self.total}; Unbalanced ${self.unbalance_amt}"
+    
 
-
-class BillDetail(models.Model):
+class BillDetail(CMSModel):
     """
     Maps to CMS table to track billing details
     """
-    id = models.BigAutoField(primary_key=True)
+
     version = models.BigIntegerField(default=0)
     bill = models.ForeignKey(
         'Bill', on_delete=models.PROTECT,
@@ -70,7 +71,7 @@ class BillDetail(models.Model):
     def __str__(self):
         return f"{self.last_updated} | #{self.bill.id}.{self.bill_details_idx}: {self.charge_item.alias} - ${self.billed_amount} (Std ${self.standard})"
 
-class Cashbook(models.Model):
+class Cashbook(CMSModel):
     """
     CMS table to track cash transactions
     """
@@ -85,7 +86,7 @@ class Cashbook(models.Model):
         (BILL, 'Bill'),
         (DELIVERY, 'Delivery'),
     ]
-    id = models.BigAutoField(primary_key=True)
+
     version = models.BigIntegerField(default=0)
     amount = models.FloatField()
     date_created = models.DateField(auto_now_add=True)
@@ -113,11 +114,11 @@ class Cashbook(models.Model):
     def __str__(self):
         return f"{self.id} | {self.date_created} {self.entry_type} #{self.reference_id} - ${self.amount}"
 
-class ChargeItem(models.Model):
+class ChargeItem(CMSModel):
     """
     CMS table to track service item charge
     """
-    id = models.BigAutoField(primary_key=True)
+
     version = models.BigIntegerField(default=0)
     alias = models.CharField(max_length=255)
     # cp_prescription_amt - '1' for medication, '0' for all other items
@@ -141,3 +142,43 @@ class ChargeItem(models.Model):
     def __str__(self):
         return f"{self.alias} | ${self.standard_amount} - {self.description_chinese} {self.description}"
 
+class PaymentMethod(CMSModel):
+
+    version = models.BigIntegerField()
+    payment_method = models.CharField(max_length=255)
+    payment_method_chinese = models.CharField(max_length=255)
+    acc_receivable_fg = TextBooleanField()
+    reference = models.CharField(max_length=255, blank=True, null=True)
+    active = TextBooleanField()
+
+    class Meta:
+        managed = False
+        db_table = 'payment_method'
+
+class PaymentDetails(CMSModel):
+
+    version = models.BigIntegerField()
+    amount = models.FloatField()
+    bill = models.ForeignKey(
+        'Bill', on_delete=models.PROTECT,
+        db_column='bill_id'
+        )
+    date_created = models.DateField(auto_now_add=True)
+    last_updated = models.DateTimeField(auto_now=True)
+    payment_method = models.ForeignKey(
+        'PaymentMethod', on_delete=models.PROTECT,
+        db_column='payment_method_id'
+        )
+    remark = models.TextField(blank=True, null=True)
+    status_print = models.IntegerField()
+    updated_by = models.CharField(max_length=255, blank=True, null=True)
+    clear_payment = TextBooleanField()
+    paid_amt = models.FloatField(blank=True, null=True)
+    payment_date = models.DateTimeField(blank=True, null=True)
+    receive_date = models.DateTimeField(blank=True, null=True)
+    receive_method_id = models.BigIntegerField(blank=True, null=True)
+    # receive_method_id not used (NULL)
+
+    class Meta:
+        managed = False
+        db_table = 'payment_details'
