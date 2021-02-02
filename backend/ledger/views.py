@@ -388,7 +388,7 @@ class NewDeliveryOrderPayment(CreateView, LoginRequiredMixin, PermissionRequired
         if do_ids:
             latest_invoice = None
             for delivery_id in do_ids:
-                delivery_obj = DeliveryOrder.objects.get(id=delivery_id).order_by('invoice_no',)
+                delivery_obj = DeliveryOrder.objects.get(id=delivery_id)
                 if not latest_invoice or delivery_obj.invoice_date > latest_invoice:
                     latest_invoice = delivery_obj.invoice_date
                 delivery_obj.bill = self.object
