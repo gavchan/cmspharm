@@ -55,6 +55,11 @@ class BillToday(ListView, LoginRequiredMixin, PermissionRequiredMixin):
             self.lastdate = self.lastdate - timedelta(days=1)
         if self.day == '1':  # Last encounter date before today
             seldate = self.lastdate
+        elif self.day:
+            try:
+                seldate = datetime.strptime(self.day, "%Y%m%d")
+            except:
+                seldate = today
         else:
             seldate = today
         query_date = seldate.strftime('%Y-%m-%d')
@@ -122,7 +127,7 @@ class PaymentsToday(ListView, LoginRequiredMixin, PermissionRequiredMixin):
         today = timezone.now()
         self.lastdate = today - timedelta(days=1)
         # Cycle through recent bills
-        recent_bills = Encounter.objects.order_by('-last_updated')[:self.RECENT_BILLS]
+        recent_bills = Encounter.objects.order_by('-date_created')[:self.RECENT_BILLS]
         recent_dates = set()
         for bill in recent_bills:
             recent_dates.add(bill.date_created.strftime('%Y-%m-%d'))
@@ -148,7 +153,7 @@ class PaymentsToday(ListView, LoginRequiredMixin, PermissionRequiredMixin):
                 self.period = 'a'
         if self.period == 'a':
             object_list = PaymentDetails.objects.filter(
-                date_created=query_date,
+                date_created__icontains=query_date,
                 date_created__lt=time_cutoff
             ).order_by('-date_created', '-last_updated')
         elif self.period == 'p':
