@@ -19,6 +19,7 @@
       </div>
     </div>
     <div class="card-body">
+      {% if unpaid_deliveries_list %}
       <div class="card mb-2">
         <div class="card-header bg-secondary text-white">
           Outstanding Unpaid Delivery Orders
@@ -64,7 +65,10 @@
         </table>
         </div>
       </div>
-      
+      {% else %}
+      <div class="alert alert-secondary" role="alert">
+        No outstanding unpaid delivery orders
+      </div>
     
 
         <form method="post" action="{% url 'ledger:NewDeliveryOrderPayment' vendor_obj.id %}" id="order-list-form">
@@ -122,34 +126,9 @@
         });
       });
 
-      $("#btn_calc").click(function() {
-        let purchase = parseFloat($("#id_purchase_quantity").val());
-        let bonus = parseFloat($("#id_bonus_quantity").val());
-        let itemspp = parseFloat($("#id_items_per_purchase").val());
-        let unitprice = parseFloat($("#id_unit_price").val());
-        let discount = parseFloat($("#id_discount").val());
-        let quantity = (purchase + bonus) * itemspp
-        let stdcost = 0
-        let avgcost = 0
-        let totalcost = purchase * unitprice * (1 - discount)
-        if (quantity !== 0) {
-          if($('#id_is_sample').is(':checked')) {
-            stdcost = (bonus * unitprice) / (bonus * itemspp);
-          } else {
-            stdcost = totalcost / (purchase * itemspp);
-          }
-          avgcost = totalcost / quantity; 
-        }
-        if (isNaN(stdcost)) { stdcost = 0 }
-        $('#ds_quantity').text(quantity)
-        $('#ds_stdcost').text(stdcost.toFixed(2))
-        $('#ds_avgcost').text(avgcost.toFixed(2))
-        $('#ds_total').text(totalcost.toFixed(2))
-      });
       $("#btn_cancel").click(function() {
         window.history.back()
       });
-      $("#btn_calc").trigger('click');
       $("#id_payment_ref").focus()
     });
 </script>
