@@ -119,10 +119,10 @@ class PaymentsToday(ListView, LoginRequiredMixin, PermissionRequiredMixin):
     def get_queryset(self):
         self.period = self.request.GET.get('p') or None
         self.day = self.request.GET.get('d') or None
-        today = timezone.now() - timedelta(hours=settings.CMS_OFFSET_HRS)
+        today = timezone.now()
         self.lastdate = today - timedelta(days=1)
         # Cycle through recent bills
-        recent_bills = Encounter.objects.order_by('-date_created')[:self.RECENT_BILLS]
+        recent_bills = Encounter.objects.order_by('-last_updated')[:self.RECENT_BILLS]
         recent_dates = set()
         for bill in recent_bills:
             recent_dates.add(bill.date_created.strftime('%Y-%m-%d'))
