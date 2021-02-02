@@ -1,6 +1,6 @@
 import csv
 from django.http import HttpResponse, HttpResponseRedirect
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.decorators import login_required, permission_required
 from django.urls import reverse, reverse_lazy, resolve, Resolver404
@@ -28,6 +28,7 @@ from .forms import (
     # NewExpenseByVendorModalForm,
     NewExpenseModalForm,
     DeliveryPaymentModalForm,
+    NewDeliveryOrderPaymentForm,
     NewIncomeModalForm,
     IncomeUpdateModalForm,
 )
@@ -331,6 +332,75 @@ class DeliveryPaymentModal(BSModalCreateView, LoginRequiredMixin, PermissionRequ
         self.delivery_obj.save()
         return HttpResponseRedirect(self.get_success_url())
 
+class NewDeliveryOrderPayment(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
+    """Add new delivery order payment (expense)"""
+    permission_required = ('ledger.add_expense', )
+    template_name = 'ledger/new_deliveryorder_payment.html'
+    form_class = NewDeliveryOrderPaymentForm
+    vendor_obj = None
+    unpaid_deliveries_list = None
+
+    def dispatch(self, request, *args, **kwargs):
+        if 'vendor_id' in kwargs:
+            self.vendor_obj = Vendor.objects.get(id=kwargs['vendor_id'])
+        else:
+            print("Error: no vendor_id")
+        if request.method == 'GET':
+            self.unpaid_deliveries_list = DeliveryOrder.objects.filter(vendor=self.vendor_obj, is_paid=False) or None
+        return super().dispatch(request, *args, **kwargs)
+
+    # def get(self, request, *args, **kwargs):
+    #     payment_form = NewDeliveryOrderPaymentForm(self.request.GET or None)
+    #     context = self.get_context_data(**kwargs)
+    #     context['payment_form'] = payment_form
+
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        data['today'] = timezone.now().strftime('%Y-%m-%d')
+        data['vendor_obj'] = self.vendor_obj
+        data['unpaid_deliveries_list'] = self.unpaid_deliveries_list
+        return data
+
+    def get_form_kwargs(self):
+        kwargs = super(NewDeliveryOrderPayment, self).get_form_kwargs()
+        kwargs.update({
+            'vendor_obj': self.vendor_obj,
+            })
+        return kwargs
+
+    def get_success_url(self):
+        return reverse('ledger:ExpenseDetail', args=(self.object.id,))
+
+    def form_valid(self, form):
+        dos = self.request.POST.get('dos')
+        if dos:
+            do_ids = map(lambda x:int(x), dos.split('|'))
+        else:
+            print("No delivery orders added")
+            do_ids = []
+        form.instance.invoice_no = self.request.POST.get('invoice_no')
+        form.instance.updated_by = self.request.user.username
+        form.instance.date_created = timezone.now()
+        form.instance.last_updated = timezone.now()
+        self.object = form.save()
+        
+        # Loop through DeliveryOrders to be added and update
+        if do_ids:
+            latest_invoice = None
+            for delivery_id in do_ids:
+                delivery_obj = DeliveryOrder.objects.get(id=delivery_id)
+                if not latest_invoice or delivery_obj.invoice_date > latest_invoice:
+                    latest_invoice = delivery_obj.invoice_date
+                delivery_obj.bill = self.object
+                delivery_obj.is_paid = True
+                delivery_obj.last_updated = timezone.now()
+                delivery_obj.save()
+            if latest_invoice:
+                self.object.invoice_date = latest_invoice
+                self.object.save()
+        return HttpResponseRedirect(self.get_success_url())
+
+
 class ExpenseDetail(DetailView, LoginRequiredMixin, PermissionRequiredMixin):
     """Show Expense Details for Drug Category, allow add delivery"""
     permission_required = ('ledger.view_expense',)
@@ -350,8 +420,11 @@ class ExpenseDetail(DetailView, LoginRequiredMixin, PermissionRequiredMixin):
             self.list_total = self.deliveryorder_list.aggregate(Sum('amount'))
         else:
             self.list_total = 0
-        self.unpaid_deliveries_list = DeliveryOrder.objects.filter(vendor=self.expense_obj.vendor, is_paid=False) or None
-        
+        self.unpaid_deliveries_list = DeliveryOrder.objects.filter(
+            vendor=self.expense_obj.vendor,
+            amount__gt=0,
+            is_paid=False
+            ) or None
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -403,21 +476,26 @@ def ExpenseAddDeliveryOrder(request, *args, **kwargs):
     
     if expense_obj and delivery_obj:
         if expense_obj.invoice_no:
-            if delivery_obj.invoice_no in expense_obj.invoice_no:
-                print(f"Error: Invoice {delivery_obj.invoice_no} already exists in expense record.")
-                return HttpResponseRedirect(reverse('ledger:ExpenseDetail', args=(expense_obj.id,)))
+            if delivery_obj.invoice_no:
+                if delivery_obj.invoice_no in expense_obj.invoice_no:
+                    print(f"Error: Invoice {delivery_obj.invoice_no} already exists in expense record.")
+                    return HttpResponseRedirect(reverse('ledger:ExpenseDetail', args=(expense_obj.id,)))
+                
         # Update delivery_obj
         delivery_obj.bill = expense_obj
         delivery_obj.is_paid = True
         delivery_obj.save()
         # Update expense_obj invoice_no
         if expense_obj.invoice_no:
-            new_invoice_no = ','.join([expense_obj.invoice_no, delivery_obj.invoice_no])
-            expense_obj.invoice_no = new_invoice_no
+            if delivery_obj.invoice_no:
+                new_invoice_no = ','.join([expense_obj.invoice_no, delivery_obj.invoice_no])
+                expense_obj.invoice_no = new_invoice_no
         else:
-            expense_obj.invoice_no = delivery_obj.invoice_no    
+            expense_obj.invoice_no = delivery_obj.invoice_no or ''
+        if delivery_obj.invoice_date:
+            if not expense_obj.invoice_date or delivery_obj.invoice_date > expense_obj.invoice_date:
+                expense_obj.invoice_date = delivery_obj.invoice_date
         expense_obj.save()
-        print(f"Delivery #{delivery_obj.id} added to expense #{expense_obj.id}")
     return HttpResponseRedirect(reverse('ledger:ExpenseDetail', args=(expense_obj.id,)))
 
 @login_required
@@ -430,8 +508,16 @@ def ExpenseRemoveDeliveryOrder(request, *args, **kwargs):
         delivery_obj.is_paid = False
         delivery_obj.save()
         # Update expense_obj invoice_no
-        invoice_nums = expense_obj.invoice_no.split(',')
-        removed_invoice_no = invoice_nums.pop(invoice_nums.index(delivery_obj.invoice_no))
+        if expense_obj.invoice_no:
+            try:
+                invoice_nums = expense_obj.invoice_no.split(',')
+            except Exception as e:
+                invoice_nums = [expense_obj.invoice_no]
+                print(e)
+        else:
+            invoice_nums = []
+        if len(invoice_nums) >= 1 and delivery_obj.invoice_no:
+            removed_invoice_no = invoice_nums.pop(invoice_nums.index(delivery_obj.invoice_no))
         if len(invoice_nums) > 1:
             expense_obj.invoice_no = ','.join(invoice_nums)
         elif len(invoice_nums) == 1:
@@ -439,7 +525,6 @@ def ExpenseRemoveDeliveryOrder(request, *args, **kwargs):
         else:
             expense_obj.invoice_no = ''
         expense_obj.save()
-        print(f"Delivery #{delivery_obj.id} #{removed_invoice_no} removed from expense #{expense_obj.id}")
     return HttpResponseRedirect(reverse('ledger:ExpenseDetail', args=(expense_obj.id,)))
 
 @login_required

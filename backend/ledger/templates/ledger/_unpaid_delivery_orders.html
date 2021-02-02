@@ -3,10 +3,16 @@
     Requires:
     - unpaid_deliveries_list
 -->
-
+{% if unpaid_deliveries_list %}
 <div class="card">
     <div class="card-header bg-warning">
-        <strong>Outstanding Unpaid Delivery Orders</strong>
+        <div class="d-flex justify-content-between align-items-center">
+            <strong>Outstanding Unpaid Delivery Orders</strong>
+            <a href="{% url 'ledger:NewDeliveryOrderPayment' expense_obj.vendor.id %}" 
+                class="btn btn-sm btn-secondary text-white"
+                >Add New Payment
+            </a>
+        </div>
     </div>
     <div class="card-body">
         <table class="table table-hover table-sm table-striped">
@@ -23,7 +29,6 @@
             </thead>
             <tbody>
                 {% for delivery_obj in unpaid_deliveries_list %}
-                {% if delivery_obj.amount != 0 %}
                 <tr>
                     <td>{{ delivery_obj.invoice_date|date:"d-m-Y" }}</td>
                     <td>{{ delivery_obj.received_date|date:"d-m-Y" }}</td>
@@ -46,11 +51,10 @@
                         {% endif %}
                     </td>
                 </tr>
-                {% endif %}
                 {% endfor %}
-        
             </tbody>
         </table>
 
     </div>
 </div>
+{% endif %}

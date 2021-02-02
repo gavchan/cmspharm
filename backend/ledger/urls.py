@@ -13,6 +13,7 @@ urlpatterns = [
     path('expense/new/modal/', views.NewExpenseModal.as_view(), name='NewExpenseModal'),
     path('expense/new/selectvendor/', views.NewExpenseSelectVendorView, name='NewExpenseSelectVendor'),
     path('expense/new/delivery/<int:delivery_id>/modal/', views.DeliveryPaymentModal.as_view(), name='DeliveryPaymentModal'),
+    path('expense/new/vendor/<int:vendor_id>/', views.NewDeliveryOrderPayment.as_view(), name='NewDeliveryOrderPayment'),
     path('expense/<int:expense_id>/add/delivery/<int:delivery_id>/', views.ExpenseAddDeliveryOrder, name='ExpenseAddDeliveryOrder'),
     path('expense/<int:expense_id>/remove/delivery/<int:delivery_id>/', views.ExpenseRemoveDeliveryOrder, name='ExpenseRemoveDeliveryOrder'),
     path('expense/<int:pk>/makepermanent', views.ExpenseConfirmPermanentModalView, name="ExpenseConfirmPermanentModal"),

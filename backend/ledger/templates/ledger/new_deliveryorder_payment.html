@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags %}
+{{form.media}}
+
+{% block content %}
+
+<div class="card shadow">
+    <div class="card-header bg-warning">
+      <div class="d-flex justify-content-between align-items-center">
+        <span>New Delivery Order Payment to: <strong>{{ vendor_obj.name }}</strong></span>
+        <span>
+          <a
+            href="javascript: history.go(-1)"
+            id="btn_cancel"
+          ><span aria-hidden="true">&times;</span>
+          </a>
+        </span>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="card mb-2">
+        <div class="card-header bg-secondary text-white">
+          Outstanding Unpaid Delivery Orders
+        </div>
+        <div class="card-body">
+          <table class="table table-hover table-sm table-striped">
+            <thead>
+                <tr>
+                    <th scope="col"><input class="input-control" type="checkbox" id="toggleSelectAll" />&nbsp;&nbsp;Invoice no.</th>
+                    <th scope="col" class="text-right">Amount</th>
+                    <th scope="col" class="text-center">Invoice date</th>
+                    <th scope="col" class="text-center">Due Date</th>
+                    <th scope="col">Products</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for delivery_obj in unpaid_deliveries_list %}
+                {% if delivery_obj.amount != 0 %}
+                <tr>
+                    <td>
+                      <label for="do_{{delivery_obj.id}}">
+                        <input 
+                          class="do_select input-control" 
+                          type="checkbox" 
+                          id="do_{{ delivery_obj.id }}" 
+                          name="do[]" 
+                          value="{{ delivery_obj.id }}" 
+                          data-id="{{ delivery_obj.id }}"
+                          data-amt="{{ delivery_obj.amount }}"
+                          data-inv="{{ delivery_obj.invoice_no }}"
+                          />&nbsp;&nbsp;{{ delivery_obj.invoice_no }}
+                        </label>
+                      </td>
+                    <td class="text-right">{{ delivery_obj.amount }}</td>
+                    <td class="text-center">{{ delivery_obj.invoice_date|date:"d-m-Y" }}</td>
+                    <td class="text-center">{{ delivery_obj.due_date|date:"d-m-Y" }}</td>
+                    <td>{{ delivery_obj.item_summary }}</td>
+                </tr>
+                {% endif %}
+                {% endfor %}
+        
+            </tbody>
+        </table>
+        </div>
+      </div>
+      
+    
+
+        <form method="post" action="{% url 'ledger:NewDeliveryOrderPayment' vendor_obj.id %}" id="order-list-form">
+          {% csrf_token %}
+          {% crispy form %}
+          <input type="hidden" id="dos" name="dos" value="" />
+          <input type="hidden" id="invoice_no" name="invoice_no" value="" />
+          <input class="btn btn-primary" type="submit" name="form" value="Submit" />
+          <button class="btn btn-light" name="back" onclick="javascript:history.go(-1);">Cancel</button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extrascripts %}
+<script type="text/javascript">
+    $(document).ready(function () {
+      $(".date").datetimepicker({
+          format: "YYYY-MM-DD",
+      });
+
+      var paymentAmount = 0;
+      const sumCheckedOrders = function() {
+        let sum = 0;
+        let do_ids = [];
+        let do_invs = [];
+        $('.do_select').each(function(index) {
+          if ($(this).is(':checked')) {
+            sum += parseFloat($(this).data('amt'));
+            do_ids.push($(this).data('id'));
+            do_invs.push($(this).data('inv'));
+            console.log($(this).data('id'), $(this).data('inv'));
+          }
+        })
+        $('#id_amount').val(sum);
+        $('#dos').val(do_ids.join('|'));
+        $('#invoice_no').val(do_invs.join(','));
+        console.log(do_ids.join('|'), do_invs.join(','));
+        $("#id_payment_ref").focus()
+      }
+      $('#toggleSelectAll').on('change', function () {
+        if ($('#toggleSelectAll').is(':checked')) {
+          $('.do_select').prop('checked', true);
+          sumCheckedOrders();
+        } else {
+          $('.do_select').prop('checked', false);
+          $('#id_amount').val(0);
+        }
+      });
+
+      $(".do_select").each(function() {
+        $(this).on('change', function() {
+          sumCheckedOrders();
+        });
+      });
+
+      $("#btn_calc").click(function() {
+        let purchase = parseFloat($("#id_purchase_quantity").val());
+        let bonus = parseFloat($("#id_bonus_quantity").val());
+        let itemspp = parseFloat($("#id_items_per_purchase").val());
+        let unitprice = parseFloat($("#id_unit_price").val());
+        let discount = parseFloat($("#id_discount").val());
+        let quantity = (purchase + bonus) * itemspp
+        let stdcost = 0
+        let avgcost = 0
+        let totalcost = purchase * unitprice * (1 - discount)
+        if (quantity !== 0) {
+          if($('#id_is_sample').is(':checked')) {
+            stdcost = (bonus * unitprice) / (bonus * itemspp);
+          } else {
+            stdcost = totalcost / (purchase * itemspp);
+          }
+          avgcost = totalcost / quantity; 
+        }
+        if (isNaN(stdcost)) { stdcost = 0 }
+        $('#ds_quantity').text(quantity)
+        $('#ds_stdcost').text(stdcost.toFixed(2))
+        $('#ds_avgcost').text(avgcost.toFixed(2))
+        $('#ds_total').text(totalcost.toFixed(2))
+      });
+      $("#btn_cancel").click(function() {
+        window.history.back()
+      });
+      $("#btn_calc").trigger('click');
+      $("#id_payment_ref").focus()
+    });
+</script>
+{% endblock %}

@@ -52,12 +52,11 @@
               class="btn btn-sm btn-success"
             >+<i class="fal fa-box-open"></i>
             </a>
-            <!-- <button
-              type="button"
-              class="btn_modal_trigger btn btn-sm btn-success"
-              data-id="{% url 'inventory:NewDeliveryOrder' %}?vendor={{ vendor.id }}"
-            ><i class="fad fa-box-alt"></i>
-            </button> -->
+            <a
+              class="btn btn-sm btn-warning"
+              href="{% url 'ledger:NewDeliveryOrderPayment' vendor.id %}?next={{ request.path }}"
+            >+<i class="far fa-file-invoice-dollar"></i>
+            </a>
             {% elif perms.ledger.add_expense %}
             <a
               href="{% url 'ledger:NewExpense' %}?vendor={{ vendor.id }}&next={{ request.path }}"

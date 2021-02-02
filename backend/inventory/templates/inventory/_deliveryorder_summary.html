@@ -44,11 +44,11 @@
         >Free
         </button> 
         {% else %}
-        <button
-          class="btn_modal_trigger btn btn-sm btn-secondary"
-          data-id="{% url 'ledger:DeliveryPaymentModal' delivery_obj.id %}"
+        <a
+          class="btn btn-sm btn-secondary"
+          href="{% url 'ledger:NewDeliveryOrderPayment' delivery_obj.vendor.id %}"
         >Payment
-        </button>
+        </a>
         {% endif %}
       </span>
     </div>

@@ -12,8 +12,8 @@
                     <th scope="col">Date received</th>
                     <th scope="col">Product</th>
                     <th scope="col">Units+Bonus</th>
-                    <th scope="col">Unit Price</th>
-                    <th scope="col">Expiry Date</th>
+                    <th scope="col" class="text-right">Unit Price</th>
+                    <th scope="col" class="text-center">Expiry Date</th>
                     <th scope="col" class="text-center">Std $</th>
                     <th scope="col" class="text-center">Avg $</th>
                     <th scope="col" class="text-right">Action</th>
@@ -24,21 +24,22 @@
                 <tr>
                     <td>{{ listitem.delivery_order.received_date|date:'d-m-Y' }}</td>
                     <td>{{ listitem.item.name }}</td>
-                    <td>
-                        {% if listitem.is_sample %}
-                        <span class="badge badge-info ml-2 mt-0"
-                        >Sample
-                        </span>
-                        {% else %}
-                            {{ listitem.purchase_quantity|floatformat}}
-                            {% if listitem.bonus_quantity %}
-                            + {{ listitem.bonus_quantity|floatformat }}
-                            {% endif %}
+                    <td class="text-center">
+                        {{ listitem.purchase_quantity|floatformat}}
+                        {% if listitem.bonus_quantity %}
+                        + {{ listitem.bonus_quantity|floatformat }}
                         {% endif %}
                     </td>
-                    <td>{{ listitem.unit_price|intcomma }} / {{ listitem.purchase_unit }} of {{ listitem.items_per_purchase|floatformat }}
-                        {% if listitem.items_unit %}{{ listitem.items_unit }}{% endif %}</td>
-                    <td>{{ listitem.expiry_date|date:'d-m-Y'}}</td>
+                    <td class="text-right">
+                        {% if listitem.is_sample %}
+                        <span class="badge badge-info ml-2 mt-0"
+                        >Bonus
+                        </span>
+                        {% else %}
+                        {{ listitem.unit_price }}
+                        {% endif %}
+                    </td>                    
+                    <td class="text-center">{{ listitem.expiry_date|date:'d-m-Y'}}</td>
                     <td class="text-center">{{ listitem.standard_cost}}</td>
                     <td class="text-center">{{ listitem.average_cost }}</td>
                     <td class="text-right">

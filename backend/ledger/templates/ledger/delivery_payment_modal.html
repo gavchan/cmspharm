@@ -47,8 +47,8 @@
               {% if user.is_staff %}
               <a
                 href="{% url 'ledger:ExpenseUpdate' delivery_obj.bill.pk %}"
-                class="btn-expense_update btn btn-sm btn-primary"
-              ><i class="fad fa-edit"></i>
+                class="btn-expense_update btn btn-sm btn-warning"
+              ><i class="fad fa-edit"></i>{% if delivery_obj.bill.permanent %}[Perm]{% endif %}
               </a>
               {% endif %}
             </td>

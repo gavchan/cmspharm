@@ -278,7 +278,7 @@ class NewExpenseForm(ModelForm):
                 Column('category', css_class='form-group col-md-4 mb-0'),
                 Column('invoice_no', css_class='form-group col-md-4 mb-0'),
                 Div(HTML("""
-                    <label for="invoice_date">Invoice date</label>*
+                    <label for="invoice_date">Invoice date</label>
                     <div class="input-group date" id="datepicker_invoice_date" data-target-input="nearest">
                         <input type="text" 
                             class="form-control datetimepicker-input"
@@ -669,6 +669,93 @@ class DeliveryPaymentModalForm(BSModalForm):
     class Meta:
         model = Expense
         exclude = ['id', 'date_created', 'last_updated']
+
+class NewDeliveryOrderPaymentForm(ModelForm):
+    
+    expected_date = forms.DateField(
+        required=True,
+        widget=forms.TextInput(attrs={'placeholder': 'YYYY-MM-DD'})
+        )
+
+    def __init__(self, *args, **kwargs):
+        self.vendor_obj = kwargs.pop('vendor_obj', None)
+        super(NewDeliveryOrderPaymentForm, self).__init__(*args, **kwargs)
+        if not self.vendor_obj:
+            print(f"Error: no vendor_obj")
+        self.helper = FormHelper()
+        self.helper.render_unmentioned_fields = False
+        self.helper.form_id = 'id-DeliveryPaymentForm'
+        self.helper.form_class = 'cmmForms'
+        self.helper.form_tag = False
+        self.helper.form_method = 'post'
+        # self.helper.form_action = reverse(
+        #     'ledger:NewDeliveryOrderPayment',
+        #     args=(self.vendor_obj,)
+        # )
+        today_date = timezone.now().strftime('%Y-%m-%d')
+        self.exp_category_drug = ExpenseCategory.objects.get(code='1').id
+        self.initial['entry_date'] = today_date
+        self.initial['payment_method'] = PaymentMethod.objects.get(
+            name='Cheque').pk
+        self.initial['vendor'] = self.vendor_obj.id
+        self.initial['payee'] = self.vendor_obj.name
+        self.initial['category'] = self.exp_category_drug
+        self.initial['description'] = 'Drug/Supplement'
+            
+        self.helper.layout = Layout(
+            
+            Row(
+                Column('payee', css_class='form-group col-md-4 mb-0'),
+                Column('description', css_class='form-group col-md-4 mb-0'),
+                Column('other_ref', css_class='form-group col-md-2 mb-0'),
+                Column('payment_method', css_class='form-group col-md-2 mb-0'),
+                css_class='form-row',
+            ),
+            Row(
+                Column('payment_ref', css_class='form-group col-md-4 mb-0'),
+                Column('amount', css_class='form-group col-md-4 mb-0'),
+                Div(HTML("""
+                    <label for="expected_date">Payment date</label>*
+                    <div class="input-group date" id="datepicker_expected_date" data-target-input="nearest">
+                        <input type="text" 
+                            class="form-control datetimepicker-input"
+                            data-target="#datepicker_expected_date"
+                            placeholder="YYYY-MM-DD"
+                            name="expected_date"
+                        >
+                        <div class="input-group-append" data-target="#datepicker_expected_date" data-toggle="datetimepicker">
+                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                        </div>
+                    </div>
+                    """),
+                    css_class='form-group col-md-4'
+                ),
+                css_class='form-row',
+            ),
+            Row(
+                Column(
+                    Field('remarks', css_class='form-group col-md-8 mb-0', rows="1")),
+                css_class="form-row",
+            ),
+            Hidden('entry_date', today_date),
+            Hidden('version', '1'),
+            Hidden('vendor', self.vendor_obj.id),
+            Hidden('version', '1'),
+            Hidden('category', self.exp_category_drug),
+            # FormActions(
+            #     Submit('submit', 'Submit'),
+            #     Button(
+            #         'back', 'Cancel',
+            #         css_class='btn-light',
+            #         onclick="javascript:history.go(-1);"
+            #     ),
+            # ),
+        )
+
+    class Meta:
+        model = Expense
+        exclude = ['id', 'date_created', 'last_updated', 'invoice_no', 'invoice_date', ]
+
 
 
 class NewIncomeModalForm(BSModalForm):
