@@ -127,7 +127,7 @@ class PaymentsToday(ListView, LoginRequiredMixin, PermissionRequiredMixin):
         today = timezone.now()
         self.lastdate = today - timedelta(days=1)
         # Cycle through recent bills
-        recent_bills = Encounter.objects.order_by('-date_created')[:self.RECENT_BILLS]
+        recent_bills = PaymentDetails.objects.order_by('-date_created')[:self.RECENT_BILLS]
         recent_dates = set()
         for bill in recent_bills:
             recent_dates.add(bill.date_created.strftime('%Y-%m-%d'))
