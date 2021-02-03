@@ -107,7 +107,8 @@ class ExpenseList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
             self.last_query = query
             object_list = Expense.objects.filter(
                 Q(description__icontains=query) |
-                Q(payee__icontains=query)
+                Q(payee__icontains=query) |
+                Q(invoice_no__icontains=query)
             ).order_by('-expected_date')
             self.last_query_count = object_list.count
         else:
