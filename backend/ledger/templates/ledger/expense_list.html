@@ -135,7 +135,16 @@ crispy_forms_tags %} {% block content %}
         <tr>
           <td>{{ expense_obj.expected_date|date:"d-m-y" }}</td>
           <td>{{ expense_obj.invoice_date|date:"d-m-y" }}</td>
-          <td>{{ expense_obj.invoice_short }}</td>
+          <td>
+            <a
+              tabindex="0"
+              data-toggle="popover" 
+              data-trigger="hover"
+              data-container="body"
+              data-content="{{expense_obj.invoice_no}}">
+              {{ expense_obj.invoice_short }}
+          </a>
+          </td>
           <td>
             <a class="btn-link" href="{% url 'ledger:NewExpense' %}?vendor={{ expense_obj.vendor.id }}">
               <span class="badge badge-secondary ml-2 mt-0"
@@ -224,6 +233,10 @@ crispy_forms_tags %} {% block content %}
     $("#btn-view_all").click(function() {
       var loadurl = "{% url 'ledger:ExpenseList' %}?q={{ last_query }}&begin=&end=" 
       window.location = loadurl;
+    });
+    $('[data-toggle="popover"]').popover();
+    $('.popover-dismiss').popover({
+      trigger: 'focus'
     });
     $("#query_input").focus();
   });

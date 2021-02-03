@@ -95,7 +95,7 @@ class Expense(LedgerEntry):
         if self.invoice_no:
             invoices = self.invoice_no.split(',')
             if len(invoices) > 1:
-                return f"{str(invoices[0])},[{len(invoices)} more]"
+                return f"{str(invoices[0])},[..+{len(invoices)-1}]"
             else:
                 return self.invoice_no
         else:
