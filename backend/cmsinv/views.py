@@ -897,6 +897,7 @@ def NewDeliveryFromDeliveryOrderModalView(request, *args, **kwargs):
                         'remarks': listitem.terms,
                     }
                     cmsreceived_obj, cmsreceived_created = ReceivedItem.objects.update_or_create(
+                        arrive_date=delivery_obj.invoice_date
                         drug_item=cmsitem_obj,
                         quantity=listitem.items_quantity,
                         cost=listitem.total_price,
