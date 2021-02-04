@@ -1,20 +1,23 @@
 from django.db import models
-from cmssys.models import CMSModel, Encounter, TextBooleanField, localize_datetime
+from cmssys.models import CMSModel, Encounter, TextBooleanField
+from datetime import timedelta
+from django.utils import timezone
 from django.conf import settings
-import datetime
+
+
 class Bill(CMSModel):
     """
     Maps to CMS table to track bills charged to patient:encounter_id
     """
 
     version = models.BigIntegerField(default=1)
-    date_created = models.DateTimeField(auto_now_add=True)
+    date_created = models.DateTimeField(editable=False)
+    last_updated = models.DateTimeField()
     encounter = models.ForeignKey(
         Encounter, on_delete=models.PROTECT,
         db_column='encounter_id'
     )
     invoice_print_status = models.BooleanField(default=False)
-    last_updated = models.DateTimeField(auto_now=True)
     receipt_print_status = models.BooleanField(default=False)
     total = models.FloatField()
     updated_by = models.CharField(max_length=255, blank=True, null=True)
@@ -34,6 +37,12 @@ class Bill(CMSModel):
     def __str__(self):
         return f"{self.date_created} | Encounter #{self.encounter_id} Total ${self.total}; Unbalanced ${self.unbalance_amt}"
     
+    def save(self, *args, **kwargs):
+        """On save, update timestamps with offset"""
+        if not self.id:
+            self.date_created = timezone.now() + timedelta(hours=settings.CMS_OFFSET_HRS) 
+        self.last_updated = timezone.now() + timedelta(hours=settings.CMS_OFFSET_HRS)
+        return super().save(*args, **kwargs)
 
 class BillDetail(CMSModel):
     """
@@ -59,7 +68,7 @@ class BillDetail(CMSModel):
     # bill_details_idx - index number of item linked to the same bill_id
     bill_details_idx = models.IntegerField(blank=True, null=True)
     discount_percent = models.DecimalField(max_digits=19, decimal_places=2, blank=True, null=True)
-    last_updated = models.DateTimeField(auto_now=True)
+    last_updated = models.DateTimeField()
     quantity = models.DecimalField(max_digits=19, decimal_places=2, blank=True, null=True)
 
     class Meta:
@@ -70,6 +79,11 @@ class BillDetail(CMSModel):
     
     def __str__(self):
         return f"{self.last_updated} | #{self.bill.id}.{self.bill_details_idx}: {self.charge_item.alias} - ${self.billed_amount} (Std ${self.standard})"
+
+    def save(self, *args, **kwargs):
+        """On save, update timestamps with offset"""
+        self.last_updated = timezone.now() + timedelta(hours=settings.CMS_OFFSET_HRS)
+        return super().save(*args, **kwargs)
 
 class Cashbook(CMSModel):
     """
@@ -89,9 +103,9 @@ class Cashbook(CMSModel):
 
     version = models.BigIntegerField(default=0)
     amount = models.FloatField()
-    date_created = models.DateField(auto_now_add=True)
+    date_created = models.DateField(editable=False)
+    last_updated = models.DateTimeField()
     editable = models.BooleanField(default=False)
-    last_updated = models.DateTimeField(auto_now=True)
 
     # reference_id - refers to if in CMS table specified in entry_type
     # E.g. for entry_type='bill', reference_id refers to bill_id
@@ -113,6 +127,13 @@ class Cashbook(CMSModel):
 
     def __str__(self):
         return f"{self.id} | {self.date_created} {self.entry_type} #{self.reference_id} - ${self.amount}"
+
+    def save(self, *args, **kwargs):
+        """On save, update timestamps with offset"""
+        if not self.id:
+            self.date_created = timezone.now() + timedelta(hours=settings.CMS_OFFSET_HRS) 
+        self.last_updated = timezone.now() + timedelta(hours=settings.CMS_OFFSET_HRS)
+        return super().save(*args, **kwargs)
 
 class ChargeItem(CMSModel):
     """
@@ -163,8 +184,8 @@ class PaymentDetails(CMSModel):
         'Bill', on_delete=models.PROTECT,
         db_column='bill_id'
         )
-    date_created = models.DateField(auto_now_add=True)
-    last_updated = models.DateTimeField(auto_now=True)
+    date_created = models.DateField(editable=False)
+    last_updated = models.DateTimeField()
     payment_method = models.ForeignKey(
         'PaymentMethod', on_delete=models.PROTECT,
         db_column='payment_method_id'
@@ -182,3 +203,10 @@ class PaymentDetails(CMSModel):
     class Meta:
         managed = False
         db_table = 'payment_details'
+
+    def save(self, *args, **kwargs):
+        """On save, update timestamps with offset"""
+        if not self.id:
+            self.date_created = timezone.now() + timedelta(hours=settings.CMS_OFFSET_HRS) 
+        self.last_updated = timezone.now() + timedelta(hours=settings.CMS_OFFSET_HRS)
+        return super().save(*args, **kwargs)

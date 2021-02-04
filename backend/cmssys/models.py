@@ -1,7 +1,9 @@
 from django.db import models
-from django.utils.timezone import get_current_timezone, make_aware, utc
-import datetime, pytz
+# from django.utils.timezone import get_current_timezone, make_aware, utc
+from datetime import timedelta
+from django.utils import timezone
 from django.conf import settings
+import pytz
 
 # Custom Field Definitions
 class MySQLBitBooleanField(models.BooleanField):
@@ -49,18 +51,18 @@ class TextBooleanField(models.BooleanField):
         else:
             return 1 if value else 0
 
-def localize_datetime(dtime):
-    """Makes DateTimeField value UTC-aware and returns datetime string localized
-    in user's timezone in ISO format"""
-    hk_timezone = pytz.timezone('Asia/Hong_Kong')
-    print(dtime)
-    print(hk_timezone)
-    print(get_current_timezone())
-    if dtime.tzinfo is None or dtime.tzinfo.utcoffset(dtime) is None:
-        tz_aware = make_aware(dtime, utc).astimezone(get_current_timezone())
-        return datetime.strftime(tz_aware, '%Y-%m-%d %H:%M:%S')
-    else:
-        return dtime
+# def localize_datetime(dtime):
+#     """Makes DateTimeField value UTC-aware and returns datetime string localized
+#     in user's timezone in ISO format"""
+#     hk_timezone = pytz.timezone('Asia/Hong_Kong')
+#     print(dtime)
+#     print(hk_timezone)
+#     print(get_current_timezone())
+#     if dtime.tzinfo is None or dtime.tzinfo.utcoffset(dtime) is None:
+#         tz_aware = make_aware(dtime, utc).astimezone(get_current_timezone())
+#         return datetime.strftime(tz_aware, '%Y-%m-%d %H:%M:%S')
+#     else:
+#         return dtime
 
 class CMSModel(models.Model):
     """
@@ -77,7 +79,7 @@ class CMSModel(models.Model):
     @property
     def date_created_conv(self):
         if self.date_created:
-            offset_datetime = self.date_created - datetime.timedelta(hours=settings.CMS_OFFSET_HRS)
+            offset_datetime = self.date_created - timedelta(hours=settings.CMS_OFFSET_HRS)
         else:
             offset_datetime = None
         return offset_datetime
@@ -85,7 +87,7 @@ class CMSModel(models.Model):
     @property
     def last_updated_conv(self):
         if self.last_updated:
-            offset_datetime = self.last_updated - datetime.timedelta(hours=settings.CMS_OFFSET_HRS)
+            offset_datetime = self.last_updated - timedelta(hours=settings.CMS_OFFSET_HRS)
         else:
             offset_datetime = None
         return offset_datetime
@@ -98,9 +100,9 @@ class AuditLog(CMSModel):
     version = models.BigIntegerField(default=0)
     actor = models.CharField(max_length=255, blank=True, null=True)
     class_name = models.CharField(max_length=255)
-    date_created = models.DateTimeField(auto_now_add=True)
+    date_created = models.DateTimeField(editable=False)
+    last_updated = models.DateTimeField()
     event_name = models.CharField(max_length=255)
-    last_updated = models.DateTimeField(auto_now=True)
     new_value = models.TextField(blank=True, null=True)
     old_value = models.TextField(blank=True, null=True)
     persisted_object_id = models.CharField(max_length=255, blank=True, null=True)
@@ -122,7 +124,12 @@ class AuditLog(CMSModel):
     def __str__(self):
         return f"{self.date_created} [{self.actor}] {self.event_name} {self.class_name}: {self.property_name} - {self.old_value} => {self.new_value}"
 
-  
+    def save(self, *args, **kwargs):
+        """On save, update timestamps with offset"""
+        if not self.id:
+            self.date_created = timezone.now() + timedelta(hours=settings.CMS_OFFSET_HRS) 
+        self.last_updated = timezone.now() + timedelta(hours=settings.CMS_OFFSET_HRS)
+        return super().save(*args, **kwargs)
 class CmsUser(CMSModel):
     """
     Maps to CMS table: user
@@ -131,9 +138,9 @@ class CmsUser(CMSModel):
     version = models.BigIntegerField(default=0)
     active = models.BooleanField(default=True)
     cname = models.CharField(max_length=255, blank=True, null=True)
-    date_created = models.DateTimeField(auto_now_add=True)
+    date_created = models.DateTimeField(editable=False)
+    last_updated = models.DateTimeField()
     email = models.CharField(max_length=255, blank=True, null=True)
-    last_updated = models.DateTimeField(auto_now=True)
     medical_council_reg_no = models.CharField(max_length=255, blank=True, null=True)
     mobile = models.CharField(max_length=255, blank=True, null=True)
     name = models.CharField(max_length=255)
@@ -158,11 +165,12 @@ class CmsUser(CMSModel):
     def __str__(self):
         return f"{self.id} | {self.name} [{self.username}]"
 
-    @property
-    def last_updated_conv(self):
-        offset_datetime = self.last_updated - datetime.timedelta(hours=settings.CMS_OFFSET_HRS)
-        print(offset_datetime)
-        return offset_datetime
+    def save(self, *args, **kwargs):
+        """On save, update timestamps with offset"""
+        if not self.id:
+            self.date_created = timezone.now() + timedelta(hours=settings.CMS_OFFSET_HRS) 
+        self.last_updated = timezone.now() + timedelta(hours=settings.CMS_OFFSET_HRS)
+        return super().save(*args, **kwargs)
 
 class UserProfile(CMSModel):
     """
@@ -258,12 +266,12 @@ class Encounter(CMSModel):
     version = models.BigIntegerField()
     # bill_id = models.BigIntegerField()
     consultation_notes_id = models.BigIntegerField(blank=True, null=True)
-    date_created = models.DateTimeField()
+    date_created = models.DateTimeField(editable=False)
+    last_updated = models.DateTimeField()
     doctor = models.ForeignKey(
         CmsUser, on_delete=models.PROTECT,
         db_column='doctor_id',
     )
-    last_updated = models.DateTimeField()
     # patient_id = models.BigIntegerField()
     patient = models.ForeignKey(
         Patient, on_delete=models.PROTECT,
@@ -284,3 +292,9 @@ class Encounter(CMSModel):
     def __str__(self):
         return f"{self.date_created} | Doctor: {self.doctor};  ${self.encounter_type}"
 
+    def save(self, *args, **kwargs):
+        """On save, update timestamps with offset"""
+        if not self.id:
+            self.date_created = timezone.now() + timedelta(hours=settings.CMS_OFFSET_HRS) 
+        self.last_updated = timezone.now() + timedelta(hours=settings.CMS_OFFSET_HRS)
+        return super().save(*args, **kwargs)

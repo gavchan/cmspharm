@@ -1,5 +1,8 @@
 from django.db import models
 from cmssys.models import CMSModel, CmsUser, TextBooleanField 
+from datetime import timedelta
+from django.utils import timezone
+from django.conf import settings
 
 # CMS INVENTORY/DRUGS Models
 
@@ -20,10 +23,10 @@ class Supplier(CMSModel):
     version = models.BigIntegerField(default=0)
     address = models.TextField(blank=True, null=True)
     contact_person = models.CharField(max_length=255, blank=True, null=True)
-    date_created = models.DateTimeField(auto_now_add=True)
+    date_created = models.DateTimeField(editable=False)
+    last_updated = models.DateTimeField()
     email = models.CharField(max_length=255, blank=True, null=True)
     fax = models.CharField(max_length=255, blank=True, null=True)
-    last_updated = models.DateTimeField(auto_now=True)
     name = models.CharField(unique=True, max_length=255, blank=True, null=True)
     tel_home = models.CharField(max_length=255, blank=True, null=True)
     tel_mobile = models.CharField(max_length=255, blank=True, null=True)
@@ -44,6 +47,13 @@ class Supplier(CMSModel):
     def __str__(self):
         return f"{self.name}"
 
+    def save(self, *args, **kwargs):
+        """On save, update timestamps with offset"""
+        if not self.id:
+            self.date_created = timezone.now() + timedelta(hours=settings.CMS_OFFSET_HRS) 
+        self.last_updated = timezone.now() + timedelta(hours=settings.CMS_OFFSET_HRS)
+        return super().save(*args, **kwargs)
+
 class Advisory(CMSModel):
     """
     Maps to CMS table: advisory
@@ -56,11 +66,11 @@ class Advisory(CMSModel):
         'cmssys.CmsUser', on_delete=models.PROTECT, 
         db_column='created_by_id', blank=True, null=True
         )
-    date_created = models.DateTimeField(auto_now_add=True)
+    date_created = models.DateTimeField(editable=False)
+    last_updated = models.DateTimeField()
     description = models.TextField()
     description_chinese = models.TextField(blank=True, null=True)
     is_public = models.BooleanField(default=True)
-    last_updated = models.DateTimeField(auto_now=True)
     updated_by = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
@@ -69,9 +79,15 @@ class Advisory(CMSModel):
         app_label = 'cmsinv'
         verbose_name_plural = 'Advisory list'
 
-
     def __str__(self):
         return f"{self.alias} | {self.description_chinese} / {self.description}"
+
+    def save(self, *args, **kwargs):
+        """On save, update timestamps with offset"""
+        if not self.id:
+            self.date_created = timezone.now() + timedelta(hours=settings.CMS_OFFSET_HRS) 
+        self.last_updated = timezone.now() + timedelta(hours=settings.CMS_OFFSET_HRS)
+        return super().save(*args, **kwargs)
 
 class Instruction(CMSModel):
     """
@@ -85,11 +101,11 @@ class Instruction(CMSModel):
         'cmssys.CmsUser', on_delete=models.PROTECT, 
         db_column='created_by_id', blank=True, null=True)
 
-    date_created = models.DateTimeField(auto_now_add=True)
+    date_created = models.DateTimeField(editable=False)
+    last_updated = models.DateTimeField()
     description = models.TextField(blank=True, null=True)
     description_chinese = models.TextField(blank=True, null=True)
     is_public = models.BooleanField(default=True)
-    last_updated = models.DateTimeField(auto_now=True)
     updated_by = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
@@ -99,6 +115,13 @@ class Instruction(CMSModel):
 
     def __str__(self):
         return f"{self.alias} | {self.description_chinese} / {self.description}"
+
+    def save(self, *args, **kwargs):
+        """On save, update timestamps with offset"""
+        if not self.id:
+            self.date_created = timezone.now() + timedelta(hours=settings.CMS_OFFSET_HRS) 
+        self.last_updated = timezone.now() + timedelta(hours=settings.CMS_OFFSET_HRS)
+        return super().save(*args, **kwargs)
 
 class InventoryItemType(CMSModel):
     """
@@ -174,7 +197,8 @@ class InventoryItem(CMSModel):
         )
     clinic_drug_no = models.CharField(max_length=255, blank=True, null=True, unique=True)
     dangerous_sign = TextBooleanField(default=False)  # MySQL text field, behaves like Boolean
-    date_created = models.DateTimeField(auto_now_add=True)
+    date_created = models.DateTimeField(editable=False)
+    last_updated = models.DateTimeField(blank=True, null=True)
     discontinue = TextBooleanField()  # MySQL text field, behaves like Boolean
     dosage = models.CharField(max_length=255, blank=True, null=True)
     duration = models.CharField(max_length=255, blank=True, null=True)
@@ -207,7 +231,6 @@ class InventoryItem(CMSModel):
     is_master_drug_list = TextBooleanField()  # MySQL text field, behaves like Boolean
     label_name = models.CharField(max_length=255, blank=True, null=True)
     label_name_chinese = models.CharField(max_length=255, blank=True, null=True)
-    last_updated = models.DateTimeField(blank=True, null=True)
     location = models.CharField(max_length=255, blank=True, null=True)
     mini_dispensary_unit = models.FloatField(default=0)
     mini_dosage_unit = models.FloatField(default=0)
@@ -254,7 +277,6 @@ class InventoryItem(CMSModel):
 
         return(next_clinic_drug_no)
 
-
     class Meta:
         managed = False
         db_table = 'inventory_item'
@@ -262,7 +284,13 @@ class InventoryItem(CMSModel):
 
     def __str__(self):
         return f"{self.registration_no} | {self.product_name} / {self.generic_name} [{self.alias}]"
-
+    
+    def save(self, *args, **kwargs):
+        """On save, update timestamps with offset"""
+        if not self.id:
+            self.date_created = timezone.now() + timedelta(hours=settings.CMS_OFFSET_HRS) 
+        self.last_updated = timezone.now() + timedelta(hours=settings.CMS_OFFSET_HRS)
+        return super().save(*args, **kwargs)
 class InventoryItemSupplier(CMSModel):
     """
     Maps to CMS table: inventory_item_supplier_manufacturer
@@ -310,8 +338,8 @@ class InventoryMovementLog(CMSModel):
     ]
 
     version = models.BigIntegerField(default=1)
-    date_created = models.DateTimeField(auto_now_add=True)
-    last_updated = models.DateTimeField(auto_now=True)
+    date_created = models.DateTimeField(editable=False)
+    last_updated = models.DateTimeField()
     lot_no = models.CharField(max_length=255, blank=True, null=True) # Not used in CMS - NULL
     move_item = models.CharField(max_length=255, blank=True, null=True)
     quantity = models.FloatField()
@@ -333,6 +361,13 @@ class InventoryMovementLog(CMSModel):
     def __str__(self):
         return f"{self.last_updated} [{self.movement_type}]: {self.quantity} | {self.move_item}"
 
+    def save(self, *args, **kwargs):
+        """On save, update timestamps with offset"""
+        if not self.id:
+            self.date_created = timezone.now() + timedelta(hours=settings.CMS_OFFSET_HRS) 
+        self.last_updated = timezone.now() + timedelta(hours=settings.CMS_OFFSET_HRS)
+        return super().save(*args, **kwargs)
+
 # CMS INVENTORY > REQUEST Models
 
 class Request(CMSModel):
@@ -349,8 +384,8 @@ class Request(CMSModel):
 
     version = models.BigIntegerField(default=1)
     create_date = models.DateField(auto_now_add=True)
-    date_created = models.DateTimeField(auto_now_add=True)
-    last_updated = models.DateTimeField(auto_now=True)
+    date_created = models.DateTimeField(editable=False)
+    last_updated = models.DateTimeField()
 
     # remarks - New Request remarks textbox
     remarks = models.TextField(blank=True, null=True)
@@ -359,7 +394,7 @@ class Request(CMSModel):
         db_column='requested_by_id'
         )
     # settle_date - appears not to be used by CMS app
-    settle_date = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    settle_date = models.DateTimeField(blank=True, null=True)
     
     # status - toggled by "Completed" button, stored as text by CMS app
     status = models.CharField(choices=STATUS_CHOICES, max_length=255, blank=True, null=True)
@@ -378,8 +413,16 @@ class Request(CMSModel):
     def get_absolute_url(self):
         from django.core.urlresolvers import reverse
         return reverse('', kwargs={'pk': self.pk})
+
     def __str__(self):
         return f"{self.create_date} | [{self.status}] {self.requested_by.name} request to {self.supplier.name}"
+
+    def save(self, *args, **kwargs):
+        """On save, update timestamps with offset"""
+        if not self.id:
+            self.date_created = timezone.now() + timedelta(hours=settings.CMS_OFFSET_HRS) 
+        self.last_updated = timezone.now() + timedelta(hours=settings.CMS_OFFSET_HRS)
+        return super().save(*args, **kwargs)
 
 class RequestItem(CMSModel):
     """
@@ -422,8 +465,8 @@ class Delivery(CMSModel):
     # cash_amount - amount to be deducted from CMS cash_book
     cash_amount = models.FloatField()
     create_date = models.DateField(blank=True, null=True)
-    date_created = models.DateTimeField(auto_now_add=True)
-    last_updated = models.DateTimeField(auto_now=True)
+    date_created = models.DateTimeField(editable=False)
+    last_updated = models.DateTimeField()
     received_by = models.ForeignKey(
         'cmssys.CmsUser', on_delete=models.PROTECT, 
         db_column='received_by_id'
@@ -454,6 +497,13 @@ class Delivery(CMSModel):
             self.create_date, self.cash_amount, self.supplier,
         )
 
+    def save(self, *args, **kwargs):
+        """On save, update timestamps with offset"""
+        if not self.id:
+            self.date_created = timezone.now() + timedelta(hours=settings.CMS_OFFSET_HRS) 
+        self.last_updated = timezone.now() + timedelta(hours=settings.CMS_OFFSET_HRS)
+        return super().save(*args, **kwargs)
+
 class ReceivedItem(CMSModel):
     """
     Maps to CMS table: received_item
@@ -471,7 +521,7 @@ class ReceivedItem(CMSModel):
         'InventoryItem', on_delete=models.PROTECT,
         db_column='drug_item_id'
         )
-    expire_date = models.DateTimeField(blank=True, null=True)
+    expire_date = models.DateField(blank=True, null=True)
     lot_no = models.CharField(max_length=255)
     manufacturer_id = models.BigIntegerField(blank=True, null=True)
     quantity = models.FloatField()
@@ -500,13 +550,13 @@ class ReceivedItem(CMSModel):
 
 class DepletionItem(CMSModel):
 
-    version = models.BigIntegerField()
-    date_created = models.DateTimeField(auto_now_add=True)
+    version = models.BigIntegerField(default=1)
+    date_created = models.DateTimeField(editable=False)
+    last_updated = models.DateTimeField()
     drug = models.ForeignKey(
         'InventoryItem', on_delete=models.PROTECT, 
         db_column='drug_id'
         )
-    last_updated = models.DateTimeField(auto_now=True)
     quantity = models.FloatField()
     remark = models.TextField(blank=True, null=True)
     update_reason = models.CharField(max_length=255, blank=True, null=True)
@@ -522,6 +572,13 @@ class DepletionItem(CMSModel):
             self.date_created, self.quantity, self.drug, self.update_reason
         )
 
+    def save(self, *args, **kwargs):
+        """On save, update timestamps with offset"""
+        if not self.id:
+            self.date_created = timezone.now() + timedelta(hours=settings.CMS_OFFSET_HRS) 
+        self.last_updated = timezone.now() + timedelta(hours=settings.CMS_OFFSET_HRS)
+        return super().save(*args, **kwargs)
+
 class Depletion(CMSModel):
     """Maps to CMS table: depletion"""
     """Stores inventory depletion info"""
@@ -535,7 +592,7 @@ class Depletion(CMSModel):
 
 
     version = models.BigIntegerField(default=1)
-    last_updated = models.DateTimeField(auto_now=True, blank=True, null=True)
+    last_updated = models.DateTimeField()
     # move_to - seems not used in CMS app
     move_to = models.TextField(blank=True, null=True)
     # remarks - Reconciliation model Remarks Text Box
@@ -552,6 +609,11 @@ class Depletion(CMSModel):
         return '{} | #{} - {}: {}'.format(
             self.id, self.depletion_type, self.remarks, self.last_updated
         )
+
+    def save(self, *args, **kwargs):
+        """On save, update timestamps with offset"""
+        self.last_updated = timezone.now() + timedelta(hours=settings.CMS_OFFSET_HRS)
+        return super(Depletion, self).save(*args, **kwargs)
 
 class DepletionDepletionItem(CMSModel):
     """
@@ -590,7 +652,7 @@ class DepletionDepletionItem(CMSModel):
 class Prescription(CMSModel):
 
     version = models.BigIntegerField(default=0)
-    date_created = models.DateTimeField(auto_now_add=True)
+    date_created = models.DateTimeField(editable=False)
     encounter_id = models.BigIntegerField(blank=True, null=True)
     language_id = models.BigIntegerField(blank=True, null=True) # Default=NULL; not used in CMS
     last_updated = models.DateTimeField(auto_now=True)

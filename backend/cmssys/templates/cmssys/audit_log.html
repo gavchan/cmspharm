@@ -171,7 +171,7 @@ crispy_forms_tags %} {% block content %}
         {% for entry in audit_log %}
 
         <tr>
-          <td>{{ entry.last_updated|date:"d-m-y H:i:s" }}</td>
+          <td>{{ entry.last_updated_conv|date:"d-m-y H:i:s" }}</td>
           <td>{{ entry.class_name }}</td>
           <td>{{ entry.actor }}</td>
           <td>{{ entry.event_name }}</td>

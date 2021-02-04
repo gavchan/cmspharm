@@ -30,6 +30,7 @@ from .models import (
     InventoryMovementLog,
     Delivery,
     ReceivedItem,
+    Depletion,
 )
 
 from .forms import (
@@ -594,8 +595,6 @@ class NewInventoryItem(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
     def get_success_url(self):
         return reverse('cmsinv:InventoryItemDetail', args=(self.object.pk,))
 
-
-
 class SupplierList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
     """
     Lists CMS suppliers
@@ -908,7 +907,7 @@ def NewDeliveryFromDeliveryOrderModalView(request, *args, **kwargs):
                         print(f"New received item added: {cmsreceived_obj}")
                         
                         # Update InventoryItem quantity/costs
-                        last_updated = timezone.now()
+                        last_updated = timezone.now() - datetime.timedelta(hours=settings.CMS_OFFSET_HRS)
                         old_stock_qty = cmsitem_obj.stock_qty
                         old_standard_cost = cmsitem_obj.standard_cost
                         old_avg_cost = cmsitem_obj.avg_cost
