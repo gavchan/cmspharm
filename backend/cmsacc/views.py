@@ -114,7 +114,7 @@ class PaymentsToday(ListView, LoginRequiredMixin, PermissionRequiredMixin):
     RECENT_BILLS = 100
     permission_required = ('cmsinv.view_payment',)
     template_name = 'cmsacc/payments_today.html'
-    model = Cashbook
+    model = PaymentDetails
     context_object_name = 'payment_list'
     paginate_by = 50
     period = None
@@ -153,17 +153,17 @@ class PaymentsToday(ListView, LoginRequiredMixin, PermissionRequiredMixin):
                 self.period = 'a'
         if self.period == 'a':
             object_list = PaymentDetails.objects.filter(
-                date_created__icontains=query_date,
-                date_created__lt=time_cutoff
+                bill__encounter__date_created__icontains=query_date,
+                bill__encounter__date_created__lt=time_cutoff
             ).order_by('-date_created', '-last_updated')
         elif self.period == 'p':
             object_list = PaymentDetails.objects.filter(
-                date_created__icontains=query_date,
-                date_created__gte=time_cutoff
+                bill__encounter__date_created__icontains=query_date,
+                bill__encounter__date_created__gte=time_cutoff
             ).order_by('-date_created', '-last_updated')
         else:
             object_list = object_list = PaymentDetails.objects.filter(
-            date_created__icontains=query_date
+            bill__encounter__date_created__icontains=query_date
         ).order_by('-date_created', '-last_updated')
         object_list = object_list.exclude(
             Q(bill__encounter__patient__patient_no='00AM')|
