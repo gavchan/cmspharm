@@ -1112,3 +1112,61 @@ def NewDeliveryFromDeliveryOrderModalView(request, *args, **kwargs):
     
     return render(request, "cmsinv/new_delivery_from_deliveryorder_modal.html", context)
 
+class ReconciliationList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
+    """
+    Displays Reconciliation Records
+    """
+    DELIVERY = '1'
+    DISPENSARY = '2'
+    RECONCILIATION = '3'
+    STOCK_INIT = '4'
+    MOVEMENT_TYPE_CHOICES = [
+        (DELIVERY, 'Delivery'),
+        (DISPENSARY, 'Dispensary'),
+        (RECONCILIATION, 'Reconciliation'),
+        (STOCK_INIT, 'Stock Initialization'),
+    ]
+    permission_required = ('cmsinv.view_depletion',)
+    template_name = 'cmsinv/reconciliation.html'
+    model = Depletion
+    context_object_name = 'reconciliation_list'
+    paginate_by = 50
+    last_query = ''
+    last_query_count = 0
+
+    def get_queryset(self):
+        self.begin = self.request.GET.get('begin') or ''
+        self.end = self.request.GET.get('end') or ''
+        # self.disp_type = self.request.GET.get('t') or ''
+        # if self.disp_type:
+        #     move_type = dict(self.MOVEMENT_TYPE_CHOICES).get(self.disp_type)
+        #     print(move_type)
+        #     object_list = InventoryMovementLog.objects.filter(movement_type=move_type).order_by('-last_updated')
+        # else:
+            # object_list = InventoryMovementLog.objects.all().order_by('-last_updated')
+        object_list = Depletion.objects.all().order_by('-last_updated')
+        query = self.request.GET.get('q')
+        if query:
+            self.last_query = query
+            object_list = object_list.filter(
+                Q(__icontains=query)
+            )
+            self.last_query_count = object_list.count
+        else:
+            self.last_query = ''
+            object_list = object_list.order_by('-last_updated')
+            self.last_query_count = object_list.count
+        if self.begin:
+            object_list = object_list.filter(received_date__gte=self.begin)
+        if self.end:
+            object_list = object_list.filter(received_date__lte=self.end)
+        return object_list
+
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        data['last_query'] = self.last_query
+        data['last_query_count'] = self.last_query_count
+        data['disp_type'] = self.disp_type
+        data['begin'] = self.begin
+        data['end'] = self.end
+        return data

@@ -41,11 +41,6 @@
                 <li class="nav-item">
                     <a href="{% url 'drugdb:DrugList' %}" class="nav-link">Reg Drugs</a>
                 </li>
-                {% if perms.cmsacc.view_bill %}
-                <li class="nav-item">
-                    <a href="{% url 'cmsacc:BillToday' %}" class="nav-link">Billing</a>
-                </li>
-                {% endif %}
                 {% if perms.cmsacc.view_payment %}
                 <li class="nav-item">
                     <a href="{% url 'cmsacc:PaymentToday' %}" class="nav-link">Payments</a>

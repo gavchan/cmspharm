@@ -105,9 +105,9 @@
             <td class="text-right">
              {{ entry.paid_amt }}
             </td>
-            <td class="text-center">-</td>
+            <td class="text-right">-</td>
             {% else %}
-            <td class="text-center">-</td>
+            <td class="text-right">-</td>
             <td class="text-right">
               {{ entry.paid_amt }}
             </td>
@@ -131,8 +131,7 @@
   
           {% endfor %}
           <tr>
-            <td class="text-right"></td>
-            <td class="text-right"><strong>Patients: {{ session_stats.count }}</strong></td>
+            <td colspan="2" class="text-left"><strong>Patients: {{ session_stats.count }}</strong></td>
             <td class="text-right"><strong>{{ session_stats.bill_total }}</strong></td>
             <td class="text-right"><strong>{{ session_stats.unbalance_total }}</strong></td>
             <td class="text-right"><strong>{{ session_stats.cash_total }}</strong></td>
