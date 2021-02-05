@@ -145,7 +145,6 @@ class PaymentsToday(ListView, LoginRequiredMixin, PermissionRequiredMixin):
         query_date = seldate.strftime('%Y-%m-%d')
         time_cutoff = seldate.replace(hour=self.PERIOD_CUTOFF_HR, minute=self.PERIOD_CUTOFF_MIN)
         
-        print(f"Query: {query_date}, cutoff: {time_cutoff}")
         if not self.period:
             if seldate >= time_cutoff:
                 self.period = 'p'
@@ -169,6 +168,19 @@ class PaymentsToday(ListView, LoginRequiredMixin, PermissionRequiredMixin):
             Q(bill__encounter__patient__patient_no='00AM')|
             Q(bill__encounter__patient__patient_no='00PM')
         )
+        self.session_stats = object_list.aggregate(
+            count=Count('bill__encounter__id'),
+            bill_total=Sum('bill__total'),
+            unbalance_total=Sum('bill__unbalance_amt'),
+
+        )
+        self.session_stats['cash_total'] = object_list.filter(
+            payment_method__payment_method='Cash'
+        ).aggregate(Sum('paid_amt'))['paid_amt__sum'] or 0.0
+        self.session_stats['other_total'] = object_list.exclude(
+            payment_method__payment_method='Cash'
+        ).aggregate(Sum('paid_amt'))['paid_amt__sum'] or 0.0
+
         return object_list
 
     def get_context_data(self, **kwargs):
