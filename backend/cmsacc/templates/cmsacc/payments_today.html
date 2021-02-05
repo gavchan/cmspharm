@@ -91,7 +91,7 @@
           {% for entry in payment_list %}
   
           <tr>
-            <td>{{ entry.last_updated_conv|date:"d-m-y H:i" }}</td>
+            <td>{{ entry.bill.date_created_conv|date:"d-m-y H:i" }}</td>
             <td class="text-right">{{ entry.bill.encounter.patient.patient_no }}</td>
             <td class="text-right">{{ entry.bill.total }}</td>
             <td class="text-right">
@@ -112,7 +112,7 @@
             </td>
             {% endif %}
             <td>{{ entry.payment_method.payment_method }}</td>
-            <td>{{ entry.encounter.doctor.name }}</td>
+            <td>{{ entry.bill.encounter.doctor.name }}</td>
             <td>{{ entry.updated_by }}</td>
             <td>
               {% if entry.remark %}
