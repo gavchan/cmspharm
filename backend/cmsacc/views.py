@@ -56,6 +56,7 @@ class PaymentsToday(ListView, LoginRequiredMixin, PermissionRequiredMixin):
         elif self.day == '2':
             try:
                 seldate = datetime.strptime(self.dt, "%d-%m-%Y")
+                seldate = seldate.replace(tzinfo=pytz.UTC)
             except:
                 seldate = today
         else:
@@ -74,16 +75,16 @@ class PaymentsToday(ListView, LoginRequiredMixin, PermissionRequiredMixin):
             object_list = PaymentDetails.objects.filter(
                 bill__encounter__date_created__icontains=query_date,
                 bill__encounter__date_created__lt=time_cutoff
-            ).order_by('-date_created', '-last_updated')
+            ).order_by('-bill__encounter__date_created', )
         elif self.period == 'p':
             object_list = PaymentDetails.objects.filter(
                 bill__encounter__date_created__icontains=query_date,
                 bill__encounter__date_created__gte=time_cutoff
-            ).order_by('-date_created', '-last_updated')
+            ).order_by('-bill__encounter__date_created', )
         else:
             object_list = object_list = PaymentDetails.objects.filter(
             bill__encounter__date_created__icontains=query_date
-        ).order_by('-date_created', '-last_updated')
+        ).order_by('-bill__encounter__date_created', )
         object_list = object_list.exclude(
             Q(bill__encounter__patient__patient_no='00AM')|
             Q(bill__encounter__patient__patient_no='00PM')
@@ -105,7 +106,6 @@ class PaymentsToday(ListView, LoginRequiredMixin, PermissionRequiredMixin):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['dt'] = self.dt
         context['day'] = self.day
         context['period'] = self.period
         context['session_stats'] = self.session_stats
