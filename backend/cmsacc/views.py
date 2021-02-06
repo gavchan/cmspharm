@@ -34,12 +34,14 @@ class PaymentsToday(ListView, LoginRequiredMixin, PermissionRequiredMixin):
     context_object_name = 'payment_list'
     paginate_by = 50
     period = None
+    dispdate = None
     lastdate = None
     session_stats = None
 
     def get_queryset(self):
-        self.period = self.request.GET.get('p') or None
-        self.day = self.request.GET.get('d') or None
+        self.period = self.request.GET.get('p') or ''
+        self.day = self.request.GET.get('d') or ''
+        self.dt = self.request.GET.get('dt') or ''
         today = timezone.now()
         self.lastdate = today - timedelta(days=1)
         # Cycle through recent bills
@@ -51,14 +53,16 @@ class PaymentsToday(ListView, LoginRequiredMixin, PermissionRequiredMixin):
             self.lastdate = self.lastdate - timedelta(days=1)
         if self.day == '1':  # Last encounter date before today
             seldate = self.lastdate
-        elif self.day:
+        elif self.day == '2':
             try:
-                seldate = datetime.strptime(self.day, "%Y%m%d")
+                seldate = datetime.strptime(self.dt, "%d-%m-%Y")
             except:
                 seldate = today
         else:
             seldate = today
         query_date = seldate.strftime('%Y-%m-%d')
+        self.dispdate = seldate.strftime('%d-%m-%Y')
+
         time_cutoff = seldate.replace(hour=self.PERIOD_CUTOFF_HR, minute=self.PERIOD_CUTOFF_MIN)
         
         if not self.period:
@@ -101,9 +105,11 @@ class PaymentsToday(ListView, LoginRequiredMixin, PermissionRequiredMixin):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['dt'] = self.dt
         context['day'] = self.day
         context['period'] = self.period
         context['session_stats'] = self.session_stats
-        context['lastdate'] = self.lastdate.strftime("%Y-%m-%d")
+        context['lastdate'] = self.lastdate.strftime("%d-%m-%Y")
+        context['dispdate'] = self.dispdate
         return context
     

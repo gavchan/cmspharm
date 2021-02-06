@@ -19,22 +19,44 @@
       <div class="col-sm-10">
         <form action="{% url 'cmsacc:PaymentToday' %}" method="get">
           <div class="row mb-2">
-            <div class="col-sm-2">
-              <div class="input-group input-group-sm">
-                <select 
-                    name="d" 
-                    id="inputGroupSelectDay" 
-                    class="custom-select"
-                    >
-                    <option value=""
-                    {% if day == '' %} selected {% endif %}
-                    >Today</option>
-                    <option value="1"
-                    {% if day == '1' %} selected {% endif %}
-                    >{{ lastdate }}</option>
-                </select>
+            <div class="col-sm-4">
+              <div class="form-group">
+                <div class="input-group input-group-sm date" id="datepicker_date" data-target-input="nearest">
+                  <div class="input-group-prepend">
+                    <div class="input-group input-group-sm">
+                      <select 
+                          name="d" 
+                          id="inputGroupSelectDay" 
+                          class="custom-select"
+                          >
+                          <option value=""
+                          {% if day == '' %} selected {% endif %}
+                          >Today</option>
+                          <option value="1"
+                          {% if day == '1' %} selected {% endif %}
+                          >Previous day</option>
+                          {% if day == '2' %}
+                          <option value="2" 
+                          selected 
+                          >Specified:
+                          </option>
+                          {% endif %}
+                      </select>
+                    </div>
+                  </div>
+                  <input type="text" 
+                          class="form-control form-control-sm datetimepicker-input"
+                          data-target="#datepicker_date"
+                          placeholder="DD-MM-YYYY"
+                          value="{{dispdate}}"
+                          name="dispdate"
+                  >
+                  <div class="input-group-append" data-target="#datepicker_date" data-toggle="datetimepicker">
+                    <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                  </div>
+                </div>
               </div>
-          </div>
+            </div>
             <div class="col-sm-2">
                 <div class="input-group input-group-sm">
                   <select 
@@ -54,7 +76,7 @@
                   </select>
                 </div>
             </div>
-            <div class="col-sm-8 pt-1">
+            <div class="col-sm-6 pt-1">
               {% if session_stats.count %}
               Session patient count: <strong>{{ session_stats.count }}</strong>,
               Total billed: <strong>$
@@ -160,19 +182,33 @@
   $(document).ready(function () {
     $("#inputGroupSelectDay").change(function() {
       let day = $("#inputGroupSelectDay option:selected").val();
-      self.location = "{% url 'cmsacc:PaymentToday' %}?d=" + day + "&p={{period}}";
+      if (day !== '2') {
+        self.location = "{% url 'cmsacc:PaymentToday' %}?d=" + day + "&p={{period}}";
+      }
     });
     $("#inputGroupSelectPeriod").change(function() {
+      let dispdate = $(".datetimepicker-input").val();
       let period = $("#inputGroupSelectPeriod option:selected").val();
-      self.location = "{% url 'cmsacc:PaymentToday' %}?d={{ day }}&p="
+      self.location = "{% url 'cmsacc:PaymentToday' %}?d={{ day }}" + "&dt=" + dispdate + "&p="
         + period;
     });
     let day = $("#inputGroupSelectDay option:selected").val();
     if (day == '') {
       setInterval(function() {
         window.location = window.location.href;
-      }, 10000);
+      }, 30000);
     }
+    $('#datepicker_date').datetimepicker({
+      format: 'DD-MM-YYYY'
+    });
+    $("#datepicker_date").on("hide.datetimepicker", function (e) {
+        let dispdate = $(".datetimepicker-input").val();
+
+        if (dispdate !== '') {
+          self.location = "{% url 'cmsacc:PaymentToday' %}?d=2&dt=" + dispdate + "&p={{period}}";
+        }
+    });
   });
+
 </script>
 {% endblock %}
