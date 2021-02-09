@@ -54,6 +54,7 @@
                 {% endif %}
             </td>
             <td colspan="5">
+                {% if record.items %}
                 <table width="100%">
                     {% for listitem in record.items %}
                     <tr>
@@ -83,6 +84,9 @@
                     </tr>
                     {% endfor %}
                 </table>
+                {% else %}
+                <p>Remarks {{ record.remarks }}</p>
+                {% endif %}
             </td>
             <td class="text-right">{{ record.amount }}</td>
             <td class="text-right">
