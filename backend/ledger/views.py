@@ -518,7 +518,10 @@ def ExpenseRemoveDeliveryOrder(request, *args, **kwargs):
         else:
             invoice_nums = []
         if len(invoice_nums) >= 1 and delivery_obj.invoice_no:
-            removed_invoice_no = invoice_nums.pop(invoice_nums.index(delivery_obj.invoice_no))
+            try:
+                removed_invoice_no = invoice_nums.pop(invoice_nums.index(delivery_obj.invoice_no))
+            except:
+                print(f"Delivery #{delivery_obj.id}, no matching invoice_no")
         if len(invoice_nums) > 1:
             expense_obj.invoice_no = ','.join(invoice_nums)
         elif len(invoice_nums) == 1:
