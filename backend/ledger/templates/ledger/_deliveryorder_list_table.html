@@ -40,12 +40,12 @@
             <td class="text-center">
                 {{ record.received_date|date:"d-m-Y" }}
                 <br>
-                {% if record.cms_synced %}
+                {% if cms_synced %}
                 <span
                 class="badge badge-success ml-2 mt-0"
                 >CMS synced
                 </span>
-                {% else %}
+                {% elif record.items %}
                 <button
                 class="btn_modal_trigger badge badge-warning ml-2 mt-0"
                 data-id="{% url 'cmsinv:NewDeliveryFromDeliveryOrderModal' record.id %}?next={{ request.path }}"
