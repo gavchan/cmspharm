@@ -438,6 +438,8 @@ class ExpenseDetail(DetailView, LoginRequiredMixin, PermissionRequiredMixin):
                 'invoice_date': order.invoice_date,
                 'invoice_no': order.invoice_no,
                 'received_date': order.received_date,
+                'remarks': order.remarks,
+                'other_ref': order.other_ref,
                 'amount': order.amount,
                 'is_paid': order.is_paid,
                 'cms_synced': order.cms_synced,

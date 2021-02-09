@@ -85,7 +85,14 @@
                     {% endfor %}
                 </table>
                 {% else %}
-                <p>Remarks {{ record.remarks }}</p>
+                  <p>
+                    {% if record.remarks %}
+                      Remarks: {{ record.remarks }}
+                    {% endif %}
+                    {% if record.other_ref %}
+                      Other Ref: {{ record.other_ref }}
+                    {% endif %}
+                    </p>
                 {% endif %}
             </td>
             <td class="text-right">{{ record.amount }}</td>
