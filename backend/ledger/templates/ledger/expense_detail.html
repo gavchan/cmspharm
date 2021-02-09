@@ -45,11 +45,24 @@
     <div class="card-body">
       <div class="form-row border-bottom pb-2 mb-2">
         <div class="col-md-6 mb-0"><strong>{{ expense_obj.payee }}</strong>
+          {% if expense_obj.vendor.is_supplier %}
           <a
             class="badge badge-secondary ml-2 my-0"
             href="{% url 'inventory:NewDeliveryOrder' %}?vendor={{ expense_obj.vendor.id }}"
           >Add new delivery
           </a>
+          <a
+            class="badge badge-light ml-2 my-0"
+            href="{% url 'ledger:NewDeliveryOrderPayment' expense_obj.vendor.id %}"
+          >New Payment 
+          </a>
+          {% else %}
+          <a
+            class="badge badge-light ml-2 my-0"
+            href="{% url 'ledger:NewExpense' %}?vendor={{ expense_obj.vendor.id }}"
+          >New Expense
+          </a>
+          {% endif %}
         </div>
         <div class="col-md-2 mb-0">Amount</div>
         <div class="col-md-4 mb-0">
