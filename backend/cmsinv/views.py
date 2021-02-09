@@ -9,6 +9,7 @@ from django.shortcuts import redirect, render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
 from django.forms.models import model_to_dict
 from django.db.models import Q
+from django.conf import settings
 from drugdb.models import (
     RegisteredDrug,
     Company,
@@ -907,7 +908,7 @@ def NewDeliveryFromDeliveryOrderModalView(request, *args, **kwargs):
                         print(f"New received item added: {cmsreceived_obj}")
                         
                         # Update InventoryItem quantity/costs
-                        last_updated = timezone.now() - datetime.timedelta(hours=settings.CMS_OFFSET_HRS)
+                        last_updated = timezone.now() - timedelta(hours=settings.CMS_OFFSET_HRS)
                         old_stock_qty = cmsitem_obj.stock_qty
                         old_standard_cost = cmsitem_obj.standard_cost
                         old_avg_cost = cmsitem_obj.avg_cost
