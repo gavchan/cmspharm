@@ -81,7 +81,7 @@
     <div class="alert alert-light" role="alert">
       No matching vendors/suppliers 
       <a
-        href="{% url 'inventory:NewVendor' %}&next={{ request.path }}"
+        href="{% url 'inventory:NewVendor' %}?next={{ request.path }}"
         class="alert-link"
       >Add new vendor</a>
     </div>
