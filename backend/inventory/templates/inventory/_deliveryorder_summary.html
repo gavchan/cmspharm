@@ -67,15 +67,15 @@
       <div class="col-md-2 mb-0">Received Date</div>
       <div class="col-md-2 mb-0">{{ delivery_obj.received_date|date:'d-m-Y'}}</div>
       <div class="col-md-2 text-right">
-        {% if delivery_obj.cms_synced %}
+        {% if delivery_obj.cms_synced and not hide_cms_synced %}
         <span
           class="badge badge-success ml-2 mt-0"
-        >Synced with CMS
+        >CMS synced
         </span>
-        {% else %}
+        {% elif not hide_cms_synced %}
         <button
           class="btn_modal_trigger badge badge-warning ml-2 mt-0"
-          data-id="{% url 'cmsinv:NewDeliveryFromDeliveryOrderModal' delivery_obj.id %}"
+          data-id="{% url 'cmsinv:NewDeliveryFromDeliveryOrderModal' delivery_obj.id %}?next={{ request.path }}"
         >Push to CMS
         </button>
         {% endif %}
@@ -89,9 +89,9 @@
       <div class="col-md-2 text-right">
         {% if delivery_obj.is_paid %}
         <span class="badge badge-success">Paid</span>
-        {% elif delivery_obj.amount == 0 %}
+        {% elif delivery_obj.amount == 0 and not hide_cms_synced %}
         <span class="badge badge-secondary">Bonus/Free</span>
-        {% else %}
+        {% elif not hide_cms_synced %}
         <span class="badge badge-danger">Due</span>
         {% endif %}
       </div>

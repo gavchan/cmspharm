@@ -3,7 +3,7 @@
         
         <tr>
             <th scope="col" width="8%">Invoice date/no.</th>
-            <th scope="col" width="8%">Received date</th>
+            <th scope="col" width="8%" class="text-center">Received date</th>
             <th scope="col" width="68%" colspan="5" class="text-center bg-secondary text-white">Purchase</th>
             <th scope="col" width="8%" class="text-right">Amount</th>
             <th scope="col" width="8%" class="text-right">Action</th>
@@ -37,7 +37,22 @@
                 {% else %}-
                 {% endif %}
             </td>
-            <td>{{ record.received_date|date:"d-m-Y" }}</td>
+            <td class="text-center">
+                {{ record.received_date|date:"d-m-Y" }}
+                <br>
+                {% if record.cms_synced %}
+                <span
+                class="badge badge-success ml-2 mt-0"
+                >CMS synced
+                </span>
+                {% else %}
+                <button
+                class="btn_modal_trigger badge badge-warning ml-2 mt-0"
+                data-id="{% url 'cmsinv:NewDeliveryFromDeliveryOrderModal' record.id %}?next={{ request.path }}"
+                >Push to CMS
+                </button>
+                {% endif %}
+            </td>
             <td colspan="5">
                 <table width="100%">
                     {% for listitem in record.items %}

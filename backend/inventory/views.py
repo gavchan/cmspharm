@@ -840,7 +840,6 @@ class DeliveryOrderAddDeliveryItem(LoginRequiredMixin, PermissionRequiredMixin, 
     def dispatch(self, request, *args, **kwargs):
         if kwargs['delivery_id']:
             self.delivery_obj = DeliveryOrder.objects.get(id=kwargs['delivery_id'])
-            print(f"Got delivery { self.delivery_obj.id }")
         else:
             print('Error: no delivery_id')
         if request.GET.get('cmsid'):
@@ -858,8 +857,6 @@ class DeliveryOrderAddDeliveryItem(LoginRequiredMixin, PermissionRequiredMixin, 
             )
             if created:
                 print(f"Item {self.cmsitem_obj.registration_no} | {self.cmsitem_obj.product_name} not in database => created")
-            else:
-                print(f"Got item {self.cmsitem_obj.id}")
         elif request.GET.get('item'):
             print(f"Request - item={request.GET.get('item')}")
             self.item_obj = Item.objects.get(id=request.GET.get('item'))
@@ -869,6 +866,7 @@ class DeliveryOrderAddDeliveryItem(LoginRequiredMixin, PermissionRequiredMixin, 
         data = super().get_context_data(**kwargs)
         data['delivery_obj'] = self.delivery_obj
         data['cmsitem_obj'] = self.cmsitem_obj
+        data['hide_cms_synced'] = True
         return data
 
     def get_form_kwargs(self):
