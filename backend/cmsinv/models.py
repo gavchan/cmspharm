@@ -249,7 +249,8 @@ class InventoryItem(CMSModel):
 
     # inventory_item_type / type_id - Only type_id=1 (Drug) is ever used in the CMS App
     inventory_item_type = models.ForeignKey(
-        'InventoryItemType', on_delete=models.PROTECT, 
+        'InventoryItemType', on_delete=models.PROTECT,
+        default=1, 
         db_column='type_id')
 
     @property

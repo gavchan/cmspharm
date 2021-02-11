@@ -437,6 +437,7 @@ class NewInventoryItem(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
         form.instance.version = 0
         form.instance.date_created = timezone.now()
         form.instance.last_updated = timezone.now()
+        form.instance.inventory_item_type = InventoryItemType.objects.get(id=1)
         session_id = self.request.session.session_key
 
         if self.regdrug_obj:  # Assign cert_holder if RegisteredDrug
@@ -483,7 +484,6 @@ class NewInventoryItem(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
                     print("Error writing audit log entry")
             form.instance.certificate_holder = cert_holder_obj
             form.instance.registration_no = self.regdrug_obj.reg_no
-            form.instance.inventory_item_type = InventoryItemType.objects.get(id=1)
 
         elif self.vendor_obj:  # Assign vendor if given
             new_supplier_data = {

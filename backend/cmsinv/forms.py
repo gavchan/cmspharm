@@ -156,7 +156,7 @@ class NewInventoryItemForm(ModelForm):
         print(url_with_query)
         self.helper.form_action = url_with_query
         self.initial['version'] = 0
-        self.initial['inventory_item_type'] = 1
+        # self.initial['inventory_item_type'] = 1
         self.initial['inventory_type'] = 'Drug'
         self.initial['is_clinic_drug_list'] = True
         self.initial['is_master_drug_list'] = True
