@@ -121,6 +121,7 @@ class DrugDetailMatch(ListView, LoginRequiredMixin):
                 self.drug_obj = RegisteredDrug.objects.get(reg_no=self.drug_reg_no)
             except RegisteredDrug.DoesNotExist:
                 self.drug_obj = None 
+                print("Error: Registered Drug No. does not exist")
             try:
                 self.deliveryitem_obj_list = DeliveryItem.objects.filter(item__reg_no=self.drug_reg_no)[:5]
             except DeliveryItem.DoesNotExist:
@@ -154,7 +155,6 @@ class DrugDetailMatch(ListView, LoginRequiredMixin):
                 # Assign first non-numeric string to keyword for filter
                 index = 0
                 while keyword == '' and index < len(related_words):
-                    print(related_words[index], keyword)
                     try:
                         float(related_words[index])
                         index += 1
@@ -188,7 +188,7 @@ class DrugDetailMatch(ListView, LoginRequiredMixin):
             self.keyword = self.drug_obj.name
             self.ingredients = self.drug_obj.ingredients_list
         else:
-            print('Error no existing reg no.')
+            print('Error: no matching reg no.')
         if self.keyword == None:
             self.keyword = ''
         if self.ingredients == None:
