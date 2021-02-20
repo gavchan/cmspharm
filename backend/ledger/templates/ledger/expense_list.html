@@ -126,6 +126,7 @@ crispy_forms_tags %} {% block content %}
           <th scope="col">Payee</th>
           <th scope="col">Category</th>
           <th scope="col" class="text-right">Amount</th>
+          <th scope="col" class="text-center">Cheque/Ref</th>
           <th scope="col" class="text-right">Action</th>
         </tr>
       </thead>
@@ -154,6 +155,12 @@ crispy_forms_tags %} {% block content %}
           </td>
           <td>{{ expense_obj.category.name }}</td>
           <td class="text-right">{{ expense_obj.amount }}</td>
+          <td class="text-center">
+            {% if expense_obj.payment_ref %}
+            {{ expense_obj.payment_ref }}
+            {% else %}-
+            {% endif %}
+          </td>
           <td class="text-right">
             {% if not expense_obj.permanent %}
             <a
