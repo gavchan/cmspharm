@@ -48,7 +48,7 @@
                 {{ cmsitem.standard_cost }}
                 {% else %}-
                 {% endif %}
-                <br>({% if cmsitem.average_cost %}{{ cmsitem.average_cost}}{% else %} - {% endif %})
+                <br>({% if cmsitem.avg_cost %}{{ cmsitem.avg_cost}}{% else %} - {% endif %})
             </td>
             <td class="item-action-cell text-right">
                 {% if user.is_staff %}
