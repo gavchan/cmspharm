@@ -28,7 +28,7 @@ class PaymentsToday(ListView, LoginRequiredMixin, PermissionRequiredMixin):
     PERIOD_CUTOFF_HR = 15  # 3pm in 24hr time
     PERIOD_CUTOFF_MIN = 0
     RECENT_BILLS = 100
-    permission_required = ('cmsinv.view_payment',)
+    permission_required = ('cmsacc.view_payment_details',)
     template_name = 'cmsacc/payments_today.html'
     model = PaymentDetails
     context_object_name = 'payment_list'
