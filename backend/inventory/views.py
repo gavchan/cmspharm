@@ -1060,3 +1060,11 @@ def StocktakeView(request, *args, **kwargs):
         return JsonResponse(data=data_dict, safe=False)
 
     return render(request, "inventory/stocktake.html", context=ctx)
+
+@login_required
+@permission_required('inventory.change_deliveryorder')
+def DeliveryOrderToggleSynced(request, *args, **kwargs):
+    delivery_obj = DeliveryOrder.objects.get(pk=kwargs['delivery_id']) or None
+    delivery_obj.cms_synced = not delivery_obj.cms_synced
+    delivery_obj.save()
+    return HttpResponseRedirect(reverse('inventory:DeliveryOrderDetail', args=(delivery_obj.id,)))

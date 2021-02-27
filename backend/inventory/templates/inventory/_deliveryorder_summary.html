@@ -67,18 +67,26 @@
       <div class="col-md-2 mb-0">Received Date</div>
       <div class="col-md-2 mb-0">{{ delivery_obj.received_date|date:'d-m-Y'}}</div>
       <div class="col-md-2 text-right">
+        {% if user.is_staff %}
+        <a
+          class="btn btn-sm badge badge-danger ml-2 mt-0"
+          href="{% url 'inventory:DeliveryOrderToggleSynced' delivery_obj.id %}?next={{ request.path }}"
+        >Toggle synced
+        </a>
+        {% endif %}
         {% if delivery_obj.cms_synced and not hide_cms_synced %}
         <span
-          class="badge badge-success ml-2 mt-0"
+          class="badge badge-success ml-1 mt-0"
         >CMS synced
         </span>
         {% elif not hide_cms_synced %}
         <button
-          class="btn_modal_trigger badge badge-warning ml-2 mt-0"
+          class="btn_modal_trigger badge badge-warning ml-1 mt-0"
           data-id="{% url 'cmsinv:NewDeliveryFromDeliveryOrderModal' delivery_obj.id %}?next={{ request.path }}"
         >Push to CMS
         </button>
         {% endif %}
+        
       </div>
     </div>
     <div class="form-row">
