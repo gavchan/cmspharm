@@ -83,7 +83,7 @@
                     <td class="text-right">$ {{ listitem.average_cost }}</td>
                     <td class="text-right">$ {{ listitem.total_price }}</td>
                     <td class="text-center">
-                        {% if not delivery_obj.cms_delivery_id and perms.inventory.change_deliveryitem %}
+                        {% if not delivery_obj.cms_synced and perms.inventory.change_deliveryitem %}
                         <button type="button" class="btn_modal_trigger btn btn-sm btn-info"
                             data-id="{% url 'inventory:DeliveryItemUpdateModal' delivery_id=delivery_obj.id pk=listitem.id %}"
                         ><i class="fad fa-edit"></i>
@@ -94,7 +94,7 @@
                         ><i class="fad fa-file"></i>
                         </button>
                         {% endif %}
-                        {% if not delivery_obj.cms_delivery_id and perms.inventory.delete_deliveryitem %}
+                        {% if not delivery_obj.cms_synced and perms.inventory.delete_deliveryitem %}
                         <button type="button" 
                             class="btn_modal_trigger btn btn-sm btn-danger"
                             data-id="{% url 'inventory:DeliveryItemDeleteModal' delivery_id=delivery_obj.id pk=listitem.id %}" 
