@@ -108,12 +108,13 @@ class ExpenseList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
             object_list = Expense.objects.filter(
                 Q(description__icontains=query) |
                 Q(payee__icontains=query) |
-                Q(invoice_no__icontains=query)
-            ).order_by('-expected_date')
+                Q(invoice_no__icontains=query) |
+                Q(payment_ref__icontains=query)
+            ).order_by('-invoice_date')
             self.last_query_count = object_list.count
         else:
             self.last_query = ''
-            object_list = Expense.objects.all().order_by('-expected_date')
+            object_list = Expense.objects.all().order_by('-invoice_date')
             self.last_query_count = object_list.count
         if self.begin and self.end:
             # Filter date range if both parameters given
@@ -649,3 +650,11 @@ class IncomeUpdateModal(BSModalUpdateView, LoginRequiredMixin, PermissionRequire
         data = super().get_context_data(**kwargs)
         data['income_obj'] = self.object
         return data
+
+@login_required
+@permission_required('ledger.change_expense')
+def ExpenseTogglePermanent(request, *args, **kwargs):
+    expense_obj = Expense.objects.get(pk=kwargs['expense_id']) or None
+    expense_obj.permanent = not expense_obj.permanent
+    expense_obj.save()
+    return HttpResponseRedirect(reverse('ledger:ExpenseDetail', args=(expense_obj.id,)))

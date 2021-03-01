@@ -17,6 +17,7 @@ urlpatterns = [
     path('expense/<int:expense_id>/add/delivery/<int:delivery_id>/', views.ExpenseAddDeliveryOrder, name='ExpenseAddDeliveryOrder'),
     path('expense/<int:expense_id>/remove/delivery/<int:delivery_id>/', views.ExpenseRemoveDeliveryOrder, name='ExpenseRemoveDeliveryOrder'),
     path('expense/<int:pk>/makepermanent', views.ExpenseConfirmPermanentModalView, name="ExpenseConfirmPermanentModal"),
+    path('expense/<int:expense_id>/togglepermanent', views.ExpenseTogglePermanent, name="ExpenseTogglePermanent"),
     path('expense/<int:pk>/', views.ExpenseDetail.as_view(), name='ExpenseDetail'),
     path('expense/new/', views.NewExpense.as_view(), name='NewExpense'),
     path('expense/', views.ExpenseList.as_view(), name='ExpenseList'),

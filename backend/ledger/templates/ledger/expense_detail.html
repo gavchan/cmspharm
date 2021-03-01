@@ -69,17 +69,23 @@
           <div class="d-flex justify-content-between">
           <span><strong>$ {{ expense_obj.amount }}</strong></span>
           <div>
-          {% if expense_obj.expected_date %}
-          <span class="badge badge-success">Paid</span>
-          {% endif %}
-          {% if not expense_obj.permanent %}
-          <button
-            class="btn_modal_trigger badge badge-warning" type="button"
-            data-id="{% url 'ledger:ExpenseConfirmPermanentModal' expense_obj.id %}?next={{ request.path }}"
-          >
-            Make permanent
-          </button>
-          {% endif %}
+            {% if not expense_obj.permanent %}
+            <button
+              class="btn_modal_trigger badge badge-warning" type="button"
+              data-id="{% url 'ledger:ExpenseConfirmPermanentModal' expense_obj.id %}?next={{ request.path }}"
+            >
+              Make permanent
+            </button>
+            {% elif user.is_staff %}
+            <a
+              class="btn btn-sm badge badge-danger ml-2 mt-0"
+              href="{% url 'ledger:ExpenseTogglePermanent' expense_obj.id %}"
+            >Toggle permanent 
+            </a>
+            {% endif %}
+            {% if expense_obj.expected_date %}
+            <span class="badge badge-success">Paid</span>
+            {% endif %}
           </div>
           </div>
         </div>
