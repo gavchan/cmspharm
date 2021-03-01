@@ -69,7 +69,13 @@
           <div class="d-flex justify-content-between">
           <span><strong>$ {{ expense_obj.amount }}</strong></span>
           <div>
-            {% if not expense_obj.permanent %}
+            {% if not expense_obj.permanent and user.is_staff %}
+            <a
+              class="btn btn-sm badge badge-danger ml-2 mt-0"
+              href="{% url 'ledger:ExpenseTogglePermanent' expense_obj.id %}"
+            >Set permanent 
+            </a>
+            {% elif not expense_obj.permanent %}
             <button
               class="btn_modal_trigger badge badge-warning" type="button"
               data-id="{% url 'ledger:ExpenseConfirmPermanentModal' expense_obj.id %}?next={{ request.path }}"
