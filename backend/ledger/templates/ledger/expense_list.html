@@ -158,6 +158,8 @@ crispy_forms_tags %} {% block content %}
           <td class="text-center">
             {% if expense_obj.payment_ref %}
             {{ expense_obj.payment_ref }}
+            {% elif expense_obj.payment_method.name %}
+            {{ expense_obj.payment_method.name }}
             {% else %}-
             {% endif %}
           </td>

@@ -71,7 +71,7 @@
           <div>
             {% if not expense_obj.permanent and user.is_staff %}
             <a
-              class="btn btn-sm badge badge-danger ml-2 mt-0"
+              class="btn btn-sm badge badge-warning ml-2 mt-0"
               href="{% url 'ledger:ExpenseTogglePermanent' expense_obj.id %}"
             >Set permanent 
             </a>
@@ -86,7 +86,7 @@
             <a
               class="btn btn-sm badge badge-danger ml-2 mt-0"
               href="{% url 'ledger:ExpenseTogglePermanent' expense_obj.id %}"
-            >Toggle permanent 
+            >Unset permanent 
             </a>
             {% endif %}
             {% if expense_obj.expected_date %}
