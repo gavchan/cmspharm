@@ -15,6 +15,7 @@ from django.db.models import Q, Sum, Count
 from .models import (
     PaymentDetails,
     PaymentMethod,
+    Bill,
 )
 
 class PaymentsToday(ListView, LoginRequiredMixin, PermissionRequiredMixin):
@@ -37,6 +38,7 @@ class PaymentsToday(ListView, LoginRequiredMixin, PermissionRequiredMixin):
     dispdate = None
     lastdate = None
     session_stats = None
+    unbalanced_bills = None
 
     def get_queryset(self):
         self.period = self.request.GET.get('p') or ''
@@ -76,15 +78,29 @@ class PaymentsToday(ListView, LoginRequiredMixin, PermissionRequiredMixin):
                 bill__encounter__date_created__icontains=query_date,
                 bill__encounter__date_created__lt=time_cutoff
             ).order_by('-bill__encounter__date_created', )
+            self.unbalanced_bills = Bill.objects.filter(
+                unbalance_amt__gt=0,
+                date_created__icontains=query_date,
+                date_created__lt=time_cutoff,
+            ).order_by('-date_created')[:self.RECENT_BILLS]
         elif self.period == 'p':
             object_list = PaymentDetails.objects.filter(
                 bill__encounter__date_created__icontains=query_date,
                 bill__encounter__date_created__gte=time_cutoff
             ).order_by('-bill__encounter__date_created', )
+            self.unbalanced_bills = Bill.objects.filter(
+                unbalance_amt__gt=0,
+                date_created__icontains=query_date,
+                date_created__gte=time_cutoff,
+            ).order_by('-date_created')[:self.RECENT_BILLS]
         else:
             object_list = object_list = PaymentDetails.objects.filter(
-            bill__encounter__date_created__icontains=query_date
-        ).order_by('-bill__encounter__date_created', )
+                bill__encounter__date_created__icontains=query_date
+            ).order_by('-bill__encounter__date_created', )
+            self.unbalanced_bills = Bill.objects.filter(
+                unbalance_amt__gt=0,
+                date_created__icontains=query_date,
+            ).order_by('-date_created')
         object_list = object_list.exclude(
             Q(bill__encounter__patient__patient_no='00AM')|
             Q(bill__encounter__patient__patient_no='00PM')
@@ -92,8 +108,6 @@ class PaymentsToday(ListView, LoginRequiredMixin, PermissionRequiredMixin):
         self.session_stats = object_list.aggregate(
             count=Count('bill__encounter__id'),
             bill_total=Sum('bill__total'),
-            unbalance_total=Sum('bill__unbalance_amt'),
-
         )
         self.session_stats['cash_total'] = object_list.filter(
             payment_method__payment_method='Cash'
@@ -101,6 +115,9 @@ class PaymentsToday(ListView, LoginRequiredMixin, PermissionRequiredMixin):
         self.session_stats['other_total'] = object_list.exclude(
             payment_method__payment_method='Cash'
         ).aggregate(Sum('paid_amt'))['paid_amt__sum'] or 0.0
+        self.session_stats['unbalance_total'] = self.unbalanced_bills.aggregate(
+            Sum('unbalance_amt')
+        )['unbalance_amt__sum'] or 0.0
 
         return object_list
 
@@ -111,5 +128,179 @@ class PaymentsToday(ListView, LoginRequiredMixin, PermissionRequiredMixin):
         context['session_stats'] = self.session_stats
         context['lastdate'] = self.lastdate.strftime("%d-%m-%Y")
         context['dispdate'] = self.dispdate
+        context['unbalanced_bills'] = self.unbalanced_bills
         return context
+
+
+# class BillsToday(ListView, LoginRequiredMixin, PermissionRequiredMixin):
+#     """
+#     Lists monthly CMS billing
+#     """
+#     PERIOD_CHOICES = [
+#         ('a', 'AM'),
+#         ('p', 'PM'),
+#     ]
+#     PERIOD_CUTOFF_HR = 15  # 3pm in 24hr time
+#     PERIOD_CUTOFF_MIN = 0
+#     RECENT_BILLS = 250
+#     permission_required = ('cmsinv.view_bill',)
+#     template_name = 'cmsacc/bills_today.html'
+#     model = Bill
+#     context_object_name = 'bill_obj_list'
+#     paginate_by = 50
+#     period = None
+#     dispdate = None
+#     lastdate = None
+#     session_stats = None
+
+#     def get_queryset(self):
+#         self.period = self.request.GET.get('p') or ''
+#         self.day = self.request.GET.get('d') or ''
+#         self.dt = self.request.GET.get('dt') or ''
+#         today = timezone.now()
+#         self.lastdate = today - timedelta(days=1)
+#         # Cycle through recent bills
+#         unbalance_bills = Bill.objects.filter(
+#             unbalance_amt=0
+#         ).order_by('-date_created')[:self.RECENT_BILLS]
+#         recent_dates = set()
+#         for bill in recent_bills:
+#             recent_dates.add(bill.date_created.strftime('%Y-%m-%d'))
+#         while not self.lastdate.strftime('%Y-%m-%d') in recent_dates:
+#             self.lastdate = self.lastdate - timedelta(days=1)
+#         if self.day == '1':  # Last encounter date before today
+#             seldate = self.lastdate
+#         elif self.day == '2':
+#             try:
+#                 seldate = datetime.strptime(self.dt, "%d-%m-%Y")
+#                 seldate = seldate.replace(tzinfo=pytz.UTC)
+#             except:
+#                 seldate = today
+#         else:
+#             seldate = today
+#         query_date = seldate.strftime('%Y-%m-%d')
+#         self.dispdate = seldate.strftime('%d-%m-%Y')
+
+#         time_cutoff = seldate.replace(hour=self.PERIOD_CUTOFF_HR, minute=self.PERIOD_CUTOFF_MIN)
+
+#         if not self.period:
+#             if seldate >= time_cutoff:
+#                 self.period = 'p'
+#             else:
+#                 self.period = 'a'
+#         if self.period == 'a':
+#             object_list = Bill.objects.filter(
+#                 encounter__date_created__icontains=query_date,
+#                 encounter__date_created__lt=time_cutoff
+#             ).order_by('-encounter.date_created',)
+#         elif self.period == 'p':
+#             object_list = Bill.objects.filter(
+#                 encounter__date_created__icontains=query_date,
+#                 encounter__date_created__gte=time_cutoff
+#             ).order_by('-encounter.date_created',)
+#         else:
+#             object_list = object_list = Bill.objects.filter(
+#             encounter__date_created__icontains=query_date
+#         )
+#         object_list = object_list.exclude(
+#             Q(encounter__patient__patient_no='00AM')|
+#             Q(encounter__patient__patient_no='00PM')
+#         )
+#         self.session_stats = object_list.aggregate(
+#             count=Count('encounter__id'),
+#             bill_total=Sum('total'),
+#             unbalance_total=Sum('unbalance_amt'),
+#         )
+#         return object_list
+
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         context['day'] = self.day
+#         context['period'] = self.period
+#         context['session_stats'] = self.session_stats
+#         context['lastdate'] = self.lastdate.strftime("%Y-%m-%d")
+#         return context
+
+
+
+
+
+
+
+
+
+#     def get_queryset(self):
+#         self.period = self.request.GET.get('p') or ''
+#         self.day = self.request.GET.get('d') or ''
+#         self.dt = self.request.GET.get('dt') or ''
+#         today = timezone.now()
+#         self.lastdate = today - timedelta(days=1)
+#         # Cycle through recent bills
+#         recent_bills = PaymentDetails.objects.order_by('-date_created')[:self.RECENT_BILLS]
+#         recent_dates = set()
+#         for bill in recent_bills:
+#             recent_dates.add(bill.date_created.strftime('%Y-%m-%d'))
+#         while not self.lastdate.strftime('%Y-%m-%d') in recent_dates:
+#             self.lastdate = self.lastdate - timedelta(days=1)
+#         if self.day == '1':  # Last encounter date before today
+#             seldate = self.lastdate
+#         elif self.day == '2':
+#             try:
+#                 seldate = datetime.strptime(self.dt, "%d-%m-%Y")
+#                 seldate = seldate.replace(tzinfo=pytz.UTC)
+#             except:
+#                 seldate = today
+#         else:
+#             seldate = today
+#         query_date = seldate.strftime('%Y-%m-%d')
+#         self.dispdate = seldate.strftime('%d-%m-%Y')
+
+#         time_cutoff = seldate.replace(hour=self.PERIOD_CUTOFF_HR, minute=self.PERIOD_CUTOFF_MIN)
+        
+#         if not self.period:
+#             if seldate >= time_cutoff:
+#                 self.period = 'p'
+#             else:
+#                 self.period = 'a'
+#         if self.period == 'a':
+#             object_list = PaymentDetails.objects.filter(
+#                 bill__encounter__date_created__icontains=query_date,
+#                 bill__encounter__date_created__lt=time_cutoff
+#             ).order_by('-bill__encounter__date_created', )
+#         elif self.period == 'p':
+#             object_list = PaymentDetails.objects.filter(
+#                 bill__encounter__date_created__icontains=query_date,
+#                 bill__encounter__date_created__gte=time_cutoff
+#             ).order_by('-bill__encounter__date_created', )
+#         else:
+#             object_list = object_list = PaymentDetails.objects.filter(
+#             bill__encounter__date_created__icontains=query_date
+#         ).order_by('-bill__encounter__date_created', )
+#         object_list = object_list.exclude(
+#             Q(bill__encounter__patient__patient_no='00AM')|
+#             Q(bill__encounter__patient__patient_no='00PM')
+#         )
+#         self.session_stats = object_list.aggregate(
+#             count=Count('bill__encounter__id'),
+#             bill_total=Sum('bill__total'),
+#             unbalance_total=Sum('bill__unbalance_amt'),
+
+#         )
+#         self.session_stats['cash_total'] = object_list.filter(
+#             payment_method__payment_method='Cash'
+#         ).aggregate(Sum('paid_amt'))['paid_amt__sum'] or 0.0
+#         self.session_stats['other_total'] = object_list.exclude(
+#             payment_method__payment_method='Cash'
+#         ).aggregate(Sum('paid_amt'))['paid_amt__sum'] or 0.0
+
+#         return object_list
+
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         context['day'] = self.day
+#         context['period'] = self.period
+#         context['session_stats'] = self.session_stats
+#         context['lastdate'] = self.lastdate.strftime("%d-%m-%Y")
+#         context['dispdate'] = self.dispdate
+#         return context
     
