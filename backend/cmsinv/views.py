@@ -578,8 +578,8 @@ class NewInventoryItem(CreateView, LoginRequiredMixin, PermissionRequiredMixin):
                 reg_no=reg_no, defaults=item_data,
             )
         else:
-           item_obj, created = Item.objects.get_or_create(
-            id=self.object.id, defaults=item_data,
+           item_obj, created = Item.objects.update_or_create(
+            cmsid=self.object.id, defaults=item_data,
         ) 
         if created:
             print(f"Item created: {item_obj}")

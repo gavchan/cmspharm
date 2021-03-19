@@ -177,6 +177,7 @@
     <table class="table table-sm table-striped">
         <thead>
             <tr>
+                <th scope="col">ID</th>
                 <th scope="col">Name</th>
                 <th scope="col">Note</th>
                 <th scope="col">Type</th>
@@ -193,6 +194,7 @@
                 class="table-secondary text-muted"
                 {% endif %}
             >
+                <td>{{ item_obj.id }}</td>
                 <td>
                   {{ item_obj.name }}
                   <button
