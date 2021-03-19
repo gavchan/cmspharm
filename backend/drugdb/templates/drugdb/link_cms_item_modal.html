@@ -1,0 +1,53 @@
+
+<div class="modal-header">
+  <h5 class="modal-title">Link Registered Drug to CMS: #{{ cmsitem_obj.id }}</h5>
+  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+
+<div class="modal-body">
+  <div class="card">
+    <div class="card-body">
+      <form method="POST"> 
+      {% csrf_token %} 
+      
+        <h5>Confirm link CMS inventory item with registered drug:</h5>
+        <p>N.B. Associated Item will be created if not existing</p>
+        <hr>
+        <p><strong>CMS Item with Reg No.{{ cmsitem_obj.registration_no}}</strong>
+          <div class="row">
+            <div class="col-sm-2"><em>Product: </em></div>
+            <div class="col-sm-10">{{ cmsitem_obj.product_name }}</div>
+          </div>
+          <div class="row">
+            <div class="col-sm-2"><em>Ingredients: </em></div>
+            <div class="col-sm-10">{{ cmsitem_obj.ingredients_list }}</div>
+          </div>
+        </p>
+        <p><strong>Reg Drug [{{ drug_obj.reg_no }}] to be linked with CMS id# {{ cmsitem_obj.id }}:</strong>
+          <div class="row">
+            <div class="col-sm-2"><em>Product: </em></div>
+            <div class="col-sm-10">{{ drug_obj.name }}</div>
+          </div>
+          <div class="row">
+            <div class="col-sm-2"><em>Ingredients: </em></div>
+            <div class="col-sm-10">{{ drug_obj.ingredients_list }}</div>
+          </div>
+        </p>
+        <hr>
+        <p><input type="checkbox" name="updateCMSProductDetails" value="1" id="inputUpdateCMSProductDetails" checked>
+          <label for="inputUpdateCMSProductDetails">Update CMS Product Name and Ingredients</label>
+        </p>
+        <p>
+          <input type="submit" class="btn btn-sm btn-warning" value="Yes - Confirm Link" /> 
+          <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">Close</button>
+        </p>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">Close</button>
+</div>

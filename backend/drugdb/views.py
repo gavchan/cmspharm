@@ -5,7 +5,8 @@ from django.urls import reverse, reverse_lazy
 from django.db.models import Q
 from django.template.loader import render_to_string
 from django.http import JsonResponse
-from django.shortcuts import render
+from django.shortcuts import redirect, render, get_object_or_404
+from django.utils import timezone
 
 from bootstrap_modal_forms.generic import BSModalCreateView, BSModalUpdateView
 from ledger.models import (
@@ -21,7 +22,7 @@ from cmsinv.models import (
 )
 
 from inventory.models import (
-    Item, DeliveryItem
+    Item, DeliveryItem, ItemType
 )
 
 class RegisteredDrugList(ListView, LoginRequiredMixin, PermissionRequiredMixin):
@@ -200,3 +201,57 @@ class DrugDetailMatch(ListView, LoginRequiredMixin):
             Q(ingredient__icontains=self.ingredients)
         ).order_by('discontinue').exclude(registration_no=self.drug_reg_no)[:100]
         return object_list
+
+
+@login_required
+@permission_required('drugdb.change_registereddrug', )
+def LinkCMSItemModalView(request, *args, **kwargs):
+    if kwargs['reg_no']:
+        drug_obj = get_object_or_404(RegisteredDrug, reg_no=kwargs['reg_no'])
+    else:
+        print("Error: no reg_no")
+    if kwargs['cmsitem_id']:
+        cmsitem_obj = get_object_or_404(InventoryItem, pk=kwargs['cmsitem_id'])
+    else:
+        print("Error: no cmsitem_id")
+    uri = request.GET.get('next', reverse('drugdb:DrugDetailMatch', args=(drug_obj.reg_no,)))
+
+    context = {
+        'drug_obj': drug_obj,
+        'cmsitem_obj': cmsitem_obj,
+    }
+    # If POST request confirm sync, add data to CMS
+    if request.method == "POST":
+        doUpdateCMSProductDetails = request.POST.get('updateCMSProductDetails') == '1'
+        # Update CMS Product Name and Ingredients if checked
+        if doUpdateCMSProductDetails:
+            cmsitem_obj.product_name = drug_obj.name
+            cmsitem_obj.ingredient = drug_obj.ingredients_list
+            cmsitem_obj.save()
+
+        # Create new corresponding inventory.Item if not existing
+        new_item_data = {
+            'name': cmsitem_obj.product_name,
+            'cmsid': cmsitem_obj.id,
+            'reg_no': drug_obj.reg_no,
+            'item_type': ItemType.objects.get(value=1),
+            'is_active': True,
+            'updated_by': request.user.username,
+            'last_updated': timezone.now(),
+        }
+        item_obj, created = Item.objects.update_or_create(
+            cmsid=cmsitem_obj.id, defaults=new_item_data
+        )
+        if created:
+            print(f"Item created: {item_obj}")
+        else:
+            print(f"Existing item updated: {item_obj}")
+
+        # Update Reg Drug cms_id and item_id
+        drug_obj.itemid = item_obj.id
+        drug_obj.item = item_obj
+        drug_obj.save()
+
+        return redirect(uri)
+    
+    return render(request, "drugdb/link_cms_item_modal.html", context)

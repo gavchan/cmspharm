@@ -12,11 +12,19 @@
       </span>
       <span>
         {% if not drug_obj.item and drug_obj.is_active %}
-        <a
-          href="{% url 'cmsinv:NewInventoryItem' %}?reg_no={{ drug_obj.reg_no }}"
-          class="btn btn-sm btn-secondary text-white"
-        >Add as new CMS Item
-        </a> 
+          {% if cmsitem_obj.registration_no %}
+          <button
+            class="btn btn-sm btn-warning btn_modal_trigger"
+            data-id="{% url 'drugdb:LinkCMSItemModal' drug_obj.reg_no cmsitem_obj.id %}?next={{ request.path }}"
+          >Link CMS Item
+          </button>
+          {% else %}
+          <a
+            href="{% url 'cmsinv:NewInventoryItem' %}?reg_no={{ drug_obj.reg_no }}"
+            class="btn btn-sm btn-secondary text-white"
+          >Add as new CMS Item
+          </a> 
+          {% endif %}
         {% endif %}
       </span>
     </div>
