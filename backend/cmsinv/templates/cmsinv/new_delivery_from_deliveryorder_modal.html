@@ -53,6 +53,11 @@
                 {% endif %}
               </td>
             </tr>
+            {% if listitem.existing %}
+            <tr>
+              <td colspan="4">**<em>Record exists: </em> {{ listitem.existing }}**
+            </tr>
+            {% endif %}
             {% endif %}
             {% endfor %}
           </tbody>

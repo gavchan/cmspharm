@@ -23,7 +23,7 @@
           class="btn btn-sm btn-dark text-white"
         ><i class="fal fa-step-backward"></i>&nbsp;Drugs
         </a>
-        {% if not delivery_obj.cms_delivery_id and perms.inventory.change_deliveryorder %}
+        {% if not delivery_obj.cms_synced and perms.inventory.change_deliveryorder %}
         <button
           class="btn_modal_trigger btn btn-sm btn-light"
           data-id="{% url 'inventory:DeliveryOrderUpdateModal' delivery_obj.id %}"

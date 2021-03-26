@@ -755,6 +755,12 @@ def NewDeliveryFromDeliveryOrderModalView(request, *args, **kwargs):
     for listitem in delivery_obj.delivery_items.all():
         if listitem.item.cmsid:
             cmsitem_obj = InventoryItem.objects.get(id=listitem.item.cmsid)
+            cmsreceived_obj = ReceivedItem.objects.get(
+                        arrive_date=delivery_obj.invoice_date,
+                        drug_item=cmsitem_obj,
+                        quantity=listitem.items_quantity,
+                        cost=listitem.total_price,
+                    ) or None
             summary = {
                 'name': listitem.item.name,
                 'cmsid': listitem.item.cmsid,
@@ -765,6 +771,7 @@ def NewDeliveryFromDeliveryOrderModalView(request, *args, **kwargs):
                 'items_quantity': listitem.items_quantity,
                 'new_standard_cost': listitem.standard_cost,
                 'new_avg_cost': listitem.average_cost,
+                'existing': cmsreceived_obj,
             }
             itemupdate_list.append(summary)
 
