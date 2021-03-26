@@ -485,7 +485,8 @@ class DeliveryOrderUpdateModalForm(BSModalForm):
         self.helper.layout = Layout(
             Row(
                 Column(
-                    UneditableField('vendor'),
+                    'vendor'
+                    # UneditableField('vendor'),
                     css_class='form-group col-md-8 mb-0'
                     ),
                 # Column('received_date', css_class='form-group col-md-4 mb-0'),
@@ -559,7 +560,7 @@ class DeliveryOrderUpdateModalForm(BSModalForm):
                 Column(Field('remarks', css_class='form-group col-md-12 mb-0', rows="2")),
                 css_class="form-row",            
             ),
-            Hidden('vendor', self.instance.vendor.pk),
+            # Hidden('vendor', self.instance.vendor.pk),
             Hidden('version', self.instance.version + 1),
             FormActions(
                 Submit('submit', 'Submit'),
