@@ -485,7 +485,7 @@ class DeliveryOrderUpdateModalForm(BSModalForm):
         self.helper.layout = Layout(
             Row(
                 Column(
-                    'vendor'
+                    'vendor',
                     # UneditableField('vendor'),
                     css_class='form-group col-md-8 mb-0'
                     ),
