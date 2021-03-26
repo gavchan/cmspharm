@@ -755,12 +755,15 @@ def NewDeliveryFromDeliveryOrderModalView(request, *args, **kwargs):
     for listitem in delivery_obj.delivery_items.all():
         if listitem.item.cmsid:
             cmsitem_obj = InventoryItem.objects.get(id=listitem.item.cmsid)
-            cmsreceived_obj = ReceivedItem.objects.get(
+            try:
+                cmsreceived_obj = ReceivedItem.objects.get(
                         arrive_date=delivery_obj.invoice_date,
                         drug_item=cmsitem_obj,
                         quantity=listitem.items_quantity,
                         cost=listitem.total_price,
-                    ) or None
+                        )
+            except ReceivedItem.DoesNotExist:
+                cmsreceived_obj = None
             summary = {
                 'name': listitem.item.name,
                 'cmsid': listitem.item.cmsid,
