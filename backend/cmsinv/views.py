@@ -906,7 +906,9 @@ def NewDeliveryFromDeliveryOrderModalView(request, *args, **kwargs):
                     )
                     if cmsreceived_created:  # Update InventoryItem, InventoryMovementLog, AuditLog
                         print(f"New received item added: {cmsreceived_obj}")
-                        
+                    else:
+                        print(f"Already existing: {cmsreceived_obj}")
+                    if cmsreceived_obj:
                         # Update InventoryItem quantity/costs
                         last_updated = timezone.now() - timedelta(hours=settings.CMS_OFFSET_HRS)
                         old_stock_qty = cmsitem_obj.stock_qty
@@ -1105,7 +1107,7 @@ def NewDeliveryFromDeliveryOrderModalView(request, *args, **kwargs):
                         else:
                             print("CMS InventoryItem not updated")
                     else:
-                        print(f"Already existing: {cmsreceived_obj}")
+                        print(f"Error: Missing cmsreceived_obj")
                     item_idx += 1
                 else:
                     print(f"Skipping item {listitem.item.name} - not a CMS item")
