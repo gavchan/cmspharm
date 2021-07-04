@@ -110,7 +110,14 @@ crispy_forms_tags %} {% block content %}
         </div>
         <div class="row mb-2">
           <div class="col-sm-12">
+          {% if user.is_staff %}
+            <a href="{% url 'ledger:ExpenseExportCsv' %}"
+              id="btn-export_csv" class="btn btn-sm btn-warning btn-block">
+              Export CSV
+            </a>
+          {% else %}
             <button id="btn-export_excel" class="btn btn-sm btn-light btn-block" disabled>Disabled</button>
+          {% endif %}
           </div>
         </div>
       </div>

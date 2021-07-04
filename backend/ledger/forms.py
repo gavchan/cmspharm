@@ -153,7 +153,7 @@ class ExpenseUpdateForm(ModelForm):
                 Column('permanent', css_class='form-group col-md-4'),
             ),
             Row(
-                Column(UneditableField('vendor'), css_class='form-group col-md-8 mb-0'),
+                Column('vendor', css_class='form-group col-md-8 mb-0'),
                 Column('payee', css_class='form-group col-md-4 mb-0'),
                 css_class='form-row',
             ),
@@ -211,7 +211,7 @@ class ExpenseUpdateForm(ModelForm):
                     Field('remarks', css_class='form-group col-md-8 mb-0', rows="1")),
                 css_class="form-row",
             ),
-            Hidden('vendor', self.instance.vendor.pk),
+            # Hidden('vendor', self.instance.vendor.pk),
             Hidden('version', self.instance.version +1),
             FormActions(
                 Submit('submit', 'Submit'),
@@ -282,6 +282,7 @@ class NewExpenseForm(ModelForm):
                     <div class="input-group date" id="datepicker_invoice_date" data-target-input="nearest">
                         <input type="text" 
                             class="form-control datetimepicker-input"
+                            id="id_invoice_date"
                             data-target="#datepicker_invoice_date"
                             placeholder="YYYY-MM-DD"
                             name="invoice_date"
@@ -308,6 +309,7 @@ class NewExpenseForm(ModelForm):
                     <div class="input-group date" id="datepicker_expected_date" data-target-input="nearest">
                         <input type="text" 
                             class="form-control datetimepicker-input"
+                            id="id_expected_date"
                             data-target="#datepicker_expected_date"
                             placeholder="YYYY-MM-DD"
                             name="expected_date"
@@ -327,6 +329,11 @@ class NewExpenseForm(ModelForm):
                 css_class="form-row",
             ),
             FormActions(
+                HTML("""
+                <button type="button" class="btn btn-warning" id="btn_set_paymentdt">
+                    Payment=Invoice
+                </button>
+                """),
                 Submit('submit', 'Submit'),
                 Button(
                     'back', 'Cancel',
@@ -498,7 +505,8 @@ class ExpenseUpdateModalForm(BSModalForm):
                     css_class='form-group col-md-4 mb-0'),
             ),
             Row(
-                Column(UneditableField('vendor'), css_class='form-group col-md-8 mb-0'),
+                Column('vendor', css_class='form-group col-md-8 mb-0'),
+                # Column(UneditableField('vendor'), css_class='form-group col-md-8 mb-0'),
                 Column('payee', css_class='form-group col-md-4 mb-0'),
                 css_class='form-row',
             ),
@@ -556,7 +564,7 @@ class ExpenseUpdateModalForm(BSModalForm):
                     Field('remarks', css_class='form-group col-md-8 mb-0', rows="1")),
                 css_class="form-row",
             ),
-            Hidden('vendor', self.instance.vendor.pk),
+            # Hidden('vendor', self.instance.vendor.pk),
             Hidden('version', self.instance.version +1),
             FormActions(
                 Submit('submit', 'Submit'),

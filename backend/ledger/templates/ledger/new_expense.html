@@ -32,7 +32,10 @@
 {% block extrascripts %}
 <script type="text/javascript">
     $(document).ready(function () {
-
+      $("#btn_set_paymentdt").click(function() {
+        console.log('click');
+        $("#id_expected_date").val($("#id_invoice_date").val());
+      });
       $("#btn_save_details").click(function() {
         $('#form').submit()
       });

@@ -17,6 +17,7 @@ from .models import (
     Expense,
     IncomeSource,
     Income,
+    PaymentMethod,
 )
 from inventory.models import (
     DeliveryOrder,
@@ -545,7 +546,28 @@ def ExpenseExportCsv(request):
 
     expenses = Expense.objects.all().values_list('expected_date', 'entry_date', 'amount', 'category', 'payee', 'payment_method', 'payment_ref', 'invoice_date', 'invoice_no', 'description', 'remarks')
     for expense in expenses:
-        writer.writerow(expense)
+        # Parse category
+        if expense[3]:
+            try:
+                category = ExpenseCategory.objects.get(id=expense[3])
+            except:
+                print("Error: Cannot parse " + expense[3])
+        else:
+            category = None
+        if category:
+            category_code = str(category.code) + "-" + category.name
+            print(category_code)
+        if expense[5]:
+            try:
+                payment_method = PaymentMethod.objects.get(id=expense[5])
+            except:
+                print("Error: Cannot parse " + expense[5])
+        else:
+            payment_method = ""
+        print(payment_method)
+        outrow = expense[0:3] + (category_code,) + (expense[4],) + (payment_method, ) + expense[6:]
+        print(outrow)
+        writer.writerow(outrow)
 
     return response
 
