@@ -51,8 +51,17 @@ class PaymentsToday(ListView, LoginRequiredMixin, PermissionRequiredMixin):
         recent_dates = set()
         for bill in recent_bills:
             recent_dates.add(bill.date_created.strftime('%Y-%m-%d'))
-        while not self.lastdate.strftime('%Y-%m-%d') in recent_dates:
-            self.lastdate = self.lastdate - timedelta(days=1)
+        error_counter=0
+        while not (self.lastdate.strftime('%Y-%m-%d') in recent_dates) and error_count < 3:
+            try:
+                lastdate = self.lastdate - timedelta(days=1)
+            except:
+                print(f"Error: {self.lastdate} - {timedelta(days=1)}")
+                error_counter += 1
+                lastdate = self.lastdate
+            self.lastdate = lastdate
+        if error_counter == 3:
+            return None
         if self.day == '1':  # Last encounter date before today
             seldate = self.lastdate
         elif self.day == '2':
